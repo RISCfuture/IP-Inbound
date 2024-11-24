@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
+	<key>bugsnag</key>
+	<dict>
+		<key>apiKey</key>
+		<string>d3066bb69c7ec0de62e6401b8aab44c6</string>
+		<key>releaseStage</key>
+		<string>$(CONFIGURATION)</string>
+	</dict>
+</dict>
+</plist>
