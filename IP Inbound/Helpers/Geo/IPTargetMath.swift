@@ -2,7 +2,7 @@ import CoreLocation
 import Foundation
 
 struct IPTargetMath: Equatable {
-    static let closeToIPTime = Measurement(value: 1, unit: UnitDuration.minutes)
+    private static let closeToIPTime = Measurement(value: 1, unit: UnitDuration.minutes)
 
     var coordinate: Coordinate
     var speed: Measurement<UnitSpeed>

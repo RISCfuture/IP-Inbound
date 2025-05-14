@@ -162,7 +162,7 @@ struct Bearing: Codable, Equatable, Sendable, CustomDebugStringConvertible {
 
     var absoluteValue: Self {
         precondition(reference == .relative, "cannot take abs of non-relative bearing")
-        return .init(angle: abs(angle.value), unit: angle.unit, reference: reference)
+        return .init(angle: angle.value.magnitude, unit: angle.unit, reference: reference)
     }
 
     var debugDescription: String {
@@ -195,7 +195,7 @@ struct Bearing: Codable, Equatable, Sendable, CustomDebugStringConvertible {
     func toTrue(declination: Measurement<UnitAngle>) -> Self {
         switch reference {
             case .magnetic:
-                    .init(angle: angle + declination, reference: .true)
+                    .init(angle: angle + declination, reference: .true).normalized
             case .true:
                 self
             case .relative:
@@ -208,7 +208,7 @@ struct Bearing: Codable, Equatable, Sendable, CustomDebugStringConvertible {
             case .magnetic:
                 self
             case .true:
-                    .init(angle: angle - declination, reference: .magnetic)
+                    .init(angle: angle - declination, reference: .magnetic).normalized
             case .relative:
                 preconditionFailure("Cannot convert relative bearing to magnetic")
         }

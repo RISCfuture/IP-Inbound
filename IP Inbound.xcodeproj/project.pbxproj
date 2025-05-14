@@ -10,6 +10,7 @@
 		0166FA742DCA685800970EFD /* DefaultsMacros in Frameworks */ = {isa = PBXBuildFile; productRef = 0166FA732DCA685800970EFD /* DefaultsMacros */; };
 		016F3C112DC08B3900F2A1AE /* Bugsnag in Frameworks */ = {isa = PBXBuildFile; productRef = 016F3C102DC08B3900F2A1AE /* Bugsnag */; };
 		016F3C142DC08B5800F2A1AE /* BugsnagPerformance in Frameworks */ = {isa = PBXBuildFile; productRef = 016F3C132DC08B5800F2A1AE /* BugsnagPerformance */; };
+		016F3ED22DD4F1E1006EEC6D /* Numerics in Frameworks */ = {isa = PBXBuildFile; productRef = 016F3ED12DD4F1E1006EEC6D /* Numerics */; };
 		01C059A72DBF49C600D733C1 /* AsyncAlgorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 01C059A62DBF49C600D733C1 /* AsyncAlgorithms */; };
 		01ECF4F32CF3E2F800BD0604 /* Defaults in Frameworks */ = {isa = PBXBuildFile; productRef = 01ECF4F22CF3E2F800BD0604 /* Defaults */; };
 		01F13CF52DBEE074000E58A2 /* NIO in Frameworks */ = {isa = PBXBuildFile; productRef = 01F13CF42DBEE074000E58A2 /* NIO */; };
@@ -44,6 +45,8 @@
 
 /* Begin PBXFileReference section */
 		016F3C1B2DC08E7A00F2A1AE /* Generate Screenshots.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Generate Screenshots.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		016F3ECE2DD4ED40006EEC6D /* Unit Tests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Unit Tests.xctestplan"; sourceTree = "<group>"; };
+		016F3ECF2DD4ED50006EEC6D /* UI Tests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = "UI Tests.xctestplan"; sourceTree = "<group>"; };
 		01ECF4B62CF3DF0D00BD0604 /* IP Inbound.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "IP Inbound.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		01ECF4C62CF3DF0F00BD0604 /* IP InboundTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "IP InboundTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		01ECF4D02CF3DF0F00BD0604 /* IP InboundUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "IP InboundUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -100,6 +103,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				016F3ED22DD4F1E1006EEC6D /* Numerics in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -116,6 +120,8 @@
 		01ECF4AD2CF3DF0D00BD0604 = {
 			isa = PBXGroup;
 			children = (
+				016F3ECE2DD4ED40006EEC6D /* Unit Tests.xctestplan */,
+				016F3ECF2DD4ED50006EEC6D /* UI Tests.xctestplan */,
 				01ECF4B82CF3DF0D00BD0604 /* IP Inbound */,
 				01ECF4C92CF3DF0F00BD0604 /* IP InboundTests */,
 				01ECF4D32CF3DF0F00BD0604 /* IP InboundUITests */,
@@ -219,6 +225,7 @@
 			);
 			name = "IP InboundTests";
 			packageProductDependencies = (
+				016F3ED12DD4F1E1006EEC6D /* Numerics */,
 			);
 			productName = "IP InboundTests";
 			productReference = 01ECF4C62CF3DF0F00BD0604 /* IP InboundTests.xctest */;
@@ -291,6 +298,7 @@
 				01C059A52DBF49C600D733C1 /* XCRemoteSwiftPackageReference "swift-async-algorithms" */,
 				016F3C0F2DC08B3900F2A1AE /* XCRemoteSwiftPackageReference "bugsnag-cocoa" */,
 				016F3C122DC08B5800F2A1AE /* XCRemoteSwiftPackageReference "bugsnag-cocoa-performance" */,
+				016F3ED02DD4F1E1006EEC6D /* XCRemoteSwiftPackageReference "swift-numerics" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 01ECF4B72CF3DF0D00BD0604 /* Products */;
@@ -758,6 +766,14 @@
 				minimumVersion = 1.12.0;
 			};
 		};
+		016F3ED02DD4F1E1006EEC6D /* XCRemoteSwiftPackageReference "swift-numerics" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-numerics.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.3;
+			};
+		};
 		01C059A52DBF49C600D733C1 /* XCRemoteSwiftPackageReference "swift-async-algorithms" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/apple/swift-async-algorithms.git";
@@ -807,6 +823,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 016F3C122DC08B5800F2A1AE /* XCRemoteSwiftPackageReference "bugsnag-cocoa-performance" */;
 			productName = BugsnagPerformance;
+		};
+		016F3ED12DD4F1E1006EEC6D /* Numerics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 016F3ED02DD4F1E1006EEC6D /* XCRemoteSwiftPackageReference "swift-numerics" */;
+			productName = Numerics;
 		};
 		01C059A62DBF49C600D733C1 /* AsyncAlgorithms */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -1,0 +1,24 @@
+{
+  "configurations" : [
+    {
+      "id" : "6964F7FD-A138-4D3E-98EC-29684E4F66D2",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:IP Inbound.xcodeproj",
+        "identifier" : "01ECF4C52CF3DF0F00BD0604",
+        "name" : "IP InboundTests"
+      }
+    }
+  ],
+  "version" : 1
+}

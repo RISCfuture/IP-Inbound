@@ -11,29 +11,22 @@ final class Target: CustomDebugStringConvertible, Identifiable, Equatable, Hasha
     var name = "New Target"
     var latitude = 0.0
     var longitude = 0.0
-    var offsetBearing = 0.0 { // deg
-        didSet {
-            offsetBearing = offsetBearing >= 0 ? offsetBearing % 360 : (
-                offsetBearing % 360 + 360
-            ) % 360
+
+    private var _offsetBearing = 0.0 // deg
+    var offsetBearing: Double {
+        get { _offsetBearing }
+        set {
+            _offsetBearing = newValue >= 0 ? newValue.truncatingRemainder(dividingBy: 360) : (
+                newValue.truncatingRemainder(dividingBy: 360) + 360
+            ).truncatingRemainder(dividingBy: 360)
         }
     }
+
     var offsetBearingIsTrue = false
-    var offsetDistance = 4.0 { // NM
-        didSet {
-            if offsetType == .distance {
-                offsetTime = offsetDistance / targetGroundSpeedMinutes
-            }
-        }
-    }
-    var offsetTime = 2.0 { // min
-        didSet {
-            if offsetType == .time {
-                offsetDistance = offsetTime * targetGroundSpeedMinutes
-            }
-        }
-    }
-    var offsetType = IPOffsetType.distance // distance or time
+
+    var offsetDistance = 4.0 // NM
+    var offsetTime = 2.0 // min
+
     var targetGroundSpeed = 120.0 // kts
     var timeOnTarget: Date?
     var isConfigured = false
@@ -88,11 +81,7 @@ final class Target: CustomDebugStringConvertible, Identifiable, Equatable, Hasha
     }
 
     var debugDescription: String {
-        let distanceTime = switch offsetType {
-            case .distance: "\(offsetDistance)NM (\(offsetTime)min)"
-            case .time: "\(offsetTime)min (\(offsetDistance)NM)"
-        }
-        return "<Target “\(name)”: \(coordinate); \(offsetBearing)/\(distanceTime)>"
+        return "<Target “\(name)”: \(coordinate); \(offsetBearing)/\(offsetDistance)NM (\(offsetTime)min)>"
     }
 
     private var targetGroundSpeedMinutes: Double { targetGroundSpeed / 60.0 }
@@ -119,7 +108,6 @@ final class Target: CustomDebugStringConvertible, Identifiable, Equatable, Hasha
          coordinate: Coordinate) {
         self.name = name
         self.coordinate = coordinate
-        offsetType = Defaults[.defaultOffsetType]
         targetGroundSpeed = Defaults[.defaultGroundSpeed]
 
         let targetGroundSpeedMinutes = Defaults[.defaultGroundSpeed] / 60.0
@@ -137,6 +125,20 @@ final class Target: CustomDebugStringConvertible, Identifiable, Equatable, Hasha
 
     static func == (lhs: Target, rhs: Target) -> Bool {
         lhs.id == rhs.id
+    }
+
+    func setOffset(time: Measurement<UnitDuration>) {
+        offsetTime = time.converted(to: .minutes).value
+        offsetDistance = (targetGroundSpeedMeasurement * time)
+            .converted(to: .nauticalMiles)
+            .value
+    }
+
+    func setOffset(distance: Measurement<UnitLength>) {
+        offsetDistance = distance.converted(to: .nauticalMiles).value
+        offsetTime = (distance / targetGroundSpeedMeasurement)
+            .converted(to: .minutes)
+            .value
     }
 
     func hash(into hasher: inout Hasher) {

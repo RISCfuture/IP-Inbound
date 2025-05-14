@@ -3,6 +3,10 @@ import SwiftUI
 struct IPSetupForm: View {
     @Bindable var target: Target
 
+    @State private var offsetType = IPOffsetType.distance
+    @State private var offsetDistance = 4.0
+    @State private var offsetTime = 2.0
+
     var body: some View {
         Form {
             Section("") {
@@ -33,10 +37,10 @@ struct IPSetupForm: View {
                 }
 
                 LabeledContent {
-                    switch target.offsetType {
+                    switch offsetType {
                         case .distance:
                             HStack {
-                                TextField("", value: $target.offsetDistance, format: .number)
+                                TextField("", value: $offsetDistance, format: .number)
                                     .multilineTextAlignment(.trailing)
                                     .keyboardType(.numberPad)
                                     .accessibilityIdentifier("offsetDistanceField")
@@ -44,7 +48,7 @@ struct IPSetupForm: View {
                             }
                         case .time:
                             HStack {
-                                TextField("", value: $target.offsetTime, format: .number)
+                                TextField("", value: $offsetTime, format: .number)
                                     .multilineTextAlignment(.trailing)
                                     .keyboardType(.numberPad)
                                     .accessibilityIdentifier("offsetTimeField")
@@ -52,7 +56,7 @@ struct IPSetupForm: View {
                             }
                     }
                 } label: {
-                    Picker("", selection: $target.offsetType) {
+                    Picker("", selection: $offsetType) {
                         Text("Distance").tag(IPOffsetType.distance)
                         Text("Time").tag(IPOffsetType.time)
                     }
@@ -74,24 +78,15 @@ struct IPSetupForm: View {
                 }
             }
         }
-        .onChange(of: target.offsetDistance) {
-            let targetGroundSpeedMinutes = target.targetGroundSpeed / 60.0
-            if target.offsetType == .distance {
-                target.offsetTime = target.offsetDistance / targetGroundSpeedMinutes
-            }
+        .onChange(of: offsetDistance) {
+            target.setOffset(distance: .init(value: offsetDistance,
+                                             unit: .nauticalMiles))
+            offsetTime = target.offsetTime
         }
-        .onChange(of: target.offsetTime) {
-            let targetGroundSpeedMinutes = target.targetGroundSpeed / 60.0
-            if target.offsetType == .time {
-                target.offsetDistance = target.offsetTime * targetGroundSpeedMinutes
-            }
-        }
-        .onChange(of: target.offsetBearing) {
-            if !(0..<360).contains(target.offsetBearing) {
-                target.offsetBearing = target.offsetBearing >= 0 ?
-                target.offsetBearing.truncatingRemainder(dividingBy: 360) :
-                (target.offsetBearing.truncatingRemainder(dividingBy: 360) + 360).truncatingRemainder(dividingBy: 360)
-            }
+        .onChange(of: offsetTime) {
+            target.setOffset(time: .init(value: offsetTime,
+                                         unit: .minutes))
+            offsetDistance = target.offsetDistance
         }
     }
 }

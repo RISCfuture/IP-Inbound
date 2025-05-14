@@ -212,7 +212,7 @@ struct TutorialView: View {
                         If IP Inbound calculates that you have insufficient time \
                         to fly to the IP and then the target, given your TOT, \
                         the CDI will change to providing guidance directly to \
-                        the target. This is indicated by the title **P.POS → IP** \
+                        the target. This is indicated by the title **P.POS → Target** \
                         showing in red. The CDI shows _desired track_ guidance to \
                         the target. The **red chevron** with an inset “T” is the \
                         direct course to the target, and the **yelow chevron** \
