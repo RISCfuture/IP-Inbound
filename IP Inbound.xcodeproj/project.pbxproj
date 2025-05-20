@@ -44,6 +44,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		01497EEC2DDC473400963D93 /* ci_post_clone.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = ci_post_clone.sh; sourceTree = "<group>"; };
 		016F3C1B2DC08E7A00F2A1AE /* Generate Screenshots.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Generate Screenshots.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		016F3ECE2DD4ED40006EEC6D /* Unit Tests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Unit Tests.xctestplan"; sourceTree = "<group>"; };
 		016F3ECF2DD4ED50006EEC6D /* UI Tests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = "UI Tests.xctestplan"; sourceTree = "<group>"; };
@@ -117,9 +118,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		01497EED2DDC473400963D93 /* ci_scripts */ = {
+			isa = PBXGroup;
+			children = (
+				01497EEC2DDC473400963D93 /* ci_post_clone.sh */,
+			);
+			path = ci_scripts;
+			sourceTree = "<group>";
+		};
 		01ECF4AD2CF3DF0D00BD0604 = {
 			isa = PBXGroup;
 			children = (
+				01497EED2DDC473400963D93 /* ci_scripts */,
 				016F3ECE2DD4ED40006EEC6D /* Unit Tests.xctestplan */,
 				016F3ECF2DD4ED50006EEC6D /* UI Tests.xctestplan */,
 				01ECF4B82CF3DF0D00BD0604 /* IP Inbound */,
