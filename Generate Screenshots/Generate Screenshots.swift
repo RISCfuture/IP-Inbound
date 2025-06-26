@@ -52,7 +52,7 @@ final class Generate_Screenshots: XCTestCase {
         let app = launch()
         
         makeTarget(app: app)
-        setTimePicker(app: app, minutesFromNow: 2)
+        setTimePicker(app: app, minutesFromNow: 4)
         
         XCUIDevice.shared.location = .init(location: LocationHelper.preIPLocation())
         app.buttons["flyButton"].tap()
