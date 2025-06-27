@@ -11,7 +11,7 @@ struct LocationEvent: Sendable {
 
     var isSimulating: Bool { simName != nil }
 
-    var coordinate: Coordinate? { // degrees
+    var coordinate: Coordinate? {
         guard let coordinate = location?.coordinate else { return nil }
         return .init(coordinate)
     }
@@ -20,7 +20,7 @@ struct LocationEvent: Sendable {
                 .init(angle: location.course, reference: .true)
         }
     }
-    var speed: Measurement<UnitSpeed>? { // knots
+    var speed: Measurement<UnitSpeed>? {
         return location.map { location in
             Measurement(value: location.speed, unit: UnitSpeed.metersPerSecond)
         }

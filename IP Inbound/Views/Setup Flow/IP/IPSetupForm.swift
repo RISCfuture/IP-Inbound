@@ -1,3 +1,5 @@
+import Defaults
+import Foundation
 import SwiftUI
 
 struct IPSetupForm: View {
@@ -6,6 +8,9 @@ struct IPSetupForm: View {
     @State private var offsetType = IPOffsetType.distance
     @State private var offsetDistance = 4.0
     @State private var offsetTime = 2.0
+
+    @Default(.distanceUnit)
+    private var distanceDefault
 
     var body: some View {
         Form {
@@ -44,7 +49,14 @@ struct IPSetupForm: View {
                                     .multilineTextAlignment(.trailing)
                                     .keyboardType(.numberPad)
                                     .accessibilityIdentifier("offsetDistanceField")
-                                Text(localizedName(of: UnitLength.nauticalMiles, style: .short))
+                                Picker("", selection: $distanceDefault) {
+                                    ForEach(DistanceUnit.allCases, id: \.self) { unit in
+                                        Text(localizedName(of: unit.distanceUnit, style: .short))
+                                            .tag(unit)
+                                    }
+                                }
+                                .labelsHidden()
+                                .accessibilityIdentifier("distanceUnitPicker")
                             }
                         case .time:
                             HStack {
@@ -71,7 +83,14 @@ struct IPSetupForm: View {
                             .multilineTextAlignment(.trailing)
                             .keyboardType(.numberPad)
                             .accessibilityIdentifier("targetGroundSpeedField")
-                        Text(localizedName(of: UnitSpeed.knots, style: .short))
+                        Picker("", selection: $distanceDefault) {
+                            ForEach(DistanceUnit.allCases, id: \.self) { unit in
+                                Text(localizedName(of: unit.speedUnit, style: .short))
+                                    .tag(unit)
+                            }
+                        }
+                        .labelsHidden()
+                        .accessibilityIdentifier("speedUnitPicker")
                     }
                 } label: {
                     Text("Target Ground Speed").foregroundStyle(.secondary)
@@ -80,7 +99,7 @@ struct IPSetupForm: View {
         }
         .onChange(of: offsetDistance) {
             target.setOffset(distance: .init(value: offsetDistance,
-                                             unit: .nauticalMiles))
+                                             unit: distanceDefault.distanceUnit))
             offsetTime = target.offsetTime
         }
         .onChange(of: offsetTime) {

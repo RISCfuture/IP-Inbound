@@ -9,13 +9,22 @@ struct TOTView: View {
     @Default(.TOTDisplayMode)
     private var displayMode
 
+    @Default(.distanceUnit)
+    private var distanceDefault
+
     var body: some View {
         HStack {
             if showSpeed {
-                Text(fromTo.speed.converted(to: .knots), format: speedFormatStyle)
+                Text(fromTo.speed.converted(to: distanceDefault.speedUnit), format: speedFormatStyle)
+                    .onTapGesture { cycleUnits() }
+                    .accessibilityAddTraits(.isButton)
+                    .accessibilityHint("Cycle speed units")
                 Text("•")
             }
-            Text(fromTo.distance.converted(to: .nauticalMiles), format: distanceFormatStyle)
+            Text(fromTo.distance.converted(to: distanceDefault.distanceUnit), format: distanceFormatStyle)
+                .onTapGesture { cycleUnits() }
+                .accessibilityAddTraits(.isButton)
+                .accessibilityHint("Cycle distance units")
             if let timeOnTarget {
                 Text("•")
                 switch displayMode {
@@ -33,6 +42,16 @@ struct TOTView: View {
             }
         }
         .fontWeight(.bold)
+    }
+
+    private func cycleUnits() {
+        guard let index = DistanceUnit.allCases.firstIndex(of: distanceDefault) else {
+            distanceDefault = .nauticalMiles
+            return
+        }
+
+        let nextIndex = (index + 1) % DistanceUnit.allCases.count
+        distanceDefault = DistanceUnit.allCases[nextIndex]
     }
 }
 

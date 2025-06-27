@@ -31,10 +31,33 @@ extension CLLocationCoordinate2D: Defaults.Serializable {
 
 extension CoordinateFormat: Defaults.Serializable {}
 
+enum DistanceUnit: String, Defaults.Serializable, CaseIterable {
+    case nauticalMiles
+    case miles
+    case kilometers
+
+    var distanceUnit: UnitLength {
+        switch self {
+            case .nauticalMiles: .nauticalMiles
+            case .miles: .miles
+            case .kilometers: .kilometers
+        }
+    }
+
+    var speedUnit: UnitSpeed {
+        switch self {
+            case .nauticalMiles: .knots
+            case .miles: .milesPerHour
+            case .kilometers: .kilometersPerHour
+        }
+    }
+}
+
 extension Defaults.Keys {
     static let defaultGroundSpeed = Key<Double>("defaultGroundSpeed", default: 120) // kts
     static let defaultOffsetType = Key<IPOffsetType>("defaultOffsetType", default: .distance)
     static let defaultOffset = Key<Double>("defaultOffset", default: 4) // NM
     static let coordinateFormat = Key<CoordinateFormat>("coordinateFormat", default: .degreesMinutesSeconds)
     static let TOTDisplayMode = Key<DisplayMode>("TOTDisplayMode", default: .zulu)
+    static let distanceUnit = Key<DistanceUnit>("distanceUnit", default: .nauticalMiles)
 }
