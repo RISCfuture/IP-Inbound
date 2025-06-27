@@ -21,10 +21,10 @@ struct TutorialView: View {
                     Text(AttributedString(localized: """
                         Start by defining your **target point (TP)**. This is the \
                         exact position you want to be over at **time on target \
-                        (TOT)**. You can choose a target on the map or use \
-                        latitude/longitude UTM coordinates. Tap the \
-                        coordinates to change between coordinate types (DMS, \
-                        DMM, DD, UTM).
+                        (TOT)**. You can choose a target on the map, use \
+                        latitude/longitude UTM coordinates, or find a place by \
+                        name/address. Tap the coordinates to change between \
+                        coordinate types (DMS, DMM, DD, UTM).
                         """))
                 }
 
@@ -148,7 +148,8 @@ struct TutorialView: View {
                     Text(AttributedString(localized: """
                          Your ground speed, the distance to the IP, and the TOT \
                         (_not_ time over IP) are shown at the bottom. Tap the \
-                        TOT to toggle between local and Zulu time (GMT).
+                        distance or speed to cycle between knots, MPH, or KPH, \
+                        and tap the TOT to toggle between local and Zulu time (GMT).
                         """))
 
                     Text(AttributedString(localized: """
