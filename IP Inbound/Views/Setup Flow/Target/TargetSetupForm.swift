@@ -8,6 +8,7 @@ struct TargetSetupForm: View {
     private var coordinateFormat
 
     @State private var editingCoordinates = false
+    @State private var findLocationShown = false
 
     var body: some View {
         Form {
@@ -36,10 +37,9 @@ struct TargetSetupForm: View {
                     Text("Coordinates").foregroundStyle(.secondary)
                 }
 
-                LabeledContent {
-                } label: {
-                    Button(action: { editingCoordinates = true }, label: { Text("Set Coordinates…") })
-                }
+                Button(action: { editingCoordinates = true }, label: { Text("Set Coordinates…") })
+
+                Button(action: { findLocationShown = true }, label: { Text("Find Location…") })
             }
         }
         .sheet(isPresented: $editingCoordinates) {
@@ -49,6 +49,13 @@ struct TargetSetupForm: View {
                 editingCoordinates = false
             }, onCancel: { editingCoordinates = false })
             .padding()
+        }
+        .sheet(isPresented: $findLocationShown) {
+            FindLocationView { coord, title in
+                target.coordinate = .init(coord)
+                target.name = title
+                findLocationShown = false
+            }
         }
     }
 }
