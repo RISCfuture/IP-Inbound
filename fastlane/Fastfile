@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # This file contains the fastlane.tools configuration
 # You can find the documentation at https://docs.fastlane.tools
 #
@@ -15,9 +17,9 @@
 
 default_platform(:ios)
 
-api_key = app_store_connect_api_key(
-  key_id: "FXXUALYK6F",
-  issuer_id: "69a6de7f-1ffd-47e3-e053-5b8c7c11a4d1",
+app_store_connect_api_key(
+  key_id:       "FXXUALYK6F",
+  issuer_id:    "69a6de7f-1ffd-47e3-e053-5b8c7c11a4d1",
   key_filepath: "./fastlane/AuthKey_FXXUALYK6F.p8"
 )
 
@@ -25,36 +27,36 @@ platform :ios do
   desc "Generate new localized screenshots"
   lane :screenshots do
     test_cases = [
-      "Generate Screenshots/Generate_Screenshots/testScreenshots_ground",
-      "Generate Screenshots/Generate_Screenshots/testScreenshots_ipEarly",
-      "Generate Screenshots/Generate_Screenshots/testScreenshots_ip",
-      "Generate Screenshots/Generate_Screenshots/testScreenshots_ipLate",
-      "Generate Screenshots/Generate_Screenshots/testScreenshots_postIP"
+        "Generate Screenshots/Generate_Screenshots/testScreenshots_ground",
+        "Generate Screenshots/Generate_Screenshots/testScreenshots_ipEarly",
+        "Generate Screenshots/Generate_Screenshots/testScreenshots_ip",
+        "Generate Screenshots/Generate_Screenshots/testScreenshots_ipLate",
+        "Generate Screenshots/Generate_Screenshots/testScreenshots_postIP"
     ]
 
     # Screenshots will be cleared via the Snapfile settings
 
-    test_cases.each_with_index do |test_method, index|
+    test_cases.each_with_index do |test_method, _index|
       capture_screenshots(
-        scheme: "Generate Screenshots",
-        devices: [
-          "iPhone 16 Pro Max",
-          "iPhone 14 Plus",
-          "iPad Pro 13-inch (M4)"
+        scheme:                     "Generate Screenshots",
+        devices:                    [
+            "iPhone 16 Pro Max",
+            "iPhone 14 Plus",
+            "iPad Pro 13-inch (M4)"
         ],
-        languages: ["en-US"],
-        output_directory: "./fastlane/screenshots",
+        languages:                  %w[en-US],
+        output_directory:           "./fastlane/screenshots",
         clear_previous_screenshots: false,
-        override_status_bar: false,
-        erase_simulator: true,
-        only_testing: [test_method],
-        reinstall_app: true,
-        output_simulator_logs: true,
-        headless: true,
-        number_of_retries: 1,
-        stop_after_first_error: true,
-        result_bundle: false,
-        concurrent_simulators: true
+        override_status_bar:        false,
+        erase_simulator:            true,
+        only_testing:               [test_method],
+        reinstall_app:              true,
+        output_simulator_logs:      true,
+        headless:                   true,
+        number_of_retries:          1,
+        stop_after_first_error:     true,
+        result_bundle:              false,
+        concurrent_simulators:      true
       )
     end
 
