@@ -5,6 +5,7 @@ struct TargetSetupMap: View {
     @Bindable var target: Target
     @State private var cameraPosition: MapCameraPosition = .automatic
     @State private var skipUpdate = false
+    @State private var currentDistance: Double = 10_000
 
     private var initialPosition: MapCameraPosition {
         return .camera(.init(centerCoordinate: target.coordinate.toCoreLocation, distance: 10_000))
@@ -29,6 +30,7 @@ struct TargetSetupMap: View {
         }
         .onMapCameraChange(frequency: .continuous) { context in
             skipUpdate = true
+            currentDistance = context.camera.distance
             target.coordinate = .init(context.camera.centerCoordinate)
         }
         .onMapCameraChange(frequency: .onEnd) {
@@ -39,7 +41,8 @@ struct TargetSetupMap: View {
                 skipUpdate = false
                 return
             }
-            cameraPosition = .camera(.init(centerCoordinate: newValue.toCoreLocation, distance: 10_000))
+            // Center map on new coordinate while preserving zoom level
+            cameraPosition = .camera(.init(centerCoordinate: newValue.toCoreLocation, distance: currentDistance))
         }
     }
 }
