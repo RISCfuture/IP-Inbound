@@ -1,6 +1,5 @@
 import Defaults
 import Foundation
-@preconcurrency import LocationFormatter
 
 struct ZuluTimeFormatStyle: FormatStyle {
     func format(_ value: Date) -> String {
@@ -19,9 +18,8 @@ func localizedName(of unit: Unit, style: Formatter.UnitStyle = .long) -> String 
 }
 
 func format(coordinate: Coordinate) -> String? {
-    let formatter = LocationCoordinateFormatter(format: Defaults[.coordinateFormat], displayOptions: .suffix)
-    formatter.symbolStyle = .traditional
-    return formatter.string(from: coordinate.toCoreLocation)
+    let style = CoordinateFormatStyle(format: Defaults[.coordinateFormat])
+    return coordinate.formatted(style)
 }
 
 let distanceNumberFormatStyle = FloatingPointFormatStyle<Double>.number.rounded(increment: 0.1)

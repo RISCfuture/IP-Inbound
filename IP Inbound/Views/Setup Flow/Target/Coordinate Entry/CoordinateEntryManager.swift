@@ -1,7 +1,6 @@
 import Defaults
 import DefaultsMacros
 import Foundation
-import LocationFormatter
 import SwiftUI
 
 private extension Double {
@@ -29,7 +28,7 @@ final class CoordinateEntryManager {
 
     private(set) var currentIndex = 0
     private var indexInString: String.Index { indexInString(currentIndex) }
-    @MainActor private let UTMFormatter = LocationCoordinateFormatter(format: .utm)
+    @MainActor private let UTMFormatter = CoordinateFormatStyle(format: .utm)
     private var formatChangeObserver: Task<Void, Never>?
 
     var digitCount: Int { stringValue.count }
@@ -60,21 +59,21 @@ final class CoordinateEntryManager {
     var stringValue: String {
         switch format {
             case .decimalDegrees:
-                String(format: "%@ %08.5f°\n%@ %09.5f°",
-                       northing, latitude.degreesDecimal,
-                       easting, longitude.degreesDecimal)
+                return String(format: "%@ %08.5f°\n%@ %09.5f°",
+                              northing, latitude.degreesDecimal,
+                              easting, longitude.degreesDecimal)
             case .degreesDecimalMinutes:
-                String(format: "%@ %02d° %06.3f′\n%@ %03d° %06.3f′",
-                       northing, latitude.degrees, latitude.minutesDecimal,
-                       easting, longitude.degrees, longitude.minutesDecimal)
+                return String(format: "%@ %02d° %06.3f′\n%@ %03d° %06.3f′",
+                              northing, latitude.degrees, latitude.minutesDecimal,
+                              easting, longitude.degrees, longitude.minutesDecimal)
             case .degreesMinutesSeconds:
-                String(format: "%@ %02d° %02d′ %05.2f″\n%@ %03d° %02d′ %05.2f″",
-                       northing, latitude.degrees, latitude.minutes, latitude.secondsDecimal,
-                       easting, longitude.degrees, longitude.minutes, longitude.secondsDecimal)
-            case .utm: // handled by UTMFormatter
-                UTMFormatter.string(for: coordinate.toCoreLocation)!
-            case .geoURI:
-                preconditionFailure("Invalid coordinate format")
+                return String(format: "%@ %02d° %02d′ %02d″\n%@ %03d° %02d′ %02d″",
+                              northing, latitude.degrees, latitude.minutes, latitude.seconds,
+                              easting, longitude.degrees, longitude.minutes, longitude.seconds)
+            case .utm:
+                return coordinate.formatted(UTMFormatter)
+            case .mgrs:
+                return MGRSHelper.fromCoordinate(coordinate, precision: .tenM) ?? ""
         }
     }
 
@@ -116,17 +115,22 @@ final class CoordinateEntryManager {
 
     func isValidCharacter(_ character: Character) -> Bool {
         var newCoordinateStr = stringValue
-        newCoordinateStr.replaceSubrange(indexInString...indexInString, with: String(character))
+        let range = indexInString..<stringValue.index(after: indexInString)
+        newCoordinateStr.replaceSubrange(range, with: String(character))
         return coordinate(from: newCoordinateStr) != nil
     }
 
     func add(_ digit: Character, advanceCursor: Bool = true) {
         guard format == .decimalDegrees || format == .degreesDecimalMinutes || format == .degreesMinutesSeconds else {
+            if format == .mgrs || format == .utm {
+                return // MGRS and UTM handled differently
+            }
             preconditionFailure("Invalid coordinate format")
         }
 
         var newCoordinateStr = stringValue
-        newCoordinateStr.replaceSubrange(indexInString...indexInString, with: String(digit))
+        let range = indexInString..<stringValue.index(after: indexInString)
+        newCoordinateStr.replaceSubrange(range, with: String(digit))
         if let newCoordinate = coordinate(from: newCoordinateStr) {
             coordinate = newCoordinate
             if advanceCursor { advance() }
@@ -135,6 +139,9 @@ final class CoordinateEntryManager {
 
     func delete() {
         guard format == .decimalDegrees || format == .degreesDecimalMinutes || format == .degreesMinutesSeconds else {
+            if format == .mgrs || format == .utm {
+                return // MGRS and UTM handled differently
+            }
             preconditionFailure("Invalid coordinate format")
         }
 
@@ -235,10 +242,10 @@ final class CoordinateEntryManager {
                     eastingIndex = 17,
                     latitudeDegreesIndex = 2...3,
                     latitudeMinutesIndex = 6...7,
-                    latitudeSecondsIndex = 10...14,
-                    longitudeDegreesIndex = 19...21,
-                    longitudeMinutesIndex = 24...25,
-                    longitudeSecondsIndex = 28...32
+                    latitudeSecondsIndex = 10...11,
+                    longitudeDegreesIndex = 16...18,
+                    longitudeMinutesIndex = 21...22,
+                    longitudeSecondsIndex = 25...26
                 let northingStr = string.slice(northingIndex),
                     eastingStr = string.slice(eastingIndex),
                     latitudeDegreesStr = string.slice(latitudeDegreesIndex),
@@ -271,13 +278,10 @@ final class CoordinateEntryManager {
                              longitude: (longitudeDegrees + longitudeMinutes / 60 + longitudeSeconds / 3600) * eastingBinade)
 
             case .utm:
-                guard let location = try? UTMFormatter.coordinate(from: string) else {
-                    return nil
-                }
-                return .init(location)
+                return try? Coordinate(string, format: .utm)
 
-            case .geoURI:
-                preconditionFailure("Invalid format")
+            case .mgrs:
+                return MGRSHelper.toCoordinate(string)
         }
     }
 
@@ -300,8 +304,7 @@ final class CoordinateEntryManager {
                     case "N", "S", "E", "W": .hemisphere
                     default: .open
                 }
-            case .utm: .open
-            case .geoURI: preconditionFailure("Invalid coordinate format")
+            case .utm, .mgrs: .open
         }
     }
 

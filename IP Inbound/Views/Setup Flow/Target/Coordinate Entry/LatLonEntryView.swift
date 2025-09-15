@@ -1,5 +1,4 @@
 import Defaults
-import LocationFormatter
 import SwiftUI
 
 struct LatLonEntryView: View {
@@ -20,7 +19,9 @@ struct LatLonEntryView: View {
     }
 
     var body: some View {
-        if coordinateFormat != .decimalDegrees && coordinateFormat != .degreesMinutesSeconds && coordinateFormat != .degreesDecimalMinutes {
+        if coordinateFormat != .decimalDegrees
+            && coordinateFormat != .degreesMinutesSeconds
+            && coordinateFormat != .degreesDecimalMinutes {
             Spacer()
         } else {
             GeometryReader { geometry in
@@ -33,7 +34,7 @@ struct LatLonEntryView: View {
                             HStack {
                                 GeometryReader { geo in
                                     Text(strings[lineIndex])
-                                        .font(.system(size: baseline * 0.8).monospaced())
+                                        .font(.system(size: baseline * 0.7).monospaced())
                                         .minimumScaleFactor(0.5)
                                         .lineLimit(1)
                                         .frame(maxWidth: .infinity, maxHeight: baseline)
@@ -107,7 +108,8 @@ struct LatLonEntryView: View {
 }
 
 #Preview {
-    @Previewable @State var coordinate = Coordinate(latitude: 37, longitude: -121.5)
+    @Previewable @State var coordinate = Coordinate(latitude: 37.5, longitude: -121.5)
 
     LatLonEntryView(coordinate: coordinate, onAccept: { coordinate = $0 }, onCancel: { })
+        .padding()
 }

@@ -7,47 +7,73 @@ struct DirectionKeypadView: View {
 
     var body: some View {
         GeometryReader { geometry in
-            // Calculate square size
-            let cellSize = min(geometry.size.width / 3, geometry.size.height / 3)
+            let buttonSize = min(geometry.size.width / 3.5, geometry.size.height / 3.5)
+            let spacing = buttonSize * 0.15
 
-            Grid(horizontalSpacing: 0, verticalSpacing: 0) {
-                GridRow {
-                    GridButtonSpace(cellSize: cellSize)
-                    GridButton(label: {
-                        Text("N")
-                            .accessibilityLabel("North")
-                    }, cellSize: cellSize, onPress: { onKeyPress("N") })
-                    .disabled(!activeDirections.contains("N"))
-                    GridButtonSpace(cellSize: cellSize)
+            VStack(spacing: spacing) {
+                // Row 1: _ N _
+                HStack(spacing: spacing) {
+                    Color.clear
+                        .frame(width: buttonSize, height: buttonSize)
+
+                    KeypadButton(
+                        label: "N",
+                        isActive: activeDirections.contains("N"),
+                        action: { onKeyPress("N") }
+                    )
+                    .frame(width: buttonSize, height: buttonSize)
+                    .accessibilityLabel("North")
+
+                    Color.clear
+                        .frame(width: buttonSize, height: buttonSize)
                 }
-                GridRow {
-                    GridButton(label: {
-                        Text("W")
-                            .accessibilityLabel("West")
-                    }, cellSize: cellSize, onPress: { onKeyPress("W") })
-                    .disabled(!activeDirections.contains("W"))
-                    GridButtonSpace(cellSize: cellSize)
-                    GridButton(label: {
-                        Text("E")
-                            .accessibilityLabel("East")
-                    }, cellSize: cellSize, onPress: { onKeyPress("E") })
-                    .disabled(!activeDirections.contains("E"))
+
+                // Row 2: W _ E
+                HStack(spacing: spacing) {
+                    KeypadButton(
+                        label: "W",
+                        isActive: activeDirections.contains("W"),
+                        action: { onKeyPress("W") }
+                    )
+                    .frame(width: buttonSize, height: buttonSize)
+                    .accessibilityLabel("West")
+
+                    Color.clear
+                        .frame(width: buttonSize, height: buttonSize)
+
+                    KeypadButton(
+                        label: "E",
+                        isActive: activeDirections.contains("E"),
+                        action: { onKeyPress("E") }
+                    )
+                    .frame(width: buttonSize, height: buttonSize)
+                    .accessibilityLabel("East")
                 }
-                GridRow {
-                    GridButtonSpace(cellSize: cellSize)
-                    GridButton(label: {
-                        Text("S")
-                            .accessibilityLabel("South")
-                    }, cellSize: cellSize, onPress: { onKeyPress("S") })
-                    .disabled(!activeDirections.contains("S"))
-                    GridButton(label: {
-                        Image(systemName: "delete.backward")
-                            .accessibilityLabel("Backspace")
-                    }, cellSize: cellSize, onPress: { onBackspace() })
+
+                // Row 3: _ S ⌫
+                HStack(spacing: spacing) {
+                    Color.clear
+                        .frame(width: buttonSize, height: buttonSize)
+
+                    KeypadButton(
+                        label: "S",
+                        isActive: activeDirections.contains("S"),
+                        action: { onKeyPress("S") }
+                    )
+                    .frame(width: buttonSize, height: buttonSize)
+                    .accessibilityLabel("South")
+
+                    KeypadButton(
+                        systemImage: "delete.left",
+                        accessibilityLabel: "Delete",
+                        isBackspace: true,
+                        action: onBackspace
+                    )
+                    .frame(width: buttonSize, height: buttonSize)
+                    .accessibilityLabel("Backspace")
                 }
             }
-            .frame(width: cellSize * 3, height: cellSize * 3)
-            .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }
 }

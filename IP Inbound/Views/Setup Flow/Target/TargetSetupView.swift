@@ -1,5 +1,4 @@
 import Defaults
-import LocationFormatter
 import MapKit
 import SwiftUI
 

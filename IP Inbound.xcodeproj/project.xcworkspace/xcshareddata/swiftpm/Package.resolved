@@ -1,5 +1,5 @@
 {
-  "originHash" : "0f564e6a6600330e2d870200b537867a6cce97d0fd0bd95a52affce216a93b5f",
+  "originHash" : "1473cdfeafe9d2890123b886d89ae6007b9aa52f6ff311b9cf1460669774bb4d",
   "pins" : [
     {
       "identity" : "bugsnag-cocoa",
@@ -20,6 +20,15 @@
       }
     },
     {
+      "identity" : "color-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ngageoint/color-ios",
+      "state" : {
+        "revision" : "1c588dafaf599a32d9adc29880264281dfbf286f",
+        "version" : "2.0.0"
+      }
+    },
+    {
       "identity" : "defaults",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/sindresorhus/Defaults",
@@ -29,12 +38,30 @@
       }
     },
     {
-      "identity" : "locationformatter",
+      "identity" : "grid-ios",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/salishseasoftware/LocationFormatter.git",
+      "location" : "https://github.com/ngageoint/grid-ios",
       "state" : {
-        "revision" : "d0a45f9a2471b20e0af4792533d79a469d86fc61",
-        "version" : "1.1.1"
+        "revision" : "9370e0042a6c78588486d345ab1133f450889508",
+        "version" : "2.0.0"
+      }
+    },
+    {
+      "identity" : "mgrs-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ngageoint/mgrs-ios",
+      "state" : {
+        "revision" : "8080304310058507e2818fd9f8138bc26a2567e3",
+        "version" : "2.0.0"
+      }
+    },
+    {
+      "identity" : "simple-features-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ngageoint/simple-features-ios",
+      "state" : {
+        "revision" : "615127133c83122077dcf71daa53a9a93f05a347",
+        "version" : "5.0.0"
       }
     },
     {
@@ -107,15 +134,6 @@
       "state" : {
         "revision" : "a34201439c74b53f0fd71ef11741af7e7caf01e1",
         "version" : "1.4.2"
-      }
-    },
-    {
-      "identity" : "utmconversion",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/wtw-software/UTMConversion",
-      "state" : {
-        "revision" : "53172a2f32b4c403a7ab362e0995fd48e9ef9d2b",
-        "version" : "1.4.0"
       }
     }
   ],

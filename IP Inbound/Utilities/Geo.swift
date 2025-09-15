@@ -2,7 +2,7 @@ import CoreLocation
 
 private let earthRadius = 6371000.0 // meters
 
-struct Coordinate: Codable, Equatable, Sendable {
+public struct Coordinate: Codable, Equatable, Sendable, Hashable {
     static var zero: Self { .init(latitude: 0, longitude: 0) }
 
     var latitude: Measurement<UnitAngle>

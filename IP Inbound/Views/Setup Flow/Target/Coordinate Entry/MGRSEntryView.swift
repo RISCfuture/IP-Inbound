@@ -1,17 +1,17 @@
 import SwiftUI
 
-struct UTMEntryView: View {
+struct MGRSEntryView: View {
     let onAccept: (Coordinate) -> Void
     let onCancel: () -> Void
 
-    @State private var entryManager: UTMEntryManager
+    @State private var entryManager: MGRSEntryManager
 
     var body: some View {
         GeometryReader { geometry in
             let baseline = geometry.size.height / 8
 
             VStack(spacing: 0) {
-                // Display formatted UTM string with cursor
+                // Display formatted MGRS string with cursor
                 HStack {
                     GeometryReader { geo in
                         Text(entryManager.attributedString)
@@ -46,8 +46,22 @@ struct UTMEntryView: View {
                     )
                     .frame(height: baseline * 5)
                 case .band:
-                    UTMBandKeypadView(
-                        activeBands: entryManager.validBands,
+                    MGRSLetterKeypadView(
+                        activeLetters: entryManager.validBands,
+                        onKeyPress: { entryManager.add($0) },
+                        onBackspace: { entryManager.backspace() }
+                    )
+                    .frame(height: baseline * 5)
+                case .column:
+                    MGRSLetterKeypadView(
+                        activeLetters: entryManager.validColumns,
+                        onKeyPress: { entryManager.add($0) },
+                        onBackspace: { entryManager.backspace() }
+                    )
+                    .frame(height: baseline * 5)
+                case .row:
+                    MGRSLetterKeypadView(
+                        activeLetters: entryManager.validRows,
                         onKeyPress: { entryManager.add($0) },
                         onBackspace: { entryManager.backspace() }
                     )
@@ -95,34 +109,34 @@ struct UTMEntryView: View {
     init(coordinate: Coordinate, onAccept: @escaping (Coordinate) -> Void, onCancel: @escaping () -> Void) {
         self.onAccept = onAccept
         self.onCancel = onCancel
-        _entryManager = State(wrappedValue: UTMEntryManager(coordinate: coordinate))
+        _entryManager = State(wrappedValue: MGRSEntryManager(coordinate: coordinate))
     }
 }
 
-// Custom keypad for UTM band letters
-struct UTMBandKeypadView: View {
-    let activeBands: [Character]
+// Custom keypad for MGRS letters
+struct MGRSLetterKeypadView: View {
+    let activeLetters: [Character]
     let onKeyPress: (Character) -> Void
     let onBackspace: () -> Void
 
-    private let bands: [[Character?]] = [
-        ["C", "D", "E", "F"],
-        ["G", "H", "J", "K"],
-        ["L", "M", "N", "P"],
-        ["Q", "R", "S", "T"],
-        ["U", "V", "W", "X"],
-        [nil, nil, nil, nil]  // Backspace row
+    private let letters: [[Character?]] = [
+        ["A", "B", "C", "D", "E"],
+        ["F", "G", "H", "J", "K"],
+        ["L", "M", "N", "P", "Q"],
+        ["R", "S", "T", "U", "V"],
+        ["W", "X", "Y", "Z", nil],
+        [nil, nil, nil, nil, nil]  // Backspace row
     ]
 
     var body: some View {
         GeometryReader { geometry in
-            let buttonSize = min(geometry.size.width / 4.5, geometry.size.height / 6.5)
+            let buttonSize = min(geometry.size.width / 5.5, geometry.size.height / 6.5)
             let spacing = buttonSize * 0.15
 
             VStack(spacing: spacing) {
-                ForEach(0..<bands.count, id: \.self) { row in
+                ForEach(0..<letters.count, id: \.self) { row in
                     HStack(spacing: spacing) {
-                        if row == bands.count - 1 {
+                        if row == letters.count - 1 {
                             // Backspace row
                             Spacer()
                             KeypadButton(
@@ -134,12 +148,12 @@ struct UTMBandKeypadView: View {
                             .frame(width: buttonSize * 2, height: buttonSize)
                             Spacer()
                         } else {
-                            ForEach(0..<bands[row].count, id: \.self) { col in
-                                if let band = bands[row][col] {
+                            ForEach(0..<letters[row].count, id: \.self) { col in
+                                if let letter = letters[row][col] {
                                     KeypadButton(
-                                        label: String(band),
-                                        isActive: activeBands.contains(band),
-                                        action: { onKeyPress(band) }
+                                        label: String(letter),
+                                        isActive: activeLetters.contains(letter),
+                                        action: { onKeyPress(letter) }
                                     )
                                     .frame(width: buttonSize, height: buttonSize)
                                 } else {
@@ -158,6 +172,6 @@ struct UTMBandKeypadView: View {
 #Preview {
     @Previewable @State var coordinate = Coordinate(latitude: 37, longitude: -121.5)
 
-    UTMEntryView(coordinate: coordinate, onAccept: { coordinate = $0 }, onCancel: { })
+    MGRSEntryView(coordinate: coordinate, onAccept: { coordinate = $0 }, onCancel: { })
         .padding()
 }

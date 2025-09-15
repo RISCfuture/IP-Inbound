@@ -1,7 +1,6 @@
 import CoreLocation
 import Defaults
 import Foundation
-import LocationFormatter
 
 enum DisplayMode: String, Defaults.Serializable {
     case local
@@ -28,8 +27,6 @@ extension CLLocationCoordinate2D: Defaults.Serializable {
 
     public static var bridge: CoordinateBridge { .init() }
 }
-
-extension CoordinateFormat: Defaults.Serializable {}
 
 enum DistanceUnit: String, Defaults.Serializable, CaseIterable {
     case nauticalMiles

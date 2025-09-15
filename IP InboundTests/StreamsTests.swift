@@ -1,7 +1,6 @@
 import Foundation
 @testable import IP_Inbound
 import Testing
-import XCTest
 
 @Suite(.disabled("Streams (non-deterministic)"))
 struct StreamsTests {

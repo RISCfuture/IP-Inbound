@@ -1,5 +1,4 @@
 import Defaults
-import LocationFormatter
 import SwiftUI
 
 struct CoordinateEntryView: View {
@@ -17,12 +16,17 @@ struct CoordinateEntryView: View {
                 Text("DDM").tag(CoordinateFormat.degreesDecimalMinutes)
                 Text("DMS").tag(CoordinateFormat.degreesMinutesSeconds)
                 Text("UTM").tag(CoordinateFormat.utm)
+                Text("MGRS").tag(CoordinateFormat.mgrs)
             }.pickerStyle(.segmented)
                 .padding(.bottom)
 
             if coordinateFormat == .utm {
                 Spacer()
                 UTMEntryView(coordinate: coordinate, onAccept: { onAccept($0) }, onCancel: onCancel)
+                Spacer()
+            } else if coordinateFormat == .mgrs {
+                Spacer()
+                MGRSEntryView(coordinate: coordinate, onAccept: { onAccept($0) }, onCancel: onCancel)
                 Spacer()
             } else {
                 LatLonEntryView(coordinate: coordinate, onAccept: { onAccept($0) }, onCancel: onCancel)
@@ -39,30 +43,16 @@ struct CoordinateEntryView: View {
     }
 
     private static func value(from coordinate: Coordinate, format: CoordinateFormat) -> String {
-        let formatter = formatter(for: format)
-        guard let formatted = formatter.string(from: coordinate.toCoreLocation) else {
-            return .init(formatter.string(from: .init())!)
-        }
-        return formatted
+        let style = CoordinateFormatStyle(format: format)
+        return coordinate.formatted(style)
     }
 
     private static func coordinate(from value: String, format: CoordinateFormat) -> Coordinate {
-        let formatter = formatter(for: format)
-        guard let coordinate = try? formatter.coordinate(from: value) else {
+        do {
+            return try Coordinate(value, format: format)
+        } catch {
             return .init(latitude: 0, longitude: 0)
         }
-        return .init(coordinate)
-    }
-
-    private static func formatter(for format: CoordinateFormat) -> LocationCoordinateFormatter {
-        let formatter = LocationCoordinateFormatter()
-        formatter.displayOptions = [.compact]
-        formatter.symbolStyle = .traditional
-        formatter.format = format
-        formatter.parsingOptions = .caseInsensitive
-        formatter.minimumDegreesFractionDigits = 5
-        formatter.maximumDegreesFractionDigits = 5
-        return formatter
     }
 }
 

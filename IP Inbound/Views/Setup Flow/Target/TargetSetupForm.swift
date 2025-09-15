@@ -27,8 +27,8 @@ struct TargetSetupForm: View {
                                 case .degreesMinutesSeconds: Defaults[.coordinateFormat] = .degreesDecimalMinutes
                                 case .degreesDecimalMinutes: Defaults[.coordinateFormat] = .decimalDegrees
                                 case .decimalDegrees: Defaults[.coordinateFormat] = .utm
-                                case .utm: Defaults[.coordinateFormat] = .degreesMinutesSeconds
-                                case .geoURI: Defaults[.coordinateFormat] = .degreesMinutesSeconds
+                                case .utm: Defaults[.coordinateFormat] = .mgrs
+                                case .mgrs: Defaults[.coordinateFormat] = .degreesMinutesSeconds
                             }
                         }
                         .accessibilityAddTraits(.isButton)
