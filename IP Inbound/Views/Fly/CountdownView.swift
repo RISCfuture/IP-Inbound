@@ -6,10 +6,16 @@ struct CountdownView: View {
     var body: some View {
         Spacer()
 
-        Text(.currentDate, format: .timer(countingDownIn: .now..<timeOnTarget, maxPrecision: .seconds(1)))
-            .font(.title)
-            .padding(.bottom)
-            .contentTransition(.numericText())
+        if timeOnTarget > Date.now {
+            Text(.currentDate, format: .timer(countingDownIn: .now..<timeOnTarget, maxPrecision: .seconds(1)))
+                .font(.title)
+                .padding(.bottom)
+                .contentTransition(.numericText())
+        } else {
+            Text("Past TOT")
+                .font(.title)
+                .padding(.bottom)
+        }
 
         Text("Guidance begins once aircraft is moving.")
             .font(.headline)
