@@ -11,9 +11,21 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lint:
-    name: Run Swiftlint
+  swiftlint:
+    name: Run SwiftLint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: norio-nomura/action-swiftlint@3.2.1
+
+  swift-format:
+    name: Run swift-format
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install swift-format
+        run: brew install swift-format
+
+      - name: Run swift-format lint
+        run: swift-format lint --recursive "IP Inbound" --configuration .swift-format

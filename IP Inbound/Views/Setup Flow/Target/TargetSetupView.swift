@@ -3,28 +3,28 @@ import MapKit
 import SwiftUI
 
 struct TargetSetupView: View {
-    @Bindable var target: Target
+  @Bindable var target: Target
 
-    var body: some View {
-        TargetSetupForm(target: target)
-        TargetSetupMap(target: target)
+  var body: some View {
+    TargetSetupForm(target: target)
+    TargetSetupMap(target: target)
 
+    HStack {
+      Spacer()
+      NavigationLink(value: SetupFlowStep.IPSetup) {
         HStack {
-            Spacer()
-            NavigationLink(value: SetupFlowStep.IPSetup) {
-                HStack {
-                    Text("Define IP")
-                    Image(systemName: "chevron.forward")
-                        .accessibilityHidden(true)
-                }
-            }.accessibilityIdentifier("defineIPButton")
+          Text("Define IP")
+          Image(systemName: "chevron.forward")
+            .accessibilityHidden(true)
         }
-        .padding(.horizontal)
+      }.accessibilityIdentifier("defineIPButton")
     }
+    .padding(.horizontal)
+  }
 }
 
 #Preview {
-    let helper = PreviewHelper()
-    TargetSetupView(target: helper.target())
-        .modelContainer(helper.modelContainer)
+  let helper = PreviewHelper()
+  TargetSetupView(target: helper.target())
+    .modelContainer(helper.modelContainer)
 }
