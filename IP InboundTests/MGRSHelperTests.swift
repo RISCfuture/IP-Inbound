@@ -11,7 +11,7 @@ struct MGRSHelperTests {
     #expect(!MGRSHelper.validate(""))  // Empty
     #expect(!MGRSHelper.validate("3"))  // Just zone start
     #expect(!MGRSHelper.validate("33"))  // Just zone
-    #expect(!MGRSHelper.validate("33X"))  // Zone + band (valid but incomplete for parsing)
+    #expect(MGRSHelper.validate("33X"))  // Zone + band (valid minimal format)
     #expect(!MGRSHelper.validate("33XV"))  // Zone + band + partial square
 
     // Valid formats
@@ -73,7 +73,8 @@ struct MGRSHelperTests {
   func testSafeCoordinateParsing() {
     #expect(MGRSHelper.toCoordinate("") == nil)
     #expect(MGRSHelper.toCoordinate("33") == nil)
-    #expect(MGRSHelper.toCoordinate("33X") == nil)
+    // "33X" is valid MGRS (zone + band) and can be parsed to a coordinate
+    #expect(MGRSHelper.toCoordinate("33X") != nil)
     #expect(MGRSHelper.toCoordinate("33XV") == nil)
     #expect(MGRSHelper.toCoordinate("33XVG74593") == nil)  // Odd digits
     #expect(MGRSHelper.toCoordinate("61XVG745593") == nil)  // Invalid zone

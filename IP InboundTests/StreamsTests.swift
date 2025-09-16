@@ -18,20 +18,32 @@ struct StreamsTests {
     let consumer1 = await multicastStream.consume()
     let consumer2 = await multicastStream.consume()
 
-    // Set up tasks to collect values from consumers
-    var results1: [Int] = []
-    var results2: [Int] = []
+    // Use actors to collect values safely across tasks
+    actor ResultsCollector {
+      var values: [Int] = []
+
+      func append(_ value: Int) {
+        values.append(value)
+      }
+
+      func getValues() -> [Int] {
+        values
+      }
+    }
+
+    let collector1 = ResultsCollector()
+    let collector2 = ResultsCollector()
 
     let task1 = Task {
       for try await value in consumer1 {
-        results1.append(value)
+        await collector1.append(value)
         if value == 3 { break }  // Stop after receiving 3
       }
     }
 
     let task2 = Task {
       for try await value in consumer2 {
-        results2.append(value)
+        await collector2.append(value)
         if value == 3 { break }  // Stop after receiving 3
       }
     }
@@ -46,6 +58,8 @@ struct StreamsTests {
     _ = await task2.result
 
     // Check that both consumers received the values
+    let results1 = await collector1.getValues()
+    let results2 = await collector2.getValues()
     #expect(results1 == [1, 2, 3])
     #expect(results2 == [1, 2, 3])
 
@@ -70,8 +84,20 @@ struct StreamsTests {
     // Set up a consumer stream
     let consumer = await multicastStream.consume()
 
-    // Set up a task to collect values and catch errors
-    var receivedError: Error?
+    // Use an actor to store the error safely
+    actor ErrorCollector {
+      var error: Error?
+
+      func setError(_ error: Error) {
+        self.error = error
+      }
+
+      func getError() -> Error? {
+        error
+      }
+    }
+
+    let errorCollector = ErrorCollector()
 
     let task = Task {
       do {
@@ -79,7 +105,7 @@ struct StreamsTests {
           continuation.finish(throwing: TestError.testCase)
         }
       } catch {
-        receivedError = error
+        await errorCollector.setError(error)
       }
     }
 
@@ -94,6 +120,7 @@ struct StreamsTests {
     _ = await task.result
 
     // Check that the consumer received the error
+    let receivedError = await errorCollector.getError()
     #expect(receivedError is TestError)
 
     // Clean up
@@ -108,12 +135,24 @@ struct StreamsTests {
     // Create the bootstrapped stream with initial value 0
     let bootstrappedStream = bootstrap(stream: stream, initial: 0)
 
-    // Set up a task to collect values
-    var results: [Int] = []
+    // Use an actor to collect values safely
+    actor ResultsCollector {
+      var values: [Int] = []
+
+      func append(_ value: Int) {
+        values.append(value)
+      }
+
+      func getValues() -> [Int] {
+        values
+      }
+    }
+
+    let collector = ResultsCollector()
 
     let task = Task {
       for try await value in bootstrappedStream {
-        results.append(value)
+        await collector.append(value)
         if value == 3 { break }  // Stop after receiving 3
       }
     }
@@ -128,6 +167,7 @@ struct StreamsTests {
     _ = await task.result
 
     // Check that the bootstrapped stream received the initial value followed by the stream values
+    let results = await collector.getValues()
     #expect(results == [0, 1, 2, 3])
 
     // Clean up
@@ -152,13 +192,30 @@ struct StreamsTests {
       )
     }
 
-    // Set up a task to collect exactly 6 values (original + 5 extrapolated)
-    var results: [TestEvent] = []
+    // Use an actor to collect values safely
+    actor EventCollector {
+      var events: [TestEvent] = []
+
+      func append(_ event: TestEvent) {
+        events.append(event)
+      }
+
+      func getEvents() -> [TestEvent] {
+        events
+      }
+
+      func count() -> Int {
+        events.count
+      }
+    }
+
+    let collector = EventCollector()
 
     let task = Task {
       for try await value in extrapolatedStream {
-        results.append(value)
-        if results.count == 6 {
+        await collector.append(value)
+        let count = await collector.count()
+        if count == 6 {
           break
         }
       }
@@ -179,6 +236,9 @@ struct StreamsTests {
 
     // Clean up
     continuation.finish()
+
+    // Get the collected results
+    let results = await collector.getEvents()
 
     // Check that we got exactly 6 values (original + 5 extrapolated)
     #expect(results.count == 6)

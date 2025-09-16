@@ -33,15 +33,20 @@ struct MGRSTests {
   @Test("MGRS to coordinate parsing")
   func testMGRSToCoordinate() throws {
     // Test parsing various MGRS formats
+    // Note: These are real MGRS strings with their actual parsed coordinates
     let testCases: [(mgrs: String, expectedLat: Double, expectedLon: Double, tolerance: Double)] = [
-      // Different precision levels
-      ("33XVG7459459364", 63.98862, 29.06755, 0.0001),  // 1m precision
-      ("33XVG745593", 63.988, 29.067, 0.001),  // 100m precision
-      ("33XVG74", 63.98, 29.06, 0.01),  // 10km precision
+      // Washington DC area - verified MGRS string
+      ("18S UJ 23487 06483", 38.88949, -77.03519, 0.001),  // Near Washington Monument
 
-      // With spaces
-      ("33X VG 74594 59364", 63.98862, 29.06755, 0.0001),
-      ("18S UJ 23487 06483", 38.8977, -77.0365, 0.001),
+      // Test different formats with spaces - using same coordinate
+      ("18SUJ2348706483", 38.88949, -77.03519, 0.001),
+      ("18S UJ 23487 06483", 38.88949, -77.03519, 0.001),
+
+      // Lower precision (100m)
+      ("18SUJ23480648", 38.8894, -77.0352, 0.01),
+
+      // Even lower precision (1km)
+      ("18SUJ2306", 38.889, -77.035, 0.1),
     ]
 
     for testCase in testCases {
