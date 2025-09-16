@@ -14,7 +14,7 @@ extension Errors: LocalizedError {
 
   var failureReason: String? {
     switch self {
-    case let .TOTNotConfigured(target):
+    case .TOTNotConfigured(let target):
       return String(localized: "Target “\(target)” does not have a Time on Target configured.")
     }
   }
