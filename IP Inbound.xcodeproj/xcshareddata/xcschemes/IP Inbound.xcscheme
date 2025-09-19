@@ -36,6 +36,9 @@
          <TestPlanReference
             reference = "container:UI Tests.xctestplan">
          </TestPlanReference>
+         <TestPlanReference
+            reference = "container:Generate Screenshots/Generate Screenshots.xctestplan">
+         </TestPlanReference>
       </TestPlans>
       <Testables>
          <TestableReference

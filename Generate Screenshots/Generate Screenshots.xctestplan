@@ -12,7 +12,13 @@
     "testTimeoutsEnabled" : true
   },
   "testTargets" : [
-
+    {
+      "target" : {
+        "containerPath" : "container:IP Inbound.xcodeproj",
+        "identifier" : "016F3C1A2DC08E7A00F2A1AE",
+        "name" : "Generate Screenshots"
+      }
+    }
   ],
   "version" : 1
 }

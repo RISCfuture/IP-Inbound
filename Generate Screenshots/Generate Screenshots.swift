@@ -6,6 +6,7 @@ import XCTest
 @MainActor
 final class Generate_Screenshots: XCTestCase {
   override func setUpWithError() throws {
+    try super.setUpWithError()
     continueAfterFailure = false
   }
 
@@ -98,14 +99,19 @@ final class Generate_Screenshots: XCTestCase {
   @MainActor
   private func launch() -> XCUIApplication {
     let app = XCUIApplication()
-    let springboardApp = XCUIApplication(bundleIdentifier: "com.apple.springboard")
 
     setupSnapshot(app, waitForAnimations: true)
+
     app.launch()
 
-    if springboardApp.alerts.buttons["Allow While Using App"].waitForExistence(timeout: 5) {
-      springboardApp.alerts.buttons["Allow While Using App"].tap()
+    // Handle location permission directly via springboard
+    let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
+    if springboard.alerts.buttons["Allow While Using App"].waitForExistence(timeout: 5) {
+      springboard.alerts.buttons["Allow While Using App"].tap()
     }
+
+    // wait 10 seconds for Apple Intelligence banner to self-dismiss
+    _ = app.textFields["nonexistent"].waitForExistence(timeout: 10)
 
     return app
   }
@@ -125,7 +131,9 @@ final class Generate_Screenshots: XCTestCase {
     app.textFields["targetNameField"].typeText("Dog Bone Lake\n")
     sleep(5)
 
-    if screenshot { snapshot("0-define-target") }
+    if screenshot {
+      snapshot("0-define-target")
+    }
 
     app.buttons["defineIPButton"].tap()
     XCTAssert(app.textFields["offsetBearingField"].waitForExistence(timeout: 60))
@@ -140,7 +148,9 @@ final class Generate_Screenshots: XCTestCase {
     app.textFields["targetGroundSpeedField"].doubleTap()
     app.textFields["targetGroundSpeedField"].typeText("\(LocationHelper.targetGroundSpeed)\n")
 
-    if screenshot { snapshot("1-define-ip") }
+    if screenshot {
+      snapshot("1-define-ip")
+    }
 
     app.buttons["timeOnTargetButton"].tap()
   }

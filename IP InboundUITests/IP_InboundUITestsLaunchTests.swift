@@ -263,7 +263,9 @@ final class IP_InboundUITestsLaunchTests: XCTestCase {
     // This might vary based on device (iPhone vs iPad)
     if UIDevice.current.userInterfaceIdiom == .phone {
       // On iPhone, use back button multiple times to get to list
-      while !app.buttons["addTargetButton"].exists && !app.navigationBars.buttons.isEmpty {
+      while !app
+        .buttons["addTargetButton"].exists && app.navigationBars.buttons.count > 0
+      {
         app.navigationBars.buttons.element(boundBy: 0).tap()
         sleep(1)
       }
@@ -410,7 +412,7 @@ final class IP_InboundUITestsLaunchTests: XCTestCase {
         if anyPicker.exists {
           // Scroll the picker wheels to set a time (e.g., 5 minutes from now)
           let wheels = app.pickerWheels
-          if !wheels.isEmpty {
+          if wheels.count > 0 {
             // Just adjust the first wheel slightly to trigger a change
             wheels.element(boundBy: 0).adjust(toPickerWheelValue: "5")
           }
