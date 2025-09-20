@@ -50,15 +50,15 @@ struct TOTSetupView: View {
           [.year, .month, .day, .hour, .minute], from: overrideTime)
         components.second = 0
         let roundedTime = Calendar.current.date(from: components) ?? overrideTime
-        self.timeOnTarget = roundedTime
+        timeOnTarget = roundedTime
         target.timeOnTarget = roundedTime
       } else {
         // Set default time if no override
         if let targetTime = target.timeOnTarget {
           if targetTime < Date() {
-            self.timeOnTarget = Date().addingTimeInterval(60 * timeAdvanceEdit)
+            timeOnTarget = Date().addingTimeInterval(60 * timeAdvanceEdit)
           } else {
-            self.timeOnTarget = targetTime
+            timeOnTarget = targetTime
           }
         } else {
           timeOnTarget = Date().addingTimeInterval(60 * timeAdvanceNew)

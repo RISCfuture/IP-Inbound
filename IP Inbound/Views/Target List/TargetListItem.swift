@@ -1,8 +1,12 @@
+import Defaults
 import SwiftUI
 
 struct TargetListItem: View {
   var target: Target
   @Binding var selectedTarget: Target?
+
+  @Default(.TOTDisplayMode)
+  private var displayMode
 
   var body: some View {
     HStack {
@@ -10,13 +14,26 @@ struct TargetListItem: View {
         Text(target.name)
         if let coordinate = format(coordinate: target.coordinate) {
           Text(coordinate)
-            .foregroundColor(.secondary)
+            .foregroundStyle(.secondary)
             .font(.caption)
         }
       }
+
       Spacer()
+
+      if let timeOnTarget = target.timeOnTarget {
+        switch displayMode {
+        case .local:
+          Text(timeOnTarget, format: localTOTFormatStyle)
+            .foregroundStyle(.secondary)
+        case .zulu:
+          Text(timeOnTarget, format: zuluTOTFormatStyle)
+            .foregroundStyle(.secondary)
+        }
+      }
+
       Image(systemName: "chevron.forward")
-        .foregroundColor(.accentColor)
+        .foregroundStyle(Color.accentColor)
         .accessibilityLabel("Edit Target")
     }.onTapGesture { selectedTarget = target }
       .accessibilityIdentifier("targetListItem")
