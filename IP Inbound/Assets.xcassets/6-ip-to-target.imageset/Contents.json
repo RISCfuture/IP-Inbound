@@ -1,19 +1,18 @@
 {
   "images" : [
     {
-      "filename" : "6-ip-to-target@1x.png",
-      "idiom" : "universal",
-      "scale" : "1x"
+      "filename" : "iPhone 15 Pro-7-fly-post-ip_framed.png",
+      "idiom" : "universal"
     },
     {
-      "filename" : "6-ip-to-target@2x.png",
-      "idiom" : "universal",
-      "scale" : "2x"
-    },
-    {
-      "filename" : "6-ip-to-target@3x.png",
-      "idiom" : "universal",
-      "scale" : "3x"
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ],
+      "filename" : "iPhone 15 Pro-7-fly-post-ip_framed 1.png",
+      "idiom" : "universal"
     }
   ],
   "info" : {

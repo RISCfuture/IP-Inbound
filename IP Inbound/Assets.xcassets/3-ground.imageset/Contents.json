@@ -1,19 +1,18 @@
 {
   "images" : [
     {
-      "filename" : "3-ground@1x.png",
-      "idiom" : "universal",
-      "scale" : "1x"
+      "filename" : "iPhone 15 Pro-3-fly-ground_framed.png",
+      "idiom" : "universal"
     },
     {
-      "filename" : "3-ground@2x.png",
-      "idiom" : "universal",
-      "scale" : "2x"
-    },
-    {
-      "filename" : "3-ground@3x.png",
-      "idiom" : "universal",
-      "scale" : "3x"
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ],
+      "filename" : "iPhone 15 Pro-3-fly-ground_framed 1.png",
+      "idiom" : "universal"
     }
   ],
   "info" : {

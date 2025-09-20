@@ -1,19 +1,18 @@
 {
   "images" : [
     {
-      "filename" : "7-pre-ip-late@1x.png",
-      "idiom" : "universal",
-      "scale" : "1x"
+      "filename" : "iPhone 15 Pro-6-fly-pre-ip-late_framed.png",
+      "idiom" : "universal"
     },
     {
-      "filename" : "7-pre-ip-late@2x.png",
-      "idiom" : "universal",
-      "scale" : "2x"
-    },
-    {
-      "filename" : "7-pre-ip-late@3x.png",
-      "idiom" : "universal",
-      "scale" : "3x"
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ],
+      "filename" : "iPhone 15 Pro-6-fly-pre-ip-late_framed 1.png",
+      "idiom" : "universal"
     }
   ],
   "info" : {
