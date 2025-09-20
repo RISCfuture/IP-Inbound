@@ -52,8 +52,8 @@ struct TOTSetupView: View {
         let roundedTime = Calendar.current.date(from: components) ?? overrideTime
         self.timeOnTarget = roundedTime
         target.timeOnTarget = roundedTime
-      } else if timeOnTarget == Date(timeIntervalSince1970: 0) {
-        // Only set default time if we haven't already initialized and no override
+      } else {
+        // Set default time if no override
         if let targetTime = target.timeOnTarget {
           if targetTime < Date() {
             self.timeOnTarget = Date().addingTimeInterval(60 * timeAdvanceEdit)
@@ -66,12 +66,18 @@ struct TOTSetupView: View {
       }
     }
     .onChange(of: timeOnTarget) {
+      // Zero out seconds for consistent timing
+      var components = Calendar.current.dateComponents(
+        [.year, .month, .day, .hour, .minute], from: timeOnTarget)
+      components.second = 0
+      let roundedTime = Calendar.current.date(from: components) ?? timeOnTarget
+
       // if TOT is in the past, assume it's tomorrow
-      if timeOnTarget.timeIntervalSinceNow < 0 {
-        let date = Calendar.current.date(byAdding: .day, value: 1, to: timeOnTarget)
+      if roundedTime.timeIntervalSinceNow < 0 {
+        let date = Calendar.current.date(byAdding: .day, value: 1, to: roundedTime)
         target.timeOnTarget = date
       } else {
-        target.timeOnTarget = timeOnTarget
+        target.timeOnTarget = roundedTime
       }
     }
   }
