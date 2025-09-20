@@ -18,12 +18,14 @@ struct FlyView: View {
         if !isMoving { .countdownOnly } else if math.isPastIP {
           .toTarget
         } else if let IPDeltaTime = math.IPDeltaTime,
-          let latestIPDeltaTime = math.latestIPDeltaTime
+          let fastestETA = math.pposToIPToTargetETAAtMaxSpeed,
+          let timeOnTarget = target.timeOnTarget
         {
-          if IPDeltaTime < -60 {
-            .toIPWithCountdown
-          } else if IPDeltaTime > latestIPDeltaTime {
+          // Only bypass IP if we'd be late even at max speed via IP
+          if fastestETA > timeOnTarget {
             .toTargetBypassingIP
+          } else if IPDeltaTime < -60 {
+            .toIPWithCountdown
           } else {
             .toIPWithSpeedGuidance
           }

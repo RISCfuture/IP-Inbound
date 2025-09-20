@@ -38,14 +38,31 @@ struct TOTSetupView: View {
       }.padding(.horizontal)
     }
     .onAppear {
-      if let timeOnTarget = target.timeOnTarget {
-        if timeOnTarget < Date() {
-          self.timeOnTarget = Date().addingTimeInterval(60 * timeAdvanceEdit)
+      // Check for launch argument override first
+      let arguments = ProcessInfo.processInfo.arguments
+      if let overrideIndex = arguments.firstIndex(of: "-totMinutesOverride"),
+        overrideIndex + 1 < arguments.count,
+        let minutes = Double(arguments[overrideIndex + 1])
+      {
+        // Set TOT to specified minutes from now
+        let overrideTime = Date().addingTimeInterval(minutes * 60)
+        var components = Calendar.current.dateComponents(
+          [.year, .month, .day, .hour, .minute], from: overrideTime)
+        components.second = 0
+        let roundedTime = Calendar.current.date(from: components) ?? overrideTime
+        self.timeOnTarget = roundedTime
+        target.timeOnTarget = roundedTime
+      } else if timeOnTarget == Date(timeIntervalSince1970: 0) {
+        // Only set default time if we haven't already initialized and no override
+        if let targetTime = target.timeOnTarget {
+          if targetTime < Date() {
+            self.timeOnTarget = Date().addingTimeInterval(60 * timeAdvanceEdit)
+          } else {
+            self.timeOnTarget = targetTime
+          }
         } else {
-          self.timeOnTarget = timeOnTarget
+          timeOnTarget = Date().addingTimeInterval(60 * timeAdvanceNew)
         }
-      } else {
-        timeOnTarget = Date().addingTimeInterval(60 * timeAdvanceNew)
       }
     }
     .onChange(of: timeOnTarget) {

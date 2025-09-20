@@ -5,7 +5,6 @@ devices [
   "iPhone 14 Plus",         # 6.5" display
   "iPhone 15 Pro",          # 6.3" display
   "iPhone 14",              # 6.1" display
-  # "iPhone 8 Plus",          # 5.5" display - Not compatible with iOS 26 (A11 chip)
   "iPhone SE (3rd generation)", # 4.7" display
 
   # iPad categories

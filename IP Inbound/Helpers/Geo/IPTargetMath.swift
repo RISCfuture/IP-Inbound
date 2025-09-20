@@ -81,6 +81,42 @@ struct IPTargetMath: Equatable {
     Coordinate.crosstrackDistance(from: coordinate, to: target.IPToTarget)
   }
 
+  var pposToIPToTargetETAAtMaxSpeed: Date? {
+    guard target.timeOnTarget != nil else { return nil }
+
+    let maxSpeed = target.targetGroundSpeedMeasurement * (1 + Target.allowableSpeedVariance)
+
+    // Time from PPOS to IP at max speed (including turn from current heading)
+    let distanceToIP = coordinate.distance(to: target.IPCoordinate)
+    let turnToIPTime = FromToMath.turnTime(
+      fromHeading: course.toMagnetic(declination: declination),
+      toHeading: coordinate.bearing(to: target.IPCoordinate).toMagnetic(declination: declination),
+      speed: maxSpeed
+    )
+    let straightTimeToIP = distanceToIP / maxSpeed
+    let totalTimeToIP = straightTimeToIP + turnToIPTime
+
+    // Time from IP to Target at max speed
+    let ipToTargetDistance = target.IPToTarget.length
+    let straightTimeIPToTarget = ipToTargetDistance / maxSpeed
+
+    // Calculate turn anticipation at IP
+    let ipBearing = target.IPCoordinate.bearing(to: coordinate).reciprocal
+    let turnAtIPTime = FromToMath.turnTime(
+      fromHeading: ipBearing.toMagnetic(declination: declination),
+      toHeading: target.desiredTrackMagnetic,
+      speed: maxSpeed
+    )
+
+    // Turn anticipation reduces total time (start turn before IP)
+    let turnAnticipation = turnAtIPTime * 0.5
+
+    // Total time = PPOS to IP + IP to Target - turn anticipation
+    let totalTime = totalTimeToIP + straightTimeIPToTarget - turnAnticipation
+
+    return Date.now.addingTimeInterval(totalTime.converted(to: .seconds).value)
+  }
+
   private var declination: Measurement<UnitAngle> { target.declinationMeasurement }
 
   init(coordinate: Coordinate, speed: Measurement<UnitSpeed>, course: Bearing, target: Target) {

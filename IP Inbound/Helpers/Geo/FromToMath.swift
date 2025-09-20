@@ -35,18 +35,39 @@ struct FromToMath: Equatable {
   var distance: Measurement<UnitLength> { from.distance(to: to) }
   var timeToGo: Measurement<UnitDuration> {
     let straightLineTime = distance / speed
-    let deltaAngle = min(
-      (bearingMagnetic - trackMagnetic).normalized.absoluteValue.radians,
-      (bearingMagnetic - trackMagnetic).normalized.absoluteValue.radians
+    let turnTime = Self.turnTime(
+      fromHeading: trackMagnetic,
+      toHeading: bearingMagnetic,
+      speed: speed
     )
 
-    guard deltaAngle > Self.smallTurn else { return straightLineTime }
+    // Calculate the forward progress made during the turn using arc geometry
+    let deltaAngle = abs((bearingMagnetic - trackMagnetic).normalized.radians)
 
-    let turnRate = Self.g * tan(Self.bankAngle) / speed.converted(to: .metersPerSecond).value
-    let turnTimeS = deltaAngle / turnRate
-    let turnTime = Measurement(value: turnTimeS, unit: UnitDuration.seconds)
+    // If turn is small, ignore turn penalty
+    guard deltaAngle > Self.smallTurn else {
+      return straightLineTime
+    }
 
-    return straightLineTime + turnTime
+    // During a constant-rate turn, the aircraft follows a circular arc
+    // The turn radius at standard bank angle: r = v²/(g*tan(bankAngle))
+    let speedMS = speed.converted(to: .metersPerSecond).value
+    let turnRadius = (speedMS * speedMS) / (Self.g * tan(Self.bankAngle))
+
+    // Arc length traveled during turn
+    let arcLength = turnRadius * deltaAngle
+
+    // Forward progress toward destination (chord length of the arc)
+    // Using the formula: chord = 2 * r * sin(θ/2)
+    let chordLength = 2 * turnRadius * sin(deltaAngle / 2)
+
+    // The difference between arc length and chord is the "extra" distance
+    let extraDistance = arcLength - chordLength
+
+    // Convert extra distance to time penalty
+    let turnPenalty = Measurement(value: extraDistance / speedMS, unit: UnitDuration.seconds)
+
+    return straightLineTime + turnPenalty
   }
   var timeOfArrival: Date { timeToGo.afterNow }
   var deltaTOT: TimeInterval {
@@ -78,6 +99,31 @@ struct FromToMath: Equatable {
     self.targetSpeed = targetSpeed
     self.timeOnTarget = timeOnTarget
     self.declination = declination
+  }
+
+  static func turnAnticipationDistance(
+    fromHeading: Bearing,
+    toHeading: Bearing,
+    speed: Measurement<UnitSpeed>
+  ) -> Measurement<UnitLength> {
+    let turnTimeRequired = turnTime(fromHeading: fromHeading, toHeading: toHeading, speed: speed)
+    let turnDistance = speed * turnTimeRequired * 0.5
+    return turnDistance.converted(to: .nauticalMiles)
+  }
+
+  static func turnTime(
+    fromHeading: Bearing,
+    toHeading: Bearing,
+    speed: Measurement<UnitSpeed>
+  ) -> Measurement<UnitDuration> {
+    let deltaAngle = abs((toHeading - fromHeading).normalized.radians)
+
+    guard deltaAngle > smallTurn else { return .init(value: 0, unit: .seconds) }
+
+    let turnRate = g * tan(bankAngle) / speed.converted(to: .metersPerSecond).value
+    let turnTimeS = deltaAngle / turnRate
+
+    return Measurement(value: turnTimeS, unit: .seconds)
   }
 
   static func == (lhs: Self, rhs: Self) -> Bool {

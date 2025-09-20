@@ -2,7 +2,7 @@ import CoreLocation
 
 struct LocationHelper {
   private static let target = (36.772367, -115.453840)
-  private static let preIP = (36.876930, -115.481479)
+  private static let preIP = (36.853375, -115.593249)
   private static let postIP = (36.80782, -115.484047)
   private static let altitude = 1502.0
   private static let course = 359.0 - 180.0
@@ -31,7 +31,7 @@ struct LocationHelper {
       altitude: Self.altitude,
       horizontalAccuracy: 1,
       verticalAccuracy: 1,
-      course: Self.course,
+      course: 100,
       courseAccuracy: 1,
       speed: Self.speed,
       speedAccuracy: 1,
@@ -81,17 +81,22 @@ struct PickerComponents {
       let minute = components.minute
     else { return nil }
 
+    let hourValue: String
     if hour > 12 {
-      self.hour = String(hour - 12)
+      hourValue = String(hour - 12)
+      meridian = "PM"
+    } else if hour == 12 {
+      hourValue = "12"
       meridian = "PM"
     } else if hour == 0 {
-      self.hour = "12"
+      hourValue = "12"
       meridian = "AM"
     } else {
-      self.hour = String(hour)
+      hourValue = String(hour)
       meridian = "AM"
     }
 
+    self.hour = hourValue
     self.minute = String(format: "%02d", minute)
   }
 }

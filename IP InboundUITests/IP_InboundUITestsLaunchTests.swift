@@ -112,18 +112,11 @@ final class IP_InboundUITestsLaunchTests: XCTestCase {
       XCTAssertTrue(flyButton.waitForExistence(timeout: 5), "Fly button should exist")
 
       if flyButton.exists {
-        print("DEBUG: About to tap fly button...")
-        print("DEBUG: Fly button label: '\(flyButton.label)'")
-        print("DEBUG: Fly button is enabled: \(flyButton.isEnabled)")
-
         flyButton.tap()
         waitForNavigation()
 
         // Additional wait for fly view to load
         Thread.sleep(forTimeInterval: 1.0)
-
-        print("DEBUG: After tapping fly button, current view:")
-        print("DEBUG: Navigation title: \(app.navigationBars.firstMatch.identifier)")
 
         // Start simulating movement for CDI view
         simulateMovement()
@@ -144,31 +137,6 @@ final class IP_InboundUITestsLaunchTests: XCTestCase {
           cdiView.exists || countdownView.exists || app.staticTexts["P.POS → IP"].exists
           || app.staticTexts["P.POS → Target"].exists || app.navigationBars["Fly"].exists
           || targetNameExists  // At minimum, the target name should be visible
-
-        // Debug: print what we can see
-        if !inFlyView {
-          print("DEBUG: Looking for fly view elements...")
-          print("CDI exists: \(cdiView.exists)")
-          print("Countdown exists: \(countdownView.exists)")
-          print("Target name exists: \(targetNameExists)")
-          print("Current navigation bar: \(app.navigationBars.firstMatch.identifier)")
-
-          // Print full view hierarchy to see what's actually displayed
-          print("\nDEBUG: Full view hierarchy in fly view:")
-          print(app.debugDescription)
-
-          // Check what static texts are visible
-          print("\nDEBUG: All static texts:")
-          app.staticTexts.allElementsBoundByIndex.forEach { text in
-            print("  - '\(text.label)'")
-          }
-
-          // Check what buttons are visible
-          print("\nDEBUG: All buttons:")
-          app.buttons.allElementsBoundByIndex.forEach { button in
-            print("  - '\(button.label)' (identifier: \(button.identifier))")
-          }
-        }
 
         XCTAssertTrue(
           inFlyView,
@@ -264,7 +232,7 @@ final class IP_InboundUITestsLaunchTests: XCTestCase {
     if UIDevice.current.userInterfaceIdiom == .phone {
       // On iPhone, use back button multiple times to get to list
       while !app
-        .buttons["addTargetButton"].exists && app.navigationBars.buttons.count > 0
+        .buttons["addTargetButton"].exists && !app.navigationBars.buttons.isEmpty
       {
         app.navigationBars.buttons.element(boundBy: 0).tap()
         sleep(1)
@@ -412,7 +380,7 @@ final class IP_InboundUITestsLaunchTests: XCTestCase {
         if anyPicker.exists {
           // Scroll the picker wheels to set a time (e.g., 5 minutes from now)
           let wheels = app.pickerWheels
-          if wheels.count > 0 {
+          if !wheels.isEmpty {
             // Just adjust the first wheel slightly to trigger a change
             wheels.element(boundBy: 0).adjust(toPickerWheelValue: "5")
           }
