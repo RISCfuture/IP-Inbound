@@ -1,8 +1,5 @@
 import SwiftUI
 
-private let minSpeed = Measurement(value: 30, unit: UnitSpeed.knots).converted(to: .metersPerSecond)
-  .value
-
 struct FlyView: View {
   var target: Target
 
@@ -12,26 +9,8 @@ struct FlyView: View {
   var body: some View {
     NeedsLocationView { location, event in
       let math = IPTargetMath(location: location, target: target)
-      let isMoving = location.speed > minSpeed
-
-      let guidance: Guidance =
-        if !isMoving { .countdownOnly } else if math.isPastIP {
-          .toTarget
-        } else if let IPDeltaTime = math.IPDeltaTime,
-          let fastestETA = math.pposToIPToTargetETAAtMaxSpeed,
-          let timeOnTarget = target.timeOnTarget
-        {
-          // Only bypass IP if we'd be late even at max speed via IP
-          if fastestETA > timeOnTarget {
-            .toTargetBypassingIP
-          } else if IPDeltaTime < -60 {
-            .toIPWithCountdown
-          } else {
-            .toIPWithSpeedGuidance
-          }
-        } else {
-          .countdownOnly
-        }
+      let guidanceHelper = GuidanceHelper(math: math, location: location, target: target)
+      let guidance = guidanceHelper.guidance
 
       VStack {
         VStack {
@@ -116,14 +95,6 @@ struct FlyView: View {
     .onDisappear {
       UIApplication.shared.isIdleTimerDisabled = false
     }
-  }
-
-  private enum Guidance {
-    case toIPWithSpeedGuidance
-    case toIPWithCountdown
-    case toTarget
-    case toTargetBypassingIP
-    case countdownOnly
   }
 }
 

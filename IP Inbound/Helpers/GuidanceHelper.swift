@@ -1,0 +1,79 @@
+import CoreLocation
+import Foundation
+
+enum Guidance {
+  case toIPWithSpeedGuidance
+  case toIPWithCountdown
+  case toTarget
+  case toTargetBypassingIP
+  case countdownOnly
+}
+
+struct GuidanceHelper {
+  // Minimum speed threshold for movement detection (vs on ground)
+  private static let movementThreshold = Measurement(value: 30, unit: UnitSpeed.knots)
+    .converted(to: .metersPerSecond).value
+
+  private let math: IPTargetMath
+  private let location: CLLocation
+  private let target: Target
+
+  // Minimum target speed for timing calculations
+  private var minTargetSpeed: Measurement<UnitSpeed> {
+    target.targetGroundSpeedMeasurement * (1 - Target.allowableSpeedVariance)
+  }
+
+  // Computed predicates for clear logic
+  var isMoving: Bool { location.speed > Self.movementThreshold }
+
+  var isPastIP: Bool { math.isPastIP }
+
+  // Timing calculations
+  var ipDeltaTime: TimeInterval { math.IPDeltaTime ?? 0 }
+
+  // More than 60 seconds early at current speed
+  var wouldArriveEarlyAtIP: Bool { ipDeltaTime < -60 }
+
+  var wouldArriveLateEvenAtMaxSpeed: Bool {
+    if let fastestETA = math.pposToIPToTargetETAAtMaxSpeed,
+      let timeOnTarget = target.timeOnTarget
+    {
+      return fastestETA > timeOnTarget
+    }
+    return false
+  }
+
+  var guidance: Guidance {
+    // Not moving - just show countdown
+    if !isMoving { return .countdownOnly }
+
+    // After IP - show IP to target guidance with CDI cross-track deviation and relative time indicator
+    if isPastIP { return .toTarget }
+
+    // Prior to IP - determine guidance mode based on timing
+    guard math.IPDeltaTime != nil, target.timeOnTarget != nil else {
+      return .countdownOnly
+    }
+
+    // If more than 1 minute early at min speed - show PPOS to IP with countdown timer (no CDI deviation)
+    if wouldArriveEarlyAtIP { return .toIPWithCountdown }
+
+    // If late even at max speed - show direct-to-target guidance with CDI cross-track deviation
+    if wouldArriveLateEvenAtMaxSpeed { return .toTargetBypassingIP }
+
+    // Within timing window - show PPOS to IP guidance with speed control (no CDI deviation)
+    return .toIPWithSpeedGuidance
+  }
+
+  init(location: CLLocation, target: Target) {
+    self.location = location
+    self.target = target
+    self.math = IPTargetMath(location: location, target: target)
+  }
+
+  init(math: IPTargetMath, location: CLLocation, target: Target) {
+    self.math = math
+    self.location = location
+    self.target = target
+  }
+}

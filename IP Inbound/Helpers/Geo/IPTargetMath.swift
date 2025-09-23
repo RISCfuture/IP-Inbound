@@ -101,7 +101,8 @@ struct IPTargetMath: Equatable {
     let straightTimeIPToTarget = ipToTargetDistance / maxSpeed
 
     // Calculate turn anticipation at IP
-    let ipBearing = target.IPCoordinate.bearing(to: coordinate).reciprocal
+    // The bearing we'll be on when arriving at IP is from PPOS to IP
+    let ipBearing = coordinate.bearing(to: target.IPCoordinate)
     let turnAtIPTime = FromToMath.turnTime(
       fromHeading: ipBearing.toMagnetic(declination: declination),
       toHeading: target.desiredTrackMagnetic,
