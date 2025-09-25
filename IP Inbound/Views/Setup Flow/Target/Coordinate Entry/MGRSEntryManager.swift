@@ -62,7 +62,7 @@ final class MGRSEntryManager {
     result += " "
 
     // Show easting and northing with appropriate precision
-    let precision = 5  // Default to 10m precision
+    let precision = 6  // Default to 1m precision
     result += easting.padding(toLength: precision, withPad: "0", startingAt: 0)
     result += " "
     result += northing.padding(toLength: precision, withPad: "0", startingAt: 0)
@@ -94,7 +94,7 @@ final class MGRSEntryManager {
   }
 
   init(coordinate: Coordinate) {
-    if let mgrs = MGRSHelper.fromCoordinate(coordinate, precision: .tenM) {
+    if let mgrs = MGRSHelper.fromCoordinate(coordinate, precision: .oneM) {
       // Parse the MGRS string to extract components
       parseMGRS(mgrs)
     }

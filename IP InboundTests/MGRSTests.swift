@@ -22,7 +22,7 @@ struct MGRSTests {
     for testCase in testCases {
       let coordinate = Coordinate(latitude: testCase.lat, longitude: testCase.lon)
       let mgrs = try #require(
-        MGRSHelper.fromCoordinate(coordinate, precision: .tenM),
+        MGRSHelper.fromCoordinate(coordinate, precision: .oneM),
         "MGRS conversion failed for lat: \(testCase.lat), lon: \(testCase.lon)")
       #expect(
         mgrs.hasPrefix(testCase.expectedPrefix),

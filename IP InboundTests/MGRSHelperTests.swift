@@ -51,7 +51,7 @@ struct MGRSHelperTests {
   func testCoordinateConversion() throws {
     // Known coordinate: Oslo, Norway
     let oslo = Coordinate(latitude: 59.9139, longitude: 10.7522)
-    if let mgrs = MGRSHelper.fromCoordinate(oslo, precision: .tenM) {
+    if let mgrs = MGRSHelper.fromCoordinate(oslo, precision: .oneM) {
       // Should produce something like "32V NM 89455 60642"
       #expect(mgrs.contains("32V"))
       #expect(mgrs.contains("NM") || mgrs.contains("NN"))  // Grid square may vary

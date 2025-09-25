@@ -79,7 +79,7 @@ final class CoordinateEntryManager {
     case .utm:
       return coordinate.formatted(UTMFormatter)
     case .mgrs:
-      return MGRSHelper.fromCoordinate(coordinate, precision: .tenM) ?? ""
+      return MGRSHelper.fromCoordinate(coordinate, precision: .oneM) ?? ""
     }
   }
 

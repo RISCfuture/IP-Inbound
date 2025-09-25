@@ -4,7 +4,7 @@ import Grid
 import MGRS
 
 enum MGRSHelper {
-  static func fromCoordinate(_ coordinate: Coordinate, precision: Precision = .tenM) -> String? {
+  static func fromCoordinate(_ coordinate: Coordinate, precision: Precision = .oneM) -> String? {
     let point = GridPoint(coordinate.longitudeDeg, coordinate.latitudeDeg)
     let mgrs = MGRS.from(point)
 

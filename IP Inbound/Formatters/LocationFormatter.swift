@@ -138,7 +138,7 @@ public struct CoordinateFormatStyle: FormatStyle, Codable, Equatable, Hashable {
 
   private func formatMGRS(_ coordinate: Coordinate) -> String {
     // Use the NGA MGRS library through our helper
-    MGRSHelper.fromCoordinate(coordinate, precision: .tenM) ?? ""
+    MGRSHelper.fromCoordinate(coordinate, precision: .oneM) ?? ""
   }
 
   public struct Precision: Codable, Equatable, Hashable, Sendable {
