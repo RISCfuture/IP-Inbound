@@ -42,7 +42,7 @@ override_status_bar false
 stop_after_first_error false
 
 # Number of retries if a test fails
-number_of_retries 5
+number_of_retries 1
 
 # Test without building (requires a derived data path)
 test_without_building false

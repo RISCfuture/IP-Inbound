@@ -11,7 +11,7 @@ extension Double {
   fileprivate var secondsDecimal: Double {
     degreesDecimal.subunitPortion(divisor: 3600, modulus: 60)
   }
-  fileprivate var seconds: Int { Int(secondsDecimal) }
+  fileprivate var seconds: Int { Int(secondsDecimal.rounded()) }
 
   fileprivate func subunitPortion(divisor: Int, modulus: Int? = nil) -> Double {
     let modulus = modulus ?? divisor
@@ -255,9 +255,9 @@ final class CoordinateEntryManager {
         latitude: (latitudeDegrees + latitudeMinutes / 60) * northingBinade,
         longitude: (longitudeDegrees + longitudeMinutes / 60) * eastingBinade)
 
-    case .degreesMinutesSeconds:  // N 00° 00′ 00.00″⏎E 000° 00′ 00.00″
+    case .degreesMinutesSeconds:  // N 00° 00′ 00″⏎E 000° 00′ 00″
       let northingIndex = 0
-      let eastingIndex = 17
+      let eastingIndex = 14
       let latitudeDegreesIndex = 2...3
       let latitudeMinutesIndex = 6...7
       let latitudeSecondsIndex = 10...11

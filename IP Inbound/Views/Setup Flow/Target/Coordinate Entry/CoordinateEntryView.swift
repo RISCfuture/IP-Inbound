@@ -18,6 +18,7 @@ struct CoordinateEntryView: View {
         Text("UTM").tag(CoordinateFormat.utm)
         Text("MGRS").tag(CoordinateFormat.mgrs)
       }.pickerStyle(.segmented)
+        .accessibilityIdentifier("coordinateFormatPicker")
         .padding(.bottom)
 
       if coordinateFormat == .utm {

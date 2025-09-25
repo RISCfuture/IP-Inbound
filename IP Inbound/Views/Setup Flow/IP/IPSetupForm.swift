@@ -83,7 +83,7 @@ struct IPSetupForm: View {
             TextField("", value: $target.targetGroundSpeed, format: .number)
               .multilineTextAlignment(.trailing)
               .keyboardType(.numberPad)
-              .accessibilityIdentifier("targetGroundSpeedField")
+              .accessibilityIdentifier("groundSpeedField")
             Picker("", selection: $distanceDefault) {
               ForEach(DistanceUnit.allCases, id: \.self) { unit in
                 Text(localizedName(of: unit.speedUnit, style: .short))

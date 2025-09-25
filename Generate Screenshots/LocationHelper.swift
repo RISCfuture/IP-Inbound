@@ -1,6 +1,6 @@
 import CoreLocation
 
-struct LocationHelper {
+enum LocationHelper {
   private static let target = (36.772367, -115.453840)
   private static let preIP = (36.853375, -115.593249)
   private static let postIP = (36.80782, -115.484047)

@@ -26,9 +26,11 @@ struct TargetListItem: View {
         case .local:
           Text(timeOnTarget, format: localTOTFormatStyle)
             .foregroundStyle(.secondary)
+            .accessibilityIdentifier("timeOnTarget")
         case .zulu:
           Text(timeOnTarget, format: zuluTOTFormatStyle)
             .foregroundStyle(.secondary)
+            .accessibilityIdentifier("timeOnTarget")
         }
       }
 

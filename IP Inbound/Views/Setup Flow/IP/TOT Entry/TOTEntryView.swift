@@ -25,6 +25,7 @@ struct TOTEntryView: View {
           Text("Zulu").tag(DisplayMode.zulu)
         }
         .pickerStyle(.segmented)
+        .accessibilityIdentifier("timeDisplayModePicker")
         .padding(.horizontal)
         .padding(.bottom)
 

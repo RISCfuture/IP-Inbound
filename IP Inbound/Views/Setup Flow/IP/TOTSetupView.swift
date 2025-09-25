@@ -18,7 +18,6 @@ struct TOTSetupView: View {
           // In this context, cancel doesn't do anything since we're always showing the entry
         }
       )
-      .accessibilityIdentifier("totEntryView")
 
       Spacer()
 

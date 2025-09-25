@@ -2,6 +2,7 @@ import CoreLocation
 import XCTest
 
 // swiftlint:disable prefer_nimble
+// swiftlint:disable empty_count
 
 final class IP_InboundUITests: XCTestCase {
   override func setUpWithError() throws {
@@ -13,15 +14,7 @@ final class IP_InboundUITests: XCTestCase {
   @MainActor
   func testCreateNewTarget() throws {
     let app = XCUIApplication()
-    app.launchArguments = ["UI_TESTING", "--reset-state"]
-
-    // Enable location simulation
-    app.launchEnvironment["SIMULATOR_LOCATION_LATITUDE"] = "37.7749"
-    app.launchEnvironment["SIMULATOR_LOCATION_LONGITUDE"] = "-122.4194"
-
-    // Set location authorization status
     app.resetAuthorizationStatus(for: .location)
-
     app.launch()
 
     // Simulate location after launch
@@ -31,33 +24,25 @@ final class IP_InboundUITests: XCTestCase {
     // Handle location permission if it appears
     handleLocationPermissionIfNeeded(app: app)
 
-    // Wait for the main view to load
-    let addTargetButton = app.buttons["addTargetButton"]
-    XCTAssertTrue(addTargetButton.waitForExistence(timeout: 5))
+    // Tap the add target button (navigation button - direct access)
+    app.buttons["addTargetButton"].tap()
 
-    // Tap the add target button
-    addTargetButton.tap()
-
-    // Enter target name
-    let targetNameField = app.textFields["targetNameField"]
-    XCTAssertTrue(targetNameField.waitForExistence(timeout: 2))
+    // Enter target name (form field - may need scrolling)
+    let targetNameField = app.collectionViews.firstMatch.makeVisible(
+      element: app.textFields["targetNameField"])!
     clearAndTypeText(in: targetNameField, text: "Test Target Alpha", app: app)
 
-    // Verify the target was created by checking if Define IP button exists
-    let defineIPButton = app.buttons["defineIPButton"]
-    XCTAssertTrue(defineIPButton.exists)
+    // Verify the target was created
+    XCTAssertTrue(app.buttons["defineIPButton"].exists)
+
+    // Clean up: Delete the created target
+    deleteTargetWithName("Test Target Alpha", app: app)
   }
 
   @MainActor
   func testSelectExistingTarget() throws {
     let app = XCUIApplication()
-    app.launchArguments = ["UI_TESTING", "--reset-state"]
-
-    // Enable location simulation
-    app.launchEnvironment["SIMULATOR_LOCATION_LATITUDE"] = "37.7749"
-    app.launchEnvironment["SIMULATOR_LOCATION_LONGITUDE"] = "-122.4194"
     app.resetAuthorizationStatus(for: .location)
-
     app.launch()
 
     // Simulate location after launch
@@ -71,123 +56,32 @@ final class IP_InboundUITests: XCTestCase {
 
     // After creating, we're already in the detail view
     // Verify we're in the target setup view first
-    let defineIPButton = app.buttons["defineIPButton"]
-    XCTAssertTrue(
-      defineIPButton.waitForExistence(timeout: 5), "Should be in target detail view after creation")
+    XCTAssertTrue(app.buttons["defineIPButton"].exists)
 
     // Go back to the list to test selection
     if !isIPad() {
       // On iPhone, go back to list
-      if app.navigationBars.buttons.element(boundBy: 0).exists {
-        app.navigationBars.buttons.element(boundBy: 0).tap()
-        waitForNavigation()
-      }
-    }
-
-    // Find and select the target from the list
-    // Use cells or otherElements since it's not a button
-    let targetItem = findTargetListItem(withName: "Selection Test Target", app: app)
-    XCTAssertTrue(targetItem.waitForExistence(timeout: 5), "Target should be in list")
-    targetItem.tap()
-    waitForNavigation()
-
-    // Verify we're back in the target setup view
-    XCTAssertTrue(
-      defineIPButton.waitForExistence(timeout: 5), "Should navigate to target detail view")
-  }
-
-  @MainActor
-  func testDeleteTarget() throws {
-    let app = XCUIApplication()
-    app.launchArguments = ["UI_TESTING", "--reset-state"]
-
-    // Enable location simulation
-    app.launchEnvironment["SIMULATOR_LOCATION_LATITUDE"] = "37.7749"
-    app.launchEnvironment["SIMULATOR_LOCATION_LONGITUDE"] = "-122.4194"
-    app.resetAuthorizationStatus(for: .location)
-
-    app.launch()
-
-    // Simulate location after launch
-    XCUIDevice.shared.location = XCUILocation(
-      location: CLLocation(latitude: 37.7749, longitude: -122.4194))
-
-    handleLocationPermissionIfNeeded(app: app)
-
-    // Use a unique target name with timestamp to avoid conflicts
-    let uniqueName = "Delete-\(Int(Date().timeIntervalSince1970))"
-
-    // Create a target to delete
-    createTargetWithName(uniqueName, app: app)
-
-    // After creating, we're in the detail view
-    // Go back to list
-    if !isIPad() {
-      // On iPhone, go back to list
-      if app.navigationBars.buttons.element(boundBy: 0).waitForExistence(timeout: 3) {
-        app.navigationBars.buttons.element(boundBy: 0).tap()
-        waitForNavigation()
-      }
-    } else {
-      // On iPad, the list should be visible in split view
+      app.navigationBars.buttons.element(boundBy: 0).tap()
       waitForNavigation()
     }
 
-    // Try to find the target - it should be visible after creation
-    // Look for our unique target name
-    let targetNamePredicate = NSPredicate(format: "label CONTAINS[c] %@", uniqueName)
-    let anyTargetText = app.staticTexts.matching(targetNamePredicate).firstMatch
+    // Find and select the target from the list
+    let targetItem = findTargetListItem(withName: "Selection Test Target", app: app)
+    targetItem.tap()
 
-    // If we can't find the exact name, it might be concatenated
-    // In that case, just verify we have at least one cell to delete
-    if !anyTargetText.waitForExistence(timeout: 2) {
-      // Continue anyway - we'll delete the first available cell
-    }
+    // Wait for and verify we're back in the target setup view
+    XCTAssertTrue(
+      app.buttons["defineIPButton"].waitForExistence(timeout: 2),
+      "Should navigate to target detail view")
 
-    // Now find the cell that contains this target
-    // In SwiftUI List, items are typically cells
-    let targetItem = app.cells.firstMatch
-    XCTAssertTrue(targetItem.exists, "Should have at least one cell in the list")
-
-    // Swipe left on the target
-    targetItem.swipeLeft()
-
-    // Tap the delete button
-    let deleteButton = app.buttons["Delete"]
-    if deleteButton.waitForExistence(timeout: 3) {
-      deleteButton.tap()
-
-      // Wait for deletion animation to complete
-      Thread.sleep(forTimeInterval: 2.0)
-
-      // Verify the specific item is gone
-      let deletedPredicate = NSPredicate(format: "label CONTAINS[c] %@", uniqueName)
-      let remainingTargetTexts = app.staticTexts.matching(deletedPredicate)
-
-      // We should have no matches of our unique name
-      XCTAssertEqual(
-        remainingTargetTexts.count,
-        0,
-        "Text '\(uniqueName)' should not appear anywhere after deletion"
-      )
-
-      // Also check that we either have no cells or see "No Target" message
-      // This is a silent verification - no output needed
-    } else {
-      XCTFail("Delete button did not appear")
-    }
+    // Clean up: Delete the created target
+    deleteTargetWithName("Selection Test Target", app: app)
   }
 
   @MainActor
   func testAccessTutorial() throws {
     let app = XCUIApplication()
-    app.launchArguments = ["UI_TESTING", "--reset-state"]
-
-    // Enable location simulation
-    app.launchEnvironment["SIMULATOR_LOCATION_LATITUDE"] = "37.7749"
-    app.launchEnvironment["SIMULATOR_LOCATION_LONGITUDE"] = "-122.4194"
     app.resetAuthorizationStatus(for: .location)
-
     app.launch()
 
     // Simulate location after launch
@@ -196,10 +90,8 @@ final class IP_InboundUITests: XCTestCase {
 
     handleLocationPermissionIfNeeded(app: app)
 
-    // Find and tap the tutorial button
-    let tutorialButton = app.buttons["tutorialButton"]
-    XCTAssertTrue(tutorialButton.waitForExistence(timeout: 5))
-    tutorialButton.tap()
+    // Find and tap the tutorial button (navigation button - direct access)
+    app.buttons["tutorialButton"].tap()
 
     // Verify the tutorial view appears
     // Look for some element that would be unique to the tutorial
@@ -208,27 +100,407 @@ final class IP_InboundUITests: XCTestCase {
       // Fallback: check for any text that might appear in tutorial
       let tutorialText = app.staticTexts.element(
         matching: NSPredicate(format: "label CONTAINS[c] 'tutorial'"))
-      XCTAssertTrue(tutorialText.exists || app.navigationBars["Tutorial"].exists)
+      if !tutorialText.exists && !app.navigationBars["Tutorial"].exists {
+        XCTFail("Tutorial view did not appear - no tutorial elements found")
+      }
     }
 
-    // Dismiss the tutorial
+    // Dismiss the tutorial - try Done first, then Close, then swipe
     if app.buttons["Done"].exists {
       app.buttons["Done"].tap()
     } else if app.buttons["Close"].exists {
       app.buttons["Close"].tap()
     } else {
-      // Swipe down to dismiss if it's a sheet
       app.swipeDown()
     }
+  }
+
+  // MARK: - Coordinate Entry Tests
+
+  @MainActor
+  func testCoordinateEntry_DecimalDegrees() throws {
+    let app = XCUIApplication()
+    setupLocationSimulation(for: app)
+    app.launch()
+
+    XCUIDevice.shared.location = XCUILocation(
+      location: CLLocation(latitude: 37.7749, longitude: -122.4194))
+    handleLocationPermissionIfNeeded(app: app)
+
+    // Create a target and navigate to coordinate entry
+    createTargetWithName("DD Test Target", app: app)
+
+    // Open coordinate entry (form button - may need scrolling)
+    let setCoordinatesButton = app.collectionViews.firstMatch.makeVisible(
+      element: app.buttons["setCoordinatesButton"])!
+    setCoordinatesButton.tap()
+
+    // Wait for coordinate format picker to appear
+    let coordinateFormatPicker = app.segmentedControls["coordinateFormatPicker"]
+    XCTAssertTrue(
+      coordinateFormatPicker.waitForExistence(timeout: 2), "Coordinate format picker should appear")
+    coordinateFormatPicker.buttons["DD"].tap()
+
+    app.buttons["North"].tap()
+    enterDigits(app: app, digits: "37.12345")
+    app.buttons["West"].tap()
+    enterDigits(app: app, digits: "121.67890")
+
+    // Accept the coordinate entry
+    app.buttons["Accept"].tap()
+
+    // Verify we're back in the target setup view
+    XCTAssertTrue(app.buttons["defineIPButton"].exists)
+
+    // Verify the coordinates were saved correctly in DD format
+    let coordinatesText = app.buttons["targetCoordinates"]
+    XCTAssertTrue(coordinatesText.exists, "Coordinates should be displayed")
+    XCTAssertTrue(
+      coordinatesText.label.contains("N 37.12345°"),
+      "Latitude should be N 37.12345° but was: \(coordinatesText.label)")
+    XCTAssertTrue(
+      coordinatesText.label.contains("W 121.67890°"),
+      "Longitude should be W 121.67890° but was: \(coordinatesText.label)")
+
+    // Clean up: Delete the created target
+    deleteTargetWithName("DD Test Target", app: app)
+  }
+
+  @MainActor
+  func testCoordinateEntry_DegreesMinutesSeconds() throws {
+    let app = XCUIApplication()
+    setupLocationSimulation(for: app)
+    app.launch()
+
+    XCUIDevice.shared.location = XCUILocation(
+      location: CLLocation(latitude: 37.7749, longitude: -122.4194))
+    handleLocationPermissionIfNeeded(app: app)
+
+    createTargetWithName("DMS Test Target", app: app)
+
+    // Open coordinate entry (form button - may need scrolling)
+    let setCoordinatesButton = app.collectionViews.firstMatch.makeVisible(
+      element: app.buttons["setCoordinatesButton"])!
+    setCoordinatesButton.tap()
+    waitForNavigation()
+
+    // Switch to DMS format
+    let coordinateFormatPicker = app.segmentedControls["coordinateFormatPicker"]
+    coordinateFormatPicker.buttons["DMS"].tap()
+
+    app.buttons["North"].tap()
+    enterDigits(app: app, digits: "37 12 34")
+
+    app.buttons["West"].tap()
+    enterDigits(app: app, digits: "121 23 45")
+
+    // Accept the coordinate entry
+    app.buttons["Accept"].tap()
+
+    // Verify we're back in the target setup view
+    XCTAssertTrue(app.buttons["defineIPButton"].exists)
+
+    // Verify the coordinates were saved correctly in DD format
+    let coordinatesText = app.buttons["targetCoordinates"]
+    XCTAssertTrue(coordinatesText.exists, "Coordinates should be displayed")
+    XCTAssertTrue(
+      coordinatesText.label.contains("N 37° 12′ 34″"),
+      "Latitude should be N 37° 12′ 34″ but was: \(coordinatesText.label)")
+    XCTAssertTrue(
+      coordinatesText.label.contains("W 121° 23′ 45″"),
+      "Longitude should be W W 121° 23′ 45″ but was: \(coordinatesText.label)")
+
+    // Clean up: Delete the created target
+    deleteTargetWithName("DMS Test Target", app: app)
+  }
+
+  @MainActor
+  func testCoordinateEntry_DegreesDecimalMinutes() throws {
+    let app = XCUIApplication()
+    setupLocationSimulation(for: app)
+    app.launch()
+
+    XCUIDevice.shared.location = XCUILocation(
+      location: CLLocation(latitude: 37.7749, longitude: -122.4194))
+    handleLocationPermissionIfNeeded(app: app)
+
+    createTargetWithName("DDM Test Target", app: app)
+
+    // Open coordinate entry (form button - may need scrolling)
+    let setCoordinatesButton = app.collectionViews.firstMatch.makeVisible(
+      element: app.buttons["setCoordinatesButton"])!
+    setCoordinatesButton.tap()
+    waitForNavigation()
+
+    // Switch to DMS format
+    let coordinateFormatPicker = app.segmentedControls["coordinateFormatPicker"]
+    coordinateFormatPicker.buttons["DDM"].tap()
+
+    app.buttons["North"].tap()
+    enterDigits(app: app, digits: "37 12.345")
+
+    app.buttons["West"].tap()
+    enterDigits(app: app, digits: "121 23.456")
+
+    // Accept the coordinate entry
+    app.buttons["Accept"].tap()
+
+    // Verify we're back in the target setup view
+    XCTAssertTrue(app.buttons["defineIPButton"].exists)
+
+    // Verify the coordinates were saved correctly in DD format
+    let coordinatesText = app.buttons["targetCoordinates"]
+    XCTAssertTrue(coordinatesText.exists, "Coordinates should be displayed")
+    XCTAssertTrue(
+      coordinatesText.label.contains("N 37° 12.345′"),
+      "Latitude should be N 37° 12.345′ but was: \(coordinatesText.label)")
+    XCTAssertTrue(
+      coordinatesText.label.contains("W 121° 23.456′"),
+      "Longitude should be W 121° 23.456′ but was: \(coordinatesText.label)")
+
+    // Clean up: Delete the created target
+    deleteTargetWithName("DDM Test Target", app: app)
+  }
+
+  // Simplified test - UTM uses different keypad
+  @MainActor
+  func testCoordinateEntry_UTM() throws {
+    let app = XCUIApplication()
+    setupLocationSimulation(for: app)
+    app.launch()
+
+    XCUIDevice.shared.location = XCUILocation(
+      location: CLLocation(latitude: 37.7749, longitude: -122.4194))
+    handleLocationPermissionIfNeeded(app: app)
+
+    createTargetWithName("UTM Test Target", app: app)
+
+    // Open coordinate entry (form button - may need scrolling)
+    let setCoordinatesButton = app.collectionViews.firstMatch.makeVisible(
+      element: app.buttons["setCoordinatesButton"])!
+    setCoordinatesButton.tap()
+    waitForNavigation()
+
+    // Switch to UTM format
+    let coordinateFormatPicker = app.segmentedControls["coordinateFormatPicker"]
+    coordinateFormatPicker.buttons["UTM"].tap()
+
+    enterDigits(app: app, digits: "10S 551000 418900")
+
+    // Accept the coordinate entry
+    app.buttons["Accept"].tap()
+
+    // Verify we're back in the target setup view
+    XCTAssertTrue(app.buttons["defineIPButton"].exists)
+
+    // Verify the coordinates were saved correctly in DD format
+    let coordinatesText = app.buttons["targetCoordinates"]
+    XCTAssertTrue(coordinatesText.exists, "Coordinates should be displayed")
+    XCTAssertTrue(
+      coordinatesText.label.contains("10S"),
+      "UTM should be 10S 551000 418900 but was: \(coordinatesText.label)")
+
+    // Clean up: Delete the created target
+    deleteTargetWithName("UTM Test Target", app: app)
+  }
+
+  // Simplified test - MGRS uses text entry
+  @MainActor
+  func testCoordinateEntry_MGRS() throws {
+    let app = XCUIApplication()
+    setupLocationSimulation(for: app)
+    app.launch()
+
+    XCUIDevice.shared.location = XCUILocation(
+      location: CLLocation(latitude: 37.7749, longitude: -122.4194))
+    handleLocationPermissionIfNeeded(app: app)
+
+    createTargetWithName("MGRS Test Target", app: app)
+
+    // Open coordinate entry (form button - may need scrolling)
+    let setCoordinatesButton = app.collectionViews.firstMatch.makeVisible(
+      element: app.buttons["setCoordinatesButton"])!
+    setCoordinatesButton.tap()
+    waitForNavigation()
+
+    // Switch to MGRS format
+    let coordinateFormatPicker = app.segmentedControls["coordinateFormatPicker"]
+    coordinateFormatPicker.buttons["MGRS"].tap()
+
+    enterDigits(app: app, digits: "12U UA 84323 40791")
+
+    app.buttons["Accept"].tap()
+
+    // Verify we're back in the target setup view
+    XCTAssertTrue(app.buttons["defineIPButton"].exists)
+
+    // Verify the coordinates were saved correctly in DD format
+    let coordinatesText = app.buttons["targetCoordinates"]
+    XCTAssertTrue(coordinatesText.exists, "Coordinates should be displayed")
+    XCTAssertTrue(
+      coordinatesText.label.contains("12U UA 84323 40791"),
+      "MGRS should be 12U UA 84323 40791 but was: \(coordinatesText.label)")
+
+    // Clean up: Delete the created target
+    deleteTargetWithName("MGRS Test Target", app: app)
+  }
+
+  // MARK: - TOT Entry Tests
+
+  @MainActor
+  func testTimeEntry_Local() throws {
+    let app = XCUIApplication()
+    setupLocationSimulation(for: app)
+    app.launch()
+
+    XCUIDevice.shared.location = XCUILocation(
+      location: CLLocation(latitude: 37.7749, longitude: -122.4194))
+    handleLocationPermissionIfNeeded(app: app)
+
+    // Create a target and navigate to TOT
+    createTargetWithName("Local Time Test", app: app)
+
+    // Navigate through IP setup to TOT (navigation button - direct access)
+    app.buttons["defineIPButton"].tap()
+
+    // Wait for IP setup fields to appear
+    let offsetBearingField = app.collectionViews.firstMatch.makeVisible(
+      element: app.textFields["offsetBearingField"])!
+    XCTAssertTrue(
+      offsetBearingField.waitForExistence(timeout: 2), "Offset bearing field should appear")
+    clearAndTypeText(in: offsetBearingField, text: "090", app: app)
+
+    let offsetDistanceField = app.collectionViews.firstMatch.makeVisible(
+      element: app.textFields["offsetDistanceField"])!
+    clearAndTypeText(in: offsetDistanceField, text: "5", app: app)
+
+    // Time on Target button (navigation button - direct access)
+    app.buttons["timeOnTargetButton"].tap()
+
+    // Wait for time entry screen to appear
+    XCTAssertTrue(
+      app
+        .segmentedControls["timeDisplayModePicker"]
+        .waitForExistence(timeout: 2),
+      "Time mode buttons should appear"
+    )
+
+    app.segmentedControls["timeDisplayModePicker"].buttons["Target Local"].tap()
+    enterDigits(app: app, digits: "12:34:56")
+
+    // Navigate back to target list to verify time is displayed
+    if !isIPad() {
+      // On iPhone, go back through navigation
+      app.navigationBars.buttons.element(boundBy: 0).tap()  // Back to IP setup
+      waitForNavigation()
+      app.navigationBars.buttons.element(boundBy: 0).tap()  // Back to target setup
+      waitForNavigation()
+      app.navigationBars.buttons.element(boundBy: 0).tap()  // Back to target list
+      waitForNavigation()
+    }
+
+    // Find the target in the list and verify the time is displayed
+    var targetCell: XCUIElement?
+    for i in 0..<app.cells.count {
+      let cell = app.cells.element(boundBy: i)
+      if cell.staticTexts.matching(
+        NSPredicate(format: "identifier == 'targetListItem' AND label == %@", "Local Time Test")
+      ).count > 0 {
+        targetCell = cell
+        break
+      }
+    }
+    XCTAssertNotNil(targetCell, "Target cell should exist in list")
+    guard let targetCell else { return }
+
+    // Look for the time text within the cell
+    let timePredicate = NSPredicate(format: "label == %@", "12:34 PM")
+    let timeText = targetCell.staticTexts.element(matching: timePredicate)
+    XCTAssertTrue(timeText.exists, "Time should be displayed as '12:34 PM'")
+
+    // Clean up: Delete the created target
+    deleteTargetFromList("Local Time Test", app: app)
+  }
+
+  @MainActor
+  func testTimeEntry_Zulu() throws {
+    let app = XCUIApplication()
+    setupLocationSimulation(for: app)
+    app.launch()
+
+    XCUIDevice.shared.location = XCUILocation(
+      location: CLLocation(latitude: 37.7749, longitude: -122.4194))
+    handleLocationPermissionIfNeeded(app: app)
+
+    // Create a target and navigate to TOT
+    createTargetWithName("Zulu Time Test", app: app)
+
+    // Navigate through IP setup to TOT (navigation button - direct access)
+    app.buttons["defineIPButton"].tap()
+
+    // Wait for IP setup fields to appear
+    let offsetBearingField = app.collectionViews.firstMatch.makeVisible(
+      element: app.textFields["offsetBearingField"])!
+    XCTAssertTrue(
+      offsetBearingField.waitForExistence(timeout: 2), "Offset bearing field should appear")
+    clearAndTypeText(in: offsetBearingField, text: "090", app: app)
+
+    let offsetDistanceField = app.collectionViews.firstMatch.makeVisible(
+      element: app.textFields["offsetDistanceField"])!
+    clearAndTypeText(in: offsetDistanceField, text: "5", app: app)
+
+    // Time on Target button (navigation button - direct access)
+    app.buttons["timeOnTargetButton"].tap()
+
+    // Wait for time entry screen to appear
+    XCTAssertTrue(
+      app
+        .segmentedControls["timeDisplayModePicker"]
+        .waitForExistence(timeout: 2),
+      "Time mode buttons should appear"
+    )
+
+    app.segmentedControls["timeDisplayModePicker"].buttons["Zulu"].tap()
+    enterDigits(app: app, digits: "18:00:00")
+
+    // Navigate back to target list to verify time is displayed
+    if !isIPad() {
+      // On iPhone, go back through navigation
+      app.navigationBars.buttons.element(boundBy: 0).tap()  // Back to IP setup
+      waitForNavigation()
+      app.navigationBars.buttons.element(boundBy: 0).tap()  // Back to target setup
+      waitForNavigation()
+      app.navigationBars.buttons.element(boundBy: 0).tap()  // Back to target list
+      waitForNavigation()
+    }
+
+    // Find the target in the list and verify the time is displayed
+    var targetCell: XCUIElement?
+    for i in 0..<app.cells.count {
+      let cell = app.cells.element(boundBy: i)
+      if cell.staticTexts.matching(
+        NSPredicate(format: "identifier == 'targetListItem' AND label == %@", "Zulu Time Test")
+      ).count > 0 {
+        targetCell = cell
+        break
+      }
+    }
+    XCTAssertNotNil(targetCell, "Target cell should exist in list")
+    guard let targetCell else { return }
+
+    // Look for the time text within the cell
+    let timePredicate = NSPredicate(format: "label == %@", "1800Z")
+    let timeText = targetCell.staticTexts.element(matching: timePredicate)
+    XCTAssertTrue(timeText.exists, "Time should be displayed as '1800Z'")
+
+    // Clean up: Delete the created target
+    deleteTargetFromList("Zulu Time Test", app: app)
   }
 
   // MARK: - Helper Methods
 
   @MainActor
   private func setupLocationSimulation(for app: XCUIApplication) {
-    // Enable location simulation with San Francisco coordinates
-    app.launchEnvironment["SIMULATOR_LOCATION_LATITUDE"] = "37.7749"
-    app.launchEnvironment["SIMULATOR_LOCATION_LONGITUDE"] = "-122.4194"
     app.resetAuthorizationStatus(for: .location)
   }
 
@@ -243,16 +515,13 @@ final class IP_InboundUITests: XCTestCase {
 
   @MainActor
   private func createTargetWithName(_ name: String, app: XCUIApplication) {
-    let addTargetButton = app.buttons["addTargetButton"]
-    if addTargetButton.waitForExistence(timeout: 5) {
-      addTargetButton.tap()
-      waitForNavigation()
+    // Add target button is a navigation button - direct access
+    app.buttons["addTargetButton"].tap()
 
-      let targetNameField = app.textFields["targetNameField"]
-      if targetNameField.waitForExistence(timeout: 3) {
-        clearAndTypeText(in: targetNameField, text: name, app: app)
-      }
-    }
+    // Wait for target name field to appear instead of generic navigation wait
+    let targetNameField = app.textFields["targetNameField"]
+    XCTAssertTrue(targetNameField.waitForExistence(timeout: 2), "Target name field should appear")
+    clearAndTypeText(in: targetNameField, text: name, app: app)
   }
 
   @MainActor
@@ -260,12 +529,16 @@ final class IP_InboundUITests: XCTestCase {
   {
     // Try multiple strategies to find the list item
 
-    // First try cells (SwiftUI List creates cells)
+    // First try to find the cell containing the target name
     if let name {
-      let predicate = NSPredicate(format: "label CONTAINS[c] %@", name)
-      let cell = app.cells.element(matching: predicate)
-      if cell.exists {
-        return cell
+      // Find the static text with the target name
+      let targetNamePredicate = NSPredicate(
+        format: "identifier == 'targetListItem' AND label == %@", name)
+      for i in 0..<app.cells.count {
+        let cell = app.cells.element(boundBy: i)
+        if cell.staticTexts.matching(targetNamePredicate).count > 0 {
+          return cell
+        }
       }
     }
 
@@ -308,6 +581,117 @@ final class IP_InboundUITests: XCTestCase {
   private func isIPad() -> Bool {
     return UIDevice.current.userInterfaceIdiom == .pad
   }
+
+  @MainActor
+  private func deleteTargetWithName(_ name: String, app: XCUIApplication) {
+    // Navigate back to list if needed
+    if !isIPad() {
+      // On iPhone, go back to list
+      app.navigationBars.buttons.element(boundBy: 0).tap()
+      waitForNavigation()
+    } else {
+      // On iPad, the list should be visible in split view
+      waitForNavigation()
+    }
+
+    // Find all cells and check which one contains our target name
+    let cells = app.cells
+    var targetCell: XCUIElement?
+
+    for i in 0..<cells.count {
+      let cell = cells.element(boundBy: i)
+      if cell.staticTexts.matching(
+        NSPredicate(format: "identifier == 'targetListItem' AND label == %@", name)
+      ).count > 0 {
+        targetCell = cell
+        break
+      }
+    }
+
+    XCTAssertNotNil(targetCell, "Cell containing target '\(name)' must exist")
+    guard let targetCell else { return }
+
+    // Swipe left on the target cell
+    targetCell.swipeLeft()
+
+    // Wait for delete button to appear
+    let deleteButton = app.buttons["Delete"]
+    XCTAssertTrue(
+      deleteButton.waitForExistence(timeout: 2), "Delete button must appear after swipe")
+
+    // Tap the delete button
+    deleteButton.tap()
+
+    // Wait for deletion animation to complete
+    Thread.sleep(forTimeInterval: 1.0)
+
+    // Verify the target was deleted
+    let targetNamePredicate = NSPredicate(
+      format: "identifier == 'targetListItem' AND label == %@", name)
+    let remainingTargets = app.staticTexts.matching(targetNamePredicate)
+    XCTAssertEqual(
+      remainingTargets.count, 0, "Target '\(name)' should no longer exist after deletion")
+
+    Thread.sleep(forTimeInterval: 1.0)  // allow sync to happen
+  }
+
+  @MainActor
+  private func deleteTargetFromList(_ name: String, app: XCUIApplication) {
+    // This version assumes we're already in the list view
+    // Find all cells and check which one contains our target name
+    let cells = app.cells
+    var targetCell: XCUIElement?
+
+    for i in 0..<cells.count {
+      let cell = cells.element(boundBy: i)
+      if cell.staticTexts.matching(
+        NSPredicate(format: "identifier == 'targetListItem' AND label == %@", name)
+      ).count > 0 {
+        targetCell = cell
+        break
+      }
+    }
+
+    XCTAssertNotNil(targetCell, "Cell containing target '\(name)' must exist")
+    guard let targetCell else { return }
+
+    // Swipe left on the target cell
+    targetCell.swipeLeft()
+
+    // Wait for delete button to appear
+    let deleteButton = app.buttons["Delete"]
+    XCTAssertTrue(
+      deleteButton.waitForExistence(timeout: 2), "Delete button must appear after swipe")
+
+    // Tap the delete button
+    deleteButton.tap()
+
+    // Wait for deletion animation to complete
+    Thread.sleep(forTimeInterval: 1.0)
+
+    // Verify the target was deleted
+    let targetNamePredicate = NSPredicate(
+      format: "identifier == 'targetListItem' AND label == %@", name)
+    let remainingTargets = app.staticTexts.matching(targetNamePredicate)
+    XCTAssertEqual(
+      remainingTargets.count, 0, "Target '\(name)' should no longer exist after deletion")
+
+    Thread.sleep(forTimeInterval: 1.0)  // allow sync to happen
+  }
+
+  // MARK: - Keypad Helper Methods
+
+  @MainActor
+  private func enterDigits(app: XCUIApplication, digits: String) {
+    // Enter digits using numeric keypad
+    for digit in digits {
+      if digit.isNumber || digit.isLetter {
+        app.buttons["keypad-\(digit)"].tap()
+        Thread.sleep(forTimeInterval: 0.1)
+      }
+    }
+  }
 }
 
 // swiftlint:enable prefer_nimble
+// swiftlint:enable empty_count

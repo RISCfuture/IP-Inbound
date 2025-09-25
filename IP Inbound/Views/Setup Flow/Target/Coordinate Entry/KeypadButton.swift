@@ -28,6 +28,7 @@ struct KeypadButton: View {
       }
     }
     .disabled(!isActive && !isBackspace)
+    .accessibilityIdentifier("keypad-\((label ?? accessibilityLabel)!)")
   }
 
   private var backgroundColor: Color {

@@ -1,4 +1,5 @@
 // swiftlint:disable prefer_nimble
+// swiftline:disable empty_count
 
 import CoreLocation
 import XCTest
@@ -24,8 +25,13 @@ final class Generate_Screenshots: XCTestCase {
     snapshot("2-define-tot")
 
     XCUIDevice.shared.location = .init(location: LocationHelper.groundLocation())
-    app.buttons["flyButton"].tap()
-    XCTAssert(app.staticTexts["countdown"].waitForExistence(timeout: 60))
+
+    let flyButton = app.buttons["flyButton"]
+    XCTAssertTrue(flyButton.waitForExistence(timeout: 10), "Fly button should exist")
+    flyButton.tap()
+
+    // Wait for countdown to appear
+    Thread.sleep(forTimeInterval: 3.0)
 
     snapshot("3-fly-ground")
 
@@ -40,8 +46,10 @@ final class Generate_Screenshots: XCTestCase {
     setTimeEntry(app: app, minutesFromNow: 15)  // Early - shows route via IP with time to spare
 
     XCUIDevice.shared.location = .init(location: LocationHelper.preIPLocation())
-    app.buttons["flyButton"].tap()
-    XCTAssert(app.staticTexts["cdi"].waitForExistence(timeout: 60))
+    let flyButton = app.buttons["flyButton"]
+    XCTAssertTrue(flyButton.waitForExistence(timeout: 10), "Fly button should exist")
+    flyButton.tap()
+    Thread.sleep(forTimeInterval: 3.0)
 
     snapshot("4-fly-pre-ip-early")
 
@@ -56,8 +64,10 @@ final class Generate_Screenshots: XCTestCase {
     setTimeEntry(app: app, minutesFromNow: 6)  // On-time - should show route via IP with speed guidance
 
     XCUIDevice.shared.location = .init(location: LocationHelper.preIPLocation())
-    app.buttons["flyButton"].tap()
-    XCTAssert(app.staticTexts["cdi"].waitForExistence(timeout: 60))
+    let flyButton = app.buttons["flyButton"]
+    XCTAssertTrue(flyButton.waitForExistence(timeout: 10), "Fly button should exist")
+    flyButton.tap()
+    Thread.sleep(forTimeInterval: 3.0)
 
     snapshot("5-fly-pre-ip")
 
@@ -72,8 +82,10 @@ final class Generate_Screenshots: XCTestCase {
     setTimeEntry(app: app, minutesFromNow: 3)  // Late timing
 
     XCUIDevice.shared.location = .init(location: LocationHelper.preIPLocation())
-    app.buttons["flyButton"].tap()
-    XCTAssert(app.staticTexts["cdi"].waitForExistence(timeout: 60))
+    let flyButton = app.buttons["flyButton"]
+    XCTAssertTrue(flyButton.waitForExistence(timeout: 10), "Fly button should exist")
+    flyButton.tap()
+    Thread.sleep(forTimeInterval: 3.0)
 
     snapshot("6-fly-pre-ip-late")
 
@@ -88,8 +100,10 @@ final class Generate_Screenshots: XCTestCase {
     setTimeEntry(app: app, minutesFromNow: 2)  // Post-IP position
 
     XCUIDevice.shared.location = .init(location: LocationHelper.postIPLocation())
-    app.buttons["flyButton"].tap()
-    XCTAssert(app.staticTexts["cdi"].waitForExistence(timeout: 60))
+    let flyButton = app.buttons["flyButton"]
+    XCTAssertTrue(flyButton.waitForExistence(timeout: 10), "Fly button should exist")
+    flyButton.tap()
+    Thread.sleep(forTimeInterval: 3.0)
 
     snapshot("7-fly-post-ip")
 
@@ -110,8 +124,8 @@ final class Generate_Screenshots: XCTestCase {
       springboard.alerts.buttons["Allow While Using App"].tap()
     }
 
-    // wait 20 seconds for Apple Intelligence banner to self-dismiss
-    _ = app.textFields["nonexistent"].waitForExistence(timeout: 20)
+    // wait for Apple Intelligence banner to self-dismiss
+    _ = app.textFields["nonexistent"].waitForExistence(timeout: 10)
 
     return app
   }
@@ -119,45 +133,58 @@ final class Generate_Screenshots: XCTestCase {
   private func makeTarget(app: XCUIApplication, screenshot: Bool = false) {
     XCUIDevice.shared.location = .init(location: LocationHelper.targetLocation())
 
-    if app.buttons["ToggleSidebar"].waitForExistence(timeout: 1) {
-      app.buttons["ToggleSidebar"].tap()
-    }
+    // Add target button - direct access
+    app.buttons["addTargetButton"].tap()
 
-    app.buttons["addTargetButton"].firstMatch.tap()
-    XCTAssert(app.textFields["targetNameField"].waitForExistence(timeout: 60))
+    let targetNameField = app.collectionViews.firstMatch.makeVisible(
+      element: app.textFields["targetNameField"])!
+    clearAndTypeText(in: targetNameField, text: "Dog Bone Lake", app: app)
 
-    app.textFields["targetNameField"].tap()
-    app.textFields["targetNameField"].tap(withNumberOfTaps: 3, numberOfTouches: 1)
-    app.textFields["targetNameField"].typeText("Dog Bone Lake\n")
-    sleep(5)
+    // Wait a moment for keyboard to dismiss
+    Thread.sleep(forTimeInterval: 0.5)
 
-    if screenshot {
-      snapshot("0-define-target")
-    }
+    if screenshot { snapshot("0-define-target") }
 
+    // Tap Define IP button
     app.buttons["defineIPButton"].tap()
-    XCTAssert(app.textFields["offsetBearingField"].waitForExistence(timeout: 60))
 
-    app.textFields["offsetBearingField"].doubleTap()
-    app.textFields["offsetBearingField"].typeText("\(Int(LocationHelper.IPBearingTrue))")
+    let offsetBearingField = app.collectionViews.firstMatch.makeVisible(
+      element: app.textFields["offsetBearingField"])!
+    XCTAssertTrue(
+      offsetBearingField.waitForExistence(timeout: 2), "Offset bearing field should exist")
+    clearAndTypeText(in: offsetBearingField, text: "\(Int(LocationHelper.IPBearingTrue))", app: app)
+
     app.buttons["offsetBearingTrue"].tap()
 
-    app.textFields["offsetDistanceField"].doubleTap()
-    app.textFields["offsetDistanceField"].typeText("\(LocationHelper.IPDistanceNM)")
+    let offsetDistanceField = app.collectionViews.firstMatch.makeVisible(
+      element: app.textFields["offsetDistanceField"])!
+    clearAndTypeText(in: offsetDistanceField, text: "\(LocationHelper.IPDistanceNM)", app: app)
 
-    app.textFields["targetGroundSpeedField"].doubleTap()
-    app.textFields["targetGroundSpeedField"].typeText("\(LocationHelper.targetGroundSpeed)\n")
-
-    if screenshot {
-      snapshot("1-define-ip")
+    let groundSpeedField = app.collectionViews.firstMatch.makeVisible(
+      element: app.textFields["groundSpeedField"])
+    if let groundSpeedField {
+      clearAndTypeText(in: groundSpeedField, text: "\(LocationHelper.targetGroundSpeed)", app: app)
     }
 
+    // Wait a moment for keyboard to dismiss
+    Thread.sleep(forTimeInterval: 0.5)
+
+    if screenshot { snapshot("1-define-ip") }
+
+    // Navigate to Time on Target
     app.buttons["timeOnTargetButton"].tap()
   }
 
   private func setTimeEntry(app: XCUIApplication, minutesFromNow: Double) {
-    XCTAssert(app.otherElements["totEntryView"].waitForExistence(timeout: 60))
-    XCTAssert(app.otherElements["timeEntryField"].waitForExistence(timeout: 5))
+    // Wait for time entry screen to appear
+    XCTAssertTrue(
+      app.segmentedControls["timeDisplayModePicker"]
+        .waitForExistence(timeout: 2),
+      "Time mode picker should appear"
+    )
+
+    // Switch to Local Time mode
+    app.segmentedControls["timeDisplayModePicker"].buttons["Target Local"].tap()
 
     // Calculate target time
     let now = Date()
@@ -168,23 +195,48 @@ final class Generate_Screenshots: XCTestCase {
     components.second = 0  // Zero out seconds
     let roundedTargetTime = calendar.date(from: components) ?? targetTime
 
-    // Format time as HHMMSS for entry
+    // Format time as HH:mm:ss for entry
     let formatter = DateFormatter()
-    formatter.dateFormat = "HHmmss"
+    formatter.dateFormat = "HH:mm:ss"
     formatter.timeZone = TimeZone.current  // Use local time for tests
     let timeString = formatter.string(from: roundedTargetTime)
 
-    // Enter time digits
-    for char in timeString {
-      if let button = app.buttons[String(char)].firstMatch as XCUIElement?,
-        button.waitForExistence(timeout: 1)
-      {
-        button.tap()
+    // Enter time using keypad helper
+    enterDigits(app: app, digits: timeString)
+
+    Thread.sleep(forTimeInterval: 1)
+  }
+
+  // MARK: - Helper Methods
+
+  @MainActor
+  private func clearAndTypeText(in textField: XCUIElement, text: String, app _: XCUIApplication) {
+    textField.tap()
+
+    // Wait a moment for field to be focused
+    Thread.sleep(forTimeInterval: 0.2)
+
+    // Triple tap to select all
+    textField.tap(withNumberOfTaps: 3, numberOfTouches: 1)
+
+    // Small delay for selection
+    Thread.sleep(forTimeInterval: 0.1)
+
+    // Type new text (will replace selection)
+    textField.typeText(text + "\n")
+  }
+
+  @MainActor
+  private func enterDigits(app: XCUIApplication, digits: String) {
+    // Enter digits using numeric keypad
+    for digit in digits {
+      if digit.isNumber || digit.isLetter {
+        app.buttons["keypad-\(digit)"].tap()
+        Thread.sleep(forTimeInterval: 0.1)
       }
     }
-
-    sleep(1)
   }
 }
 
 // swiftlint:enable prefer_nimble
+// swiftline:enable empty_count

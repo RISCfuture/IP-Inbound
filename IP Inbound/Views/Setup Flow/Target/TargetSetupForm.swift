@@ -33,11 +33,13 @@ struct TargetSetupForm: View {
             }
             .accessibilityAddTraits(.isButton)
             .accessibilityHint("Change coordinate format")
+            .accessibilityIdentifier("targetCoordinates")
         } label: {
           Text("Coordinates").foregroundStyle(.secondary)
         }
 
         Button(action: { editingCoordinates = true }, label: { Text("Set Coordinates…") })
+          .accessibilityIdentifier("setCoordinatesButton")
 
         Button(action: { findLocationShown = true }, label: { Text("Find Location…") })
       }
