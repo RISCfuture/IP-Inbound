@@ -14,7 +14,7 @@ struct IPSetupForm: View {
 
   var body: some View {
     Form {
-      Section("") {
+      Section {
         LabeledContent {
           VStack {
             HStack {
@@ -38,7 +38,8 @@ struct IPSetupForm: View {
             }
           }
         } label: {
-          Text("Bearing").foregroundStyle(.secondary)
+          Text("Bearing")
+            .foregroundStyle(.secondary)
         }
 
         LabeledContent {
@@ -93,7 +94,8 @@ struct IPSetupForm: View {
             .accessibilityIdentifier("speedUnitPicker")
           }
         } label: {
-          Text("Target Ground Speed").foregroundStyle(.secondary)
+          Text("Target Ground Speed")
+            .foregroundStyle(.secondary)
         }
       }
     }
