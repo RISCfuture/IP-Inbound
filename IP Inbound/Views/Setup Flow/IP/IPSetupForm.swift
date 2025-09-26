@@ -44,29 +44,29 @@ struct IPSetupForm: View {
 
         LabeledContent {
           switch offsetType {
-          case .distance:
-            HStack {
-              TextField("", value: $offsetDistance, format: .number)
-                .multilineTextAlignment(.trailing)
-                .keyboardType(.numberPad)
-                .accessibilityIdentifier("offsetDistanceField")
-              Picker("", selection: $distanceDefault) {
-                ForEach(DistanceUnit.allCases, id: \.self) { unit in
-                  Text(localizedName(of: unit.distanceUnit, style: .short))
-                    .tag(unit)
+            case .distance:
+              HStack {
+                TextField("", value: $offsetDistance, format: .number)
+                  .multilineTextAlignment(.trailing)
+                  .keyboardType(.numberPad)
+                  .accessibilityIdentifier("offsetDistanceField")
+                Picker("", selection: $distanceDefault) {
+                  ForEach(DistanceUnit.allCases, id: \.self) { unit in
+                    Text(localizedName(of: unit.distanceUnit, style: .short))
+                      .tag(unit)
+                  }
                 }
+                .labelsHidden()
+                .accessibilityIdentifier("distanceUnitPicker")
               }
-              .labelsHidden()
-              .accessibilityIdentifier("distanceUnitPicker")
-            }
-          case .time:
-            HStack {
-              TextField("", value: $offsetTime, format: .number)
-                .multilineTextAlignment(.trailing)
-                .keyboardType(.numberPad)
-                .accessibilityIdentifier("offsetTimeField")
-              Text(localizedName(of: UnitDuration.minutes, style: .short))
-            }
+            case .time:
+              HStack {
+                TextField("", value: $offsetTime, format: .number)
+                  .multilineTextAlignment(.trailing)
+                  .keyboardType(.numberPad)
+                  .accessibilityIdentifier("offsetTimeField")
+                Text(localizedName(of: UnitDuration.minutes, style: .short))
+              }
           }
         } label: {
           Picker("", selection: $offsetType) {
@@ -103,14 +103,18 @@ struct IPSetupForm: View {
       target.setOffset(
         distance: .init(
           value: offsetDistance,
-          unit: distanceDefault.distanceUnit))
+          unit: distanceDefault.distanceUnit
+        )
+      )
       offsetTime = target.offsetTime
     }
     .onChange(of: offsetTime) {
       target.setOffset(
         time: .init(
           value: offsetTime,
-          unit: .minutes))
+          unit: .minutes
+        )
+      )
       offsetDistance = target.offsetDistance
     }
   }

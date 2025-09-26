@@ -32,7 +32,7 @@ final class MGRSEntryManager {
     // Valid MGRS bands (excludes I and O)
     [
       "C", "D", "E", "F", "G", "H", "J", "K", "L", "M",
-      "N", "P", "Q", "R", "S", "T", "U", "V", "W", "X",
+      "N", "P", "Q", "R", "S", "T", "U", "V", "W", "X"
     ]
   }
 
@@ -41,7 +41,7 @@ final class MGRSEntryManager {
     [
       "A", "B", "C", "D", "E", "F", "G", "H", "J", "K",
       "L", "M", "N", "P", "Q", "R", "S", "T", "U", "V",
-      "W", "X", "Y", "Z",
+      "W", "X", "Y", "Z"
     ]
   }
 
@@ -49,7 +49,7 @@ final class MGRSEntryManager {
     // Valid MGRS row letters (excludes I, O, and letters after V)
     [
       "A", "B", "C", "D", "E", "F", "G", "H", "J", "K",
-      "L", "M", "N", "P", "Q", "R", "S", "T", "U", "V",
+      "L", "M", "N", "P", "Q", "R", "S", "T", "U", "V"
     ]
   }
 

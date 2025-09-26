@@ -7,7 +7,10 @@ func GridButtonSpace(cellSize: CGFloat) -> some View {
 
 @ViewBuilder
 func GridButton(
-  label: () -> some View, cellSize: CGFloat, isDisabled: Bool = false, onPress: @escaping () -> Void
+  label: () -> some View,
+  cellSize: CGFloat,
+  isDisabled: Bool = false,
+  onPress: @escaping () -> Void
 ) -> some View {
   Button(action: onPress) {
     label()

@@ -22,7 +22,8 @@ enum LocationHelper {
       courseAccuracy: 1,
       speed: 0,
       speedAccuracy: 1,
-      timestamp: Date())
+      timestamp: Date()
+    )
   }
 
   static func preIPLocation() -> CLLocation {
@@ -35,7 +36,8 @@ enum LocationHelper {
       courseAccuracy: 1,
       speed: Self.speed,
       speedAccuracy: 1,
-      timestamp: Date())
+      timestamp: Date()
+    )
   }
 
   static func postIPLocation() -> CLLocation {
@@ -48,7 +50,8 @@ enum LocationHelper {
       courseAccuracy: 1,
       speed: Self.speed,
       speedAccuracy: 1,
-      timestamp: Date())
+      timestamp: Date()
+    )
   }
 
   static func groundLocation() -> CLLocation {
@@ -61,7 +64,8 @@ enum LocationHelper {
       courseAccuracy: 1,
       speed: 0,
       speedAccuracy: 1,
-      timestamp: Date())
+      timestamp: Date()
+    )
   }
 
   static func pickerComponents(minutesFromNow: Double) -> PickerComponents {

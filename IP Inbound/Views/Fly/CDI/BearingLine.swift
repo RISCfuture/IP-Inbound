@@ -24,9 +24,11 @@ struct BearingLine: Shape {
     // Center deflected portion
     if let deflection {
       path.move(
-        to: CGPoint(x: center.x + deflection, y: center.y - radius * deviationSegmentSize / 2))
+        to: CGPoint(x: center.x + deflection, y: center.y - radius * deviationSegmentSize / 2)
+      )
       path.addLine(
-        to: CGPoint(x: center.x + deflection, y: center.y + radius * deviationSegmentSize / 2))
+        to: CGPoint(x: center.x + deflection, y: center.y + radius * deviationSegmentSize / 2)
+      )
     }
 
     // Bottom fixed portion
@@ -36,10 +38,12 @@ struct BearingLine: Shape {
     // Arrowhead
     path.move(to: CGPoint(x: center.x, y: center.y - radius * (1 - inset)))
     path.addLine(
-      to: CGPoint(x: center.x - arrowheadSize, y: center.y - radius * (1 - arrowheadInset)))
+      to: CGPoint(x: center.x - arrowheadSize, y: center.y - radius * (1 - arrowheadInset))
+    )
     path.move(to: CGPoint(x: center.x, y: center.y - radius * (1 - inset)))
     path.addLine(
-      to: CGPoint(x: center.x + arrowheadSize, y: center.y - radius * (1 - arrowheadInset)))
+      to: CGPoint(x: center.x + arrowheadSize, y: center.y - radius * (1 - arrowheadInset))
+    )
 
     return path
   }

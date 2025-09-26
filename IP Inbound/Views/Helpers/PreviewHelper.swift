@@ -25,7 +25,8 @@ class PreviewHelper {
       courseAccuracy: 1,
       speed: Self.speed,
       speedAccuracy: 1,
-      timestamp: Date())
+      timestamp: Date()
+    )
   }
 
   static var postIPLocation: CLLocation {
@@ -38,7 +39,8 @@ class PreviewHelper {
       courseAccuracy: 1,
       speed: Self.speed,
       speedAccuracy: 1,
-      timestamp: Date())
+      timestamp: Date()
+    )
   }
 
   static var groundLocation: CLLocation {
@@ -51,7 +53,8 @@ class PreviewHelper {
       courseAccuracy: 1,
       speed: 0,
       speedAccuracy: 1,
-      timestamp: Date())
+      timestamp: Date()
+    )
   }
 
   let modelContainer: ModelContainer
@@ -66,12 +69,16 @@ class PreviewHelper {
 
   init() {
     modelContainer = try! .init(
-      for: Target.self, configurations: .init(isStoredInMemoryOnly: true, cloudKitDatabase: .none))
+      for: Target.self,
+      configurations: .init(isStoredInMemoryOnly: true, cloudKitDatabase: .none)
+    )
   }
 
   func target(minutesFromNow: Double = 4.0) -> Target {
     let target = Target(
-      name: "My Target", coordinate: .init(latitude: Self.target.0, longitude: Self.target.1))
+      name: "My Target",
+      coordinate: .init(latitude: Self.target.0, longitude: Self.target.1)
+    )
     target.timeOnTarget = Date().addingTimeInterval(minutesFromNow * 60)
     return target
   }

@@ -28,16 +28,16 @@ struct TOTView: View {
       if let timeOnTarget {
         Text("•")
         switch displayMode {
-        case .local:
-          Text(timeOnTarget, format: localTOTFormatStyle)
-            .onTapGesture { displayMode = .zulu }
-            .accessibilityHint("Toggle local or zulu time")
-            .accessibilityAddTraits(.isButton)
-        case .zulu:
-          Text(timeOnTarget, format: zuluTOTFormatStyle)
-            .onTapGesture { displayMode = .local }
-            .accessibilityHint("Toggle local or zulu time")
-            .accessibilityAddTraits(.isButton)
+          case .local:
+            Text(timeOnTarget, format: localTOTFormatStyle)
+              .onTapGesture { displayMode = .zulu }
+              .accessibilityHint("Toggle local or zulu time")
+              .accessibilityAddTraits(.isButton)
+          case .zulu:
+            Text(timeOnTarget, format: zuluTOTFormatStyle)
+              .onTapGesture { displayMode = .local }
+              .accessibilityHint("Toggle local or zulu time")
+              .accessibilityAddTraits(.isButton)
         }
       }
     }

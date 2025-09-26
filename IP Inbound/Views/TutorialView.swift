@@ -9,12 +9,11 @@ struct TutorialView: View {
         Text("How to Use IP Inbound").font(.title)
         Text(
           """
-          IP Inbound is application that helps pilots fly an \
-          IP-to-target run to an accurate time on target. This \
-          application is useful for formation demo pilots, or pilots \
-          who participate in simulated tactical events, and need to be \
-          over a target at a precise time.
-          """)
+          IP Inbound is application that helps pilots fly an IP-to-target run to an accurate time \
+          on target. This application is useful for formation demo pilots, or pilots who \
+          participate in simulated tactical events, and need to be over a target at a precise time.
+          """
+        )
 
         Text("Planning").font(.title2)
 
@@ -22,53 +21,55 @@ struct TutorialView: View {
           Text(
             AttributedString(
               localized: """
-                Start by defining your **target point (TP)**. This is the \
-                exact position you want to be over at **time on target \
-                (TOT)**. You can choose a target on the map, use \
-                latitude/longitude UTM coordinates, or find a place by \
-                name/address. Tap the coordinates to change between \
-                coordinate types (DMS, DMM, DD, UTM).
-                """))
+                Start by defining your **target point (TP)**. This is the exact position you want \
+                to be over at **time on target (TOT)**. You can choose a target on the map, use \
+                latitude/longitude UTM coordinates, or find a place by name/address. Tap the \
+                coordinates to change between coordinate types (DMS, DMM, DD, UTM).
+                """
+            )
+          )
         }
 
         ParagraphWithImage(imageName: "1-define-ip", imageLeading: false) {
           Text(
             AttributedString(
               localized: """
-                Next, define your **initial point (IP)**. This is the \
-                position where you will start your run-in to target. \
-                It’s used to help ensure you achieve your desired \
-                IP-to-target bearing with sufficient time to reach the \
-                TP by TOT.
-                """))
+                Next, define your **initial point (IP)**. This is the position where you will \
+                start your run-in to target. It’s used to help ensure you achieve your desired \
+                IP-to-target bearing with sufficient time to reach the TP by TOT.
+                """
+            )
+          )
 
           Text(
             AttributedString(
               localized: """
-                Choose a bearing and distance that satisfies your \
-                mission, and select a speed that gives you some wiggle \
-                room to speed up or slow down to meet your TOT. Mission \
-                requirements may dictate specific bearings, distance \
-                and/or speeds.
-                """))
+                Choose a bearing and distance that satisfies your mission, and select a speed that \
+                gives you some wiggle room to speed up or slow down to meet your TOT. Mission \
+                requirements may dictate specific bearings, distance and/or speeds.
+                """
+            )
+          )
 
           Text(
             AttributedString(
               localized: """
-                IP Inbound will work the TOT backwards to find your time \
-                over IP, and it will provide guidance to ensure you \
-                reach the IP at or before that time.
-                """))
+                IP Inbound will work the TOT backwards to find your time over IP, and it will \
+                provide guidance to ensure you reach the IP at or before that time.
+                """
+            )
+          )
         }
 
         ParagraphWithImage(imageName: "2-tot", imageLeading: false) {
           Text(
             AttributedString(
               localized: """
-                Finally, set your time on target. It’s ok if you don’t \
-                know your final TOT yet; you can adjust it in the air \
-                if necessary.
-                """))
+                Finally, set your time on target. It’s ok if you don’t know your final TOT yet; \
+                you can adjust it in the air if necessary.
+                """
+            )
+          )
         }
 
         Text("Pre-IP").font(.title2)
@@ -77,35 +78,36 @@ struct TutorialView: View {
           Text(
             AttributedString(
               localized: """
-                When you’re on the ground, prior to takeoff, IP Inbound \
-                simply gives you a countdown timer so you can maintain \
-                awareness on your approaching TOT. The fun begins when \
-                you get airborne.
-                """))
+                When you’re on the ground, prior to takeoff, IP Inbound simply gives you a \
+                countdown timer so you can maintain awareness on your approaching TOT. The fun \
+                begins when you get airborne.
+                """
+            )
+          )
         }
 
         ParagraphWithImage(imageName: "5-pre-ip", imageLeading: false) {
           Text(
             AttributedString(
               localized: """
-                Once airborne, prior to reaching the IP, IP Inbound \
-                displays a **course deviation indicator (CDI)** \
-                providing **direct-to guidance** to your IP. The CDI is \
-                based on your ground track and magnetic heading. The \
-                title reads **P.POS → IP** to remind you that course \
-                guidance is to the IP, not the target.
-                """))
+                Once airborne, prior to reaching the IP, IP Inbound displays a **course deviation \
+                indicator (CDI)** providing **direct-to guidance** to your IP. The CDI is based on \
+                your ground track and magnetic heading. The title reads **P.POS → IP** to remind \
+                you that course guidance is to the IP, not the target.
+                """
+            )
+          )
 
           Text(
             AttributedString(
               localized: """
-                The **yellow arrow** points directly at the IP. The \
-                **red chevron** with an inset “T” indicates the \
-                direction to the target, for situational awareness. \
-                Below the CDI is the **speed deviation indication**, \
-                which indicates whether you need to slow down or speed \
-                up to make your time over IP.
-                """))
+                The **yellow arrow** points directly at the IP. The **red chevron** with an inset \
+                “T” indicates the direction to the target, for situational awareness. Below the \
+                CDI is the **speed deviation indication**, which indicates whether you need to \
+                slow down or speed up to make your time over IP.
+                """
+            )
+          )
 
           VStack {
             HStack {
@@ -165,51 +167,55 @@ struct TutorialView: View {
           Text(
             AttributedString(
               localized: """
-                 Your ground speed, the distance to the IP, and the TOT \
-                (_not_ time over IP) are shown at the bottom. Tap the \
-                distance or speed to cycle between knots, MPH, or KPH, \
-                and tap the TOT to toggle between local and Zulu time (GMT).
-                """))
+                 Your ground speed, the distance to the IP, and the TOT (_not_ time over IP) are \
+                shown at the bottom. Tap the distance or speed to cycle between knots, MPH, or \
+                KPH, and tap the TOT to toggle between local and Zulu time (GMT).
+                """
+            )
+          )
 
           Text(
             AttributedString(
               localized: """
-                Speed deviation is calculated factoring in turning \
-                required. IP Inbound assumes that you will make a level, \
-                45°-banked turn in the shortest direction to the IP when \
-                calculating time to IP.
-                """))
+                Speed deviation is calculated factoring in turning required. IP Inbound assumes \
+                that you will make a level, 45°-banked turn in the shortest direction to the IP \
+                when calculating time to IP.
+                """
+            )
+          )
 
           Text(
             AttributedString(
               localized: """
-                If your TOT changes at any point, either on the ground \
-                or in the air, simply press **‹ Time on Target** to \
-                return to the TOT page and set the new TOT. You can then \
+                If your TOT changes at any point, either on the ground or in the air, simply press \
+                **‹ Time on Target** to return to the TOT page and set the new TOT. You can then \
                 return to the CDI view by pressing **Fly!** again.
-                """))
+                """
+            )
+          )
         }
 
         ParagraphWithImage(imageName: "4-pre-ip-early", imageLeading: false) {
           Text(
             AttributedString(
               localized: """
-                If you are very early, IP Inbound assumes that you will \
-                want to hold over the IP until you reach your **push \
-                time**; in other words, the time you leave the IP for \
+                If you are very early, IP Inbound assumes that you will want to hold over the IP \
+                until you reach your **push time**; in other words, the time you leave the IP for \
                 the target to make your TOT.
-                """))
+                """
+            )
+          )
 
           Text(
             AttributedString(
               localized: """
-                In this situation, the speed deviation view will be \
-                replaced with a countdown timer to your push time. The \
-                speed deviation timer will show again when you are \
-                closer to your push time. Your push time is calculated \
-                by working backwards from TOT using the desired ground \
-                speed you set during IP configuration.
-                """))
+                In this situation, the speed deviation view will be replaced with a countdown \
+                timer to your push time. The speed deviation timer will show again when you are \
+                closer to your push time. Your push time is calculated by working backwards from \
+                TOT using the desired ground speed you set during IP configuration.
+                """
+            )
+          )
         }
 
         Text("IP-to-Target Run").font(.title2)
@@ -218,23 +224,24 @@ struct TutorialView: View {
           Text(
             AttributedString(
               localized: """
-                Any time you’ve passed the IP inbound, the CDI switches \
-                to target guidance. The **red arrow** points to the \
-                _desired track_ to the target (not direct-to the \
-                target). The **inset portion** of the arrow indicates how \
-                far left or right of the desired track you are. The \
-                **yellow chevron** with an inset “IP” indicates the \
+                Any time you’ve passed the IP inbound, the CDI switches to target guidance. The \
+                **red arrow** points to the _desired track_ to the target (not direct-to the \
+                target). The **inset portion** of the arrow indicates how far left or right of the \
+                desired track you are. The **yellow chevron** with an inset “IP” indicates the \
                 direct course to the IP, for situational awareness.
-                """))
+                """
+            )
+          )
 
           Text(
             AttributedString(
               localized: """
-                The speed deviation indicator now provides speed guidance \
-                to get you over the target at exactly the TOT. The title \
-                now reads **P.POS → Target**, as the CDI is now providing \
-                guidance to target.
-                """))
+                The speed deviation indicator now provides speed guidance to get you over the \
+                target at exactly the TOT. The title now reads **P.POS → Target**, as the CDI is \
+                now providing guidance to target.
+                """
+            )
+          )
         }
 
         Text("Late to Target").font(.title2)
@@ -243,15 +250,15 @@ struct TutorialView: View {
           Text(
             AttributedString(
               localized: """
-                If IP Inbound calculates that you have insufficient time \
-                to fly to the IP and then the target, given your TOT, \
-                the CDI will change to providing guidance directly to \
-                the target. This is indicated by the title **P.POS → Target** \
-                showing in red. The CDI shows _desired track_ guidance to \
-                the target. The **red chevron** with an inset “T” is the \
-                direct course to the target, and the **yelow chevron** \
-                with an inset “IP” is the direct course to the IP.
-                """))
+                If IP Inbound calculates that you have insufficient time to fly to the IP and then \
+                the target, given your TOT, the CDI will change to providing guidance directly to \
+                the target. This is indicated by the title **P.POS → Target** showing in red. The \
+                CDI shows _desired track_ guidance to the target. The **red chevron** with an \
+                inset “T” is the direct course to the target, and the **yelow chevron** with an \
+                inset “IP” is the direct course to the IP.
+                """
+            )
+          )
         }
       }
       .multilineTextAlignment(.leading)
@@ -271,19 +278,19 @@ struct ParagraphWithImage<Content: View>: View {
 
   var body: some View {
     switch sizeClass {
-    case .regular:
-      HStack(alignment: .top, spacing: 8) {
-        if imageLeading {
-          image
-          VStack(alignment: .leading, spacing: 16) { content() }
-        } else {
-          VStack(alignment: .leading, spacing: 16) { content() }
-          image
+      case .regular:
+        HStack(alignment: .top, spacing: 8) {
+          if imageLeading {
+            image
+            VStack(alignment: .leading, spacing: 16) { content() }
+          } else {
+            VStack(alignment: .leading, spacing: 16) { content() }
+            image
+          }
         }
-      }
-    case .compact, .none, .some:
-      content()
-      image
+      case .compact, .none, .some:
+        content()
+        image
     }
   }
 

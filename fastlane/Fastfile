@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # This file contains the fastlane.tools configuration
 # You can find the documentation at https://docs.fastlane.tools
 #
@@ -7,17 +9,17 @@
 # For a list of all available plugins, check out
 #     https://docs.fastlane.tools/plugins/available-plugins
 
-default_platform(:ios)
+default_platform :ios
 
 platform :ios do
   # App Store Connect API key configuration
   before_all do
     app_store_connect_api_key(
-      key_id: "FXXUALYK6F",
-      issuer_id: "69a6de7f-1ffd-47e3-e053-5b8c7c11a4d1",
+      key_id:       "FXXUALYK6F",
+      issuer_id:    "69a6de7f-1ffd-47e3-e053-5b8c7c11a4d1",
       key_filepath: "./fastlane/AuthKey_FXXUALYK6F.p8",
-      duration: 1200, # optional (maximum 1200)
-      in_house: false # optional but may be required if using match/sigh
+      duration:     1200, # optional (maximum 1200)
+      in_house:     false # optional but may be required if using match/sigh
     )
   end
 
@@ -25,17 +27,17 @@ platform :ios do
   lane :screenshots do
     # First run with light mode
     puts "Generating light mode screenshots…"
-    snapshot scheme: "Generate Screenshots",
-      dark_mode: false,
-      output_directory: "./fastlane/screenshots/light",
-      clear_previous_screenshots: true
+    snapshot scheme:                     "Generate Screenshots",
+             dark_mode:                  false,
+             output_directory:           "./fastlane/screenshots/light",
+             clear_previous_screenshots: true
 
     # Then run with dark mode
     puts "Generating dark mode screenshots…"
-    snapshot scheme: "Generate Screenshots",
-      dark_mode: true,
-      output_directory: "./fastlane/screenshots/dark",
-      clear_previous_screenshots: true
+    snapshot scheme:                     "Generate Screenshots",
+             dark_mode:                  true,
+             output_directory:           "./fastlane/screenshots/dark",
+             clear_previous_screenshots: true
 
     puts "Screenshots generated successfully!"
   end
@@ -48,8 +50,8 @@ platform :ios do
 
   desc "Upload screenshots to App Store Connect"
   lane :upload_screenshots do
-    require 'fileutils'
-    require 'tmpdir'
+    require "fileutils"
+    require "tmpdir"
 
     # Create a temporary directory with only non-framed screenshots
     Dir.mktmpdir do |temp_dir|
@@ -60,21 +62,22 @@ platform :ios do
       # Copy only non-framed screenshots to temp directory
       Dir.glob("./fastlane/screenshots/light/en-US/*.png").each do |file|
         next if file.include?("_framed")
+
         FileUtils.cp(file, lang_dir)
       end
 
       # Upload only non-framed screenshots
       upload_to_app_store(
-        app_identifier: "codes.tim.IP-Inbound",
-        skip_binary_upload: true,
-        skip_metadata: true,
+        app_identifier:        "codes.tim.IP-Inbound",
+        skip_binary_upload:    true,
+        skip_metadata:         true,
         overwrite_screenshots: true,
-        screenshots_path: temp_dir,
-        force: true # Skip HTML preview
+        screenshots_path:      temp_dir,
+        force:                 true # Skip HTML preview
       )
     end
 
-    # Note: App Store Connect only supports one set of screenshots per size class
+    # NOTE: App Store Connect only supports one set of screenshots per size class
     # Dark mode screenshots are generated but not uploaded
     # Framed screenshots are kept locally for marketing/other uses
   end
@@ -82,7 +85,6 @@ platform :ios do
   desc "Generate and upload screenshots to App Store"
   lane :screenshots_and_upload do
     screenshots
-    frames
     upload_screenshots
   end
 end

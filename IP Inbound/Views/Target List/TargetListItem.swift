@@ -23,14 +23,14 @@ struct TargetListItem: View {
 
       if let timeOnTarget = target.timeOnTarget {
         switch displayMode {
-        case .local:
-          Text(timeOnTarget, format: localTOTFormatStyle)
-            .foregroundStyle(.secondary)
-            .accessibilityIdentifier("timeOnTarget")
-        case .zulu:
-          Text(timeOnTarget, format: zuluTOTFormatStyle)
-            .foregroundStyle(.secondary)
-            .accessibilityIdentifier("timeOnTarget")
+          case .local:
+            Text(timeOnTarget, format: localTOTFormatStyle)
+              .foregroundStyle(.secondary)
+              .accessibilityIdentifier("timeOnTarget")
+          case .zulu:
+            Text(timeOnTarget, format: zuluTOTFormatStyle)
+              .foregroundStyle(.secondary)
+              .accessibilityIdentifier("timeOnTarget")
         }
       }
 

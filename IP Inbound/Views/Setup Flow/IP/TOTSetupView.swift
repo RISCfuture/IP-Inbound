@@ -44,14 +44,18 @@ struct TOTSetupView: View {
       if target.timeOnTarget == nil {
         let defaultTime = Date().addingTimeInterval(60 * timeAdvanceNew)
         var components = Calendar.current.dateComponents(
-          [.year, .month, .day, .hour, .minute], from: defaultTime)
+          [.year, .month, .day, .hour, .minute],
+          from: defaultTime
+        )
         components.second = 0
         target.timeOnTarget = Calendar.current.date(from: components) ?? defaultTime
       } else if let targetTime = target.timeOnTarget, targetTime < Date() {
         // If the saved time is in the past, update it
         let updatedTime = Date().addingTimeInterval(60 * timeAdvanceEdit)
         var components = Calendar.current.dateComponents(
-          [.year, .month, .day, .hour, .minute], from: updatedTime)
+          [.year, .month, .day, .hour, .minute],
+          from: updatedTime
+        )
         components.second = 0
         target.timeOnTarget = Calendar.current.date(from: components) ?? updatedTime
       }

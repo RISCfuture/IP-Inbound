@@ -38,41 +38,41 @@ struct MGRSEntryView: View {
 
         // Custom keypad based on current input mode
         switch entryManager.inputMode {
-        case .zone:
-          NumericKeypadView(
-            activeDigits: Array(0...9),
-            onKeyPress: { entryManager.add(Character("\($0)")) },
-            onBackspace: { entryManager.backspace() }
-          )
-          .frame(height: baseline * 5)
-        case .band:
-          MGRSLetterKeypadView(
-            activeLetters: entryManager.validBands,
-            onKeyPress: { entryManager.add($0) },
-            onBackspace: { entryManager.backspace() }
-          )
-          .frame(height: baseline * 5)
-        case .column:
-          MGRSLetterKeypadView(
-            activeLetters: entryManager.validColumns,
-            onKeyPress: { entryManager.add($0) },
-            onBackspace: { entryManager.backspace() }
-          )
-          .frame(height: baseline * 5)
-        case .row:
-          MGRSLetterKeypadView(
-            activeLetters: entryManager.validRows,
-            onKeyPress: { entryManager.add($0) },
-            onBackspace: { entryManager.backspace() }
-          )
-          .frame(height: baseline * 5)
-        case .numeric:
-          NumericKeypadView(
-            activeDigits: Array(0...9),
-            onKeyPress: { entryManager.add(Character("\($0)")) },
-            onBackspace: { entryManager.backspace() }
-          )
-          .frame(height: baseline * 5)
+          case .zone:
+            NumericKeypadView(
+              activeDigits: Array(0...9),
+              onKeyPress: { entryManager.add(Character("\($0)")) },
+              onBackspace: { entryManager.backspace() }
+            )
+            .frame(height: baseline * 5)
+          case .band:
+            MGRSLetterKeypadView(
+              activeLetters: entryManager.validBands,
+              onKeyPress: { entryManager.add($0) },
+              onBackspace: { entryManager.backspace() }
+            )
+            .frame(height: baseline * 5)
+          case .column:
+            MGRSLetterKeypadView(
+              activeLetters: entryManager.validColumns,
+              onKeyPress: { entryManager.add($0) },
+              onBackspace: { entryManager.backspace() }
+            )
+            .frame(height: baseline * 5)
+          case .row:
+            MGRSLetterKeypadView(
+              activeLetters: entryManager.validRows,
+              onKeyPress: { entryManager.add($0) },
+              onBackspace: { entryManager.backspace() }
+            )
+            .frame(height: baseline * 5)
+          case .numeric:
+            NumericKeypadView(
+              activeDigits: Array(0...9),
+              onKeyPress: { entryManager.add(Character("\($0)")) },
+              onBackspace: { entryManager.backspace() }
+            )
+            .frame(height: baseline * 5)
         }
 
         // Accept/Cancel buttons
@@ -113,7 +113,9 @@ struct MGRSEntryView: View {
   }
 
   init(
-    coordinate: Coordinate, onAccept: @escaping (Coordinate) -> Void, onCancel: @escaping () -> Void
+    coordinate: Coordinate,
+    onAccept: @escaping (Coordinate) -> Void,
+    onCancel: @escaping () -> Void
   ) {
     self.onAccept = onAccept
     self.onCancel = onCancel
@@ -133,7 +135,7 @@ struct MGRSLetterKeypadView: View {
     ["L", "M", "N", "P", "Q"],
     ["R", "S", "T", "U", "V"],
     ["W", "X", "Y", "Z", nil],
-    [nil, nil, nil, nil, nil],  // Backspace row
+    [nil, nil, nil, nil, nil]  // Backspace row
   ]
 
   var body: some View {

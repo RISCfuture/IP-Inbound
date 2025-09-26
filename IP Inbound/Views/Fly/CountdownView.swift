@@ -8,7 +8,8 @@ struct CountdownView: View {
 
     if timeOnTarget > Date.now {
       Text(
-        .currentDate, format: .timer(countingDownIn: .now..<timeOnTarget, maxPrecision: .seconds(1))
+        .currentDate,
+        format: .timer(countingDownIn: .now..<timeOnTarget, maxPrecision: .seconds(1))
       )
       .font(.title)
       .padding(.bottom)

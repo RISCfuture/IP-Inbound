@@ -38,27 +38,27 @@ struct UTMEntryView: View {
 
         // Custom keypad based on current input mode
         switch entryManager.inputMode {
-        case .zone:
-          NumericKeypadView(
-            activeDigits: Array(0...9),
-            onKeyPress: { entryManager.add(Character("\($0)")) },
-            onBackspace: { entryManager.backspace() }
-          )
-          .frame(height: baseline * 5)
-        case .band:
-          UTMBandKeypadView(
-            activeBands: entryManager.validBands,
-            onKeyPress: { entryManager.add($0) },
-            onBackspace: { entryManager.backspace() }
-          )
-          .frame(height: baseline * 5)
-        case .numeric:
-          NumericKeypadView(
-            activeDigits: Array(0...9),
-            onKeyPress: { entryManager.add(Character("\($0)")) },
-            onBackspace: { entryManager.backspace() }
-          )
-          .frame(height: baseline * 5)
+          case .zone:
+            NumericKeypadView(
+              activeDigits: Array(0...9),
+              onKeyPress: { entryManager.add(Character("\($0)")) },
+              onBackspace: { entryManager.backspace() }
+            )
+            .frame(height: baseline * 5)
+          case .band:
+            UTMBandKeypadView(
+              activeBands: entryManager.validBands,
+              onKeyPress: { entryManager.add($0) },
+              onBackspace: { entryManager.backspace() }
+            )
+            .frame(height: baseline * 5)
+          case .numeric:
+            NumericKeypadView(
+              activeDigits: Array(0...9),
+              onKeyPress: { entryManager.add(Character("\($0)")) },
+              onBackspace: { entryManager.backspace() }
+            )
+            .frame(height: baseline * 5)
         }
 
         // Accept/Cancel buttons
@@ -99,7 +99,9 @@ struct UTMEntryView: View {
   }
 
   init(
-    coordinate: Coordinate, onAccept: @escaping (Coordinate) -> Void, onCancel: @escaping () -> Void
+    coordinate: Coordinate,
+    onAccept: @escaping (Coordinate) -> Void,
+    onCancel: @escaping () -> Void
   ) {
     self.onAccept = onAccept
     self.onCancel = onCancel
@@ -119,7 +121,7 @@ struct UTMBandKeypadView: View {
     ["L", "M", "N", "P"],
     ["Q", "R", "S", "T"],
     ["U", "V", "W", "X"],
-    [nil, nil, nil, nil],  // Backspace row
+    [nil, nil, nil, nil]  // Backspace row
   ]
 
   var body: some View {

@@ -46,10 +46,10 @@ final class TOTEntryManager {
     formatter.dateFormat = "HHmmss"
 
     switch displayMode {
-    case .local:
-      formatter.timeZone = targetTimezone ?? TimeZone.current
-    case .zulu:
-      formatter.timeZone = TimeZone(identifier: "UTC")
+      case .local:
+        formatter.timeZone = targetTimezone ?? TimeZone.current
+      case .zulu:
+        formatter.timeZone = TimeZone(identifier: "UTC")
     }
 
     let timeString = formatter.string(from: timeOnTarget)
@@ -60,12 +60,12 @@ final class TOTEntryManager {
 
     let modeIndicator: String
     switch displayMode {
-    case .zulu:
-      modeIndicator = "Z"
-    case .local:
-      // Show the actual timezone abbreviation (e.g., PST, EDT, etc.)
-      let tz = targetTimezone ?? TimeZone.current
-      modeIndicator = tz.abbreviation(for: timeOnTarget) ?? "L"
+      case .zulu:
+        modeIndicator = "Z"
+      case .local:
+        // Show the actual timezone abbreviation (e.g., PST, EDT, etc.)
+        let tz = targetTimezone ?? TimeZone.current
+        modeIndicator = tz.abbreviation(for: timeOnTarget) ?? "L"
     }
     return "\(hours):\(minutes):\(seconds) \(modeIndicator)"
   }
@@ -97,16 +97,16 @@ final class TOTEntryManager {
     formatter.dateFormat = "HH:mm:ss"
 
     switch displayMode {
-    case .local:
-      // When in local mode, show Zulu time as secondary
-      formatter.timeZone = TimeZone(identifier: "UTC")
-      return formatter.string(from: timeOnTarget) + " Z"
-    case .zulu:
-      // When in Zulu mode, show target local time as secondary with its timezone abbreviation
-      let tz = targetTimezone ?? TimeZone.current
-      formatter.timeZone = tz
-      let abbreviation = tz.abbreviation(for: timeOnTarget) ?? "Local"
-      return formatter.string(from: timeOnTarget) + " \(abbreviation)"
+      case .local:
+        // When in local mode, show Zulu time as secondary
+        formatter.timeZone = TimeZone(identifier: "UTC")
+        return formatter.string(from: timeOnTarget) + " Z"
+      case .zulu:
+        // When in Zulu mode, show target local time as secondary with its timezone abbreviation
+        let tz = targetTimezone ?? TimeZone.current
+        formatter.timeZone = tz
+        let abbreviation = tz.abbreviation(for: timeOnTarget) ?? "Local"
+        return formatter.string(from: timeOnTarget) + " \(abbreviation)"
     }
   }
 
@@ -162,19 +162,19 @@ final class TOTEntryManager {
     let digit = Int(String(character))!
 
     switch position {
-    case .hourTens:
-      return digit <= 2
-    case .hourOnes:
-      let hourTens = getDigit(at: getIndexForPosition(.hourTens))
-      return hourTens == 2 ? digit <= 3 : true
-    case .minuteTens:
-      return digit <= 5
-    case .minuteOnes:
-      return true
-    case .secondTens:
-      return digit <= 5
-    case .secondOnes:
-      return true
+      case .hourTens:
+        return digit <= 2
+      case .hourOnes:
+        let hourTens = getDigit(at: getIndexForPosition(.hourTens))
+        return hourTens == 2 ? digit <= 3 : true
+      case .minuteTens:
+        return digit <= 5
+      case .minuteOnes:
+        return true
+      case .secondTens:
+        return digit <= 5
+      case .secondOnes:
+        return true
     }
   }
 
@@ -223,10 +223,10 @@ final class TOTEntryManager {
 
   func toggleDisplayMode() {
     switch displayMode {
-    case .local:
-      displayMode = .zulu
-    case .zulu:
-      displayMode = .local
+      case .local:
+        displayMode = .zulu
+      case .zulu:
+        displayMode = .local
     }
     Defaults[.TOTDisplayMode] = displayMode
   }
@@ -244,10 +244,10 @@ final class TOTEntryManager {
     formatter.dateFormat = "HHmmss"
 
     switch displayMode {
-    case .local:
-      formatter.timeZone = targetTimezone ?? TimeZone.current
-    case .zulu:
-      formatter.timeZone = TimeZone(identifier: "UTC")
+      case .local:
+        formatter.timeZone = targetTimezone ?? TimeZone.current
+      case .zulu:
+        formatter.timeZone = TimeZone(identifier: "UTC")
     }
 
     // Use a calendar with the appropriate timezone
@@ -287,24 +287,24 @@ final class TOTEntryManager {
     // Format is HH:MM:SS TZ, so positions are:
     // 0,1 = hours, 2 = colon, 3,4 = minutes, 5 = colon, 6,7 = seconds, 8 = space, 9+ = timezone
     switch index {
-    case 0: return .hourTens
-    case 1: return .hourOnes
-    case 3: return .minuteTens
-    case 4: return .minuteOnes
-    case 6: return .secondTens
-    case 7: return .secondOnes
-    default: return nil
+      case 0: return .hourTens
+      case 1: return .hourOnes
+      case 3: return .minuteTens
+      case 4: return .minuteOnes
+      case 6: return .secondTens
+      case 7: return .secondOnes
+      default: return nil
     }
   }
 
   private func getIndexForPosition(_ position: TimePosition) -> Int {
     switch position {
-    case .hourTens: return 0
-    case .hourOnes: return 1
-    case .minuteTens: return 3
-    case .minuteOnes: return 4
-    case .secondTens: return 6
-    case .secondOnes: return 7
+      case .hourTens: return 0
+      case .hourOnes: return 1
+      case .minuteTens: return 3
+      case .minuteOnes: return 4
+      case .secondTens: return 6
+      case .secondOnes: return 7
     }
   }
 

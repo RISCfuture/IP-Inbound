@@ -43,11 +43,11 @@ enum SnapshotError: Error, CustomDebugStringConvertible {
 
   var debugDescription: String {
     switch self {
-    case .cannotFindSimulatorHomeDirectory:
-      return
-        "Couldn't find simulator home location. Please, check SIMULATOR_HOST_HOME env variable."
-    case .cannotRunOnPhysicalDevice:
-      return "Can't use Snapshot on a physical device."
+      case .cannotFindSimulatorHomeDirectory:
+        return
+          "Couldn't find simulator home location. Please, check SIMULATOR_HOST_HOME env variable."
+      case .cannotRunOnPhysicalDevice:
+        return "Can't use Snapshot on a physical device."
     }
   }
 }
@@ -91,7 +91,8 @@ open class Snapshot: NSObject {
     do {
       let trimCharacterSet = CharacterSet.whitespacesAndNewlines
       deviceLanguage = try String(contentsOf: path, encoding: .utf8).trimmingCharacters(
-        in: trimCharacterSet)
+        in: trimCharacterSet
+      )
       app.launchArguments += ["-AppleLanguages", "(\(deviceLanguage))"]
     } catch {
       NSLog("Couldn't detect/set language...")
@@ -109,7 +110,8 @@ open class Snapshot: NSObject {
     do {
       let trimCharacterSet = CharacterSet.whitespacesAndNewlines
       currentLocale = try String(contentsOf: path, encoding: .utf8).trimmingCharacters(
-        in: trimCharacterSet)
+        in: trimCharacterSet
+      )
     } catch {
       NSLog("Couldn't detect/set locale...")
     }
@@ -136,11 +138,12 @@ open class Snapshot: NSObject {
       let launchArguments = try String(contentsOf: path, encoding: String.Encoding.utf8)
       let regex = try NSRegularExpression(pattern: "(\\\".+?\\\"|\\S+)", options: [])
       let matches = regex.matches(
-        in: launchArguments, options: [], range: NSRange(location: 0, length: launchArguments.count)
+        in: launchArguments,
+        options: [],
+        range: NSRange(location: 0, length: launchArguments.count)
       )
       let results = matches.map { result -> String in
-        let range = Range(result.range, in: launchArguments)!
-        return String(launchArguments[range])
+        (launchArguments as NSString).substring(with: result.range)
       }
       app.launchArguments += results
     } catch {
@@ -235,7 +238,9 @@ open class Snapshot: NSObject {
     let networkLoadingIndicator = app.otherElements.deviceStatusBars.networkLoadingIndicators
       .element
     let networkLoadingIndicatorDisappeared = XCTNSPredicateExpectation(
-      predicate: NSPredicate(format: "exists == false"), object: networkLoadingIndicator)
+      predicate: NSPredicate(format: "exists == false"),
+      object: networkLoadingIndicator
+    )
     _ = XCTWaiter.wait(for: [networkLoadingIndicatorDisappeared], timeout: timeout)
   }
 
@@ -297,7 +302,8 @@ extension XCUIElementQuery {
     return self.containing(isNetworkLoadingIndicator)
   }
 
-  @MainActor fileprivate var deviceStatusBars: XCUIElementQuery {
+  @MainActor
+  fileprivate var deviceStatusBars: XCUIElementQuery {
     guard let app = Snapshot.app else {
       fatalError("XCUIApplication is not set. Please call setupSnapshot(app) before snapshot().")
     }

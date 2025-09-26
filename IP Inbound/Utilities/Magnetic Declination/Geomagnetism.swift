@@ -228,7 +228,8 @@ final class Geomagnetism {
         ? yearLength
         : (year.isMultiple(of: 4)
           && (!year.isMultiple(of: 25) || (year.isMultiple(of: 400) && !year.isMultiple(of: 4000)))
-          ? 366 : 365))
+          ? 366 : 365)
+    )
     let dt: Double = yearFraction - epoch
     let srlon: Double = sin(rlon)
     let srlat: Double = sin(rlat)
@@ -360,7 +361,8 @@ final class Geomagnetism {
     // Compute declination (dec), inclination (dip) and total intensity (ti)
     horizontalIntensity = sqrt((northIntensity * northIntensity) + (eastIntensity * eastIntensity))
     intensity = sqrt(
-      (horizontalIntensity * horizontalIntensity) + (verticalIntensity * verticalIntensity))
+      (horizontalIntensity * horizontalIntensity) + (verticalIntensity * verticalIntensity)
+    )
     //	Calculate the declination.
     declination = atan2(eastIntensity, northIntensity).toDegrees
     inclination = atan2(verticalIntensity, horizontalIntensity).toDegrees

@@ -24,11 +24,11 @@ struct TargetSetupForm: View {
           Text(format(coordinate: target.coordinate) ?? "<n/a>")
             .onTapGesture {
               switch coordinateFormat {
-              case .degreesMinutesSeconds: Defaults[.coordinateFormat] = .degreesDecimalMinutes
-              case .degreesDecimalMinutes: Defaults[.coordinateFormat] = .decimalDegrees
-              case .decimalDegrees: Defaults[.coordinateFormat] = .utm
-              case .utm: Defaults[.coordinateFormat] = .mgrs
-              case .mgrs: Defaults[.coordinateFormat] = .degreesMinutesSeconds
+                case .degreesMinutesSeconds: Defaults[.coordinateFormat] = .degreesDecimalMinutes
+                case .degreesDecimalMinutes: Defaults[.coordinateFormat] = .decimalDegrees
+                case .decimalDegrees: Defaults[.coordinateFormat] = .utm
+                case .utm: Defaults[.coordinateFormat] = .mgrs
+                case .mgrs: Defaults[.coordinateFormat] = .degreesMinutesSeconds
               }
             }
             .accessibilityAddTraits(.isButton)
@@ -51,7 +51,8 @@ struct TargetSetupForm: View {
           target.coordinate = coordinate
           target.calculateDeclination()
           editingCoordinates = false
-        }, onCancel: { editingCoordinates = false }
+        },
+        onCancel: { editingCoordinates = false }
       )
       .padding()
     }

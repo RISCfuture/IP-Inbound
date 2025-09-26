@@ -15,77 +15,77 @@ struct FlyView: View {
       VStack {
         VStack {
           switch guidance {
-          case .toIPWithSpeedGuidance, .toIPWithCountdown:
-            Text("P.POS → IP").font(.title)
-            Text(target.name).font(.caption)
-          case .toTarget:
-            Text("P.POS → Target").font(.title)
-            Text(target.name).font(.caption)
-          case .toTargetBypassingIP:
-            Text("P.POS → Target").font(.title).foregroundStyle(Color.red)
-            Text(target.name).font(.caption)
-          case .countdownOnly:
-            Text(target.name).font(.title)
+            case .toIPWithSpeedGuidance, .toIPWithCountdown:
+              Text("P.POS → IP").font(.title)
+              Text(target.name).font(.caption)
+            case .toTarget:
+              Text("P.POS → Target").font(.title)
+              Text(target.name).font(.caption)
+            case .toTargetBypassingIP:
+              Text("P.POS → Target").font(.title).foregroundStyle(Color.red)
+              Text(target.name).font(.caption)
+            case .countdownOnly:
+              Text(target.name).font(.title)
           }
         }
 
         switch guidance {
-        case .toIPWithSpeedGuidance, .toIPWithCountdown:
-          if let fromTo = math.pposToIP {
-            CDIView(
-              heading: fromTo.trackMagnetic,
-              bearing: fromTo.bearingMagnetic,
-              bearingColor: .yellow,
-              IPDirectBearing: nil,
-              targetDirectBearing: math.pposToTarget?.bearingMagnetic,
-              crossTrackDistance: nil
-            )
-            .accessibilityIdentifier("cdi")
-          }
-        case .toTarget, .toTargetBypassingIP:
-          if let fromTo = math.pposToTarget {
-            CDIView(
-              heading: fromTo.trackMagnetic,
-              bearing: target.desiredTrackMagnetic,
-              bearingColor: .red,
-              IPDirectBearing: math.pposToIP?.bearingMagnetic,
-              targetDirectBearing: math.pposToTarget?.bearingMagnetic,
-              crossTrackDistance: math.crossTrackDistance
-            )
-            .accessibilityIdentifier("cdi")
-          }
-        case .countdownOnly:
-          if let timeOnTarget = target.timeOnTarget {
-            CountdownView(timeOnTarget: timeOnTarget)
-              .accessibilityIdentifier("countdown")
-          }
+          case .toIPWithSpeedGuidance, .toIPWithCountdown:
+            if let fromTo = math.pposToIP {
+              CDIView(
+                heading: fromTo.trackMagnetic,
+                bearing: fromTo.bearingMagnetic,
+                bearingColor: .yellow,
+                IPDirectBearing: nil,
+                targetDirectBearing: math.pposToTarget?.bearingMagnetic,
+                crossTrackDistance: nil
+              )
+              .accessibilityIdentifier("cdi")
+            }
+          case .toTarget, .toTargetBypassingIP:
+            if let fromTo = math.pposToTarget {
+              CDIView(
+                heading: fromTo.trackMagnetic,
+                bearing: target.desiredTrackMagnetic,
+                bearingColor: .red,
+                IPDirectBearing: math.pposToIP?.bearingMagnetic,
+                targetDirectBearing: math.pposToTarget?.bearingMagnetic,
+                crossTrackDistance: math.crossTrackDistance
+              )
+              .accessibilityIdentifier("cdi")
+            }
+          case .countdownOnly:
+            if let timeOnTarget = target.timeOnTarget {
+              CountdownView(timeOnTarget: timeOnTarget)
+                .accessibilityIdentifier("countdown")
+            }
         }
 
         if event.isSimulating { SimulatorBanner() }
 
         switch guidance {
-        case .toIPWithSpeedGuidance:
-          if let fromTo = math.pposToIP, let timeOnTarget = target.timeOnTarget {
-            TimingView(timeOnTarget: timeOnTarget, fromTo: fromTo, onTimeDeltaTOT: 30)
-          }
-        case .toIPWithCountdown:
-          if let fromTo = math.pposToIP, let desiredTimeOverIP = target.desiredTimeOverIP {
-            Text(
-              .currentDate,
-              format: .timer(countingDownIn: .now..<desiredTimeOverIP, maxPrecision: .seconds(1))
-            )
-            .font(.title)
-            .padding(.bottom)
-            TOTView(fromTo: fromTo, timeOnTarget: desiredTimeOverIP)
-          }
-        case .toTarget, .toTargetBypassingIP:
-          if let fromTo = math.pposToTarget, let timeOnTarget = target.timeOnTarget {
-            TimingView(timeOnTarget: timeOnTarget, fromTo: fromTo, onTimeDeltaTOT: 30)
-          }
-        case .countdownOnly:
-          if let fromTo = math.pposToTarget {
-            TOTView(fromTo: fromTo, timeOnTarget: target.desiredTimeOverIP, showSpeed: false)
-          }
+          case .toIPWithSpeedGuidance:
+            if let fromTo = math.pposToIP, let timeOnTarget = target.timeOnTarget {
+              TimingView(timeOnTarget: timeOnTarget, fromTo: fromTo, onTimeDeltaTOT: 30)
+            }
+          case .toIPWithCountdown:
+            if let fromTo = math.pposToIP, let desiredTimeOverIP = target.desiredTimeOverIP {
+              Text(
+                .currentDate,
+                format: .timer(countingDownIn: .now..<desiredTimeOverIP, maxPrecision: .seconds(1))
+              )
+              .font(.title)
+              .padding(.bottom)
+              TOTView(fromTo: fromTo, timeOnTarget: desiredTimeOverIP)
+            }
+          case .toTarget, .toTargetBypassingIP:
+            if let fromTo = math.pposToTarget, let timeOnTarget = target.timeOnTarget {
+              TimingView(timeOnTarget: timeOnTarget, fromTo: fromTo, onTimeDeltaTOT: 30)
+            }
+          case .countdownOnly:
+            if let fromTo = math.pposToTarget {
+              TOTView(fromTo: fromTo, timeOnTarget: target.desiredTimeOverIP, showSpeed: false)
+            }
         }
       }.padding()
     }.onAppear {

@@ -61,25 +61,40 @@ final class CoordinateEntryManager {
 
   var stringValue: String {
     switch format {
-    case .decimalDegrees:
-      return String(
-        format: "%@ %08.5f°\n%@ %09.5f°",
-        northing, latitude.degreesDecimal,
-        easting, longitude.degreesDecimal)
-    case .degreesDecimalMinutes:
-      return String(
-        format: "%@ %02d° %06.3f′\n%@ %03d° %06.3f′",
-        northing, latitude.degrees, latitude.minutesDecimal,
-        easting, longitude.degrees, longitude.minutesDecimal)
-    case .degreesMinutesSeconds:
-      return String(
-        format: "%@ %02d° %02d′ %02d″\n%@ %03d° %02d′ %02d″",
-        northing, latitude.degrees, latitude.minutes, latitude.seconds,
-        easting, longitude.degrees, longitude.minutes, longitude.seconds)
-    case .utm:
-      return coordinate.formatted(UTMFormatter)
-    case .mgrs:
-      return MGRSHelper.fromCoordinate(coordinate, precision: .oneM) ?? ""
+      case .decimalDegrees:
+        return String(
+          format: "%@ %08.5f°\n%@ %09.5f°",
+          northing,
+          latitude.degreesDecimal,
+          easting,
+          longitude.degreesDecimal
+        )
+      case .degreesDecimalMinutes:
+        return String(
+          format: "%@ %02d° %06.3f′\n%@ %03d° %06.3f′",
+          northing,
+          latitude.degrees,
+          latitude.minutesDecimal,
+          easting,
+          longitude.degrees,
+          longitude.minutesDecimal
+        )
+      case .degreesMinutesSeconds:
+        return String(
+          format: "%@ %02d° %02d′ %02d″\n%@ %03d° %02d′ %02d″",
+          northing,
+          latitude.degrees,
+          latitude.minutes,
+          latitude.seconds,
+          easting,
+          longitude.degrees,
+          longitude.minutes,
+          longitude.seconds
+        )
+      case .utm:
+        return coordinate.formatted(UTMFormatter)
+      case .mgrs:
+        return MGRSHelper.fromCoordinate(coordinate, precision: .oneM) ?? ""
     }
   }
 
@@ -158,11 +173,11 @@ final class CoordinateEntryManager {
     }
 
     switch digitType {
-    case .numeric: add("0", advanceCursor: false)
-    case .hemisphere:
-      let resetChar = [Character("N"), Character("E")].first(where: { isValidCharacter($0) })!
-      add(resetChar, advanceCursor: false)
-    case .open: preconditionFailure("Invalid index position")
+      case .numeric: add("0", advanceCursor: false)
+      case .hemisphere:
+        let resetChar = [Character("N"), Character("E")].first(where: { isValidCharacter($0) })!
+        add(resetChar, advanceCursor: false)
+      case .open: preconditionFailure("Invalid index position")
     }
   }
 
@@ -193,118 +208,121 @@ final class CoordinateEntryManager {
 
   private func coordinate(from string: String) -> Coordinate? {
     switch format {
-    case .decimalDegrees:  // N 00.00000°⏎E 000.00000°
-      let northingIndex = 0
-      let eastingIndex = 12
-      let latitudeIndex = 2...9
-      let longitudeIndex = 14...22
-      let northingStr = string.slice(northingIndex)
-      let eastingStr = string.slice(eastingIndex)
-      let latitudeStr = string.slice(latitudeIndex)
-      let longitudeStr = string.slice(longitudeIndex)
-      guard northingStr == "N" || northingStr == "S",
-        eastingStr == "E" || eastingStr == "W"
-      else {
-        return nil
-      }
-      let northingBinade = northingStr == "N" ? 1.0 : -1.0
-      let eastingBinade = eastingStr == "E" ? 1.0 : -1.0
-      guard let latitude = Double(latitudeStr),
-        let longitude = Double(longitudeStr),
-        (0...90).contains(latitude),
-        (0..<180.0).contains(longitude)
-      else {
-        return nil
-      }
-      return .init(
-        latitude: latitude * northingBinade,
-        longitude: longitude * eastingBinade)
+      case .decimalDegrees:  // N 00.00000°⏎E 000.00000°
+        let northingIndex = 0
+        let eastingIndex = 12
+        let latitudeIndex = 2...9
+        let longitudeIndex = 14...22
+        let northingStr = string.slice(northingIndex)
+        let eastingStr = string.slice(eastingIndex)
+        let latitudeStr = string.slice(latitudeIndex)
+        let longitudeStr = string.slice(longitudeIndex)
+        guard northingStr == "N" || northingStr == "S",
+          eastingStr == "E" || eastingStr == "W"
+        else {
+          return nil
+        }
+        let northingBinade = northingStr == "N" ? 1.0 : -1.0
+        let eastingBinade = eastingStr == "E" ? 1.0 : -1.0
+        guard let latitude = Double(latitudeStr),
+          let longitude = Double(longitudeStr),
+          (0...90).contains(latitude),
+          (0..<180.0).contains(longitude)
+        else {
+          return nil
+        }
+        return .init(
+          latitude: latitude * northingBinade,
+          longitude: longitude * eastingBinade
+        )
 
-    case .degreesDecimalMinutes:  // N 00° 00.000′⏎E 000° 00.000′
-      let northingIndex = 0
-      let eastingIndex = 14
-      let latitudeDegreesIndex = 2...3
-      let latitudeMinutesIndex = 6...11
-      let longitudeDegreesIndex = 16...18
-      let longitudeMinutesIndex = 21...26
-      let northingStr = string.slice(northingIndex)
-      let eastingStr = string.slice(eastingIndex)
-      let latitudeDegreesStr = string.slice(latitudeDegreesIndex)
-      let latitudeMinutesStr = string.slice(latitudeMinutesIndex)
-      let longitudeDegreesStr = string.slice(longitudeDegreesIndex)
-      let longitudeMinutesStr = string.slice(longitudeMinutesIndex)
-      guard northingStr == "N" || northingStr == "S",
-        eastingStr == "E" || eastingStr == "W"
-      else {
-        return nil
-      }
-      let northingBinade = northingStr == "N" ? 1.0 : -1.0
-      let eastingBinade = eastingStr == "E" ? 1.0 : -1.0
-      guard let latitudeDegrees = Double(latitudeDegreesStr),
-        let latitudeMinutes = Double(latitudeMinutesStr),
-        let longitudeDegrees = Double(longitudeDegreesStr),
-        let longitudeMinutes = Double(longitudeMinutesStr),
-        (0...90).contains(latitudeDegrees),
-        (0..<60.0).contains(latitudeMinutes),
-        (0..<180).contains(longitudeDegrees),
-        (0..<60.0).contains(longitudeMinutes)
-      else {
-        return nil
-      }
-      return .init(
-        latitude: (latitudeDegrees + latitudeMinutes / 60) * northingBinade,
-        longitude: (longitudeDegrees + longitudeMinutes / 60) * eastingBinade)
+      case .degreesDecimalMinutes:  // N 00° 00.000′⏎E 000° 00.000′
+        let northingIndex = 0
+        let eastingIndex = 14
+        let latitudeDegreesIndex = 2...3
+        let latitudeMinutesIndex = 6...11
+        let longitudeDegreesIndex = 16...18
+        let longitudeMinutesIndex = 21...26
+        let northingStr = string.slice(northingIndex)
+        let eastingStr = string.slice(eastingIndex)
+        let latitudeDegreesStr = string.slice(latitudeDegreesIndex)
+        let latitudeMinutesStr = string.slice(latitudeMinutesIndex)
+        let longitudeDegreesStr = string.slice(longitudeDegreesIndex)
+        let longitudeMinutesStr = string.slice(longitudeMinutesIndex)
+        guard northingStr == "N" || northingStr == "S",
+          eastingStr == "E" || eastingStr == "W"
+        else {
+          return nil
+        }
+        let northingBinade = northingStr == "N" ? 1.0 : -1.0
+        let eastingBinade = eastingStr == "E" ? 1.0 : -1.0
+        guard let latitudeDegrees = Double(latitudeDegreesStr),
+          let latitudeMinutes = Double(latitudeMinutesStr),
+          let longitudeDegrees = Double(longitudeDegreesStr),
+          let longitudeMinutes = Double(longitudeMinutesStr),
+          (0...90).contains(latitudeDegrees),
+          (0..<60.0).contains(latitudeMinutes),
+          (0..<180).contains(longitudeDegrees),
+          (0..<60.0).contains(longitudeMinutes)
+        else {
+          return nil
+        }
+        return .init(
+          latitude: (latitudeDegrees + latitudeMinutes / 60) * northingBinade,
+          longitude: (longitudeDegrees + longitudeMinutes / 60) * eastingBinade
+        )
 
-    case .degreesMinutesSeconds:  // N 00° 00′ 00″⏎E 000° 00′ 00″
-      let northingIndex = 0
-      let eastingIndex = 14
-      let latitudeDegreesIndex = 2...3
-      let latitudeMinutesIndex = 6...7
-      let latitudeSecondsIndex = 10...11
-      let longitudeDegreesIndex = 16...18
-      let longitudeMinutesIndex = 21...22
-      let longitudeSecondsIndex = 25...26
-      let northingStr = string.slice(northingIndex)
-      let eastingStr = string.slice(eastingIndex)
-      let latitudeDegreesStr = string.slice(latitudeDegreesIndex)
-      let latitudeMinutesStr = string.slice(latitudeMinutesIndex)
-      let latitudeSecondsStr = string.slice(latitudeSecondsIndex)
-      let longitudeDegreesStr = string.slice(longitudeDegreesIndex)
-      let longitudeMinutesStr = string.slice(longitudeMinutesIndex)
-      let longitudeSecondsStr = string.slice(longitudeSecondsIndex)
-      guard northingStr == "N" || northingStr == "S",
-        eastingStr == "E" || eastingStr == "W"
-      else {
-        return nil
-      }
-      let northingBinade = northingStr == "N" ? 1.0 : -1.0
-      let eastingBinade = eastingStr == "E" ? 1.0 : -1.0
-      guard let latitudeDegrees = Double(latitudeDegreesStr),
-        let latitudeMinutes = Double(latitudeMinutesStr),
-        let latitudeSeconds = Double(latitudeSecondsStr),
-        let longitudeDegrees = Double(longitudeDegreesStr),
-        let longitudeMinutes = Double(longitudeMinutesStr),
-        let longitudeSeconds = Double(longitudeSecondsStr),
-        (0...90).contains(latitudeDegrees),
-        (0..<60).contains(latitudeMinutes),
-        (0..<60.0).contains(latitudeSeconds),
-        (0..<180).contains(longitudeDegrees),
-        (0..<60).contains(longitudeMinutes),
-        (0..<60.0).contains(longitudeSeconds)
-      else {
-        return nil
-      }
-      return .init(
-        latitude: (latitudeDegrees + latitudeMinutes / 60 + latitudeSeconds / 3600)
-          * northingBinade,
-        longitude: (longitudeDegrees + longitudeMinutes / 60 + longitudeSeconds / 3600)
-          * eastingBinade)
+      case .degreesMinutesSeconds:  // N 00° 00′ 00″⏎E 000° 00′ 00″
+        let northingIndex = 0
+        let eastingIndex = 14
+        let latitudeDegreesIndex = 2...3
+        let latitudeMinutesIndex = 6...7
+        let latitudeSecondsIndex = 10...11
+        let longitudeDegreesIndex = 16...18
+        let longitudeMinutesIndex = 21...22
+        let longitudeSecondsIndex = 25...26
+        let northingStr = string.slice(northingIndex)
+        let eastingStr = string.slice(eastingIndex)
+        let latitudeDegreesStr = string.slice(latitudeDegreesIndex)
+        let latitudeMinutesStr = string.slice(latitudeMinutesIndex)
+        let latitudeSecondsStr = string.slice(latitudeSecondsIndex)
+        let longitudeDegreesStr = string.slice(longitudeDegreesIndex)
+        let longitudeMinutesStr = string.slice(longitudeMinutesIndex)
+        let longitudeSecondsStr = string.slice(longitudeSecondsIndex)
+        guard northingStr == "N" || northingStr == "S",
+          eastingStr == "E" || eastingStr == "W"
+        else {
+          return nil
+        }
+        let northingBinade = northingStr == "N" ? 1.0 : -1.0
+        let eastingBinade = eastingStr == "E" ? 1.0 : -1.0
+        guard let latitudeDegrees = Double(latitudeDegreesStr),
+          let latitudeMinutes = Double(latitudeMinutesStr),
+          let latitudeSeconds = Double(latitudeSecondsStr),
+          let longitudeDegrees = Double(longitudeDegreesStr),
+          let longitudeMinutes = Double(longitudeMinutesStr),
+          let longitudeSeconds = Double(longitudeSecondsStr),
+          (0...90).contains(latitudeDegrees),
+          (0..<60).contains(latitudeMinutes),
+          (0..<60.0).contains(latitudeSeconds),
+          (0..<180).contains(longitudeDegrees),
+          (0..<60).contains(longitudeMinutes),
+          (0..<60.0).contains(longitudeSeconds)
+        else {
+          return nil
+        }
+        return .init(
+          latitude: (latitudeDegrees + latitudeMinutes / 60 + latitudeSeconds / 3600)
+            * northingBinade,
+          longitude: (longitudeDegrees + longitudeMinutes / 60 + longitudeSeconds / 3600)
+            * eastingBinade
+        )
 
-    case .utm:
-      return try? Coordinate(string, format: .utm)
+      case .utm:
+        return try? Coordinate(string, format: .utm)
 
-    case .mgrs:
-      return MGRSHelper.toCoordinate(string)
+      case .mgrs:
+        return MGRSHelper.toCoordinate(string)
     }
   }
 
@@ -324,13 +342,13 @@ final class CoordinateEntryManager {
 
   private func digitType(for index: Int) -> DigitType {
     switch format {
-    case .decimalDegrees, .degreesDecimalMinutes, .degreesMinutesSeconds:
-      switch stringValue[indexInString(index)] {
-      case "0"..."9": .numeric
-      case "N", "S", "E", "W": .hemisphere
-      default: .open
-      }
-    case .utm, .mgrs: .open
+      case .decimalDegrees, .degreesDecimalMinutes, .degreesMinutesSeconds:
+        switch stringValue[indexInString(index)] {
+          case "0"..."9": .numeric
+          case "N", "S", "E", "W": .hemisphere
+          default: .open
+        }
+      case .utm, .mgrs: .open
     }
   }
 

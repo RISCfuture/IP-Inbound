@@ -44,7 +44,9 @@ struct IPTargetMathTests {
   @Test("IP_ETA, calculates correctly")
   func testIPTargetMathIPETA() throws {
     let target = Target(
-      name: "Test Target", coordinate: Coordinate(latitude: 38.0, longitude: -122.0))
+      name: "Test Target",
+      coordinate: Coordinate(latitude: 38.0, longitude: -122.0)
+    )
     target.offsetBearingIsTrue = true
     target.offsetBearing = 180
     target.offsetDistance = 30
@@ -67,7 +69,9 @@ struct IPTargetMathTests {
   @Test("IPDeltaTime, calculates correctly")
   func testIPTargetMathDeltaTimes() throws {
     let target = Target(
-      name: "Test Target", coordinate: Coordinate(latitude: 38.0, longitude: -122.0))
+      name: "Test Target",
+      coordinate: Coordinate(latitude: 38.0, longitude: -122.0)
+    )
     target.offsetBearingIsTrue = true
     target.offsetBearing = 180
     target.offsetDistance = 30
@@ -90,7 +94,9 @@ struct IPTargetMathTests {
   func testIPTargetMathCrossTrackDistance() throws {
     // Set up a target
     let target = Target(
-      name: "Test Target", coordinate: Coordinate(latitude: 38.0, longitude: -122.0))
+      name: "Test Target",
+      coordinate: Coordinate(latitude: 38.0, longitude: -122.0)
+    )
     target.offsetBearing = 90  // IP is due east of the target
     target.offsetBearingIsTrue = true
     target.offsetDistance = 4
@@ -107,7 +113,10 @@ struct IPTargetMathTests {
     // since we are
     #expect(
       southOfTarget.crossTrackDistance.converted(to: .nauticalMiles).value.isApproximatelyEqual(
-        to: 60, relativeTolerance: 0.01))
+        to: 60,
+        relativeTolerance: 0.01
+      )
+    )
 
     // Position is 60NM north of target and approaching target from the west
     let northOfTarget = IPTargetMath(
@@ -121,6 +130,9 @@ struct IPTargetMathTests {
     // since we are
     #expect(
       northOfTarget.crossTrackDistance.converted(to: .nauticalMiles).value.isApproximatelyEqual(
-        to: -60, relativeTolerance: 0.01))
+        to: -60,
+        relativeTolerance: 0.01
+      )
+    )
   }
 }

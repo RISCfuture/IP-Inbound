@@ -24,7 +24,7 @@ final class UTMEntryManager {
     // Valid UTM bands
     [
       "C", "D", "E", "F", "G", "H", "J", "K", "L", "M",
-      "N", "P", "Q", "R", "S", "T", "U", "V", "W", "X",
+      "N", "P", "Q", "R", "S", "T", "U", "V", "W", "X"
     ]
   }
 

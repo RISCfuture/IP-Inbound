@@ -18,7 +18,8 @@ struct IPTargetMath: Equatable {
       track: course,
       targetSpeed: target.targetGroundSpeedMeasurement,
       timeOnTarget: timeOnTarget,
-      declination: declination)
+      declination: declination
+    )
   }
 
   var pposToTarget: FromToMath? {
@@ -30,7 +31,8 @@ struct IPTargetMath: Equatable {
       track: course,
       targetSpeed: target.targetGroundSpeedMeasurement,
       timeOnTarget: timeOnTarget,
-      declination: declination)
+      declination: declination
+    )
   }
 
   var IPToTarget: FromToMath? {
@@ -42,7 +44,8 @@ struct IPTargetMath: Equatable {
       track: target.desiredTrack,
       targetSpeed: target.targetGroundSpeedMeasurement,
       timeOnTarget: timeOnTarget,
-      declination: declination)
+      declination: declination
+    )
   }
 
   var isPastIP: Bool {
@@ -132,6 +135,7 @@ struct IPTargetMath: Equatable {
       coordinate: .init(location.coordinate),
       speed: .init(value: location.speed, unit: .metersPerSecond),
       course: .init(angle: location.course, reference: .true),
-      target: target)
+      target: target
+    )
   }
 }

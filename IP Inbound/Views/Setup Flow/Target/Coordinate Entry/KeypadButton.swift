@@ -61,7 +61,9 @@ struct KeypadButton: View {
   }
 
   init(
-    systemImage: String, accessibilityLabel: String, isBackspace: Bool = false,
+    systemImage: String,
+    accessibilityLabel: String,
+    isBackspace: Bool = false,
     action: @escaping () -> Void
   ) {
     self.label = nil

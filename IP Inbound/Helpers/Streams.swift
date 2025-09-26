@@ -60,7 +60,8 @@ actor MulticastStream<T: Sendable, E: Error> {
 }
 
 func bootstrap<T: Sendable, S: Sendable & AsyncSequence<T, any Error>>(
-  stream: S, initial: T
+  stream: S,
+  initial: T
 ) -> AsyncThrowingStream<T, any Error> {
   AsyncThrowingStream { continuation in
     continuation.yield(initial)

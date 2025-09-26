@@ -103,7 +103,8 @@ struct TOTEntryView: View {
       wrappedValue: .init(
         timeOnTarget: timeOnTarget,
         targetCoordinate: targetCoordinate
-      ))
+      )
+    )
   }
 }
 

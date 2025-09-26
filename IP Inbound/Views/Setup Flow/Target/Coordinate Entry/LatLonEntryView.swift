@@ -59,23 +59,23 @@ struct LatLonEntryView: View {
           Spacer(minLength: 0)
 
           switch entryManager.digitType {
-          case .numeric:
-            NumericKeypadView(
-              activeDigits: activeDigits,
-              onKeyPress: { entryManager.add($0) },
-              onBackspace: { entryManager.backspace() }
-            )
-            .frame(height: baseline * 5)
-          case .hemisphere:
-            DirectionKeypadView(
-              activeDirections: activeDirections,
-              onKeyPress: { entryManager.add($0) },
-              onBackspace: { entryManager.backspace() }
-            )
-            .frame(height: baseline * 5)
-          default:
-            Spacer()
+            case .numeric:
+              NumericKeypadView(
+                activeDigits: activeDigits,
+                onKeyPress: { entryManager.add($0) },
+                onBackspace: { entryManager.backspace() }
+              )
               .frame(height: baseline * 5)
+            case .hemisphere:
+              DirectionKeypadView(
+                activeDirections: activeDirections,
+                onKeyPress: { entryManager.add($0) },
+                onBackspace: { entryManager.backspace() }
+              )
+              .frame(height: baseline * 5)
+            default:
+              Spacer()
+                .frame(height: baseline * 5)
           }
 
           HStack {
@@ -112,7 +112,9 @@ struct LatLonEntryView: View {
   }
 
   init(
-    coordinate: Coordinate, onAccept: @escaping (Coordinate) -> Void, onCancel: @escaping () -> Void
+    coordinate: Coordinate,
+    onAccept: @escaping (Coordinate) -> Void,
+    onCancel: @escaping () -> Void
   ) {
     self.onAccept = onAccept
     self.onCancel = onCancel

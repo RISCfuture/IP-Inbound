@@ -139,7 +139,8 @@ struct LocationStreamerTests {
     // Use == instead of === for struct comparison
     #expect(
       extrapolated1.location == event1.location && extrapolated1.simName == event1.simName
-        && extrapolated1.error?.localizedDescription == event1.error?.localizedDescription)
+        && extrapolated1.error?.localizedDescription == event1.error?.localizedDescription
+    )
 
     // Case 2: Future time not after location time
     let now = Date()
@@ -153,7 +154,8 @@ struct LocationStreamerTests {
     // Use == instead of === for struct comparison
     #expect(
       extrapolated2.location === event2.location && extrapolated2.simName == event2.simName
-        && extrapolated2.error?.localizedDescription == event2.error?.localizedDescription)
+        && extrapolated2.error?.localizedDescription == event2.error?.localizedDescription
+    )
   }
 
   @Test("LocationEvent - extrapolate calculates new position correctly")

@@ -42,7 +42,9 @@ struct LocationEvent: Sendable {
     else { return self }
 
     let dt = Measurement(
-      value: time.timeIntervalSince(location.timestamp), unit: UnitDuration.seconds)
+      value: time.timeIntervalSince(location.timestamp),
+      unit: UnitDuration.seconds
+    )
     let distance = speed * dt
     let newCoordinate = coordinate.offsetBy(bearing: courseTrue.angle, distance: distance)
     let accuracyChange = dt.converted(to: .seconds).value
@@ -57,9 +59,11 @@ struct LocationEvent: Sendable {
         courseAccuracy: location.courseAccuracy + accuracyChange,
         speed: location.speed,
         speedAccuracy: location.speedAccuracy + accuracyChange,
-        timestamp: Date()),
+        timestamp: Date()
+      ),
       simName: simName,
-      error: error)
+      error: error
+    )
   }
 }
 
@@ -124,7 +128,9 @@ final class LocationStreamer: Sendable {
           continuation.yield(
             LocationEvent(
               location: sim.location,
-              simName: sim.simName))
+              simName: sim.simName
+            )
+          )
         }
       }
       continuation.onTermination = { _ in
@@ -153,7 +159,9 @@ final class LocationStreamer: Sendable {
         interval: 0.2
       ) { event, _ in
         event?.extrapolate(to: Date())
-      }, initial: LocationEvent())
+      },
+      initial: LocationEvent()
+    )
 
     let combined = combineLatest(smoothRealStream, smoothSimStream)
       //        let combined = combineLatest(realLocationStream, simLocationStream)

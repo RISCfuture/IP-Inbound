@@ -62,10 +62,14 @@ struct MGRSHelperTests {
       let backToCoord = MGRSHelper.toCoordinate(mgrs)
     {
       #expect(
-        backToCoord.latitudeDeg.isApproximatelyEqual(to: oslo.latitudeDeg, absoluteTolerance: 0.01))
+        backToCoord.latitudeDeg.isApproximatelyEqual(to: oslo.latitudeDeg, absoluteTolerance: 0.01)
+      )
       #expect(
         backToCoord.longitudeDeg.isApproximatelyEqual(
-          to: oslo.longitudeDeg, absoluteTolerance: 0.01))
+          to: oslo.longitudeDeg,
+          absoluteTolerance: 0.01
+        )
+      )
     }
   }
 

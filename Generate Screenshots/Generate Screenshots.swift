@@ -137,7 +137,8 @@ final class Generate_Screenshots: XCTestCase {
     app.buttons["addTargetButton"].tap()
 
     let targetNameField = app.collectionViews.firstMatch.makeVisible(
-      element: app.textFields["targetNameField"])!
+      element: app.textFields["targetNameField"]
+    )!
     clearAndTypeText(in: targetNameField, text: "Dog Bone Lake", app: app)
 
     // Wait a moment for keyboard to dismiss
@@ -149,19 +150,24 @@ final class Generate_Screenshots: XCTestCase {
     app.buttons["defineIPButton"].tap()
 
     let offsetBearingField = app.collectionViews.firstMatch.makeVisible(
-      element: app.textFields["offsetBearingField"])!
+      element: app.textFields["offsetBearingField"]
+    )!
     XCTAssertTrue(
-      offsetBearingField.waitForExistence(timeout: 2), "Offset bearing field should exist")
+      offsetBearingField.waitForExistence(timeout: 2),
+      "Offset bearing field should exist"
+    )
     clearAndTypeText(in: offsetBearingField, text: "\(Int(LocationHelper.IPBearingTrue))", app: app)
 
     app.buttons["offsetBearingTrue"].tap()
 
     let offsetDistanceField = app.collectionViews.firstMatch.makeVisible(
-      element: app.textFields["offsetDistanceField"])!
+      element: app.textFields["offsetDistanceField"]
+    )!
     clearAndTypeText(in: offsetDistanceField, text: "\(LocationHelper.IPDistanceNM)", app: app)
 
     let groundSpeedField = app.collectionViews.firstMatch.makeVisible(
-      element: app.textFields["groundSpeedField"])
+      element: app.textFields["groundSpeedField"]
+    )
     if let groundSpeedField {
       clearAndTypeText(in: groundSpeedField, text: "\(LocationHelper.targetGroundSpeed)", app: app)
     }
@@ -191,7 +197,9 @@ final class Generate_Screenshots: XCTestCase {
     let targetTime = now.addingTimeInterval(minutesFromNow * 60)
     let calendar = Calendar.current
     var components = calendar.dateComponents(
-      [.year, .month, .day, .hour, .minute, .second], from: targetTime)
+      [.year, .month, .day, .hour, .minute, .second],
+      from: targetTime
+    )
     components.second = 0  // Zero out seconds
     let roundedTargetTime = calendar.date(from: components) ?? targetTime
 

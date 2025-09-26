@@ -18,16 +18,19 @@ struct CompassRose: Shape {
       let angle = Angle(degrees: Double(degree)).radians
       let tickEnd = CGPoint(
         x: center.x + cos(angle) * radius,
-        y: center.y + sin(angle) * radius)
+        y: center.y + sin(angle) * radius
+      )
       let tickStart =
         if degree.isMultiple(of: majorTickInterval) {
           CGPoint(
             x: center.x + cos(angle) * (radius * majorTickInset),
-            y: center.y + sin(angle) * (radius * majorTickInset))
+            y: center.y + sin(angle) * (radius * majorTickInset)
+          )
         } else {
           CGPoint(
             x: center.x + cos(angle) * (radius * minorTickInset),
-            y: center.y + sin(angle) * (radius * minorTickInset))
+            y: center.y + sin(angle) * (radius * minorTickInset)
+          )
         }
 
       path.move(to: tickStart)

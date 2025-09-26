@@ -18,24 +18,24 @@ enum MGRSHelper {
 
     // Format based on precision
     switch precision {
-    case .gridZone:
-      return "\(gridZone)\(band)"
-    case .hundredKm:
-      return "\(gridZone)\(band) \(column)\(row)"
-    default:
-      // Calculate the number of digits to use for easting and northing
-      let digitCount = precision.digitCount
-      let format = "%0\(digitCount)d"
+      case .gridZone:
+        return "\(gridZone)\(band)"
+      case .hundredKm:
+        return "\(gridZone)\(band) \(column)\(row)"
+      default:
+        // Calculate the number of digits to use for easting and northing
+        let digitCount = precision.digitCount
+        let format = "%0\(digitCount)d"
 
-      // Scale the easting and northing values based on precision
-      let scaleFactor = pow(10.0, Double(5 - digitCount))
-      let scaledEasting = Int(Double(easting) / scaleFactor)
-      let scaledNorthing = Int(Double(northing) / scaleFactor)
+        // Scale the easting and northing values based on precision
+        let scaleFactor = pow(10.0, Double(5 - digitCount))
+        let scaledEasting = Int(Double(easting) / scaleFactor)
+        let scaledNorthing = Int(Double(northing) / scaleFactor)
 
-      let eastingStr = String(format: format, scaledEasting)
-      let northingStr = String(format: format, scaledNorthing)
+        let eastingStr = String(format: format, scaledEasting)
+        let northingStr = String(format: format, scaledNorthing)
 
-      return "\(gridZone)\(band) \(column)\(row) \(eastingStr) \(northingStr)"
+        return "\(gridZone)\(band) \(column)\(row) \(eastingStr) \(northingStr)"
     }
   }
 
@@ -215,13 +215,13 @@ enum MGRSHelper {
 
     var digitCount: Int {
       switch self {
-      case .gridZone: return 0
-      case .hundredKm: return 0
-      case .tenKm: return 1
-      case .oneKm: return 2
-      case .hundredM: return 3
-      case .tenM: return 4
-      case .oneM: return 5
+        case .gridZone: return 0
+        case .hundredKm: return 0
+        case .tenKm: return 1
+        case .oneKm: return 2
+        case .hundredM: return 3
+        case .tenM: return 4
+        case .oneM: return 5
       }
     }
 

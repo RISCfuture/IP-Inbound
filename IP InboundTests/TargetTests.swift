@@ -92,7 +92,8 @@ struct TargetTests {
     let desiredTimeOverIP = try #require(target.desiredTimeOverIP)
     let expectedTime = tot.addingTimeInterval(-5 * 60)
     #expect(
-      (desiredTimeOverIP.timeIntervalSince1970 - expectedTime.timeIntervalSince1970).magnitude < 1)
+      (desiredTimeOverIP.timeIntervalSince1970 - expectedTime.timeIntervalSince1970).magnitude < 1
+    )
   }
 
   @Test("maxAllowableTimeOverIP, calculates correctly")
@@ -116,7 +117,8 @@ struct TargetTests {
     // Should be about 5.45 minutes before TOT
     let expectedTime = tot.addingTimeInterval(-5.45 * 60)
     #expect(
-      abs(maxAllowableTimeOverIP.timeIntervalSince1970 - expectedTime.timeIntervalSince1970) < 5)
+      abs(maxAllowableTimeOverIP.timeIntervalSince1970 - expectedTime.timeIntervalSince1970) < 5
+    )
   }
 
   @Test("calculateDeclination, calculates correctly")

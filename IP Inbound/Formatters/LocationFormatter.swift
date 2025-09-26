@@ -30,16 +30,16 @@ public struct CoordinateFormatStyle: FormatStyle, Codable, Equatable, Hashable {
 
   public func format(_ value: Coordinate) -> String {
     switch format {
-    case .decimalDegrees:
-      return formatDecimalDegrees(value)
-    case .degreesDecimalMinutes:
-      return formatDegreesDecimalMinutes(value)
-    case .degreesMinutesSeconds:
-      return formatDegreesMinutesSeconds(value)
-    case .utm:
-      return formatUTM(value)
-    case .mgrs:
-      return formatMGRS(value)
+      case .decimalDegrees:
+        return formatDecimalDegrees(value)
+      case .degreesDecimalMinutes:
+        return formatDegreesDecimalMinutes(value)
+      case .degreesMinutesSeconds:
+        return formatDegreesMinutesSeconds(value)
+      case .utm:
+        return formatUTM(value)
+      case .mgrs:
+        return formatMGRS(value)
     }
   }
 
@@ -182,16 +182,16 @@ public struct CoordinateParseStrategy: ParseStrategy {
 
   public func parse(_ value: String) throws -> Coordinate {
     switch format {
-    case .decimalDegrees:
-      return try parseDecimalDegrees(value)
-    case .degreesDecimalMinutes:
-      return try parseDegreesDecimalMinutes(value)
-    case .degreesMinutesSeconds:
-      return try parseDegreesMinutesSeconds(value)
-    case .utm:
-      return try parseUTM(value)
-    case .mgrs:
-      return try parseMGRS(value)
+      case .decimalDegrees:
+        return try parseDecimalDegrees(value)
+      case .degreesDecimalMinutes:
+        return try parseDegreesDecimalMinutes(value)
+      case .degreesMinutesSeconds:
+        return try parseDegreesMinutesSeconds(value)
+      case .utm:
+        return try parseUTM(value)
+      case .mgrs:
+        return try parseMGRS(value)
     }
   }
 
@@ -320,11 +320,13 @@ public struct CoordinateParseStrategy: ParseStrategy {
 
     var errorDescription: String? {
       switch self {
-      case .invalidFormat:
-        String(
-          localized: "coordinate.parse.error.format", defaultValue: "Invalid coordinate format")
-      case .invalidNumber:
-        String(localized: "coordinate.parse.error.number", defaultValue: "Invalid numeric value")
+        case .invalidFormat:
+          String(
+            localized: "coordinate.parse.error.format",
+            defaultValue: "Invalid coordinate format"
+          )
+        case .invalidNumber:
+          String(localized: "coordinate.parse.error.number", defaultValue: "Invalid numeric value")
       }
     }
   }
@@ -358,7 +360,8 @@ extension FormatStyle where Self == CoordinateFormatStyle {
   ///   - precision: The precision settings for formatting.
   /// - Returns: A configured coordinate format style.
   public static func coordinate(
-    _ format: CoordinateFormat, precision: CoordinateFormatStyle.Precision = .standard
+    _ format: CoordinateFormat,
+    precision: CoordinateFormatStyle.Precision = .standard
   ) -> CoordinateFormatStyle {
     CoordinateFormatStyle(format: format, precision: precision)
   }

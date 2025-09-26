@@ -13,7 +13,8 @@ struct SimData: Sendable {
       altitudeMSL_m: 0,
       trackTrueDeg: 0,
       groundSpeedMps: 0,
-      date: Date(timeIntervalSinceReferenceDate: 0))
+      date: Date(timeIntervalSinceReferenceDate: 0)
+    )
   }
 
   let simName: String
@@ -48,12 +49,18 @@ struct SimData: Sendable {
       verticalAccuracy: 1.0,
       course: trackTrueDeg,
       speed: groundSpeedMps,
-      timestamp: Date())
+      timestamp: Date()
+    )
   }
 
   init(
-    simName: String, latitudeDeg: Double, longitudeDeg: Double, altitudeMSL_m: Double,
-    trackTrueDeg: Double, groundSpeedMps: Double, date: Date = .init()
+    simName: String,
+    latitudeDeg: Double,
+    longitudeDeg: Double,
+    altitudeMSL_m: Double,
+    trackTrueDeg: Double,
+    groundSpeedMps: Double,
+    date: Date = .init()
   ) {
     self.simName = simName
     self.latitudeDeg = latitudeDeg
@@ -94,7 +101,8 @@ final actor SimReceiver {
     let bootstrap = DatagramBootstrap(group: group!)
       .channelOption(ChannelOptions.socketOption(.so_reuseaddr), value: 1)
       .channelOption(
-        ChannelOptions.recvAllocator, value: FixedSizeRecvByteBufferAllocator(capacity: 2048)
+        ChannelOptions.recvAllocator,
+        value: FixedSizeRecvByteBufferAllocator(capacity: 2048)
       )
       .channelInitializer { channel in
         channel.pipeline
@@ -106,13 +114,15 @@ final actor SimReceiver {
         "UDP server started",
         metadata: [
           "port": "\(port)"
-        ])
+        ]
+      )
     } catch let error as IOError where error.errnoCode == 48 {
       Self.logger.warning(
         "Port already in use. Simulator data will not be available.",
         metadata: [
           "port": "\(port)"
-        ])
+        ]
+      )
       // Cleanup resources
       try? await group?.shutdownGracefully()
       group = nil
@@ -121,7 +131,8 @@ final actor SimReceiver {
         "Error starting UDP server",
         metadata: [
           "error": "\(error)"
-        ])
+        ]
+      )
       // Cleanup resources
       try? await group?.shutdownGracefully()
       group = nil
@@ -151,7 +162,8 @@ final actor SimReceiver {
         "Error stopping UDP server",
         metadata: [
           "error": "\(error)"
-        ])
+        ]
+      )
     }
 
     // Don't finish the continuation - we want to keep the stream alive
@@ -191,7 +203,8 @@ private final class SimHandler: Sendable, ChannelInboundHandler {
         "Ignoring UDP message: fields.count != 6",
         metadata: [
           "fields.count": "\(fields.count)"
-        ])
+        ]
+      )
       return
     }
 
@@ -200,7 +213,8 @@ private final class SimHandler: Sendable, ChannelInboundHandler {
         "Ignoring UDP message: Invalid longitude (field 1)",
         metadata: [
           "fields[1]": "\(fields[1])"
-        ])
+        ]
+      )
       return
     }
     guard let latitude = Double(fields[2]) else {
@@ -208,7 +222,8 @@ private final class SimHandler: Sendable, ChannelInboundHandler {
         "Ignoring UDP message: Invalid latitude (field 2)",
         metadata: [
           "fields[2]": "\(fields[2])"
-        ])
+        ]
+      )
       return
     }
     guard let altitude = Double(fields[3]) else {
@@ -216,7 +231,8 @@ private final class SimHandler: Sendable, ChannelInboundHandler {
         "Ignoring UDP message: Invalid altitude (field 3)",
         metadata: [
           "fields[3]": "\(fields[3])"
-        ])
+        ]
+      )
       return
     }
     guard let track = Double(fields[4]) else {
@@ -224,7 +240,8 @@ private final class SimHandler: Sendable, ChannelInboundHandler {
         "Ignoring UDP message: Invalid track (field 4)",
         metadata: [
           "fields[4]": "\(fields[4])"
-        ])
+        ]
+      )
       return
     }
     guard let groundspeed = Double(fields[5]) else {
@@ -232,7 +249,8 @@ private final class SimHandler: Sendable, ChannelInboundHandler {
         "Ignoring UDP message: Invalid groundspeed (field 5)",
         metadata: [
           "fields[5]": "\(fields[5])"
-        ])
+        ]
+      )
       return
     }
 

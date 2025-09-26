@@ -38,7 +38,10 @@ struct FromToMathTests {
     // Test distance calculation (should be about 60NM)
     #expect(
       fromTo.distance.converted(to: .kilometers).value.isApproximatelyEqual(
-        to: 559.12, relativeTolerance: 0.01))
+        to: 559.12,
+        relativeTolerance: 0.01
+      )
+    )
   }
 
   @Test("timeToGo, straight line, calculates correctly")
@@ -59,7 +62,10 @@ struct FromToMathTests {
 
     #expect(
       fromTo.timeToGo.converted(to: .minutes).value.isApproximatelyEqual(
-        to: 30, relativeTolerance: 0.01))
+        to: 30,
+        relativeTolerance: 0.01
+      )
+    )
   }
 
   @Test("timeToGo, with turn, calculates correctly")
@@ -83,7 +89,10 @@ struct FromToMathTests {
     // Test timeToGo calculation - 30 min + ~0.2 min to turn 90°
     #expect(
       fromTo.timeToGo.converted(to: .minutes).value.isApproximatelyEqual(
-        to: 30.19, relativeTolerance: 0.01))
+        to: 30.19,
+        relativeTolerance: 0.01
+      )
+    )
   }
 
   @Test("deltaTOT, calculates correctly")

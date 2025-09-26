@@ -19,7 +19,8 @@ final class IP_InboundUITests: XCTestCase {
 
     // Simulate location after launch
     XCUIDevice.shared.location = XCUILocation(
-      location: CLLocation(latitude: 37.7749, longitude: -122.4194))
+      location: CLLocation(latitude: 37.7749, longitude: -122.4194)
+    )
 
     // Handle location permission if it appears
     handleLocationPermissionIfNeeded(app: app)
@@ -29,7 +30,8 @@ final class IP_InboundUITests: XCTestCase {
 
     // Enter target name (form field - may need scrolling)
     let targetNameField = app.collectionViews.firstMatch.makeVisible(
-      element: app.textFields["targetNameField"])!
+      element: app.textFields["targetNameField"]
+    )!
     clearAndTypeText(in: targetNameField, text: "Test Target Alpha", app: app)
 
     // Verify the target was created
@@ -47,7 +49,8 @@ final class IP_InboundUITests: XCTestCase {
 
     // Simulate location after launch
     XCUIDevice.shared.location = XCUILocation(
-      location: CLLocation(latitude: 37.7749, longitude: -122.4194))
+      location: CLLocation(latitude: 37.7749, longitude: -122.4194)
+    )
 
     handleLocationPermissionIfNeeded(app: app)
 
@@ -72,7 +75,8 @@ final class IP_InboundUITests: XCTestCase {
     // Wait for and verify we're back in the target setup view
     XCTAssertTrue(
       app.buttons["defineIPButton"].waitForExistence(timeout: 2),
-      "Should navigate to target detail view")
+      "Should navigate to target detail view"
+    )
 
     // Clean up: Delete the created target
     deleteTargetWithName("Selection Test Target", app: app)
@@ -86,7 +90,8 @@ final class IP_InboundUITests: XCTestCase {
 
     // Simulate location after launch
     XCUIDevice.shared.location = XCUILocation(
-      location: CLLocation(latitude: 37.7749, longitude: -122.4194))
+      location: CLLocation(latitude: 37.7749, longitude: -122.4194)
+    )
 
     handleLocationPermissionIfNeeded(app: app)
 
@@ -99,7 +104,8 @@ final class IP_InboundUITests: XCTestCase {
     if !tutorialView.exists {
       // Fallback: check for any text that might appear in tutorial
       let tutorialText = app.staticTexts.element(
-        matching: NSPredicate(format: "label CONTAINS[c] 'tutorial'"))
+        matching: NSPredicate(format: "label CONTAINS[c] 'tutorial'")
+      )
       if !tutorialText.exists && !app.navigationBars["Tutorial"].exists {
         XCTFail("Tutorial view did not appear - no tutorial elements found")
       }
@@ -124,7 +130,8 @@ final class IP_InboundUITests: XCTestCase {
     app.launch()
 
     XCUIDevice.shared.location = XCUILocation(
-      location: CLLocation(latitude: 37.7749, longitude: -122.4194))
+      location: CLLocation(latitude: 37.7749, longitude: -122.4194)
+    )
     handleLocationPermissionIfNeeded(app: app)
 
     // Create a target and navigate to coordinate entry
@@ -132,13 +139,16 @@ final class IP_InboundUITests: XCTestCase {
 
     // Open coordinate entry (form button - may need scrolling)
     let setCoordinatesButton = app.collectionViews.firstMatch.makeVisible(
-      element: app.buttons["setCoordinatesButton"])!
+      element: app.buttons["setCoordinatesButton"]
+    )!
     setCoordinatesButton.tap()
 
     // Wait for coordinate format picker to appear
     let coordinateFormatPicker = app.segmentedControls["coordinateFormatPicker"]
     XCTAssertTrue(
-      coordinateFormatPicker.waitForExistence(timeout: 2), "Coordinate format picker should appear")
+      coordinateFormatPicker.waitForExistence(timeout: 2),
+      "Coordinate format picker should appear"
+    )
     coordinateFormatPicker.buttons["DD"].tap()
 
     app.buttons["North"].tap()
@@ -157,10 +167,12 @@ final class IP_InboundUITests: XCTestCase {
     XCTAssertTrue(coordinatesText.exists, "Coordinates should be displayed")
     XCTAssertTrue(
       coordinatesText.label.contains("N 37.12345°"),
-      "Latitude should be N 37.12345° but was: \(coordinatesText.label)")
+      "Latitude should be N 37.12345° but was: \(coordinatesText.label)"
+    )
     XCTAssertTrue(
       coordinatesText.label.contains("W 121.67890°"),
-      "Longitude should be W 121.67890° but was: \(coordinatesText.label)")
+      "Longitude should be W 121.67890° but was: \(coordinatesText.label)"
+    )
 
     // Clean up: Delete the created target
     deleteTargetWithName("DD Test Target", app: app)
@@ -173,14 +185,16 @@ final class IP_InboundUITests: XCTestCase {
     app.launch()
 
     XCUIDevice.shared.location = XCUILocation(
-      location: CLLocation(latitude: 37.7749, longitude: -122.4194))
+      location: CLLocation(latitude: 37.7749, longitude: -122.4194)
+    )
     handleLocationPermissionIfNeeded(app: app)
 
     createTargetWithName("DMS Test Target", app: app)
 
     // Open coordinate entry (form button - may need scrolling)
     let setCoordinatesButton = app.collectionViews.firstMatch.makeVisible(
-      element: app.buttons["setCoordinatesButton"])!
+      element: app.buttons["setCoordinatesButton"]
+    )!
     setCoordinatesButton.tap()
     waitForNavigation()
 
@@ -205,10 +219,12 @@ final class IP_InboundUITests: XCTestCase {
     XCTAssertTrue(coordinatesText.exists, "Coordinates should be displayed")
     XCTAssertTrue(
       coordinatesText.label.contains("N 37° 12′ 34″"),
-      "Latitude should be N 37° 12′ 34″ but was: \(coordinatesText.label)")
+      "Latitude should be N 37° 12′ 34″ but was: \(coordinatesText.label)"
+    )
     XCTAssertTrue(
       coordinatesText.label.contains("W 121° 23′ 45″"),
-      "Longitude should be W W 121° 23′ 45″ but was: \(coordinatesText.label)")
+      "Longitude should be W W 121° 23′ 45″ but was: \(coordinatesText.label)"
+    )
 
     // Clean up: Delete the created target
     deleteTargetWithName("DMS Test Target", app: app)
@@ -221,14 +237,16 @@ final class IP_InboundUITests: XCTestCase {
     app.launch()
 
     XCUIDevice.shared.location = XCUILocation(
-      location: CLLocation(latitude: 37.7749, longitude: -122.4194))
+      location: CLLocation(latitude: 37.7749, longitude: -122.4194)
+    )
     handleLocationPermissionIfNeeded(app: app)
 
     createTargetWithName("DDM Test Target", app: app)
 
     // Open coordinate entry (form button - may need scrolling)
     let setCoordinatesButton = app.collectionViews.firstMatch.makeVisible(
-      element: app.buttons["setCoordinatesButton"])!
+      element: app.buttons["setCoordinatesButton"]
+    )!
     setCoordinatesButton.tap()
     waitForNavigation()
 
@@ -253,10 +271,12 @@ final class IP_InboundUITests: XCTestCase {
     XCTAssertTrue(coordinatesText.exists, "Coordinates should be displayed")
     XCTAssertTrue(
       coordinatesText.label.contains("N 37° 12.345′"),
-      "Latitude should be N 37° 12.345′ but was: \(coordinatesText.label)")
+      "Latitude should be N 37° 12.345′ but was: \(coordinatesText.label)"
+    )
     XCTAssertTrue(
       coordinatesText.label.contains("W 121° 23.456′"),
-      "Longitude should be W 121° 23.456′ but was: \(coordinatesText.label)")
+      "Longitude should be W 121° 23.456′ but was: \(coordinatesText.label)"
+    )
 
     // Clean up: Delete the created target
     deleteTargetWithName("DDM Test Target", app: app)
@@ -270,14 +290,16 @@ final class IP_InboundUITests: XCTestCase {
     app.launch()
 
     XCUIDevice.shared.location = XCUILocation(
-      location: CLLocation(latitude: 37.7749, longitude: -122.4194))
+      location: CLLocation(latitude: 37.7749, longitude: -122.4194)
+    )
     handleLocationPermissionIfNeeded(app: app)
 
     createTargetWithName("UTM Test Target", app: app)
 
     // Open coordinate entry (form button - may need scrolling)
     let setCoordinatesButton = app.collectionViews.firstMatch.makeVisible(
-      element: app.buttons["setCoordinatesButton"])!
+      element: app.buttons["setCoordinatesButton"]
+    )!
     setCoordinatesButton.tap()
     waitForNavigation()
 
@@ -298,7 +320,8 @@ final class IP_InboundUITests: XCTestCase {
     XCTAssertTrue(coordinatesText.exists, "Coordinates should be displayed")
     XCTAssertTrue(
       coordinatesText.label.contains("10S"),
-      "UTM should be 10S 551000 418900 but was: \(coordinatesText.label)")
+      "UTM should be 10S 551000 418900 but was: \(coordinatesText.label)"
+    )
 
     // Clean up: Delete the created target
     deleteTargetWithName("UTM Test Target", app: app)
@@ -312,14 +335,16 @@ final class IP_InboundUITests: XCTestCase {
     app.launch()
 
     XCUIDevice.shared.location = XCUILocation(
-      location: CLLocation(latitude: 37.7749, longitude: -122.4194))
+      location: CLLocation(latitude: 37.7749, longitude: -122.4194)
+    )
     handleLocationPermissionIfNeeded(app: app)
 
     createTargetWithName("MGRS Test Target", app: app)
 
     // Open coordinate entry (form button - may need scrolling)
     let setCoordinatesButton = app.collectionViews.firstMatch.makeVisible(
-      element: app.buttons["setCoordinatesButton"])!
+      element: app.buttons["setCoordinatesButton"]
+    )!
     setCoordinatesButton.tap()
     waitForNavigation()
 
@@ -339,7 +364,8 @@ final class IP_InboundUITests: XCTestCase {
     XCTAssertTrue(coordinatesText.exists, "Coordinates should be displayed")
     XCTAssertTrue(
       coordinatesText.label.contains("12U UA 84323 40791"),
-      "MGRS should be 12U UA 84323 40791 but was: \(coordinatesText.label)")
+      "MGRS should be 12U UA 84323 40791 but was: \(coordinatesText.label)"
+    )
 
     // Clean up: Delete the created target
     deleteTargetWithName("MGRS Test Target", app: app)
@@ -354,7 +380,8 @@ final class IP_InboundUITests: XCTestCase {
     app.launch()
 
     XCUIDevice.shared.location = XCUILocation(
-      location: CLLocation(latitude: 37.7749, longitude: -122.4194))
+      location: CLLocation(latitude: 37.7749, longitude: -122.4194)
+    )
     handleLocationPermissionIfNeeded(app: app)
 
     // Create a target and navigate to TOT
@@ -365,13 +392,17 @@ final class IP_InboundUITests: XCTestCase {
 
     // Wait for IP setup fields to appear
     let offsetBearingField = app.collectionViews.firstMatch.makeVisible(
-      element: app.textFields["offsetBearingField"])!
+      element: app.textFields["offsetBearingField"]
+    )!
     XCTAssertTrue(
-      offsetBearingField.waitForExistence(timeout: 2), "Offset bearing field should appear")
+      offsetBearingField.waitForExistence(timeout: 2),
+      "Offset bearing field should appear"
+    )
     clearAndTypeText(in: offsetBearingField, text: "090", app: app)
 
     let offsetDistanceField = app.collectionViews.firstMatch.makeVisible(
-      element: app.textFields["offsetDistanceField"])!
+      element: app.textFields["offsetDistanceField"]
+    )!
     clearAndTypeText(in: offsetDistanceField, text: "5", app: app)
 
     // Time on Target button (navigation button - direct access)
@@ -416,7 +447,13 @@ final class IP_InboundUITests: XCTestCase {
     // Look for the time text within the cell
     let timePredicate = NSPredicate(format: "label == %@", "12:34 PM")
     let timeText = targetCell.staticTexts.element(matching: timePredicate)
-    XCTAssertTrue(timeText.exists, "Time should be displayed as '12:34 PM'")
+    // Check for both 12-hour and 24-hour time formats
+    let time24HourPredicate = NSPredicate(format: "label == %@", "12:34")
+    let time24HourText = targetCell.staticTexts.element(matching: time24HourPredicate)
+    XCTAssertTrue(
+      timeText.exists || time24HourText.exists,
+      "Time should be displayed as either '12:34 PM' (12-hour) or '12:34' (24-hour)"
+    )
 
     // Clean up: Delete the created target
     deleteTargetFromList("Local Time Test", app: app)
@@ -429,7 +466,8 @@ final class IP_InboundUITests: XCTestCase {
     app.launch()
 
     XCUIDevice.shared.location = XCUILocation(
-      location: CLLocation(latitude: 37.7749, longitude: -122.4194))
+      location: CLLocation(latitude: 37.7749, longitude: -122.4194)
+    )
     handleLocationPermissionIfNeeded(app: app)
 
     // Create a target and navigate to TOT
@@ -440,13 +478,17 @@ final class IP_InboundUITests: XCTestCase {
 
     // Wait for IP setup fields to appear
     let offsetBearingField = app.collectionViews.firstMatch.makeVisible(
-      element: app.textFields["offsetBearingField"])!
+      element: app.textFields["offsetBearingField"]
+    )!
     XCTAssertTrue(
-      offsetBearingField.waitForExistence(timeout: 2), "Offset bearing field should appear")
+      offsetBearingField.waitForExistence(timeout: 2),
+      "Offset bearing field should appear"
+    )
     clearAndTypeText(in: offsetBearingField, text: "090", app: app)
 
     let offsetDistanceField = app.collectionViews.firstMatch.makeVisible(
-      element: app.textFields["offsetDistanceField"])!
+      element: app.textFields["offsetDistanceField"]
+    )!
     clearAndTypeText(in: offsetDistanceField, text: "5", app: app)
 
     // Time on Target button (navigation button - direct access)
@@ -533,7 +575,9 @@ final class IP_InboundUITests: XCTestCase {
     if let name {
       // Find the static text with the target name
       let targetNamePredicate = NSPredicate(
-        format: "identifier == 'targetListItem' AND label == %@", name)
+        format: "identifier == 'targetListItem' AND label == %@",
+        name
+      )
       for i in 0..<app.cells.count {
         let cell = app.cells.element(boundBy: i)
         if cell.staticTexts.matching(targetNamePredicate).count > 0 {
@@ -617,7 +661,9 @@ final class IP_InboundUITests: XCTestCase {
     // Wait for delete button to appear
     let deleteButton = app.buttons["Delete"]
     XCTAssertTrue(
-      deleteButton.waitForExistence(timeout: 2), "Delete button must appear after swipe")
+      deleteButton.waitForExistence(timeout: 2),
+      "Delete button must appear after swipe"
+    )
 
     // Tap the delete button
     deleteButton.tap()
@@ -627,10 +673,15 @@ final class IP_InboundUITests: XCTestCase {
 
     // Verify the target was deleted
     let targetNamePredicate = NSPredicate(
-      format: "identifier == 'targetListItem' AND label == %@", name)
+      format: "identifier == 'targetListItem' AND label == %@",
+      name
+    )
     let remainingTargets = app.staticTexts.matching(targetNamePredicate)
     XCTAssertEqual(
-      remainingTargets.count, 0, "Target '\(name)' should no longer exist after deletion")
+      remainingTargets.count,
+      0,
+      "Target '\(name)' should no longer exist after deletion"
+    )
 
     Thread.sleep(forTimeInterval: 1.0)  // allow sync to happen
   }
@@ -661,7 +712,9 @@ final class IP_InboundUITests: XCTestCase {
     // Wait for delete button to appear
     let deleteButton = app.buttons["Delete"]
     XCTAssertTrue(
-      deleteButton.waitForExistence(timeout: 2), "Delete button must appear after swipe")
+      deleteButton.waitForExistence(timeout: 2),
+      "Delete button must appear after swipe"
+    )
 
     // Tap the delete button
     deleteButton.tap()
@@ -671,10 +724,15 @@ final class IP_InboundUITests: XCTestCase {
 
     // Verify the target was deleted
     let targetNamePredicate = NSPredicate(
-      format: "identifier == 'targetListItem' AND label == %@", name)
+      format: "identifier == 'targetListItem' AND label == %@",
+      name
+    )
     let remainingTargets = app.staticTexts.matching(targetNamePredicate)
     XCTAssertEqual(
-      remainingTargets.count, 0, "Target '\(name)' should no longer exist after deletion")
+      remainingTargets.count,
+      0,
+      "Target '\(name)' should no longer exist after deletion"
+    )
 
     Thread.sleep(forTimeInterval: 1.0)  // allow sync to happen
   }

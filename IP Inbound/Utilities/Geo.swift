@@ -11,13 +11,15 @@ public struct Coordinate: Codable, Equatable, Sendable, Hashable {
   private var radians: Self {
     .init(
       latitude: latitude.converted(to: .radians),
-      longitude: longitude.converted(to: .radians))
+      longitude: longitude.converted(to: .radians)
+    )
   }
 
   private var degrees: Self {
     .init(
       latitude: latitude.converted(to: .degrees),
-      longitude: longitude.converted(to: .degrees))
+      longitude: longitude.converted(to: .degrees)
+    )
   }
 
   var latitudeDeg: Double { latitude.converted(to: .degrees).value }
@@ -35,14 +37,16 @@ public struct Coordinate: Codable, Equatable, Sendable, Hashable {
   init(latitude: Double, longitude: Double, unit: UnitAngle = .degrees) {
     self.init(
       latitude: .init(value: latitude, unit: unit),
-      longitude: .init(value: longitude, unit: unit))
+      longitude: .init(value: longitude, unit: unit)
+    )
   }
 
   init(_ coordinate: CLLocationCoordinate2D) {
     self.init(
       latitude: coordinate.latitude,
       longitude: coordinate.longitude,
-      unit: .degrees)
+      unit: .degrees
+    )
   }
 
   static func vector(from start: Self, to end: Self) -> Vector {
@@ -64,20 +68,26 @@ public struct Coordinate: Codable, Equatable, Sendable, Hashable {
 
     let delta13 = acos(
       sin(lineRad.from.latitude.value) * sin(positionRad.latitude.value) + cos(
-        lineRad.from.latitude.value) * cos(positionRad.latitude.value)
-        * cos(positionRad.longitude.value - lineRad.from.longitude.value))
+        lineRad.from.latitude.value
+      ) * cos(positionRad.latitude.value)
+        * cos(positionRad.longitude.value - lineRad.from.longitude.value)
+    )
     let theta13 = atan2(
       sin(positionRad.longitude.value - lineRad.from.longitude.value)
         * cos(positionRad.latitude.value),
       cos(lineRad.from.latitude.value) * sin(positionRad.latitude.value) - sin(
-        lineRad.from.latitude.value) * cos(positionRad.latitude.value)
-        * cos(positionRad.longitude.value - lineRad.from.longitude.value))
+        lineRad.from.latitude.value
+      ) * cos(positionRad.latitude.value)
+        * cos(positionRad.longitude.value - lineRad.from.longitude.value)
+    )
     let theta12 = atan2(
       sin(lineRad.to.longitude.value - lineRad.from.longitude.value)
         * cos(lineRad.to.latitude.value),
       cos(lineRad.from.latitude.value) * sin(lineRad.to.latitude.value) - sin(
-        lineRad.from.latitude.value) * cos(lineRad.to.latitude.value)
-        * cos(lineRad.to.longitude.value - lineRad.from.longitude.value))
+        lineRad.from.latitude.value
+      ) * cos(lineRad.to.latitude.value)
+        * cos(lineRad.to.longitude.value - lineRad.from.longitude.value)
+    )
     let deltaXT = asin(sin(delta13) * sin(theta13 - theta12)) * earthRadius
 
     return .init(value: -deltaXT, unit: .meters)
@@ -119,13 +129,15 @@ public struct Coordinate: Codable, Equatable, Sendable, Hashable {
     // Calculate the new latitude
     let newLatitudeRad = asin(
       sin(coordRad.latitude.value) * cos(distanceFraction) + cos(coordRad.latitude.value)
-        * sin(distanceFraction) * cos(bearingRad))
+        * sin(distanceFraction) * cos(bearingRad)
+    )
     let  // Calculate the new longitude
     newLongitudeRad =
       coordRad.longitude.value
       + atan2(
         sin(bearingRad) * sin(distanceFraction) * cos(coordRad.latitude.value),
-        cos(distanceFraction) - sin(coordRad.latitude.value) * sin(newLatitudeRad))
+        cos(distanceFraction) - sin(coordRad.latitude.value) * sin(newLatitudeRad)
+      )
 
     return .init(latitude: newLatitudeRad, longitude: newLongitudeRad, unit: .radians)
   }
@@ -193,12 +205,12 @@ struct Bearing: Codable, Equatable, Sendable, CustomDebugStringConvertible {
 
   var debugDescription: String {
     switch reference {
-    case .magnetic:
-      "\(angle.debugDescription)M"
-    case .true:
-      "\(angle.debugDescription)T"
-    case .relative:
-      angle.debugDescription
+      case .magnetic:
+        "\(angle.debugDescription)M"
+      case .true:
+        "\(angle.debugDescription)T"
+      case .relative:
+        angle.debugDescription
     }
   }
 
@@ -210,7 +222,8 @@ struct Bearing: Codable, Equatable, Sendable, CustomDebugStringConvertible {
   init(angle: Double, unit: UnitAngle = .degrees, reference: Reference) {
     self.init(
       angle: .init(value: angle, unit: unit),
-      reference: reference)
+      reference: reference
+    )
   }
 
   static func - (lhs: Self, rhs: Self) -> Self {
@@ -223,23 +236,23 @@ struct Bearing: Codable, Equatable, Sendable, CustomDebugStringConvertible {
 
   func toTrue(declination: Measurement<UnitAngle>) -> Self {
     switch reference {
-    case .magnetic:
-      .init(angle: angle + declination, reference: .true).normalized
-    case .true:
-      self
-    case .relative:
-      preconditionFailure("Cannot convert relative bearing to true")
+      case .magnetic:
+        .init(angle: angle + declination, reference: .true).normalized
+      case .true:
+        self
+      case .relative:
+        preconditionFailure("Cannot convert relative bearing to true")
     }
   }
 
   func toMagnetic(declination: Measurement<UnitAngle>) -> Self {
     switch reference {
-    case .magnetic:
-      self
-    case .true:
-      .init(angle: angle - declination, reference: .magnetic).normalized
-    case .relative:
-      preconditionFailure("Cannot convert relative bearing to magnetic")
+      case .magnetic:
+        self
+      case .true:
+        .init(angle: angle - declination, reference: .magnetic).normalized
+      case .relative:
+        preconditionFailure("Cannot convert relative bearing to magnetic")
     }
   }
 

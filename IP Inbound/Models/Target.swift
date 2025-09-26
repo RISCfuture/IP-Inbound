@@ -51,7 +51,8 @@ final class Target: CustomDebugStringConvertible, Identifiable, Equatable, Hasha
     get {
       .init(
         angle: offsetBearing,
-        reference: offsetBearingIsTrue ? .true : .magnetic)
+        reference: offsetBearingIsTrue ? .true : .magnetic
+      )
     }
     set {
       offsetBearing = newValue.degrees
@@ -118,12 +119,12 @@ final class Target: CustomDebugStringConvertible, Identifiable, Equatable, Hasha
 
     let targetGroundSpeedMinutes = Defaults[.defaultGroundSpeed] / 60.0
     switch Defaults[.defaultOffsetType] {
-    case .distance:
-      offsetDistance = Defaults[.defaultOffset]
-      offsetTime = Defaults[.defaultOffset] / targetGroundSpeedMinutes
-    case .time:
-      offsetTime = Defaults[.defaultOffset]
-      offsetDistance = targetGroundSpeedMinutes * Defaults[.defaultOffset]
+      case .distance:
+        offsetDistance = Defaults[.defaultOffset]
+        offsetTime = Defaults[.defaultOffset] / targetGroundSpeedMinutes
+      case .time:
+        offsetTime = Defaults[.defaultOffset]
+        offsetDistance = targetGroundSpeedMinutes * Defaults[.defaultOffset]
     }
 
     calculateDeclination()

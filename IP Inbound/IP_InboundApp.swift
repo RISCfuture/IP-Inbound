@@ -46,7 +46,8 @@ struct IP_InboundApp: App {
       try autoreleasepool {
         let desc = NSPersistentStoreDescription(url: config.url)
         let opts = NSPersistentCloudKitContainerOptions(
-          containerIdentifier: "iCloud.codes.tim.IP-Inbound")
+          containerIdentifier: "iCloud.codes.tim.IP-Inbound"
+        )
         desc.cloudKitContainerOptions = opts
         // Load the store synchronously so it completes before initializing the
         // CloudKit schema.

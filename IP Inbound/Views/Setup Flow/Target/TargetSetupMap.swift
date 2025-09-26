@@ -27,7 +27,8 @@ struct TargetSetupMap: View {
     }
     .onAppear {
       cameraPosition = .camera(
-        .init(centerCoordinate: target.coordinate.toCoreLocation, distance: 10_000))
+        .init(centerCoordinate: target.coordinate.toCoreLocation, distance: 10_000)
+      )
     }
     .onMapCameraChange(frequency: .continuous) { context in
       skipUpdate = true
@@ -44,7 +45,8 @@ struct TargetSetupMap: View {
       }
       // Center map on new coordinate while preserving zoom level
       cameraPosition = .camera(
-        .init(centerCoordinate: newValue.toCoreLocation, distance: currentDistance))
+        .init(centerCoordinate: newValue.toCoreLocation, distance: currentDistance)
+      )
     }
   }
 }

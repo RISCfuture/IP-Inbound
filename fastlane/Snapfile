@@ -1,23 +1,25 @@
+# frozen_string_literal: true
+
 # A list of devices you want to take the screenshots from
 devices [
-  # iPhone categories
-  "iPhone 15 Pro Max",      # 6.9" display
-  "iPhone 14 Plus",         # 6.5" display
-  "iPhone 15 Pro",          # 6.3" display
-  "iPhone 14",              # 6.1" display
-  "iPhone SE (3rd generation)", # 4.7" display
+    # iPhone categories
+    "iPhone 15 Pro Max", # 6.9" display
+    "iPhone 14 Plus",         # 6.5" display
+    "iPhone 15 Pro",          # 6.3" display
+    "iPhone 14",              # 6.1" display
+    "iPhone SE (3rd generation)", # 4.7" display
 
-  # iPad categories
-  "iPad Pro 13-inch (M4)",      # 13" display
-  "iPad Pro (12.9-inch) (6th generation)", # 12.9" display
-  "iPad Pro 11-inch (M4)",      # 11" display
-  "iPad Air (5th generation)",  # 10.5" display
-  "iPad (9th generation)"       # 9.7" display
+    # iPad categories
+    "iPad Pro 13-inch (M4)", # 13" display
+    "iPad Pro (12.9-inch) (6th generation)", # 12.9" display
+    "iPad Pro 11-inch (M4)",      # 11" display
+    "iPad Air (5th generation)",  # 10.5" display
+    "iPad (9th generation)"       # 9.7" display
 ]
 
 # Languages to generate screenshots for
-languages [
-  "en-US"
+languages %w[
+    en-US
 ]
 
 # The name of the scheme which contains the UI Tests
@@ -53,7 +55,7 @@ dark_mode true
 
 # Launch arguments to pass to the app on launch
 launch_arguments [
-  "-UITestsEnabled YES"
+    "-UITestsEnabled YES"
 ]
 
 # The bundle identifier of your app

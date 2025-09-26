@@ -7,22 +7,22 @@ enum Errors: Error {
 extension Errors: LocalizedError {
   var errorDescription: String? {
     switch self {
-    case .TOTNotConfigured:
-      return String(localized: "Can’t use a target without setting Time on Target first.")
+      case .TOTNotConfigured:
+        return String(localized: "Can’t use a target without setting Time on Target first.")
     }
   }
 
   var failureReason: String? {
     switch self {
-    case .TOTNotConfigured(let target):
-      return String(localized: "Target “\(target)” does not have a Time on Target configured.")
+      case .TOTNotConfigured(let target):
+        return String(localized: "Target “\(target)” does not have a Time on Target configured.")
     }
   }
 
   var recoverySuggestion: String? {
     switch self {
-    case .TOTNotConfigured:
-      return String(localized: "Edit the target and set the Time on Target.")
+      case .TOTNotConfigured:
+        return String(localized: "Edit the target and set the Time on Target.")
     }
   }
 }

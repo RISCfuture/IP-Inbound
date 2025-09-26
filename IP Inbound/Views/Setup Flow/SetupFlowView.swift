@@ -18,20 +18,20 @@ struct SetupFlowView: View {
         .navigationTitle("Define Target")
         .navigationDestination(for: SetupFlowStep.self) { step in
           switch step {
-          case .targetSetup:
-            TargetSetupView(target: target)
-              .navigationTitle("Define Target")
-          case .IPSetup:
-            IPSetupView(target: target)
-              .navigationTitle("Define IP")
-          case .timeOnTarget:
-            TOTSetupView(target: target)
-              .navigationTitle("Time on Target")
-          case .fly:
-            FlyView(target: target)
-              .onAppear {
-                target.isConfigured = true
-              }
+            case .targetSetup:
+              TargetSetupView(target: target)
+                .navigationTitle("Define Target")
+            case .IPSetup:
+              IPSetupView(target: target)
+                .navigationTitle("Define IP")
+            case .timeOnTarget:
+              TOTSetupView(target: target)
+                .navigationTitle("Time on Target")
+            case .fly:
+              FlyView(target: target)
+                .onAppear {
+                  target.isConfigured = true
+                }
           }
         }
         .onAppear {

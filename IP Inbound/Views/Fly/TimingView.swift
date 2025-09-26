@@ -9,7 +9,8 @@ struct TimingView: View {
   private var cautionDeltaTOT: TimeInterval { onTimeDeltaTOT * 5 }
   private var onTimeRange: ClosedRange<Date> {
     timeOnTarget.addingTimeInterval(
-      -onTimeDeltaTOT)...timeOnTarget.addingTimeInterval(onTimeDeltaTOT)
+      -onTimeDeltaTOT
+    )...timeOnTarget.addingTimeInterval(onTimeDeltaTOT)
   }
   private var cautionRange: ClosedRange<Date> {
     let baseTime = fromTo.distance / fromTo.targetSpeed

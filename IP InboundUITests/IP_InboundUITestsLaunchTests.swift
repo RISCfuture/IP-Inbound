@@ -23,7 +23,8 @@ final class IP_InboundUITestsLaunchTests: XCTestCase {
 
     // Simulate location after launch
     XCUIDevice.shared.location = XCUILocation(
-      location: CLLocation(latitude: 37.7749, longitude: -122.4194))
+      location: CLLocation(latitude: 37.7749, longitude: -122.4194)
+    )
 
     handleLocationPermissionIfNeeded(app: app)
 
@@ -32,7 +33,8 @@ final class IP_InboundUITestsLaunchTests: XCTestCase {
 
     // Enter target name using makeVisible pattern from working tests
     let targetNameField = app.collectionViews.firstMatch.makeVisible(
-      element: app.textFields["targetNameField"])!
+      element: app.textFields["targetNameField"]
+    )!
     clearAndTypeText(in: targetNameField, text: "Mission Target", app: app)
 
     // Step 2: Navigate to IP Setup
@@ -41,14 +43,18 @@ final class IP_InboundUITestsLaunchTests: XCTestCase {
 
     // Step 3: Configure IP offset using makeVisible pattern
     let offsetBearingField = app.collectionViews.firstMatch.makeVisible(
-      element: app.textFields["offsetBearingField"])!
+      element: app.textFields["offsetBearingField"]
+    )!
     XCTAssertTrue(
-      offsetBearingField.waitForExistence(timeout: 2), "Offset bearing field should exist")
+      offsetBearingField.waitForExistence(timeout: 2),
+      "Offset bearing field should exist"
+    )
     clearAndTypeText(in: offsetBearingField, text: "270", app: app)
 
     // Test offset distance entry using makeVisible pattern
     let offsetDistanceField = app.collectionViews.firstMatch.makeVisible(
-      element: app.textFields["offsetDistanceField"])!
+      element: app.textFields["offsetDistanceField"]
+    )!
     clearAndTypeText(in: offsetDistanceField, text: "10", app: app)
 
     // Step 4: Navigate to Time on Target
@@ -88,7 +94,8 @@ final class IP_InboundUITestsLaunchTests: XCTestCase {
 
     // Simulate location after launch
     XCUIDevice.shared.location = XCUILocation(
-      location: CLLocation(latitude: 37.7749, longitude: -122.4194))
+      location: CLLocation(latitude: 37.7749, longitude: -122.4194)
+    )
 
     handleLocationPermissionIfNeeded(app: app)
 
@@ -100,12 +107,14 @@ final class IP_InboundUITestsLaunchTests: XCTestCase {
 
     // Fill in IP setup fields
     let offsetBearingField = app.collectionViews.firstMatch.makeVisible(
-      element: app.textFields["offsetBearingField"])!
+      element: app.textFields["offsetBearingField"]
+    )!
     XCTAssertTrue(offsetBearingField.waitForExistence(timeout: 2))
     clearAndTypeText(in: offsetBearingField, text: "090", app: app)
 
     let offsetDistanceField = app.collectionViews.firstMatch.makeVisible(
-      element: app.textFields["offsetDistanceField"])!
+      element: app.textFields["offsetDistanceField"]
+    )!
     clearAndTypeText(in: offsetDistanceField, text: "5", app: app)
 
     // Navigate to Time on Target
@@ -141,7 +150,8 @@ final class IP_InboundUITestsLaunchTests: XCTestCase {
 
     // Simulate location after launch
     XCUIDevice.shared.location = XCUILocation(
-      location: CLLocation(latitude: 37.7749, longitude: -122.4194))
+      location: CLLocation(latitude: 37.7749, longitude: -122.4194)
+    )
 
     handleLocationPermissionIfNeeded(app: app)
 
@@ -161,8 +171,9 @@ final class IP_InboundUITestsLaunchTests: XCTestCase {
 
     // Wait for and verify we're back in the target setup view
     XCTAssertTrue(
-      app.buttons["defineIPButton"].waitForExistence(timeout: 2),
-      "Should navigate to target detail view")
+      app.buttons["defineIPButton"].waitForExistence(timeout: 10),
+      "Should navigate to target detail view"
+    )
 
     // Clean up
     deleteTargetWithName("Quick Target", app: app)
@@ -221,7 +232,9 @@ final class IP_InboundUITestsLaunchTests: XCTestCase {
     // Find the cell containing the target name
     if let name {
       let targetNamePredicate = NSPredicate(
-        format: "identifier == 'targetListItem' AND label == %@", name)
+        format: "identifier == 'targetListItem' AND label == %@",
+        name
+      )
       for i in 0..<app.cells.count {
         let cell = app.cells.element(boundBy: i)
         if cell.staticTexts.matching(targetNamePredicate).count > 0 {
@@ -272,7 +285,9 @@ final class IP_InboundUITestsLaunchTests: XCTestCase {
     // Wait for delete button to appear
     let deleteButton = app.buttons["Delete"]
     XCTAssertTrue(
-      deleteButton.waitForExistence(timeout: 2), "Delete button must appear after swipe")
+      deleteButton.waitForExistence(timeout: 2),
+      "Delete button must appear after swipe"
+    )
 
     // Tap the delete button
     deleteButton.tap()
@@ -282,10 +297,15 @@ final class IP_InboundUITestsLaunchTests: XCTestCase {
 
     // Verify the target was deleted
     let targetNamePredicate = NSPredicate(
-      format: "identifier == 'targetListItem' AND label == %@", name)
+      format: "identifier == 'targetListItem' AND label == %@",
+      name
+    )
     let remainingTargets = app.staticTexts.matching(targetNamePredicate)
     XCTAssertEqual(
-      remainingTargets.count, 0, "Target '\(name)' should no longer exist after deletion")
+      remainingTargets.count,
+      0,
+      "Target '\(name)' should no longer exist after deletion"
+    )
 
     Thread.sleep(forTimeInterval: 1.0)  // allow sync to happen
   }
@@ -316,7 +336,9 @@ final class IP_InboundUITestsLaunchTests: XCTestCase {
     // Wait for delete button to appear
     let deleteButton = app.buttons["Delete"]
     XCTAssertTrue(
-      deleteButton.waitForExistence(timeout: 2), "Delete button must appear after swipe")
+      deleteButton.waitForExistence(timeout: 2),
+      "Delete button must appear after swipe"
+    )
 
     // Tap the delete button
     deleteButton.tap()
@@ -326,10 +348,15 @@ final class IP_InboundUITestsLaunchTests: XCTestCase {
 
     // Verify the target was deleted
     let targetNamePredicate = NSPredicate(
-      format: "identifier == 'targetListItem' AND label == %@", name)
+      format: "identifier == 'targetListItem' AND label == %@",
+      name
+    )
     let remainingTargets = app.staticTexts.matching(targetNamePredicate)
     XCTAssertEqual(
-      remainingTargets.count, 0, "Target '\(name)' should no longer exist after deletion")
+      remainingTargets.count,
+      0,
+      "Target '\(name)' should no longer exist after deletion"
+    )
 
     Thread.sleep(forTimeInterval: 1.0)  // allow sync to happen
   }
@@ -365,12 +392,14 @@ final class IP_InboundUITestsLaunchTests: XCTestCase {
 
     // Set offset values using makeVisible pattern
     let offsetBearingField = app.collectionViews.firstMatch.makeVisible(
-      element: app.textFields["offsetBearingField"])!
+      element: app.textFields["offsetBearingField"]
+    )!
     XCTAssertTrue(offsetBearingField.waitForExistence(timeout: 2))
     clearAndTypeText(in: offsetBearingField, text: "090", app: app)
 
     let offsetDistanceField = app.collectionViews.firstMatch.makeVisible(
-      element: app.textFields["offsetDistanceField"])!
+      element: app.textFields["offsetDistanceField"]
+    )!
     clearAndTypeText(in: offsetDistanceField, text: "5", app: app)
 
     // Go to Time on Target

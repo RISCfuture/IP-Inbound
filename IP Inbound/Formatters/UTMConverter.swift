@@ -163,7 +163,7 @@ public enum UTMConverter {
   private static func calculateBand(latitude: Double) -> Character {
     let bands: [Character] = [
       "C", "D", "E", "F", "G", "H", "J", "K", "L", "M",
-      "N", "P", "Q", "R", "S", "T", "U", "V", "W", "X",
+      "N", "P", "Q", "R", "S", "T", "U", "V", "W", "X"
     ]
 
     if latitude < -80.0 { return "A" }
@@ -237,14 +237,14 @@ public enum UTMConverter {
 
     var errorDescription: String? {
       switch self {
-      case .invalidFormat:
-        String(localized: "Invalid UTM format")
-      case .invalidNumber:
-        String(localized: "Invalid numeric value")
-      case .invalidZone:
-        String(localized: "Invalid UTM zone (must be 1-60)")
-      case .invalidBand:
-        String(localized: "Invalid UTM band letter")
+        case .invalidFormat:
+          String(localized: "Invalid UTM format")
+        case .invalidNumber:
+          String(localized: "Invalid numeric value")
+        case .invalidZone:
+          String(localized: "Invalid UTM zone (must be 1-60)")
+        case .invalidBand:
+          String(localized: "Invalid UTM band letter")
       }
     }
   }
