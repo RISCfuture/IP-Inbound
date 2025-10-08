@@ -22,9 +22,10 @@ struct TutorialView: View {
             AttributedString(
               localized: """
                 Start by defining your **target point (TP)**. This is the exact position you want \
-                to be over at **time on target (TOT)**. You can choose a target on the map, use \
-                latitude/longitude UTM coordinates, or find a place by name/address. Tap the \
-                coordinates to change between coordinate types (DMS, DMM, DD, UTM).
+                to be over at **time on target (TOT)**. You can choose a target on the map; use \
+                enter coordinates using latitude/longitude, UTM, or MGRS; or find a place by \
+                name/address. Tap the coordinates to change between coordinate types (DMS, DMM, \
+                DD, UTM, MGRS).
                 """
             )
           )
@@ -46,7 +47,7 @@ struct TutorialView: View {
               localized: """
                 Choose a bearing and distance that satisfies your mission, and select a speed that \
                 gives you some wiggle room to speed up or slow down to meet your TOT. Mission \
-                requirements may dictate specific bearings, distance and/or speeds.
+                requirements may dictate a specific bearing, distance and/or speed.
                 """
             )
           )
@@ -65,7 +66,7 @@ struct TutorialView: View {
           Text(
             AttributedString(
               localized: """
-                Finally, set your time on target. It’s ok if you don’t know your final TOT yet; \
+                Finally, set your time on target. It’s OK if you don’t know your final TOT yet; \
                 you can adjust it in the air if necessary.
                 """
             )
@@ -86,18 +87,18 @@ struct TutorialView: View {
           )
         }
 
-        ParagraphWithImage(imageName: "5-pre-ip", imageLeading: false) {
-          Text(
-            AttributedString(
-              localized: """
-                Once airborne, prior to reaching the IP, IP Inbound displays a **course deviation \
-                indicator (CDI)** providing **direct-to guidance** to your IP. The CDI is based on \
-                your ground track and magnetic heading. The title reads **P.POS → IP** to remind \
-                you that course guidance is to the IP, not the target.
-                """
-            )
+        Text(
+          AttributedString(
+            localized: """
+              Once airborne, prior to reaching the IP, IP Inbound displays a **course deviation \
+              indicator (CDI)** providing **direct-to guidance** to your IP. The CDI is based on \
+              your ground track and magnetic heading. The title reads **P.POS → IP** to remind you \
+              that course guidance is to the IP, not the target.
+              """
           )
+        )
 
+        ParagraphWithImage(imageName: "5-pre-ip", imageLeading: true) {
           Text(
             AttributedString(
               localized: """
@@ -167,33 +168,34 @@ struct TutorialView: View {
           Text(
             AttributedString(
               localized: """
-                 Your ground speed, the distance to the IP, and the TOT (_not_ time over IP) are \
+                 Your ground speed, the distance to the IP, and the calculated time over IP are \
                 shown at the bottom. Tap the distance or speed to cycle between knots, MPH, or \
                 KPH, and tap the TOT to toggle between local and Zulu time (GMT).
                 """
             )
           )
-
-          Text(
-            AttributedString(
-              localized: """
-                Speed deviation is calculated factoring in turning required. IP Inbound assumes \
-                that you will make a level, 45°-banked turn in the shortest direction to the IP \
-                when calculating time to IP.
-                """
-            )
-          )
-
-          Text(
-            AttributedString(
-              localized: """
-                If your TOT changes at any point, either on the ground or in the air, simply press \
-                **‹ Time on Target** to return to the TOT page and set the new TOT. You can then \
-                return to the CDI view by pressing **Fly!** again.
-                """
-            )
-          )
         }
+
+        Text(
+          AttributedString(
+            localized: """
+              Speed deviation is calculated factoring in turning required, both your turn from \
+              your present heading to the IP, as well as your IP-to-target turn. IP Inbound \
+              assumes that you will make each turn a level, 45°-banked turn in the shortest \
+              direction.
+              """
+          )
+        )
+
+        Text(
+          AttributedString(
+            localized: """
+              If your TOT changes at any point, either on the ground or in the air, simply press \
+              the Back button to return to the TOT page and set the new TOT. You can then return \
+              to the CDI view by pressing **Fly!** again.
+              """
+          )
+        )
 
         ParagraphWithImage(imageName: "4-pre-ip-early", imageLeading: false) {
           Text(
@@ -224,11 +226,11 @@ struct TutorialView: View {
           Text(
             AttributedString(
               localized: """
-                Any time you’ve passed the IP inbound, the CDI switches to target guidance. The \
-                **red arrow** points to the _desired track_ to the target (not direct-to the \
-                target). The **inset portion** of the arrow indicates how far left or right of the \
-                desired track you are. The **yellow chevron** with an inset “IP” indicates the \
-                direct course to the IP, for situational awareness.
+                Any time you’ve passed the IP inbound, the CDI switches to target guidance along \
+                the IP-to-target bearing. The **red arrow** points to the _desired track_ to the \
+                target (not direct-to the target). The **inset portion** of the arrow indicates \
+                how far left or right of the desired track you are. The **yellow chevron** with an \
+                inset “IP” indicates the direct course to the IP, for situational awareness.
                 """
             )
           )
@@ -237,8 +239,8 @@ struct TutorialView: View {
             AttributedString(
               localized: """
                 The speed deviation indicator now provides speed guidance to get you over the \
-                target at exactly the TOT. The title now reads **P.POS → Target**, as the CDI is \
-                now providing guidance to target.
+                target at exactly the TOT. The title now reads **IP → Target**, as the CDI is now \
+                providing guidance to target along the IP-to-target bearing.
                 """
             )
           )
@@ -252,10 +254,10 @@ struct TutorialView: View {
               localized: """
                 If IP Inbound calculates that you have insufficient time to fly to the IP and then \
                 the target, given your TOT, the CDI will change to providing guidance directly to \
-                the target. This is indicated by the title **P.POS → Target** showing in red. The \
-                CDI shows _desired track_ guidance to the target. The **red chevron** with an \
-                inset “T” is the direct course to the target, and the **yelow chevron** with an \
-                inset “IP” is the direct course to the IP.
+                the target, bypassing the IP. This is indicated by the title **P.POS → Target** \
+                showing in red. The CDI shows _desired track_ guidance to the target. The **red \
+                chevron** with an inset “T” is the direct course to the target, and the **yelow \
+                chevron** with an inset “IP” is the direct course to the IP.
                 """
             )
           )
@@ -289,8 +291,13 @@ struct ParagraphWithImage<Content: View>: View {
           }
         }
       case .compact, .none, .some:
-        content()
-        image
+        if imageLeading {
+          image
+          content()
+        } else {
+          content()
+          image
+        }
     }
   }
 
