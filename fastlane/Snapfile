@@ -1,21 +1,16 @@
 # frozen_string_literal: true
 
 # A list of devices you want to take the screenshots from
-devices [
-    # iPhone categories
-    "iPhone 15 Pro Max", # 6.9" display
-    "iPhone 14 Plus",         # 6.5" display
-    "iPhone 15 Pro",          # 6.3" display
-    "iPhone 14",              # 6.1" display
-    "iPhone SE (3rd generation)", # 4.7" display
+# Using devices with App Store Connect accepted screenshot sizes
+devices([
+    # iPhone - Required sizes
+    "iPhone 15 Pro Max",              # 6.7" display - 1290x2796 (accepted by App Store Connect)
+    "iPhone 14 Plus",                 # 6.5" display - 1284x2778 (covers second tier)
 
-    # iPad categories
-    "iPad Pro 13-inch (M4)", # 13" display
-    "iPad Pro (12.9-inch) (6th generation)", # 12.9" display
-    "iPad Pro 11-inch (M4)",      # 11" display
-    "iPad Air (5th generation)",  # 10.5" display
-    "iPad (9th generation)"       # 9.7" display
-]
+    # iPad - Required sizes
+    "iPad Pro (12.9-inch) (6th generation)", # 12.9" display - 2048x2732 (accepted by App Store Connect)
+    "iPad Pro (11-inch) (4th generation)" # 11" display - 1668x2388 (covers second tier iPad)
+])
 
 # Languages to generate screenshots for
 languages %w[
