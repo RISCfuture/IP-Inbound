@@ -19,7 +19,7 @@ struct FlyView: View {
               Text("P.POS → IP").font(.title)
               Text(target.name).font(.caption)
             case .toTarget:
-              Text("P.POS → Target").font(.title)
+              Text("IP → Target").font(.title)
               Text(target.name).font(.caption)
             case .toTargetBypassingIP:
               Text("P.POS → Target").font(.title).foregroundStyle(Color.red)
