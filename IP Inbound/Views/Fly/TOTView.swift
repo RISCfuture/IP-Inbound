@@ -5,6 +5,7 @@ struct TOTView: View {
   var fromTo: FromToMath
   var timeOnTarget: Date?
   var showSpeed = true
+  var isPush = false
 
   @Default(.TOTDisplayMode)
   private var displayMode
@@ -27,17 +28,22 @@ struct TOTView: View {
         .accessibilityHint("Cycle distance units")
       if let timeOnTarget {
         Text("•")
-        switch displayMode {
-          case .local:
-            Text(timeOnTarget, format: localTOTFormatStyle)
-              .onTapGesture { displayMode = .zulu }
-              .accessibilityHint("Toggle local or zulu time")
-              .accessibilityAddTraits(.isButton)
-          case .zulu:
-            Text(timeOnTarget, format: zuluTOTFormatStyle)
-              .onTapGesture { displayMode = .local }
-              .accessibilityHint("Toggle local or zulu time")
-              .accessibilityAddTraits(.isButton)
+        HStack(alignment: .firstTextBaseline, spacing: 4) {
+          switch displayMode {
+            case .local:
+              Text(timeOnTarget, format: localTOTFormatStyle)
+                .onTapGesture { displayMode = .zulu }
+                .accessibilityHint("Toggle local or zulu time")
+                .accessibilityAddTraits(.isButton)
+            case .zulu:
+              Text(timeOnTarget, format: zuluTOTFormatStyle)
+                .onTapGesture { displayMode = .local }
+                .accessibilityHint("Toggle local or zulu time")
+                .accessibilityAddTraits(.isButton)
+          }
+          Text(isPush ? "Push" : "TOT")
+            .font(.caption)
+            .textCase(.uppercase)
         }
       }
     }

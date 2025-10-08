@@ -7,13 +7,18 @@ struct CountdownView: View {
     Spacer()
 
     if timeOnTarget > Date.now {
-      Text(
-        .currentDate,
-        format: .timer(countingDownIn: .now..<timeOnTarget, maxPrecision: .seconds(1))
-      )
-      .font(.title)
+      VStack(alignment: .center, spacing: 0) {
+        Text(
+          .currentDate,
+          format: .timer(countingDownIn: .now..<timeOnTarget, maxPrecision: .seconds(1))
+        )
+        .font(.title)
+        .contentTransition(.numericText())
+        Text("to TOT")
+          .font(.caption)
+          .textCase(.uppercase)
+      }
       .padding(.bottom)
-      .contentTransition(.numericText())
     } else {
       Text("Past TOT")
         .font(.title)

@@ -70,13 +70,22 @@ struct FlyView: View {
             }
           case .toIPWithCountdown:
             if let fromTo = math.pposToIP, let desiredTimeOverIP = target.desiredTimeOverIP {
-              Text(
-                .currentDate,
-                format: .timer(countingDownIn: .now..<desiredTimeOverIP, maxPrecision: .seconds(1))
-              )
-              .font(.title)
+              VStack(alignment: .center, spacing: 0) {
+                Text(
+                  .currentDate,
+                  format: .timer(
+                    countingDownIn: .now..<desiredTimeOverIP,
+                    maxPrecision: .seconds(1)
+                  )
+                )
+                .font(.title)
+                .contentTransition(.numericText())
+                Text("to Push")
+                  .font(.caption)
+                  .textCase(.uppercase)
+              }
               .padding(.bottom)
-              TOTView(fromTo: fromTo, timeOnTarget: desiredTimeOverIP)
+              TOTView(fromTo: fromTo, timeOnTarget: desiredTimeOverIP, isPush: true)
             }
           case .toTarget, .toTargetBypassingIP:
             if let fromTo = math.pposToTarget, let timeOnTarget = target.timeOnTarget {
@@ -84,7 +93,12 @@ struct FlyView: View {
             }
           case .countdownOnly:
             if let fromTo = math.pposToTarget {
-              TOTView(fromTo: fromTo, timeOnTarget: target.desiredTimeOverIP, showSpeed: false)
+              TOTView(
+                fromTo: fromTo,
+                timeOnTarget: target.desiredTimeOverIP,
+                showSpeed: false,
+                isPush: true
+              )
             }
         }
       }.padding()
