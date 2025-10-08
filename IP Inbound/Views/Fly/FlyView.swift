@@ -138,13 +138,13 @@ struct FlyView: View {
 
 #Preview("Pre-IP, On Time") {
   let helper = PreviewHelper()
-  FlyView(target: helper.target(minutesFromNow: 2))
+  FlyView(target: helper.target(minutesFromNow: 4))
     .environment(\.previewLocation, helper.preIPEvent)
 }
 
 #Preview("Pre-IP, Late") {
   let helper = PreviewHelper()
-  FlyView(target: helper.target(minutesFromNow: 1.5))
+  FlyView(target: helper.target(minutesFromNow: 2))
     .environment(\.previewLocation, helper.preIPEvent)
 }
 
