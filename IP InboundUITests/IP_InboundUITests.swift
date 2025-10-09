@@ -539,6 +539,96 @@ final class IP_InboundUITests: XCTestCase {
     deleteTargetFromList("Zulu Time Test", app: app)
   }
 
+  // MARK: - Navigation Flow Tests
+
+  @MainActor
+  func testNavigationBetweenSetupSteps() throws {
+    let app = XCUIApplication()
+    app.resetAuthorizationStatus(for: .location)
+    app.launch()
+
+    XCUIDevice.shared.location = XCUILocation(
+      location: CLLocation(latitude: 37.7749, longitude: -122.4194)
+    )
+    handleLocationPermissionIfNeeded(app: app)
+
+    // Create a target
+    createTargetWithName("Nav Test Target", app: app)
+
+    // Navigate to IP Setup
+    app.buttons["defineIPButton"].tap()
+
+    // Fill in IP setup fields
+    let offsetBearingField = app.collectionViews.firstMatch.makeVisible(
+      element: app.textFields["offsetBearingField"]
+    )!
+    XCTAssertTrue(offsetBearingField.waitForExistence(timeout: 2))
+    clearAndTypeText(in: offsetBearingField, text: "090", app: app)
+
+    let offsetDistanceField = app.collectionViews.firstMatch.makeVisible(
+      element: app.textFields["offsetDistanceField"]
+    )!
+    clearAndTypeText(in: offsetDistanceField, text: "5", app: app)
+
+    // Navigate to Time on Target
+    app.buttons["timeOnTargetButton"].tap()
+
+    // Verify time entry screen appears
+    XCTAssertTrue(
+      app.segmentedControls["timeDisplayModePicker"]
+        .waitForExistence(timeout: 2),
+      "Time mode picker should appear"
+    )
+
+    // Navigate back through the flow
+    if !isIPad() {
+      app.navigationBars.buttons.element(boundBy: 0).tap()  // Back to IP setup
+      waitForNavigation()
+      XCTAssertTrue(app.buttons["timeOnTargetButton"].exists)
+
+      app.navigationBars.buttons.element(boundBy: 0).tap()  // Back to target setup
+      waitForNavigation()
+      XCTAssertTrue(app.buttons["defineIPButton"].exists)
+    }
+
+    // Clean up
+    deleteTargetWithName("Nav Test Target", app: app)
+  }
+
+  @MainActor
+  func testDirectToFlyForConfiguredTarget() throws {
+    let app = XCUIApplication()
+    app.resetAuthorizationStatus(for: .location)
+    app.launch()
+
+    XCUIDevice.shared.location = XCUILocation(
+      location: CLLocation(latitude: 37.7749, longitude: -122.4194)
+    )
+    handleLocationPermissionIfNeeded(app: app)
+
+    // Create and configure a target
+    createAndConfigureTarget(app: app)
+
+    // Navigate back to the target list
+    if !isIPad() {
+      app.navigationBars.buttons.element(boundBy: 0).tap()
+      waitForNavigation()
+    }
+
+    // Find and select the target from the list
+    let targetItem = findTargetListItem(withName: "Quick Target", app: app)
+    targetItem.tap()
+
+    // Verify we're back in the target setup view
+    XCTAssertTrue(
+      app.buttons["defineIPButton"].waitForExistence(timeout: 10),
+      "Should navigate to target detail view"
+    )
+
+    // Clean up
+    deleteTargetWithName("Quick Target", app: app)
+  }
+
   // MARK: - Helper Methods
 
   @MainActor
@@ -748,6 +838,41 @@ final class IP_InboundUITests: XCTestCase {
         Thread.sleep(forTimeInterval: 0.1)
       }
     }
+  }
+
+  @MainActor
+  private func createAndConfigureTarget(app: XCUIApplication) {
+    // Create target
+    createTargetWithName("Quick Target", app: app)
+
+    // Configure IP
+    app.buttons["defineIPButton"].tap()
+
+    // Set offset values using makeVisible pattern
+    let offsetBearingField = app.collectionViews.firstMatch.makeVisible(
+      element: app.textFields["offsetBearingField"]
+    )!
+    XCTAssertTrue(offsetBearingField.waitForExistence(timeout: 2))
+    clearAndTypeText(in: offsetBearingField, text: "090", app: app)
+
+    let offsetDistanceField = app.collectionViews.firstMatch.makeVisible(
+      element: app.textFields["offsetDistanceField"]
+    )!
+    clearAndTypeText(in: offsetDistanceField, text: "5", app: app)
+
+    // Go to Time on Target
+    app.buttons["timeOnTargetButton"].tap()
+
+    // Wait for time entry screen
+    XCTAssertTrue(
+      app.segmentedControls["timeDisplayModePicker"]
+        .waitForExistence(timeout: 2),
+      "Time mode picker should appear"
+    )
+
+    // Enter a time using the keypad
+    app.segmentedControls["timeDisplayModePicker"].buttons["Zulu"].tap()
+    enterDigits(app: app, digits: "12:00:00")
   }
 }
 
