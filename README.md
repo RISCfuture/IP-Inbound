@@ -59,4 +59,4 @@ The "IP Inbound" target is the application, which can be compiled and run on any
 iOS device. The "Generate Screenshots" target generates screenshots for the
 App Store.
 
-Bugsnag is included for exception reporting.
+Sentry is included for exception reporting.

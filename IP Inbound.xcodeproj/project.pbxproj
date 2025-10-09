@@ -3,20 +3,22 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 90;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		0166FA742DCA685800970EFD /* DefaultsMacros in Frameworks */ = {isa = PBXBuildFile; productRef = 0166FA732DCA685800970EFD /* DefaultsMacros */; };
-		016F3C112DC08B3900F2A1AE /* Bugsnag in Frameworks */ = {isa = PBXBuildFile; productRef = 016F3C102DC08B3900F2A1AE /* Bugsnag */; };
-		016F3C142DC08B5800F2A1AE /* BugsnagPerformance in Frameworks */ = {isa = PBXBuildFile; productRef = 016F3C132DC08B5800F2A1AE /* BugsnagPerformance */; };
 		016F3ED22DD4F1E1006EEC6D /* Numerics in Frameworks */ = {isa = PBXBuildFile; productRef = 016F3ED12DD4F1E1006EEC6D /* Numerics */; };
 		018068742E76A9530073B0AD /* MGRS in Frameworks */ = {isa = PBXBuildFile; productRef = 018068732E76A9530073B0AD /* MGRS */; };
+		0198B2AD2E9860B2003CB126 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
+		0198B2AE2E9860B2003CB126 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
+		0198B2AF2E9860B2003CB126 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		01C059A72DBF49C600D733C1 /* AsyncAlgorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 01C059A62DBF49C600D733C1 /* AsyncAlgorithms */; };
 		01ECF4F32CF3E2F800BD0604 /* Defaults in Frameworks */ = {isa = PBXBuildFile; productRef = 01ECF4F22CF3E2F800BD0604 /* Defaults */; };
 		01F13CF52DBEE074000E58A2 /* NIO in Frameworks */ = {isa = PBXBuildFile; productRef = 01F13CF42DBEE074000E58A2 /* NIO */; };
 		01F13CF72DBEE074000E58A2 /* NIOPosix in Frameworks */ = {isa = PBXBuildFile; productRef = 01F13CF62DBEE074000E58A2 /* NIOPosix */; };
 		01F13CFE2DBEE65B000E58A2 /* Logging in Frameworks */ = {isa = PBXBuildFile; productRef = 01F13CFD2DBEE65B000E58A2 /* Logging */; };
+		6B2BC84D01DF41E8847B6899 /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = 4E66068E9AFD4993959FE327 /* Sentry */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -93,41 +95,35 @@
 /* Begin PBXFrameworksBuildPhase section */
 		016F3C182DC08E7A00F2A1AE /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
+				0198B2AD2E9860B2003CB126 /* (null) in Frameworks */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		01ECF4B32CF3DF0D00BD0604 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 				0166FA742DCA685800970EFD /* DefaultsMacros in Frameworks */,
 				01F13CFE2DBEE65B000E58A2 /* Logging in Frameworks */,
-				016F3C112DC08B3900F2A1AE /* Bugsnag in Frameworks */,
-				016F3C142DC08B5800F2A1AE /* BugsnagPerformance in Frameworks */,
 				01F13CF72DBEE074000E58A2 /* NIOPosix in Frameworks */,
 				01ECF4F32CF3E2F800BD0604 /* Defaults in Frameworks */,
 				01F13CF52DBEE074000E58A2 /* NIO in Frameworks */,
 				01C059A72DBF49C600D733C1 /* AsyncAlgorithms in Frameworks */,
 				018068742E76A9530073B0AD /* MGRS in Frameworks */,
+				6B2BC84D01DF41E8847B6899 /* Sentry in Frameworks */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		01ECF4C32CF3DF0F00BD0604 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 				016F3ED22DD4F1E1006EEC6D /* Numerics in Frameworks */,
+				0198B2AE2E9860B2003CB126 /* (null) in Frameworks */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		01ECF4CD2CF3DF0F00BD0604 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
+				0198B2AF2E9860B2003CB126 /* (null) in Frameworks */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
@@ -194,8 +190,6 @@
 				016F3C1C2DC08E7A00F2A1AE /* Generate Screenshots */,
 			);
 			name = "Generate Screenshots";
-			packageProductDependencies = (
-			);
 			productName = "Generate Screenshots";
 			productReference = 016F3C1B2DC08E7A00F2A1AE /* Generate Screenshots.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
@@ -207,10 +201,9 @@
 				01ECF4B22CF3DF0D00BD0604 /* Sources */,
 				01ECF4B32CF3DF0D00BD0604 /* Frameworks */,
 				01ECF4B42CF3DF0D00BD0604 /* Resources */,
+				C8D493EE46664369A7D42761 /* Upload Debug Symbols to Sentry */,
 			);
 			buildRules = (
-			);
-			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
 				01ECF4B82CF3DF0D00BD0604 /* IP Inbound */,
@@ -222,10 +215,9 @@
 				01F13CF62DBEE074000E58A2 /* NIOPosix */,
 				01F13CFD2DBEE65B000E58A2 /* Logging */,
 				01C059A62DBF49C600D733C1 /* AsyncAlgorithms */,
-				016F3C102DC08B3900F2A1AE /* Bugsnag */,
-				016F3C132DC08B5800F2A1AE /* BugsnagPerformance */,
 				0166FA732DCA685800970EFD /* DefaultsMacros */,
 				018068732E76A9530073B0AD /* MGRS */,
+				4E66068E9AFD4993959FE327 /* Sentry */,
 			);
 			productName = "IP Inbound";
 			productReference = 01ECF4B62CF3DF0D00BD0604 /* IP Inbound.app */;
@@ -272,8 +264,6 @@
 				01ECF4D32CF3DF0F00BD0604 /* IP InboundUITests */,
 			);
 			name = "IP InboundUITests";
-			packageProductDependencies = (
-			);
 			productName = "IP InboundUITests";
 			productReference = 01ECF4D02CF3DF0F00BD0604 /* IP InboundUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
@@ -319,12 +309,11 @@
 				01F13CF32DBEE074000E58A2 /* XCRemoteSwiftPackageReference "swift-nio" */,
 				01F13CFC2DBEE65B000E58A2 /* XCRemoteSwiftPackageReference "swift-log" */,
 				01C059A52DBF49C600D733C1 /* XCRemoteSwiftPackageReference "swift-async-algorithms" */,
-				016F3C0F2DC08B3900F2A1AE /* XCRemoteSwiftPackageReference "bugsnag-cocoa" */,
-				016F3C122DC08B5800F2A1AE /* XCRemoteSwiftPackageReference "bugsnag-cocoa-performance" */,
 				016F3ED02DD4F1E1006EEC6D /* XCRemoteSwiftPackageReference "swift-numerics" */,
 				018068722E76A9530073B0AD /* XCRemoteSwiftPackageReference "mgrs-ios" */,
+				F48BBB649D7A4A6387FBF73C /* XCRemoteSwiftPackageReference "sentry-cocoa" */,
 			);
-			preferredProjectObjectVersion = 77;
+			preferredProjectObjectVersion = 90;
 			productRefGroup = 01ECF4B72CF3DF0D00BD0604 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -340,62 +329,77 @@
 /* Begin PBXResourcesBuildPhase section */
 		016F3C192DC08E7A00F2A1AE /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		01ECF4B42CF3DF0D00BD0604 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		01ECF4C42CF3DF0F00BD0604 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		01ECF4CE2CF3DF0F00BD0604 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		C8D493EE46664369A7D42761 /* Upload Debug Symbols to Sentry */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}",
+			);
+			name = "Upload Debug Symbols to Sentry";
+			runOnlyForDeploymentPostprocessing = 1;
+			shellPath = /bin/sh;
+			shellScript = (
+				"# This script is responsible for uploading debug symbols and source context for Sentry.",
+				"if [[ \"$(uname -m)\" == arm64 ]]; then",
+				"  export PATH=\"/opt/homebrew/bin:$PATH\"",
+				"fi",
+				"",
+				"if which sentry-cli >/dev/null; then",
+				"  export SENTRY_ORG=timcodes",
+				"  export SENTRY_PROJECT=ip-inbound",
+				"  ERROR=$(sentry-cli debug-files upload --include-sources \"$DWARF_DSYM_FOLDER_PATH\" 2>&1 >/dev/null)",
+				"  if [ ! $? -eq 0 ]; then",
+				"    echo \"warning: sentry-cli - $ERROR\"",
+				"  fi",
+				"else",
+				"  echo \"warning: sentry-cli not installed, download from https://github.com/getsentry/sentry-cli/releases\"",
+				"fi",
+				"",
+			);
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		016F3C172DC08E7A00F2A1AE /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		01ECF4B22CF3DF0D00BD0604 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		01ECF4C22CF3DF0F00BD0604 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		01ECF4CC2CF3DF0F00BD0604 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
@@ -418,7 +422,7 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		016F3C242DC08E7A00F2A1AE /* Debug */ = {
+		016F3C242DC08E7A00F2A1AE /* Debug configuration for PBXNativeTarget "Generate Screenshots" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALLOW_TARGET_PLATFORM_SPECIALIZATION = YES;
@@ -436,7 +440,7 @@
 			};
 			name = Debug;
 		};
-		016F3C252DC08E7A00F2A1AE /* Release */ = {
+		016F3C252DC08E7A00F2A1AE /* Release configuration for PBXNativeTarget "Generate Screenshots" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALLOW_TARGET_PLATFORM_SPECIALIZATION = YES;
@@ -454,7 +458,7 @@
 			};
 			name = Release;
 		};
-		01ECF4D82CF3DF0F00BD0604 /* Debug */ = {
+		01ECF4D82CF3DF0F00BD0604 /* Debug configuration for PBXProject "IP Inbound" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -492,7 +496,7 @@
 				DEVELOPMENT_TEAM = 2NFSK2WB24;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -525,7 +529,7 @@
 			};
 			name = Debug;
 		};
-		01ECF4D92CF3DF0F00BD0604 /* Release */ = {
+		01ECF4D92CF3DF0F00BD0604 /* Release configuration for PBXProject "IP Inbound" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -563,7 +567,7 @@
 				DEVELOPMENT_TEAM = 2NFSK2WB24;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -589,7 +593,7 @@
 			};
 			name = Release;
 		};
-		01ECF4DB2CF3DF0F00BD0604 /* Debug */ = {
+		01ECF4DB2CF3DF0F00BD0604 /* Debug configuration for PBXNativeTarget "IP Inbound" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -597,8 +601,10 @@
 				CODE_SIGN_ENTITLEMENTS = "IP Inbound/IP Inbound.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 4;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "\"IP Inbound/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "IP-Inbound-Info.plist";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
@@ -620,7 +626,7 @@
 			};
 			name = Debug;
 		};
-		01ECF4DC2CF3DF0F00BD0604 /* Release */ = {
+		01ECF4DC2CF3DF0F00BD0604 /* Release configuration for PBXNativeTarget "IP Inbound" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -628,8 +634,10 @@
 				CODE_SIGN_ENTITLEMENTS = "IP Inbound/IP Inbound.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 4;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "\"IP Inbound/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "IP-Inbound-Info.plist";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
@@ -651,7 +659,7 @@
 			};
 			name = Release;
 		};
-		01ECF4DE2CF3DF0F00BD0604 /* Debug */ = {
+		01ECF4DE2CF3DF0F00BD0604 /* Debug configuration for PBXNativeTarget "IP InboundTests" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -667,7 +675,7 @@
 			};
 			name = Debug;
 		};
-		01ECF4DF2CF3DF0F00BD0604 /* Release */ = {
+		01ECF4DF2CF3DF0F00BD0604 /* Release configuration for PBXNativeTarget "IP InboundTests" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -683,7 +691,7 @@
 			};
 			name = Release;
 		};
-		01ECF4E12CF3DF0F00BD0604 /* Debug */ = {
+		01ECF4E12CF3DF0F00BD0604 /* Debug configuration for PBXNativeTarget "IP InboundUITests" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -698,7 +706,7 @@
 			};
 			name = Debug;
 		};
-		01ECF4E22CF3DF0F00BD0604 /* Release */ = {
+		01ECF4E22CF3DF0F00BD0604 /* Release configuration for PBXNativeTarget "IP InboundUITests" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -719,67 +727,46 @@
 		016F3C232DC08E7A00F2A1AE /* Build configuration list for PBXNativeTarget "Generate Screenshots" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				016F3C242DC08E7A00F2A1AE /* Debug */,
-				016F3C252DC08E7A00F2A1AE /* Release */,
+				016F3C242DC08E7A00F2A1AE /* Debug configuration for PBXNativeTarget "Generate Screenshots" */,
+				016F3C252DC08E7A00F2A1AE /* Release configuration for PBXNativeTarget "Generate Screenshots" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		01ECF4B12CF3DF0D00BD0604 /* Build configuration list for PBXProject "IP Inbound" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				01ECF4D82CF3DF0F00BD0604 /* Debug */,
-				01ECF4D92CF3DF0F00BD0604 /* Release */,
+				01ECF4D82CF3DF0F00BD0604 /* Debug configuration for PBXProject "IP Inbound" */,
+				01ECF4D92CF3DF0F00BD0604 /* Release configuration for PBXProject "IP Inbound" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		01ECF4DA2CF3DF0F00BD0604 /* Build configuration list for PBXNativeTarget "IP Inbound" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				01ECF4DB2CF3DF0F00BD0604 /* Debug */,
-				01ECF4DC2CF3DF0F00BD0604 /* Release */,
+				01ECF4DB2CF3DF0F00BD0604 /* Debug configuration for PBXNativeTarget "IP Inbound" */,
+				01ECF4DC2CF3DF0F00BD0604 /* Release configuration for PBXNativeTarget "IP Inbound" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		01ECF4DD2CF3DF0F00BD0604 /* Build configuration list for PBXNativeTarget "IP InboundTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				01ECF4DE2CF3DF0F00BD0604 /* Debug */,
-				01ECF4DF2CF3DF0F00BD0604 /* Release */,
+				01ECF4DE2CF3DF0F00BD0604 /* Debug configuration for PBXNativeTarget "IP InboundTests" */,
+				01ECF4DF2CF3DF0F00BD0604 /* Release configuration for PBXNativeTarget "IP InboundTests" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		01ECF4E02CF3DF0F00BD0604 /* Build configuration list for PBXNativeTarget "IP InboundUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				01ECF4E12CF3DF0F00BD0604 /* Debug */,
-				01ECF4E22CF3DF0F00BD0604 /* Release */,
+				01ECF4E12CF3DF0F00BD0604 /* Debug configuration for PBXNativeTarget "IP InboundUITests" */,
+				01ECF4E22CF3DF0F00BD0604 /* Release configuration for PBXNativeTarget "IP InboundUITests" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		016F3C0F2DC08B3900F2A1AE /* XCRemoteSwiftPackageReference "bugsnag-cocoa" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/bugsnag/bugsnag-cocoa";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 6.32.2;
-			};
-		};
-		016F3C122DC08B5800F2A1AE /* XCRemoteSwiftPackageReference "bugsnag-cocoa-performance" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/bugsnag/bugsnag-cocoa-performance";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.12.0;
-			};
-		};
 		016F3ED02DD4F1E1006EEC6D /* XCRemoteSwiftPackageReference "swift-numerics" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/apple/swift-numerics.git";
@@ -828,6 +815,14 @@
 				minimumVersion = 1.6.3;
 			};
 		};
+		F48BBB649D7A4A6387FBF73C /* XCRemoteSwiftPackageReference "sentry-cocoa" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/getsentry/sentry-cocoa/";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -835,16 +830,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 01ECF4F12CF3E2F800BD0604 /* XCRemoteSwiftPackageReference "Defaults" */;
 			productName = DefaultsMacros;
-		};
-		016F3C102DC08B3900F2A1AE /* Bugsnag */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 016F3C0F2DC08B3900F2A1AE /* XCRemoteSwiftPackageReference "bugsnag-cocoa" */;
-			productName = Bugsnag;
-		};
-		016F3C132DC08B5800F2A1AE /* BugsnagPerformance */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 016F3C122DC08B5800F2A1AE /* XCRemoteSwiftPackageReference "bugsnag-cocoa-performance" */;
-			productName = BugsnagPerformance;
 		};
 		016F3ED12DD4F1E1006EEC6D /* Numerics */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -880,6 +865,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 01F13CFC2DBEE65B000E58A2 /* XCRemoteSwiftPackageReference "swift-log" */;
 			productName = Logging;
+		};
+		4E66068E9AFD4993959FE327 /* Sentry */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F48BBB649D7A4A6387FBF73C /* XCRemoteSwiftPackageReference "sentry-cocoa" */;
+			productName = Sentry;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
