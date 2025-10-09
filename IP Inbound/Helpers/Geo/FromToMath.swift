@@ -34,40 +34,37 @@ struct FromToMath: Equatable {
 
   var distance: Measurement<UnitLength> { from.distance(to: to) }
   var timeToGo: Measurement<UnitDuration> {
-    let straightLineTime = distance / speed
     let turnTime = Self.turnTime(
       fromHeading: trackMagnetic,
       toHeading: bearingMagnetic,
       speed: speed
     )
 
-    // Calculate the forward progress made during the turn using arc geometry
     let deltaAngle = abs((bearingMagnetic - trackMagnetic).normalized.radians)
 
-    // If turn is small, ignore turn penalty
+    // If turn is small, ignore turn geometry
     guard deltaAngle > Self.smallTurn else {
-      return straightLineTime
+      return distance / speed
     }
 
+    // Calculate forward progress made during the turn using chord length
     // During a constant-rate turn, the aircraft follows a circular arc
-    // The turn radius at standard bank angle: r = v²/(g*tan(bankAngle))
+    // Turn radius: r = v²/(g*tan(bankAngle))
     let speedMS = speed.converted(to: .metersPerSecond).value
     let turnRadius = (speedMS * speedMS) / (Self.g * tan(Self.bankAngle))
-
-    // Arc length traveled during turn
-    let arcLength = turnRadius * deltaAngle
 
     // Forward progress toward destination (chord length of the arc)
     // Using the formula: chord = 2 * r * sin(θ/2)
     let chordLength = 2 * turnRadius * sin(deltaAngle / 2)
 
-    // The difference between arc length and chord is the "extra" distance
-    let extraDistance = arcLength - chordLength
+    // Remaining distance after accounting for forward progress during turn
+    let remainingDistance = Measurement(
+      value: distance.converted(to: .meters).value - chordLength,
+      unit: UnitLength.meters
+    )
 
-    // Convert extra distance to time penalty
-    let turnPenalty = Measurement(value: extraDistance / speedMS, unit: UnitDuration.seconds)
-
-    return straightLineTime + turnPenalty
+    // Total time = time spent turning + time for remaining distance
+    return turnTime + (remainingDistance / speed)
   }
   var timeOfArrival: Date { timeToGo.afterNow }
   var deltaTOT: TimeInterval {
