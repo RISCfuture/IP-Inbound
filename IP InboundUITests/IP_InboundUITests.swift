@@ -609,8 +609,15 @@ final class IP_InboundUITests: XCTestCase {
     // Create and configure a target
     createAndConfigureTarget(app: app)
 
-    // Navigate back to the target list
+    // Navigate back to the target list (need to go back 3 levels from Time on Target)
     if !isIPad() {
+      // Back from Time on Target to IP Setup
+      app.navigationBars.buttons.element(boundBy: 0).tap()
+      waitForNavigation()
+      // Back from IP Setup to Target Setup
+      app.navigationBars.buttons.element(boundBy: 0).tap()
+      waitForNavigation()
+      // Back from Target Setup to Target List
       app.navigationBars.buttons.element(boundBy: 0).tap()
       waitForNavigation()
     }
