@@ -2,3 +2,5 @@ parent_config: https://gist.githubusercontent.com/RISCfuture/c57d132e5e0160a768d
 
 excluded:
   - fastlane
+  - IP InboundUITests/IP_InboundUITestsLaunchTests.swift
+  - Generate Screenshots/SnapshotHelper.swift
