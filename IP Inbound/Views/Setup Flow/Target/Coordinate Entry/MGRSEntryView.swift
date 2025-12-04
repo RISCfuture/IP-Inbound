@@ -140,7 +140,8 @@ struct MGRSLetterKeypadView: View {
 
   var body: some View {
     GeometryReader { geometry in
-      let buttonSize = min(geometry.size.width / 5.5, geometry.size.height / 6.5)
+      // Ensure minimum button size of 44 points (Apple's minimum touch target)
+      let buttonSize = max(44, min(geometry.size.width / 5.5, geometry.size.height / 6.5))
       let spacing = buttonSize * 0.15
 
       VStack(spacing: spacing) {

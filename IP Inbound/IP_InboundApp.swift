@@ -7,6 +7,22 @@ import SwiftUI
 
 @main
 struct IP_InboundApp: App {
+  // MARK: - Type Properties
+
+  private static var isRunningTests: Bool {
+    // Detect unit tests (XCTestCase is loaded in the app process)
+    if NSClassFromString("XCTestCase") != nil {
+      return true
+    }
+    // Detect UI tests (test runner sets this environment variable)
+    if ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil {
+      return true
+    }
+    return false
+  }
+
+  // MARK: - Instance Properties
+
   private let modelContainer: ModelContainer
 
   var body: some Scene {
@@ -16,6 +32,8 @@ struct IP_InboundApp: App {
         .environment(\.previewLocation, nil)
     }.modelContainer(modelContainer)
   }
+
+  // MARK: - Initializers
 
   init() {
     SentrySDK.start { options in
@@ -65,7 +83,15 @@ struct IP_InboundApp: App {
     }
   }
 
+  // MARK: - Type Methods
+
   private static func createCloudKitStore() throws -> ModelConfiguration {
+    // Disable CloudKit entirely when running tests to avoid blocking the main
+    // thread waiting for CloudKit operations that will fail in the simulator.
+    if isRunningTests {
+      return ModelConfiguration(cloudKitDatabase: .none)
+    }
+
     guard FileManager.default.ubiquityIdentityToken != nil else {
       return ModelConfiguration(for: Target.self)
     }
@@ -73,6 +99,7 @@ struct IP_InboundApp: App {
     let config = ModelConfiguration()
 
     #if DEBUG
+
       // Use an autorelease pool to make sure Swift deallocates the persistent
       // container before setting up the SwiftData stack.
       try autoreleasepool {
