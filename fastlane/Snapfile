@@ -4,12 +4,12 @@
 # Using devices with App Store Connect accepted screenshot sizes
 devices([
     # iPhone - Required sizes
-    "iPhone 15 Pro Max",              # 6.7" display - 1290x2796 (accepted by App Store Connect)
-    "iPhone 14 Plus",                 # 6.5" display - 1284x2778 (covers second tier)
+    "iPhone 17 Pro Max",              # 6.7" display (accepted by App Store Connect)
+    "iPhone 16e",                     # 6.5" display (covers second tier)
 
     # iPad - Required sizes
-    "iPad Pro (12.9-inch) (6th generation)", # 12.9" display - 2048x2732 (accepted by App Store Connect)
-    "iPad Pro (11-inch) (4th generation)" # 11" display - 1668x2388 (covers second tier iPad)
+    "iPad Pro 13-inch (M5)",          # 12.9" display (accepted by App Store Connect)
+    "iPad Pro 11-inch (M5)"           # 11" display (covers second tier iPad)
 ])
 
 # Languages to generate screenshots for

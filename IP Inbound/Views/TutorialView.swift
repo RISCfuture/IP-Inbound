@@ -5,6 +5,7 @@ import SwiftUI
 struct TutorialView: View {
   var body: some View {
     ScrollView {
+      EmptyView().accessibilityIdentifier("tutorialView")
       LazyVStack(alignment: .leading, spacing: 24) {
         Text("How to Use IP Inbound").font(.title)
         Text(

@@ -9,6 +9,7 @@ struct FindLocationView: View {
 
   var body: some View {
     NavigationStack {
+      EmptyView().accessibilityIdentifier("findLocationView")
       VStack {
         List(searchCompleter.suggestions, id: \.self) { suggestion in
           VStack(alignment: .leading) {

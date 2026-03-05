@@ -16,6 +16,7 @@ struct SimulatorBanner: View {
       .padding(.vertical, 8)
       .background(Color.orange)
       .clipShape(Capsule())
+      .accessibilityIdentifier("simulatorBanner")
   }
 }
 

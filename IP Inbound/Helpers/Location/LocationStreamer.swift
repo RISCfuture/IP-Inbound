@@ -79,6 +79,7 @@ final class LocationStreamer: Sendable {
 
   private static var isRunningUITests: Bool {
     ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
+      || ProcessInfo.processInfo.arguments.contains("-UITests")
   }
 
   private var listenerCount = 0

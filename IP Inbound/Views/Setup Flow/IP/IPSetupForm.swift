@@ -73,6 +73,7 @@ struct IPSetupForm: View {
             Text("Distance").tag(IPOffsetType.distance)
             Text("Time").tag(IPOffsetType.time)
           }
+          .pickerStyle(.segmented)
           .labelsHidden()
           .padding(.horizontal, -12)
           .accessibilityIdentifier("offsetTypePicker")

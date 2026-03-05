@@ -20,12 +20,14 @@ struct TOTView: View {
           .onTapGesture { cycleUnits() }
           .accessibilityAddTraits(.isButton)
           .accessibilityHint("Cycle speed units")
+          .accessibilityIdentifier("flySpeedDisplay")
         Text("•")
       }
       Text(fromTo.distance.converted(to: distanceDefault.distanceUnit), format: distanceFormatStyle)
         .onTapGesture { cycleUnits() }
         .accessibilityAddTraits(.isButton)
         .accessibilityHint("Cycle distance units")
+        .accessibilityIdentifier("flyDistanceDisplay")
       if let timeOnTarget {
         Text("•")
         HStack(alignment: .firstTextBaseline, spacing: 4) {
@@ -35,11 +37,13 @@ struct TOTView: View {
                 .onTapGesture { displayMode = .zulu }
                 .accessibilityHint("Toggle local or zulu time")
                 .accessibilityAddTraits(.isButton)
+                .accessibilityIdentifier("flyTOTDisplay")
             case .zulu:
               Text(timeOnTarget, format: zuluTOTFormatStyle)
                 .onTapGesture { displayMode = .local }
                 .accessibilityHint("Toggle local or zulu time")
                 .accessibilityAddTraits(.isButton)
+                .accessibilityIdentifier("flyTOTDisplay")
           }
           Text(isPush ? "Push" : "TOT")
             .font(.caption)

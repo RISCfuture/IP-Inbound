@@ -42,6 +42,7 @@ struct TargetSetupForm: View {
           .accessibilityIdentifier("setCoordinatesButton")
 
         Button(action: { findLocationShown = true }, label: { Text("Find Location…") })
+          .accessibilityIdentifier("findLocationButton")
       }
     }
     .sheet(isPresented: $editingCoordinates) {

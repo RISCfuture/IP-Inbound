@@ -14,8 +14,11 @@ struct IP_InboundApp: App {
     if NSClassFromString("XCTestCase") != nil {
       return true
     }
-    // Detect UI tests (test runner sets this environment variable)
-    if ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil {
+    // Detect UI tests (test runner sets this environment variable, or
+    // the test harness passes -UITests as a launch argument)
+    if ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
+      || ProcessInfo.processInfo.arguments.contains("-UITests")
+    {
       return true
     }
     return false
@@ -89,7 +92,7 @@ struct IP_InboundApp: App {
     // Disable CloudKit entirely when running tests to avoid blocking the main
     // thread waiting for CloudKit operations that will fail in the simulator.
     if isRunningTests {
-      return ModelConfiguration(cloudKitDatabase: .none)
+      return ModelConfiguration(isStoredInMemoryOnly: true, cloudKitDatabase: .none)
     }
 
     guard FileManager.default.ubiquityIdentityToken != nil else {

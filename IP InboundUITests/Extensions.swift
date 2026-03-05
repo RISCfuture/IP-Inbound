@@ -7,10 +7,10 @@ func waitForNavigation() {
 
 extension XCUIElement {
   var isVisible: Bool {
-    guard self.exists && !self.frame.isEmpty else { return false }
-    let app = XCUIApplication()
-    guard let firstWindow = app.windows.allElementsBoundByIndex.first else { return false }
-    return firstWindow.frame.contains(self.frame)
+    // Use firstMatch to avoid "Multiple matching elements" on iPad split views
+    let resolved = firstMatch
+    guard resolved.exists else { return false }
+    return resolved.isHittable
   }
 
   func makeVisible(element: XCUIElement) -> XCUIElement? {

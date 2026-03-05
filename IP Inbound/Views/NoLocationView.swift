@@ -10,7 +10,9 @@ struct NoLocationView: View {
       Text("No location.")
         .font(.title)
         .foregroundStyle(.secondary)
-    }.padding()
+    }
+    .accessibilityIdentifier("noLocationView")
+    .padding()
   }
 }
 

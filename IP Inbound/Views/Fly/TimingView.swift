@@ -69,6 +69,7 @@ struct TimingView: View {
 
       TOTView(fromTo: fromTo, timeOnTarget: timeOnTarget, showSpeed: true)
     }
+    .accessibilityIdentifier("timingIndicator")
   }
 }
 

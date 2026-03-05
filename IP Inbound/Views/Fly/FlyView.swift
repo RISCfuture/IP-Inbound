@@ -102,7 +102,9 @@ struct FlyView: View {
             }
         }
       }.padding()
-    }.onAppear {
+    }
+    .accessibilityIdentifier("flyView")
+    .onAppear {
       target.isConfigured = true
       UIApplication.shared.isIdleTimerDisabled = true
     }

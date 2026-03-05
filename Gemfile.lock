@@ -139,10 +139,10 @@ GEM
     mime-types (3.7.0)
       logger
       mime-types-data (~> 3.2025, >= 3.2025.0507)
-    mime-types-data (3.2025.0924)
+    mime-types-data (3.2026.0203)
     mini_magick (4.5.1)
-    multi_json (1.18.0)
-    multi_xml (0.8.0)
+    multi_json (1.19.1)
+    multi_xml (0.8.1)
       bigdecimal (>= 3.1, < 5)
     multipart-post (2.4.1)
     mutex_m (0.3.0)
@@ -239,4 +239,4 @@ DEPENDENCIES
   ostruct
 
 BUNDLED WITH
-  4.0.3
+  4.0.6
