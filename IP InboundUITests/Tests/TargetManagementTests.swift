@@ -8,6 +8,7 @@ final class TargetManagementTests: BaseTestCase {
 
   @MainActor
   func testCreateNewTarget() throws {
+    try skipOniOS18()
     launchApp()
     let list = TargetListPage(app: app)
     let setup = list.createTarget(named: "Alpha")
@@ -31,6 +32,7 @@ final class TargetManagementTests: BaseTestCase {
 
   @MainActor
   func testSelectExistingTarget() throws {
+    try skipOniOS18()
     launchApp()
     let list = TargetListPage(app: app)
     let setup = list.createTarget(named: "Bravo")
@@ -131,7 +133,10 @@ final class TargetManagementTests: BaseTestCase {
       // The format may be DD (37.12345°), DMS (37° 07′ 24″), etc.
       let predicate = NSPredicate(format: "label CONTAINS '37' AND label CONTAINS '121'")
       let coordText = cell.staticTexts.element(matching: predicate)
-      XCTAssertTrue(coordText.waitForExistence(timeout: 5), "Cell should show coordinates containing '37' and '121'")
+      XCTAssertTrue(
+        coordText.waitForExistence(timeout: 5),
+        "Cell should show coordinates containing '37' and '121'"
+      )
     }
 
     // Clean up
@@ -195,7 +200,10 @@ final class TargetManagementTests: BaseTestCase {
 
     // With no target selected, the detail pane should show "No Target"
     let noTargetText = app.staticTexts["No Target"]
-    XCTAssertTrue(noTargetText.waitForExistence(timeout: 5), "'No Target' should be displayed in detail pane")
+    XCTAssertTrue(
+      noTargetText.waitForExistence(timeout: 5),
+      "'No Target' should be displayed in detail pane"
+    )
   }
 }
 

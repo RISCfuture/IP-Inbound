@@ -25,7 +25,10 @@ final class CoordinateEntryTests: BaseTestCase {
 
     let label = returned.coordinatesLabel()
     XCTAssertTrue(label.contains("N 37.12345°"), "Latitude should be N 37.12345° but was: \(label)")
-    XCTAssertTrue(label.contains("W 121.67890°"), "Longitude should be W 121.67890° but was: \(label)")
+    XCTAssertTrue(
+      label.contains("W 121.67890°"),
+      "Longitude should be W 121.67890° but was: \(label)"
+    )
 
     navigateToListAndDelete("DD Test")
   }
@@ -134,7 +137,10 @@ final class CoordinateEntryTests: BaseTestCase {
 
     let label = returned.coordinatesLabel()
     XCTAssertTrue(label.contains("12U"), "MGRS label should contain '12U' but was: \(label)")
-    XCTAssertFalse(label.contains("10S"), "MGRS should not show initial location 10S, was: \(label)")
+    XCTAssertFalse(
+      label.contains("10S"),
+      "MGRS should not show initial location 10S, was: \(label)"
+    )
 
     navigateToListAndDelete("MGRS Test")
   }
@@ -160,7 +166,10 @@ final class CoordinateEntryTests: BaseTestCase {
 
     let label = returned.coordinatesLabel()
     XCTAssertTrue(label.contains("S 33.86880°"), "Latitude should be S 33.86880° but was: \(label)")
-    XCTAssertTrue(label.contains("E 151.20930°"), "Longitude should be E 151.20930° but was: \(label)")
+    XCTAssertTrue(
+      label.contains("E 151.20930°"),
+      "Longitude should be E 151.20930° but was: \(label)"
+    )
 
     navigateToListAndDelete("SE Test")
   }
@@ -200,7 +209,10 @@ final class CoordinateEntryTests: BaseTestCase {
 
     // At least one of the subsequent labels should differ from the first
     let changed = (label1 != label2) || (label2 != label3)
-    XCTAssertTrue(changed, "Tapping coordinates should cycle format. Got: '\(label1)', '\(label2)', '\(label3)'")
+    XCTAssertTrue(
+      changed,
+      "Tapping coordinates should cycle format. Got: '\(label1)', '\(label2)', '\(label3)'"
+    )
 
     navigateToListAndDelete("Cycle Test")
   }

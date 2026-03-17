@@ -1,10 +1,19 @@
 import CoreLocation
 import XCTest
 
-// swiftlint:disable prefer_nimble
+// swiftlint:disable final_test_case test_case_accessibility
 
 class BaseTestCase: XCTestCase {
+
+  // MARK: - Instance Properties
+
   var app: XCUIApplication!
+
+  @MainActor var isIPad: Bool {
+    UIDevice.current.userInterfaceIdiom == .pad
+  }
+
+  // MARK: - XCTestCase
 
   override func setUpWithError() throws {
     continueAfterFailure = false
@@ -12,14 +21,18 @@ class BaseTestCase: XCTestCase {
     // Handle location permission alerts that appear during test interaction.
     // XCUITest's default handler taps "Don't Allow" which breaks tests.
     addUIInterruptionMonitor(withDescription: "Location Permission") { alert in
-      let allowButton = alert.buttons["Allow While Using App"]
-      if allowButton.exists {
-        allowButton.tap()
-        return true
+      MainActor.assumeIsolated {
+        let allowButton = alert.buttons["Allow While Using App"]
+        if allowButton.exists {
+          allowButton.tap()
+          return true
+        }
+        return false
       }
-      return false
     }
   }
+
+  // MARK: - Methods
 
   /// Call at the start of each test to set up the app. Must be called from @MainActor context.
   @MainActor
@@ -45,11 +58,6 @@ class BaseTestCase: XCTestCase {
     handleLocationPermissionIfNeeded()
     // Re-set location after permission grant — iPad may miss the initial update
     setSimulatedLocation(latitude: 37.7749, longitude: -122.4194)
-  }
-
-  @MainActor
-  var isIPad: Bool {
-    UIDevice.current.userInterfaceIdiom == .pad
   }
 
   @MainActor
@@ -85,4 +93,4 @@ class BaseTestCase: XCTestCase {
   }
 }
 
-// swiftlint:enable prefer_nimble
+// swiftlint:enable final_test_case test_case_accessibility

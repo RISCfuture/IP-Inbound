@@ -9,9 +9,11 @@ struct FindLocationPage: Page {
     app.otherElements["findLocationView"].waitForExistence(timeout: 3)
   }
 
-  // MARK: - Elements
-
   @MainActor var searchField: XCUIElement { app.searchFields.firstMatch }
+
+  @MainActor var hasSuggestions: Bool {
+    app.cells.count > 0  // swiftlint:disable:this empty_count
+  }
 
   // MARK: - Actions
 
@@ -36,16 +38,12 @@ struct FindLocationPage: Page {
   func selectSuggestion(containing text: String) -> TargetSetupPage {
     let predicate = NSPredicate(format: "label CONTAINS[c] %@", text)
     let match = app.staticTexts.element(matching: predicate)
-    XCTAssertTrue(match.waitForExistence(timeout: 10), "Suggestion containing '\(text)' should appear")
+    XCTAssertTrue(
+      match.waitForExistence(timeout: 10),
+      "Suggestion containing '\(text)' should appear"
+    )
     match.tap()
     return TargetSetupPage(app: app)
-  }
-
-  // MARK: - Queries
-
-  @MainActor
-  var hasSuggestions: Bool {
-    app.cells.count > 0
   }
 }
 

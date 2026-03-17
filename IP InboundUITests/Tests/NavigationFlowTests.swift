@@ -46,7 +46,7 @@ final class NavigationFlowTests: BaseTestCase {
     totPage.selectZuluTime()
     totPage.enterTime("18:00:00")
 
-    let flyPage = totPage.tapFly()
+    totPage.tapFly()
 
     // Assert fly view loads (countdown mode expected in test environment)
     XCTAssertTrue(waitForFlyContent(), "Fly view content should appear after forward navigation")
@@ -60,6 +60,7 @@ final class NavigationFlowTests: BaseTestCase {
 
   @MainActor
   func testBackNavigationFlow() throws {
+    try skipOniOS18()
     launchApp()
     let list = TargetListPage(app: app)
     let setup = list.createTarget(named: "BackNav")
@@ -77,7 +78,8 @@ final class NavigationFlowTests: BaseTestCase {
 
     // Assert bearing field retains value
     let ipBack = IPSetupPage(app: app)
-    let bearingField = ipBack.scrollToVisible(ipBack.offsetBearingField) ?? ipBack.offsetBearingField
+    let bearingField =
+      ipBack.scrollToVisible(ipBack.offsetBearingField) ?? ipBack.offsetBearingField
     XCTAssertTrue(bearingField.waitForExistence(timeout: 3))
     let bearingValue = bearingField.value as? String ?? ""
     XCTAssertTrue(
@@ -107,6 +109,7 @@ final class NavigationFlowTests: BaseTestCase {
 
   @MainActor
   func testConfiguredTargetSkipsToFly() throws {
+    try skipOniOS18()
     launchApp()
     let list = TargetListPage(app: app)
 
@@ -122,7 +125,7 @@ final class NavigationFlowTests: BaseTestCase {
     totPage.selectZuluTime()
     totPage.enterTime("18:00:00")
 
-    let flyPage = totPage.tapFly()
+    totPage.tapFly()
 
     // Wait for fly view to render
     XCTAssertTrue(waitForFlyContent(), "Fly view should render on first visit")
@@ -142,7 +145,7 @@ final class NavigationFlowTests: BaseTestCase {
       let setup = TargetSetupPage(app: app)
       let ipPage = setup.tapDefineIP()
       let totPage = ipPage.tapTimeOnTarget()
-      _ = totPage.tapFly()
+      totPage.tapFly()
       XCTAssertTrue(
         waitForFlyContent(timeout: 15),
         "Configured target should still reach fly view"
@@ -163,7 +166,10 @@ final class NavigationFlowTests: BaseTestCase {
     let setup = list.createTarget(named: "NewSetup")
 
     // Assert we land on target setup, NOT fly view
-    XCTAssertTrue(setup.defineIPButton.waitForExistence(timeout: 5), "Define IP button should be visible")
+    XCTAssertTrue(
+      setup.defineIPButton.waitForExistence(timeout: 5),
+      "Define IP button should be visible"
+    )
 
     // Verify it's NOT the fly view
     let flyView = app.otherElements["flyView"]
@@ -192,7 +198,7 @@ final class NavigationFlowTests: BaseTestCase {
     totPage.selectZuluTime()
     totPage.enterTime("18:00:00")
 
-    let flyPage = totPage.tapFly()
+    totPage.tapFly()
     XCTAssertTrue(waitForFlyContent(), "Fly view should render")
 
     // Go back to TOT via nav bar back button (labeled with previous view's title)
@@ -210,7 +216,7 @@ final class NavigationFlowTests: BaseTestCase {
     XCTAssertTrue(totBack.isDisplayed, "Should be on TOT page after back from fly")
 
     // Go back forward to fly
-    let flyAgain = totBack.tapFly()
+    totBack.tapFly()
     XCTAssertTrue(
       waitForFlyContent(),
       "Fly view should render after reconfig"

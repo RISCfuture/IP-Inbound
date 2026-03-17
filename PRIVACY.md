@@ -4,15 +4,27 @@ This privacy policy applies to the IP Inbound app (hereby referred to as "Applic
 
 **What information does the Application obtain and how is it used?**
 
-The Application does not obtain any information when you download and use it. Registration is not required to use the Application.
+The Application collects limited data to provide its core functionality and improve reliability. The specific categories of data are described below.
 
-**Does the Application collect precise real time location information of the device?**
+**Location Data**
 
-This Application does not collect precise information about the location of your mobile device.
+The Application uses your device's precise GPS location in real time to provide navigation guidance to your target. Location data is processed entirely on your device and is not transmitted to any external server or third party.
+
+**Crash and Diagnostic Data**
+
+The Application uses Sentry, a third-party error monitoring service, to collect crash reports, performance data, and diagnostic information. This data helps the Service Provider identify and fix bugs. Sentry may collect device information, app state at the time of a crash, and performance traces. This data is not linked to your identity and is used solely for app stability and performance improvement.
+
+**iCloud Data**
+
+The Application uses Apple's CloudKit to sync your saved targets across your devices via your iCloud account. This data is stored in your personal iCloud container and is managed by Apple under their privacy policy. The Service Provider does not have access to your iCloud data.
+
+**Tracking**
+
+The Application does not track you. It does not use advertising identifiers, does not engage in cross-app tracking, and does not share data with advertisers or data brokers.
 
 **Do third parties see and/or have access to information obtained by the Application?**
 
-Since the Application does not collect any information, no data is shared with third parties.
+Crash and diagnostic data is transmitted to Sentry (a third-party service) for error monitoring. No other data is shared with third parties. Location data and iCloud data are never sent to the Service Provider or any third party.
 
 **What are my opt-out rights?**
 
@@ -22,17 +34,17 @@ You can stop all collection of information by the Application easily by uninstal
 
 The Application is not used to knowingly solicit data from or market to children under the age of 13.
 
-The Service Provider does not knowingly collect personally identifiable information from children. The Service Provider encourages all children to never submit any personally identifiable information through the Application and/or Services. The Service Provider encourage parents and legal guardians to monitor their children's Internet usage and to help enforce this Policy by instructing their children never to provide personally identifiable information through the Application and/or Services without their permission. If you have reason to believe that a child has provided personally identifiable information to the Service Provider through the Application and/or Services, please contact the Service Provider (apple@timothymorgan.info) so that they will be able to take the necessary actions. You must also be at least 16 years of age to consent to the processing of your personally identifiable information in your country (in some countries we may allow your parent or guardian to do so on your behalf).
+The Service Provider does not knowingly collect personally identifiable information from children. The Service Provider encourages all children to never submit any personally identifiable information through the Application and/or Services. The Service Provider encourages parents and legal guardians to monitor their children's Internet usage and to help enforce this Policy by instructing their children never to provide personally identifiable information through the Application and/or Services without their permission. If you have reason to believe that a child has provided personally identifiable information to the Service Provider through the Application and/or Services, please contact the Service Provider (apple@timothymorgan.info) so that they will be able to take the necessary actions. You must also be at least 16 years of age to consent to the processing of your personally identifiable information in your country (in some countries we may allow your parent or guardian to do so on your behalf).
 
 **Security**
 
-The Service Provider is concerned about safeguarding the confidentiality of your information. However, since the Application does not collect any information, there is no risk of your data being accessed by unauthorized individuals.
+The Service Provider is concerned about safeguarding the confidentiality of your information. Location data never leaves your device. Crash and diagnostic data transmitted to Sentry is sent over encrypted connections (HTTPS). iCloud data is protected by Apple's security infrastructure.
 
 **Changes**
 
 This Privacy Policy may be updated from time to time for any reason. The Service Provider will notify you of any changes to their Privacy Policy by updating this page with the new Privacy Policy. You are advised to consult this Privacy Policy regularly for any changes, as continued use is deemed approval of all changes.
 
-This privacy policy is effective as of 2025-05-12
+This privacy policy is effective as of 2026-03-16
 
 **Your Consent**
 
@@ -41,7 +53,3 @@ By using the Application, you are consenting to the processing of your informati
 **Contact Us**
 
 If you have any questions regarding privacy while using the Application, or have questions about the practices, please contact the Service Provider via email at apple@timothymorgan.info.
-
-* * *
-
-This privacy policy page was generated by [App Privacy Policy Generator](https://app-privacy-policy-generator.nisrulz.com/)

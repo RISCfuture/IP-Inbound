@@ -30,11 +30,11 @@
       shouldUseLaunchSchemeArgsEnv = "YES">
       <TestPlans>
          <TestPlanReference
-            reference = "container:Unit Tests.xctestplan"
+            reference = "container:IP InboundTests/Unit Tests.xctestplan"
             default = "YES">
          </TestPlanReference>
          <TestPlanReference
-            reference = "container:UI Tests.xctestplan">
+            reference = "container:IP InboundUITests/UI Tests.xctestplan">
          </TestPlanReference>
          <TestPlanReference
             reference = "container:Generate Screenshots/Generate Screenshots.xctestplan">

@@ -48,9 +48,6 @@
 /* Begin PBXFileReference section */
 		01497EEC2DDC473400963D93 /* ci_post_clone.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = ci_post_clone.sh; sourceTree = "<group>"; };
 		016F3C1B2DC08E7A00F2A1AE /* Generate Screenshots.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Generate Screenshots.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		016F3ECE2DD4ED40006EEC6D /* Unit Tests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Unit Tests.xctestplan"; sourceTree = "<group>"; };
-		016F3ECF2DD4ED50006EEC6D /* UI Tests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = "UI Tests.xctestplan"; sourceTree = "<group>"; };
-		01B263622E7C75B2009218E3 /* Generate Screenshots.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = "Generate Screenshots.xctestplan"; path = "Generate Screenshots/Generate Screenshots.xctestplan"; sourceTree = "<group>"; };
 		01ECF4B62CF3DF0D00BD0604 /* IP Inbound.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "IP Inbound.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		01ECF4C62CF3DF0F00BD0604 /* IP InboundTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "IP InboundTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		01ECF4D02CF3DF0F00BD0604 /* IP InboundUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "IP InboundUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -63,6 +60,20 @@
 				Extensions.swift,
 			);
 			target = 016F3C1A2DC08E7A00F2A1AE /* Generate Screenshots */;
+		};
+		0123BC7F2F67F35400FF7A8E /* Exceptions for "IP InboundTests" folder in "IP InboundTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"Unit Tests.xctestplan",
+			);
+			target = 01ECF4C52CF3DF0F00BD0604 /* IP InboundTests */;
+		};
+		0123BC802F67F35700FF7A8E /* Exceptions for "IP InboundUITests" folder in "IP InboundUITests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"UI Tests.xctestplan",
+			);
+			target = 01ECF4CF2CF3DF0F00BD0604 /* IP InboundUITests */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -79,12 +90,16 @@
 		};
 		01ECF4C92CF3DF0F00BD0604 /* IP InboundTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				0123BC7F2F67F35400FF7A8E /* Exceptions for "IP InboundTests" folder in "IP InboundTests" target */,
+			);
 			path = "IP InboundTests";
 			sourceTree = "<group>";
 		};
 		01ECF4D32CF3DF0F00BD0604 /* IP InboundUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
+				0123BC802F67F35700FF7A8E /* Exceptions for "IP InboundUITests" folder in "IP InboundUITests" target */,
 				011EBCA72E850CB70012E257 /* Exceptions for "IP InboundUITests" folder in "Generate Screenshots" target */,
 			);
 			path = "IP InboundUITests";
@@ -139,10 +154,7 @@
 		01ECF4AD2CF3DF0D00BD0604 = {
 			isa = PBXGroup;
 			children = (
-				01B263622E7C75B2009218E3 /* Generate Screenshots.xctestplan */,
 				01497EED2DDC473400963D93 /* ci_scripts */,
-				016F3ECE2DD4ED40006EEC6D /* Unit Tests.xctestplan */,
-				016F3ECF2DD4ED50006EEC6D /* UI Tests.xctestplan */,
 				01ECF4B82CF3DF0D00BD0604 /* IP Inbound */,
 				01ECF4C92CF3DF0F00BD0604 /* IP InboundTests */,
 				01ECF4D32CF3DF0F00BD0604 /* IP InboundUITests */,
@@ -497,7 +509,6 @@
 				DEVELOPMENT_TEAM = 2NFSK2WB24;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -568,7 +579,6 @@
 				DEVELOPMENT_TEAM = 2NFSK2WB24;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -608,6 +618,7 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "IP-Inbound-Info.plist";
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -641,6 +652,7 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "IP-Inbound-Info.plist";
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

@@ -9,12 +9,14 @@ struct TargetListPage: Page {
     app.buttons["addTargetButton"].waitForExistence(timeout: 15)
   }
 
-  // MARK: - Elements
-
   @MainActor var addTargetButton: XCUIElement { app.buttons["addTargetButton"] }
   @MainActor var tutorialButton: XCUIElement { app.buttons["tutorialButton"] }
 
-  // MARK: - Actions
+  @MainActor var targetCount: Int {
+    app.cells.count
+  }
+
+  // MARK: - Methods
 
   @MainActor
   @discardableResult
@@ -90,26 +92,6 @@ struct TargetListPage: Page {
   }
 
   @MainActor
-  private func findCell(named name: String) -> XCUIElement? {
-    let nameText = app.staticTexts[name].firstMatch
-    guard nameText.waitForExistence(timeout: 5) else { return nil }
-    for i in 0..<app.cells.count {
-      let cell = app.cells.element(boundBy: i)
-      if cell.staticTexts[name].exists {
-        return cell
-      }
-    }
-    return nil
-  }
-
-  // MARK: - Queries
-
-  @MainActor
-  var targetCount: Int {
-    app.cells.count
-  }
-
-  @MainActor
   func cellContainsTimeText(named name: String) -> Bool {
     guard let cell = targetCell(named: name) else { return false }
     // swiftlint:disable:next force_try
@@ -121,6 +103,21 @@ struct TargetListPage: Page {
       }
     }
     return false
+  }
+
+  // MARK: - Private
+
+  @MainActor
+  private func findCell(named name: String) -> XCUIElement? {
+    let nameText = app.staticTexts[name].firstMatch
+    guard nameText.waitForExistence(timeout: 5) else { return nil }
+    for i in 0..<app.cells.count {
+      let cell = app.cells.element(boundBy: i)
+      if cell.staticTexts[name].exists {
+        return cell
+      }
+    }
+    return nil
   }
 }
 

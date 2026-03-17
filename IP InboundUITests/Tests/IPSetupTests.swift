@@ -21,13 +21,16 @@ final class IPSetupTests: BaseTestCase {
 
     let inbound = ipPage.inboundLabel()
     XCTAssertNotNil(inbound, "Inbound label should be visible")
-    XCTAssertTrue(
-      inbound?.contains("Inbound:") == true,
+    XCTAssertEqual(
+      inbound?.contains("Inbound:"),
+      true,
       "Inbound label should show a computed value, got: \(inbound ?? "nil")"
     )
     // Should not be empty after the "Inbound:" prefix
-    let value = inbound?.replacingOccurrences(of: "Inbound:", with: "").trimmingCharacters(in: .whitespaces)
-    XCTAssertFalse(value?.isEmpty == true, "Inbound value should not be empty")
+    let value = inbound?.replacingOccurrences(of: "Inbound:", with: "").trimmingCharacters(
+      in: .whitespaces
+    )
+    XCTAssertNotEqual(value?.isEmpty, true, "Inbound value should not be empty")
 
     navigateFromIPToListAndDelete("Bearing Test")
   }
@@ -56,7 +59,8 @@ final class IPSetupTests: BaseTestCase {
     let inboundTrue = ipPage.inboundLabel()
 
     XCTAssertNotEqual(
-      inboundMagnetic, inboundTrue,
+      inboundMagnetic,
+      inboundTrue,
       "Inbound value should change between magnetic and true. Magnetic: '\(inboundMagnetic ?? "nil")', True: '\(inboundTrue ?? "nil")'"
     )
 
@@ -74,15 +78,24 @@ final class IPSetupTests: BaseTestCase {
 
     // Distance field should be visible by default
     let distField = ipPage.offsetDistanceField
-    XCTAssertTrue(distField.waitForExistence(timeout: 3), "Distance field should be visible initially")
+    XCTAssertTrue(
+      distField.waitForExistence(timeout: 3),
+      "Distance field should be visible initially"
+    )
 
     // Switch to Time
     ipPage.selectOffsetType("Time")
     Thread.sleep(forTimeInterval: 0.5)
 
     let timeField = ipPage.offsetTimeField
-    XCTAssertTrue(timeField.waitForExistence(timeout: 3), "Time field should appear after switching")
-    XCTAssertFalse(ipPage.offsetDistanceField.exists, "Distance field should be gone after switching to Time")
+    XCTAssertTrue(
+      timeField.waitForExistence(timeout: 3),
+      "Time field should appear after switching"
+    )
+    XCTAssertFalse(
+      ipPage.offsetDistanceField.exists,
+      "Distance field should be gone after switching to Time"
+    )
 
     // Switch back to Distance
     ipPage.selectOffsetType("Distance")
@@ -158,7 +171,11 @@ final class IPSetupTests: BaseTestCase {
     XCTAssertTrue(timeField.waitForExistence(timeout: 3), "Time field should appear")
     let timeValue = timeField.value as? String ?? ""
     let numericTime = Double(timeValue) ?? 0
-    XCTAssertGreaterThan(numericTime, 0, "Offset time should be a positive number for 5 NM at 120 kts, got: '\(timeValue)'")
+    XCTAssertGreaterThan(
+      numericTime,
+      0,
+      "Offset time should be a positive number for 5 NM at 120 kts, got: '\(timeValue)'"
+    )
 
     navigateFromIPToListAndDelete("Speed Test")
   }

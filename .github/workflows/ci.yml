@@ -33,8 +33,12 @@ jobs:
       - uses: actions/checkout@v4
       - name: Enable macros
         run: defaults write com.apple.dt.Xcode IDESkipMacroFingerprintValidation -bool YES
+      - name: Boot simulator
+        run: |
+          xcrun simctl boot "${{ matrix.device }}" || true
+          xcrun simctl bootstatus "${{ matrix.device }}" || true
       - name: Run unit tests
-        run: xcodebuild test -retry-tests-on-failure -test-iterations 3 -scheme "IP Inbound" -testPlan "Unit Tests" -destination "platform=iOS Simulator,name=${{ matrix.device }},OS=${{ matrix.ios }}" | xcpretty && exit ${PIPESTATUS[0]}
+        run: xcodebuild test -retry-tests-on-failure -test-iterations 3 -scheme "IP Inbound" -testPlan "Unit Tests" -destination "platform=iOS Simulator,name=${{ matrix.device }},OS=${{ matrix.ios }}" -skipMacroValidation | xcpretty && exit ${PIPESTATUS[0]}
 
   ui:
     name: UI Tests (${{ matrix.device }})

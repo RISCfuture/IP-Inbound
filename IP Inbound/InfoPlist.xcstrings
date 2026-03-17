@@ -24,17 +24,6 @@
         }
       }
     },
-    "NSLocationUsageDescription" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "IP Inbound needs to know your location in order to help you navigate to your target."
-          }
-        }
-      }
-    },
     "NSLocationWhenInUseUsageDescription" : {
       "extractionState" : "manual",
       "localizations" : {

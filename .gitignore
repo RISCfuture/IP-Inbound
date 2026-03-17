@@ -2,4 +2,23 @@
 .swiftlint/RemoteConfigCache
 .swift-format
 
+# Sentry CLI config
 .sentryclirc
+
+# Xcode
+DerivedData/
+build/
+*.xcuserstate
+xcuserdata/
+
+# macOS
+.DS_Store
+
+# Signing keys and credentials
+*.p8
+*.p12
+*.key
+
+# Fastlane
+fastlane/report.xml
+fastlane/test_output/

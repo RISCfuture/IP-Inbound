@@ -28,8 +28,14 @@ final class TutorialTests: BaseTestCase {
 
     XCTAssertTrue(tutorial.hasSectionTitle("Planning"), "'Planning' section should exist")
     XCTAssertTrue(tutorial.hasSectionTitle("Pre-IP"), "'Pre-IP' section should exist")
-    XCTAssertTrue(tutorial.hasSectionTitle("IP-to-Target Run"), "'IP-to-Target Run' section should exist")
-    XCTAssertTrue(tutorial.hasSectionTitle("Late to Target"), "'Late to Target' section should exist")
+    XCTAssertTrue(
+      tutorial.hasSectionTitle("IP-to-Target Run"),
+      "'IP-to-Target Run' section should exist"
+    )
+    XCTAssertTrue(
+      tutorial.hasSectionTitle("Late to Target"),
+      "'Late to Target' section should exist"
+    )
   }
 
   // MARK: - Test 37

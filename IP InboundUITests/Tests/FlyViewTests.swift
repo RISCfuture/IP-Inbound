@@ -8,6 +8,7 @@ final class FlyViewTests: BaseTestCase {
   // MARK: - Helpers
 
   @MainActor
+  @discardableResult
   private func configureTargetAndFly(named name: String) -> FlyPage {
     let list = TargetListPage(app: app)
     let setup = list.createTarget(named: name)
@@ -61,7 +62,7 @@ final class FlyViewTests: BaseTestCase {
   @MainActor
   func testFlyView_ShowsTargetName() throws {
     launchApp()
-    let flyPage = configureTargetAndFly(named: "Echo")
+    configureTargetAndFly(named: "Echo")
 
     // Wait for fly view to render (LocationStreamer delivers static location in test mode)
     XCTAssertTrue(waitForFlyContent(), "Fly view content should appear")
@@ -82,7 +83,7 @@ final class FlyViewTests: BaseTestCase {
   @MainActor
   func testFlyView_CountdownMode_ShowsGuidanceMessage() throws {
     launchApp()
-    let flyPage = configureTargetAndFly(named: "GuidanceMsg")
+    configureTargetAndFly(named: "GuidanceMsg")
 
     XCTAssertTrue(waitForFlyContent(), "Fly view content should appear")
 
@@ -101,7 +102,7 @@ final class FlyViewTests: BaseTestCase {
   @MainActor
   func testFlyView_CountdownMode_ShowsTimeToTOT() throws {
     launchApp()
-    let flyPage = configureTargetAndFly(named: "CountdownTOT")
+    configureTargetAndFly(named: "CountdownTOT")
 
     XCTAssertTrue(waitForFlyContent(), "Fly view content should appear")
 
@@ -150,7 +151,7 @@ final class FlyViewTests: BaseTestCase {
 
     // In UI test mode, the LocationStreamer uses a static location,
     // so IP→Target mode won't activate. Verify fly view renders.
-    let flyPage = configureTargetAndFly(named: "PostIPTest")
+    configureTargetAndFly(named: "PostIPTest")
 
     XCTAssertTrue(waitForFlyContent(), "Fly view content should appear")
 
@@ -184,13 +185,21 @@ final class FlyViewTests: BaseTestCase {
       speedDisplay.tap()
       Thread.sleep(forTimeInterval: 0.5)
       let label2 = speedDisplay.label
-      XCTAssertNotEqual(label1, label2, "Speed unit should change on tap. Before: '\(label1)', After: '\(label2)'")
+      XCTAssertNotEqual(
+        label1,
+        label2,
+        "Speed unit should change on tap. Before: '\(label1)', After: '\(label2)'"
+      )
     } else if distanceDisplay.waitForExistence(timeout: 5) {
       let label1 = distanceDisplay.label
       distanceDisplay.tap()
       Thread.sleep(forTimeInterval: 0.5)
       let label2 = distanceDisplay.label
-      XCTAssertNotEqual(label1, label2, "Distance unit should change on tap. Before: '\(label1)', After: '\(label2)'")
+      XCTAssertNotEqual(
+        label1,
+        label2,
+        "Distance unit should change on tap. Before: '\(label1)', After: '\(label2)'"
+      )
     } else {
       // In countdown mode without target coordinates, TOTView may not appear.
       // This is acceptable - the test validates the behavior when elements are present.

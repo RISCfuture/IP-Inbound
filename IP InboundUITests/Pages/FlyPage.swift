@@ -12,8 +12,6 @@ struct FlyPage: Page {
       || app.otherElements["countdown"].waitForExistence(timeout: 2)
   }
 
-  // MARK: - Elements
-
   @MainActor var cdi: XCUIElement { app.otherElements["cdi"] }
   @MainActor var countdown: XCUIElement { app.otherElements["countdown"] }
   @MainActor var simulatorBanner: XCUIElement { app.staticTexts["simulatorBanner"] }
@@ -21,7 +19,18 @@ struct FlyPage: Page {
   @MainActor var flyDistanceDisplay: XCUIElement { app.staticTexts["flyDistanceDisplay"] }
   @MainActor var flyTOTDisplay: XCUIElement { app.staticTexts["flyTOTDisplay"] }
 
-  // MARK: - Actions
+  @MainActor var guidanceMode: String? {
+    if app.staticTexts["P.POS → IP"].exists { return "P.POS → IP" }
+    if app.staticTexts["IP → Target"].exists { return "IP → Target" }
+    if app.staticTexts["P.POS → Target"].exists { return "P.POS → Target" }
+    return nil
+  }
+
+  @MainActor var hasCDI: Bool { cdi.exists }
+  @MainActor var hasCountdown: Bool { countdown.exists }
+  @MainActor var hasSimulatorBanner: Bool { simulatorBanner.exists }
+
+  // MARK: - Methods
 
   @MainActor
   func tapSpeedToCycleUnits() {
@@ -41,25 +50,6 @@ struct FlyPage: Page {
     XCTAssertTrue(flyTOTDisplay.waitForExistence(timeout: 3), "TOT display should exist")
     flyTOTDisplay.tap()
   }
-
-  // MARK: - Queries
-
-  @MainActor
-  var guidanceMode: String? {
-    if app.staticTexts["P.POS → IP"].exists { return "P.POS → IP" }
-    if app.staticTexts["IP → Target"].exists { return "IP → Target" }
-    if app.staticTexts["P.POS → Target"].exists { return "P.POS → Target" }
-    return nil
-  }
-
-  @MainActor
-  var hasCDI: Bool { cdi.exists }
-
-  @MainActor
-  var hasCountdown: Bool { countdown.exists }
-
-  @MainActor
-  var hasSimulatorBanner: Bool { simulatorBanner.exists }
 
   @MainActor
   func hasTargetName(_ name: String) -> Bool {

@@ -1,7 +1,5 @@
 import XCTest
 
-// swiftlint:disable prefer_nimble
-
 struct TutorialPage: Page {
   let app: XCUIApplication
 
@@ -9,13 +7,11 @@ struct TutorialPage: Page {
     app.staticTexts["How to Use IP Inbound"].waitForExistence(timeout: 5)
   }
 
-  // MARK: - Elements
-
   @MainActor var tutorialTitle: XCUIElement { app.staticTexts["How to Use IP Inbound"] }
   @MainActor var doneButton: XCUIElement { app.buttons["Done"] }
   @MainActor var closeButton: XCUIElement { app.buttons["Close"] }
 
-  // MARK: - Actions
+  // MARK: - Methods
 
   @MainActor
   func scrollDown() {
@@ -42,8 +38,6 @@ struct TutorialPage: Page {
     return TargetListPage(app: app)
   }
 
-  // MARK: - Queries
-
   @MainActor
   func hasSectionTitle(_ title: String) -> Bool {
     let text = app.staticTexts[title]
@@ -58,5 +52,3 @@ struct TutorialPage: Page {
     return false
   }
 }
-
-// swiftlint:enable prefer_nimble

@@ -42,19 +42,12 @@ struct IP_InboundApp: App {
     SentrySDK.start { options in
       options.dsn =
         "https://6d826473ed575a590d160fa29163b480@o4510156629475328.ingest.us.sentry.io/4510161641996288"
-      options.debug = true  // Enabled debug when first installing is always helpful
+      options.debug = true
 
-      // Adds IP for users.
-      // For more information, visit: https://docs.sentry.io/platforms/apple/data-management/data-collected/
-      options.sendDefaultPii = true
+      options.tracesSampleRate = 0.2
 
-      // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
-      // We recommend adjusting this value in production.
-      options.tracesSampleRate = 1.0
-
-      // Configure profiling. Visit https://docs.sentry.io/platforms/apple/profiling/ to learn more.
       options.configureProfiling = {
-        $0.sessionSampleRate = 1.0  // We recommend adjusting this value in production.
+        $0.sessionSampleRate = 0.2
         $0.lifecycle = .trace
       }
 

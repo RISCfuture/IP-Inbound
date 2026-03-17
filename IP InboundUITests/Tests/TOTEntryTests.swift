@@ -29,14 +29,9 @@ final class TOTEntryTests: BaseTestCase {
     XCTAssertTrue(listPage.isDisplayed)
 
     // Cell should show a time value (either local format like "12:34 PM" or Zulu like "1934Z")
-    let cell = listPage.targetCell(named: "Local Time Test")
-    XCTAssertNotNil(cell, "Target cell should exist")
-    if let cell {
-      // The time should appear in local format (e.g., "12:34 PM") or zulu.
-      // Search by label content since parent accessibility identifiers override children.
-      let hasTime = listPage.cellContainsTimeText(named: "Local Time Test")
-      XCTAssertTrue(hasTime, "Cell should contain a time display")
-    }
+    XCTAssertNotNil(listPage.targetCell(named: "Local Time Test"), "Target cell should exist")
+    let hasTime = listPage.cellContainsTimeText(named: "Local Time Test")
+    XCTAssertTrue(hasTime, "Cell should contain a time display")
 
     listPage.deleteTarget(named: "Local Time Test")
   }
@@ -105,7 +100,8 @@ final class TOTEntryTests: BaseTestCase {
 
     // The secondary string should change (different timezone abbreviation)
     XCTAssertNotEqual(
-      zuluSecondary, localSecondary,
+      zuluSecondary,
+      localSecondary,
       "Secondary time should change when toggling. Zulu: '\(zuluSecondary)', Local: '\(localSecondary)'"
     )
 
@@ -133,7 +129,10 @@ final class TOTEntryTests: BaseTestCase {
     let label = entryField.label
     XCTAssertFalse(label.isEmpty, "Time entry should display a default time")
     // Verify it's not all zeros
-    let stripped = label.replacingOccurrences(of: ":", with: "").replacingOccurrences(of: " ", with: "")
+    let stripped = label.replacingOccurrences(of: ":", with: "").replacingOccurrences(
+      of: " ",
+      with: ""
+    )
     let allZeros = stripped.allSatisfy { $0 == "0" }
     XCTAssertFalse(allZeros, "Default time should not be all zeros, was: \(label)")
 

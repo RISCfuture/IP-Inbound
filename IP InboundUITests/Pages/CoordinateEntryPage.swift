@@ -24,7 +24,10 @@ struct CoordinateEntryPage: Page {
   }
 
   @MainActor
-  func enterLatLon(lat: (direction: String, digits: String), lon: (direction: String, digits: String)) {
+  func enterLatLon(
+    lat: (direction: String, digits: String),
+    lon: (direction: String, digits: String)
+  ) {
     tapDirection(lat.direction)
     enterOnKeypad(lat.digits)
     tapDirection(lon.direction)
