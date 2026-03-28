@@ -22,9 +22,9 @@ struct TutorialPage: Page {
   @discardableResult
   func dismiss() -> TargetListPage {
     if doneButton.exists {
-      doneButton.tap()
+      forceTap(doneButton)
     } else if closeButton.exists {
-      closeButton.tap()
+      forceTap(closeButton)
     } else {
       app.swipeDown()
     }

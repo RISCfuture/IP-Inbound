@@ -36,19 +36,19 @@ struct FlyPage: Page {
   func tapSpeedToCycleUnits() {
     let speed = flySpeedDisplay
     if speed.waitForExistence(timeout: 3) {
-      speed.tap()
+      forceTap(speed)
     } else {
       // Fallback: tap distance display which also cycles units
       let distance = flyDistanceDisplay
       XCTAssertTrue(distance.waitForExistence(timeout: 3), "Distance display should exist")
-      distance.tap()
+      forceTap(distance)
     }
   }
 
   @MainActor
   func tapTOTToToggleTimeMode() {
     XCTAssertTrue(flyTOTDisplay.waitForExistence(timeout: 3), "TOT display should exist")
-    flyTOTDisplay.tap()
+    forceTap(flyTOTDisplay)
   }
 
   @MainActor

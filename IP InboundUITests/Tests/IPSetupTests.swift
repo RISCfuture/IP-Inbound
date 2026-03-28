@@ -222,7 +222,11 @@ final class IPSetupTests: BaseTestCase {
         if addTarget.waitForExistence(timeout: 1) { break }
         let backButton = app.navigationBars.buttons.element(boundBy: 0)
         guard backButton.waitForExistence(timeout: 3) else { break }
-        backButton.tap()
+        if backButton.isHittable {
+          backButton.tap()
+        } else {
+          backButton.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        }
         Thread.sleep(forTimeInterval: 0.5)
       }
     }

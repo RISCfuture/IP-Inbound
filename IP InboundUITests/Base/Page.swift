@@ -35,7 +35,15 @@ extension Page {
     for i in 0..<app.collectionViews.count {
       let cv = app.collectionViews.element(boundBy: i)
       guard cv.exists else { continue }
-      if let result = cv.makeVisible(element: element), result.exists { return result }
+      if let result = cv.makeVisible(element: element), result.exists {
+        ensureHittable(result)
+        return result
+      }
+    }
+    // Element might be visible but behind nav bar — try ensureHittable
+    if element.exists {
+      ensureHittable(element)
+      if element.isHittable { return element }
     }
     return nil
   }
@@ -45,10 +53,45 @@ extension Page {
     // Ensure element is hittable before attempting to type
     let predicate = NSPredicate(format: "isHittable == true")
     let expectation = XCTNSPredicateExpectation(predicate: predicate, object: textField)
-    _ = XCTWaiter.wait(for: [expectation], timeout: 3)
-    textField.tap()
+    if XCTWaiter.wait(for: [expectation], timeout: 3) != .completed {
+      ensureHittable(textField)
+    }
+    forceTap(textField)
     textField.tap(withNumberOfTaps: 3, numberOfTouches: 1)
     textField.typeText(text)
+  }
+
+  @MainActor
+  func forceTap(_ element: XCUIElement) {
+    if element.isHittable {
+      element.tap()
+    } else {
+      element.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+    }
+  }
+
+  @MainActor
+  func ensureHittable(_ element: XCUIElement) {
+    guard element.exists, !element.isHittable else { return }
+    for i in 0..<app.collectionViews.count {
+      let cv = app.collectionViews.element(boundBy: i)
+      guard cv.exists else { continue }
+      let windowHeight = app.windows.firstMatch.frame.height
+      for _ in 0..<3 {
+        if element.frame.minY < windowHeight * 0.35 {
+          let start = cv.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.3))
+          let end = cv.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.45))
+          start.press(forDuration: 0.01, thenDragTo: end)
+        } else if element.frame.maxY > windowHeight * 0.75 {
+          let start = cv.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.7))
+          let end = cv.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.55))
+          start.press(forDuration: 0.01, thenDragTo: end)
+        } else {
+          break
+        }
+        if element.isHittable || !element.exists { return }
+      }
+    }
   }
 
   @MainActor
@@ -57,14 +100,10 @@ extension Page {
       guard char.isNumber || char.isLetter else { continue }
       let button = app.buttons["keypad-\(char)"]
       XCTAssertTrue(button.waitForExistence(timeout: 4), "Keypad button '\(char)' should exist")
-      let predicate = NSPredicate(format: "isHittable == true")
-      let expectation = XCTNSPredicateExpectation(predicate: predicate, object: button)
-      XCTAssertEqual(
-        XCTWaiter.wait(for: [expectation], timeout: 4),
-        .completed,
-        "Keypad button '\(char)' should be hittable"
-      )
-      button.tap()
+      if !waitForHittable(button, timeout: 4) {
+        ensureHittable(button)
+      }
+      forceTap(button)
     }
   }
 
@@ -72,8 +111,10 @@ extension Page {
   func tapDirection(_ direction: String) {
     let button = app.buttons["keypad-\(direction)"]
     XCTAssertTrue(button.waitForExistence(timeout: 3), "\(direction) button should exist")
-    waitForHittable(button)
-    button.tap()
+    if !waitForHittable(button) {
+      ensureHittable(button)
+    }
+    forceTap(button)
     // Wait for direction button to disappear (keypad switches to numeric)
     let gone = XCTNSPredicateExpectation(
       predicate: NSPredicate(format: "isHittable == false"),
@@ -92,7 +133,8 @@ extension Page {
 
   @MainActor
   func tapBackButton() {
-    app.navigationBars.buttons.element(boundBy: 0).tap()
+    let backButton = app.navigationBars.buttons.element(boundBy: 0)
+    forceTap(backButton)
   }
 
   @MainActor

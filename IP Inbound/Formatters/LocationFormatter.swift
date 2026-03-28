@@ -1,8 +1,7 @@
 import CoreLocation
 import Defaults
 import Foundation
-import Grid
-import MGRS
+import SwiftGeographic
 
 // MARK: - Coordinate Format
 
@@ -124,14 +123,15 @@ public struct CoordinateFormatStyle: FormatStyle, Codable, Equatable, Hashable {
   // MARK: - UTM
 
   private func formatUTM(_ coordinate: Coordinate) -> String {
-    let utm = UTMConverter.fromLatLon(
-      latitude: coordinate.latitudeDeg,
-      longitude: coordinate.longitudeDeg
-    )
-    let easting = Int(utm.easting)
-    let northing = Int(utm.northing)
+    guard
+      let geo = try? GeographicCoordinate(
+        latitude: coordinate.latitudeDeg,
+        longitude: coordinate.longitudeDeg
+      ),
+      let utm = try? geo.utm
+    else { return "" }
 
-    return "\(utm.zone)\(utm.band) \(easting) \(northing)"
+    return "\(utm.zone)\(coordinate.utmBand) \(Int(utm.easting)) \(Int(utm.northing))"
   }
 
   // MARK: - MGRS
@@ -296,15 +296,42 @@ public struct CoordinateParseStrategy: ParseStrategy {
   }
 
   private func parseUTM(_ value: String) throws -> Coordinate {
-    let utm = try UTMConverter.parseUTM(value)
-    let (lat, lon) = UTMConverter.toLatLon(
-      easting: utm.easting,
-      northing: utm.northing,
-      zone: utm.zone,
-      band: utm.band
-    )
+    let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
+    let pattern = #"(\d{1,2})\s*([A-Z])\s+(\d+(?:\.\d+)?)\s+(\d+(?:\.\d+)?)"#
+    let regex = try NSRegularExpression(pattern: pattern, options: .caseInsensitive)
 
-    return Coordinate(latitude: lat, longitude: lon)
+    guard
+      let match = regex.firstMatch(
+        in: trimmed,
+        range: NSRange(location: 0, length: trimmed.count)
+      )
+    else { throw ParseError.invalidFormat }
+
+    let zoneRange = Range(match.range(at: 1), in: trimmed)!
+    let bandRange = Range(match.range(at: 2), in: trimmed)!
+    let eastingRange = Range(match.range(at: 3), in: trimmed)!
+    let northingRange = Range(match.range(at: 4), in: trimmed)!
+
+    guard let zone = Int(trimmed[zoneRange]),
+      (1...60).contains(zone),
+      let easting = Double(trimmed[eastingRange]),
+      let northing = Double(trimmed[northingRange])
+    else { throw ParseError.invalidNumber }
+
+    let band = trimmed[bandRange].uppercased().first!
+    guard "CDEFGHJKLMNPQRSTUVWX".contains(band) else {
+      throw ParseError.invalidFormat
+    }
+
+    let hemisphere: Hemisphere = band < "N" ? .south : .north
+    let utmCoord = try SwiftGeographic.UTMCoordinate(
+      zone: zone,
+      hemisphere: hemisphere,
+      easting: easting,
+      northing: northing
+    )
+    let geo = try utmCoord.geographic
+    return Coordinate(latitude: geo.latitude, longitude: geo.longitude)
   }
 
   private func parseMGRS(_ value: String) throws -> Coordinate {

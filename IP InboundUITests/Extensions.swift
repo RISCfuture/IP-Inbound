@@ -9,8 +9,13 @@ extension XCUIElement {
   var isVisible: Bool {
     // Use firstMatch to avoid "Multiple matching elements" on iPad split views
     let resolved = firstMatch
-    guard resolved.exists else { return false }
-    return resolved.isHittable
+    guard resolved.exists, !resolved.frame.isEmpty else { return false }
+    // Frame-based check: visible if the element's frame is within the window.
+    // Liquid Glass makes nav bars translucent and floating, so elements behind
+    // the nav bar report isHittable == false despite being on-screen.
+    let app = XCUIApplication()
+    guard let firstWindow = app.windows.allElementsBoundByIndex.first else { return false }
+    return firstWindow.frame.contains(resolved.frame)
   }
 
   func makeVisible(element: XCUIElement) -> XCUIElement? {

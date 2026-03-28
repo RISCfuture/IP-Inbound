@@ -22,7 +22,7 @@ struct TargetListPage: Page {
   @discardableResult
   func tapAddTarget() -> TargetSetupPage {
     XCTAssertTrue(addTargetButton.waitForExistence(timeout: 15), "addTargetButton should appear")
-    addTargetButton.tap()
+    forceTap(addTargetButton)
     return TargetSetupPage(app: app)
   }
 
@@ -30,6 +30,7 @@ struct TargetListPage: Page {
   @discardableResult
   func createTarget(named name: String) -> TargetSetupPage {
     let setupPage = tapAddTarget()
+    XCTAssertTrue(setupPage.isDisplayed, "Target setup page should appear")
     setupPage.enterTargetName(name)
     return setupPage
   }
@@ -62,7 +63,7 @@ struct TargetListPage: Page {
   func selectTarget(named name: String) -> TargetSetupPage {
     let cell = targetCell(named: name)
     XCTAssertNotNil(cell, "Target '\(name)' should exist in list")
-    cell?.tap()
+    if let cell { forceTap(cell) }
     return TargetSetupPage(app: app)
   }
 

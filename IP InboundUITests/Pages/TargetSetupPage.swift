@@ -30,7 +30,7 @@ struct TargetSetupPage: Page {
   func tapCoordinatesToCycleFormat() {
     let coords = scrollToVisible(targetCoordinates) ?? targetCoordinates
     XCTAssertTrue(coords.waitForExistence(timeout: 3), "Coordinates should be displayed")
-    coords.tap()
+    forceTap(coords)
   }
 
   @MainActor
@@ -38,7 +38,7 @@ struct TargetSetupPage: Page {
   func tapSetCoordinates() -> CoordinateEntryPage {
     let button = scrollToVisible(setCoordinatesButton) ?? setCoordinatesButton
     XCTAssertTrue(button.waitForExistence(timeout: 3), "Set Coordinates button should appear")
-    button.tap()
+    forceTap(button)
     return CoordinateEntryPage(app: app)
   }
 
@@ -46,7 +46,7 @@ struct TargetSetupPage: Page {
   @discardableResult
   func tapFindLocation() -> FindLocationPage {
     let button = scrollToVisible(findLocationButton) ?? findLocationButton
-    button.tap()
+    forceTap(button)
     return FindLocationPage(app: app)
   }
 
@@ -54,7 +54,7 @@ struct TargetSetupPage: Page {
   @discardableResult
   func tapDefineIP() -> IPSetupPage {
     XCTAssertTrue(defineIPButton.waitForExistence(timeout: 5), "Define IP button should appear")
-    defineIPButton.tap()
+    forceTap(defineIPButton)
     return IPSetupPage(app: app)
   }
 

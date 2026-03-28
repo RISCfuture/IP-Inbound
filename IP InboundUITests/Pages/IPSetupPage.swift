@@ -51,7 +51,7 @@ struct IPSetupPage: Page {
   func selectBearingReference(_ reference: String) {
     let picker = scrollToVisible(bearingReferencePicker) ?? bearingReferencePicker
     XCTAssertTrue(picker.waitForExistence(timeout: 3), "Bearing reference picker should appear")
-    picker.buttons[reference].tap()
+    forceTap(picker.buttons[reference])
   }
 
   @MainActor
@@ -72,7 +72,7 @@ struct IPSetupPage: Page {
   func selectOffsetType(_ type: String) {
     let picker = scrollToVisible(offsetTypePicker) ?? offsetTypePicker
     XCTAssertTrue(picker.waitForExistence(timeout: 3), "Offset type picker should appear")
-    picker.buttons[type].tap()
+    forceTap(picker.buttons[type])
   }
 
   @MainActor
@@ -86,14 +86,14 @@ struct IPSetupPage: Page {
   @discardableResult
   func tapTimeOnTarget() -> TOTSetupPage {
     XCTAssertTrue(timeOnTargetButton.waitForExistence(timeout: 5))
-    timeOnTargetButton.tap()
+    forceTap(timeOnTargetButton)
     return TOTSetupPage(app: app)
   }
 
   @MainActor
   @discardableResult
   func tapBackToTargetSetup() -> TargetSetupPage {
-    targetSetupButton.tap()
+    forceTap(targetSetupButton)
     return TargetSetupPage(app: app)
   }
 }

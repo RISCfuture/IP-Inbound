@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		011479ED2F779D5F003AEBCC /* SwiftGeographic in Frameworks */ = {isa = PBXBuildFile; productRef = 011479EC2F779D5F003AEBCC /* SwiftGeographic */; };
 		0166FA742DCA685800970EFD /* DefaultsMacros in Frameworks */ = {isa = PBXBuildFile; productRef = 0166FA732DCA685800970EFD /* DefaultsMacros */; };
 		016F3ED22DD4F1E1006EEC6D /* Numerics in Frameworks */ = {isa = PBXBuildFile; productRef = 016F3ED12DD4F1E1006EEC6D /* Numerics */; };
-		018068742E76A9530073B0AD /* MGRS in Frameworks */ = {isa = PBXBuildFile; productRef = 018068732E76A9530073B0AD /* MGRS */; };
 		0198B2AD2E9860B2003CB126 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		0198B2AE2E9860B2003CB126 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		0198B2AF2E9860B2003CB126 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
@@ -122,8 +122,8 @@
 				01F13CF72DBEE074000E58A2 /* NIOPosix in Frameworks */,
 				01ECF4F32CF3E2F800BD0604 /* Defaults in Frameworks */,
 				01F13CF52DBEE074000E58A2 /* NIO in Frameworks */,
+				011479ED2F779D5F003AEBCC /* SwiftGeographic in Frameworks */,
 				01C059A72DBF49C600D733C1 /* AsyncAlgorithms in Frameworks */,
-				018068742E76A9530073B0AD /* MGRS in Frameworks */,
 				6B2BC84D01DF41E8847B6899 /* Sentry in Frameworks */,
 			);
 		};
@@ -228,8 +228,8 @@
 				01F13CFD2DBEE65B000E58A2 /* Logging */,
 				01C059A62DBF49C600D733C1 /* AsyncAlgorithms */,
 				0166FA732DCA685800970EFD /* DefaultsMacros */,
-				018068732E76A9530073B0AD /* MGRS */,
 				4E66068E9AFD4993959FE327 /* Sentry */,
+				011479EC2F779D5F003AEBCC /* SwiftGeographic */,
 			);
 			productName = "IP Inbound";
 			productReference = 01ECF4B62CF3DF0D00BD0604 /* IP Inbound.app */;
@@ -287,8 +287,8 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1630;
-				LastUpgradeCheck = 2600;
+				LastSwiftUpdateCheck = 2640;
+				LastUpgradeCheck = 2640;
 				TargetAttributes = {
 					016F3C1A2DC08E7A00F2A1AE = {
 						CreatedOnToolsVersion = 16.3;
@@ -322,8 +322,8 @@
 				01F13CFC2DBEE65B000E58A2 /* XCRemoteSwiftPackageReference "swift-log" */,
 				01C059A52DBF49C600D733C1 /* XCRemoteSwiftPackageReference "swift-async-algorithms" */,
 				016F3ED02DD4F1E1006EEC6D /* XCRemoteSwiftPackageReference "swift-numerics" */,
-				018068722E76A9530073B0AD /* XCRemoteSwiftPackageReference "mgrs-ios" */,
 				F48BBB649D7A4A6387FBF73C /* XCRemoteSwiftPackageReference "sentry-cocoa" */,
+				011479EB2F779D5F003AEBCC /* XCRemoteSwiftPackageReference "SwiftGeographic" */,
 			);
 			preferredProjectObjectVersion = 90;
 			productRefGroup = 01ECF4B72CF3DF0D00BD0604 /* Products */;
@@ -534,7 +534,7 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 6.0;
+				SWIFT_VERSION = 6.3;
 				TVOS_DEPLOYMENT_TARGET = 18.0;
 				WATCHOS_DEPLOYMENT_TARGET = 11.0;
 				XROS_DEPLOYMENT_TARGET = 2.0;
@@ -596,7 +596,7 @@
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 6.0;
+				SWIFT_VERSION = 6.3;
 				TVOS_DEPLOYMENT_TARGET = 18.0;
 				VALIDATE_PRODUCT = YES;
 				WATCHOS_DEPLOYMENT_TARGET = 11.0;
@@ -780,20 +780,20 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		011479EB2F779D5F003AEBCC /* XCRemoteSwiftPackageReference "SwiftGeographic" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/RISCfuture/SwiftGeographic";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		016F3ED02DD4F1E1006EEC6D /* XCRemoteSwiftPackageReference "swift-numerics" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/apple/swift-numerics.git";
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 1.0.3;
-			};
-		};
-		018068722E76A9530073B0AD /* XCRemoteSwiftPackageReference "mgrs-ios" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/ngageoint/mgrs-ios";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.0.0;
 			};
 		};
 		01C059A52DBF49C600D733C1 /* XCRemoteSwiftPackageReference "swift-async-algorithms" */ = {
@@ -833,12 +833,19 @@
 			repositoryURL = "https://github.com/getsentry/sentry-cocoa/";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 8.0.0;
+				minimumVersion = 9.0.0;
 			};
+			traits = (
+			);
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		011479EC2F779D5F003AEBCC /* SwiftGeographic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 011479EB2F779D5F003AEBCC /* XCRemoteSwiftPackageReference "SwiftGeographic" */;
+			productName = SwiftGeographic;
+		};
 		0166FA732DCA685800970EFD /* DefaultsMacros */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 01ECF4F12CF3E2F800BD0604 /* XCRemoteSwiftPackageReference "Defaults" */;
@@ -848,11 +855,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 016F3ED02DD4F1E1006EEC6D /* XCRemoteSwiftPackageReference "swift-numerics" */;
 			productName = Numerics;
-		};
-		018068732E76A9530073B0AD /* MGRS */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 018068722E76A9530073B0AD /* XCRemoteSwiftPackageReference "mgrs-ios" */;
-			productName = MGRS;
 		};
 		01C059A62DBF49C600D733C1 /* AsyncAlgorithms */ = {
 			isa = XCSwiftPackageProductDependency;

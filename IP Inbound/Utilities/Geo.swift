@@ -29,6 +29,18 @@ public struct Coordinate: Codable, Equatable, Sendable, Hashable {
     .init(latitude: latitudeDeg, longitude: longitudeDeg)
   }
 
+  var utmBand: Character {
+    let bands: [Character] = [
+      "C", "D", "E", "F", "G", "H", "J", "K", "L", "M",
+      "N", "P", "Q", "R", "S", "T", "U", "V", "W", "X"
+    ]
+    let lat = latitudeDeg
+    if lat < -80.0 { return "A" }
+    if lat >= 84.0 { return "Z" }
+    let index = Int((lat + 80.0) / 8.0)
+    return bands[min(max(index, 0), bands.count - 1)]
+  }
+
   init(latitude: Measurement<UnitAngle>, longitude: Measurement<UnitAngle>) {
     self.latitude = latitude
     self.longitude = longitude

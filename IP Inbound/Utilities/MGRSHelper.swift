@@ -1,61 +1,43 @@
 import CoreLocation
 import Foundation
-import Grid
-import MGRS
+import SwiftGeographic
 
 enum MGRSHelper {
   static func fromCoordinate(_ coordinate: Coordinate, precision: Precision = .oneM) -> String? {
-    let point = GridPoint(coordinate.longitudeDeg, coordinate.latitudeDeg)
-    let mgrs = MGRS.from(point)
+    guard
+      let geo = try? GeographicCoordinate(
+        latitude: coordinate.latitudeDeg,
+        longitude: coordinate.longitudeDeg
+      ),
+      let mgrs = try? geo.mgrs(precision: precision.mgrsPrecision)
+    else { return nil }
 
-    // Get MGRS components
-    let gridZone = mgrs.zone
-    let band = mgrs.band
-    let column = mgrs.column
-    let row = mgrs.row
-    let easting = mgrs.easting
-    let northing = mgrs.northing
-
-    // Format based on precision
     switch precision {
       case .gridZone:
-        return "\(gridZone)\(band)"
+        return mgrs.gridZone
       case .hundredKm:
-        return "\(gridZone)\(band) \(column)\(row)"
+        return "\(mgrs.gridZone) \(mgrs.squareIdentifier)"
       default:
-        // Calculate the number of digits to use for easting and northing
-        let digitCount = precision.digitCount
-        let format = "%0\(digitCount)d"
-
-        // Scale the easting and northing values based on precision
-        let scaleFactor = pow(10.0, Double(5 - digitCount))
-        let scaledEasting = Int(Double(easting) / scaleFactor)
-        let scaledNorthing = Int(Double(northing) / scaleFactor)
-
-        let eastingStr = String(format: format, scaledEasting)
-        let northingStr = String(format: format, scaledNorthing)
-
-        return "\(gridZone)\(band) \(column)\(row) \(eastingStr) \(northingStr)"
+        return format(mgrs.gridReference, withSpaces: true)
     }
   }
 
   static func toCoordinate(_ mgrsString: String) -> Coordinate? {
-    // Clean up the input string
     let cleaned =
       mgrsString
       .uppercased()
       .replacingOccurrences(of: " ", with: "")
       .replacingOccurrences(of: "-", with: "")
 
-    // Try to safely parse MGRS without crashing
-    // The MGRS library uses preconditionFailure, so we need to be very careful
     guard isSafeToParseForDisplay(cleaned) else {
       return nil
     }
 
-    let mgrs = MGRS.parse(cleaned)
-    let point = mgrs.toPoint()
-    return Coordinate(latitude: point.latitude, longitude: point.longitude)
+    guard let mgrs = try? MGRSCoordinate(string: cleaned),
+      let geo = try? mgrs.geographic
+    else { return nil }
+
+    return Coordinate(latitude: geo.latitude, longitude: geo.longitude)
   }
 
   static func validate(_ mgrsString: String) -> Bool {
@@ -212,6 +194,17 @@ enum MGRSHelper {
     case hundredM  // 100m precision (e.g., "33X VG 745 593")
     case tenM  // 10m precision (e.g., "33X VG 7459 5936")
     case oneM  // 1m precision (e.g., "33X VG 74594 59364")
+
+    var mgrsPrecision: MGRSPrecision {
+      switch self {
+        case .gridZone, .hundredKm: .hundredKilometer
+        case .tenKm: .tenKilometer
+        case .oneKm: .oneKilometer
+        case .hundredM: .hundredMeter
+        case .tenM: .tenMeter
+        case .oneM: .oneMeter
+      }
+    }
 
     var digitCount: Int {
       switch self {

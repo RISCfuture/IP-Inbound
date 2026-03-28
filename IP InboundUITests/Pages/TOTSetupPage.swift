@@ -31,13 +31,13 @@ struct TOTSetupPage: Page {
   @MainActor
   func selectLocalTime() {
     XCTAssertTrue(timeDisplayModePicker.waitForExistence(timeout: 3))
-    timeDisplayModePicker.buttons["Target Local"].tap()
+    forceTap(timeDisplayModePicker.buttons["Target Local"])
   }
 
   @MainActor
   func selectZuluTime() {
     XCTAssertTrue(timeDisplayModePicker.waitForExistence(timeout: 3))
-    timeDisplayModePicker.buttons["Zulu"].tap()
+    forceTap(timeDisplayModePicker.buttons["Zulu"])
   }
 
   @MainActor
@@ -49,14 +49,14 @@ struct TOTSetupPage: Page {
   @discardableResult
   func tapFly() -> FlyPage {
     XCTAssertTrue(flyButton.waitForExistence(timeout: 3), "Fly button should appear")
-    flyButton.tap()
+    forceTap(flyButton)
     return FlyPage(app: app)
   }
 
   @MainActor
   @discardableResult
   func tapBackToIPSetup() -> IPSetupPage {
-    defineIPButton.tap()
+    forceTap(defineIPButton)
     return IPSetupPage(app: app)
   }
 

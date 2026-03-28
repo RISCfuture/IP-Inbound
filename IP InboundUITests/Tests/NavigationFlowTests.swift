@@ -24,7 +24,11 @@ final class NavigationFlowTests: BaseTestCase {
         if addTarget.waitForExistence(timeout: 1) { break }
         let backButton = app.navigationBars.buttons.element(boundBy: 0)
         guard backButton.waitForExistence(timeout: 3) else { break }
-        backButton.tap()
+        if backButton.isHittable {
+          backButton.tap()
+        } else {
+          backButton.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        }
         Thread.sleep(forTimeInterval: 0.5)
       }
     }
@@ -204,10 +208,19 @@ final class NavigationFlowTests: BaseTestCase {
     // Go back to TOT via nav bar back button (labeled with previous view's title)
     let backButton = app.navigationBars.buttons["Time on Target"]
     if backButton.waitForExistence(timeout: 3) {
-      backButton.tap()
+      if backButton.isHittable {
+        backButton.tap()
+      } else {
+        backButton.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+      }
     } else {
       // Fallback: tap first nav bar back button
-      app.navigationBars.buttons.element(boundBy: 0).tap()
+      let fallback = app.navigationBars.buttons.element(boundBy: 0)
+      if fallback.isHittable {
+        fallback.tap()
+      } else {
+        fallback.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+      }
     }
     Thread.sleep(forTimeInterval: 0.5)
 

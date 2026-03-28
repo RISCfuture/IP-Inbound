@@ -20,7 +20,7 @@ struct CoordinateEntryPage: Page {
   @MainActor
   func selectFormat(_ format: String) {
     XCTAssertTrue(formatPicker.waitForExistence(timeout: 3), "Format picker should appear")
-    formatPicker.buttons[format].tap()
+    forceTap(formatPicker.buttons[format])
   }
 
   @MainActor
@@ -53,14 +53,14 @@ struct CoordinateEntryPage: Page {
       object: acceptButton
     )
     _ = XCTWaiter.wait(for: [enabledPredicate], timeout: 3)
-    acceptButton.tap()
+    forceTap(acceptButton)
     return TargetSetupPage(app: app)
   }
 
   @MainActor
   @discardableResult
   func tapCancel() -> TargetSetupPage {
-    cancelButton.tap()
+    forceTap(cancelButton)
     return TargetSetupPage(app: app)
   }
 }

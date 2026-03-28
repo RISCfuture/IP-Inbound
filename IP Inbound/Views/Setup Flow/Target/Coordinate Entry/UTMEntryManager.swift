@@ -1,4 +1,5 @@
 import Foundation
+import SwiftGeographic
 import SwiftUI
 
 @MainActor
@@ -72,13 +73,16 @@ final class UTMEntryManager {
   }
 
   init(coordinate: Coordinate) {
-    let utm = UTMConverter.fromLatLon(
-      latitude: coordinate.latitudeDeg,
-      longitude: coordinate.longitudeDeg
-    )
+    guard
+      let geo = try? GeographicCoordinate(
+        latitude: coordinate.latitudeDeg,
+        longitude: coordinate.longitudeDeg
+      ),
+      let utm = try? geo.utm
+    else { return }
 
     zone = String(utm.zone)
-    band = String(utm.band)
+    band = String(coordinate.utmBand)
     easting = String(Int(utm.easting))
     northing = String(Int(utm.northing))
   }
@@ -198,14 +202,18 @@ final class UTMEntryManager {
   func getCoordinate() -> Coordinate? {
     guard isValid else { return nil }
 
-    let (lat, lon) = UTMConverter.toLatLon(
-      easting: Double(easting) ?? 0,
-      northing: Double(northing) ?? 0,
-      zone: Int(zone) ?? 0,
-      band: Character(band)
-    )
+    let hemisphere: Hemisphere = Character(band) < "N" ? .south : .north
+    guard
+      let utmCoord = try? SwiftGeographic.UTMCoordinate(
+        zone: Int(zone) ?? 0,
+        hemisphere: hemisphere,
+        easting: Double(easting) ?? 0,
+        northing: Double(northing) ?? 0
+      ),
+      let geo = try? utmCoord.geographic
+    else { return nil }
 
-    return Coordinate(latitude: lat, longitude: lon)
+    return Coordinate(latitude: geo.latitude, longitude: geo.longitude)
   }
 
   enum InputMode {

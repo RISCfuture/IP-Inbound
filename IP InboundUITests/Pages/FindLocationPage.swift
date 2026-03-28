@@ -20,7 +20,7 @@ struct FindLocationPage: Page {
   @MainActor
   func search(for query: String) {
     XCTAssertTrue(searchField.waitForExistence(timeout: 3), "Search field should appear")
-    searchField.tap()
+    forceTap(searchField)
     searchField.typeText(query)
   }
 
@@ -29,7 +29,7 @@ struct FindLocationPage: Page {
   func selectFirstSuggestion() -> TargetSetupPage {
     let cell = app.cells.firstMatch
     XCTAssertTrue(cell.waitForExistence(timeout: 10), "Suggestion should appear")
-    cell.tap()
+    forceTap(cell)
     return TargetSetupPage(app: app)
   }
 
@@ -42,7 +42,7 @@ struct FindLocationPage: Page {
       match.waitForExistence(timeout: 10),
       "Suggestion containing '\(text)' should appear"
     )
-    match.tap()
+    forceTap(match)
     return TargetSetupPage(app: app)
   }
 }
