@@ -3,6 +3,7 @@ import Foundation
 import Logging
 import NIOCore
 import NIOPosix
+import Sentry
 
 struct SimData: Sendable {
   static var empty: Self {
@@ -127,6 +128,10 @@ final actor SimReceiver {
       try? await group?.shutdownGracefully()
       group = nil
     } catch {
+      SentrySDK.capture(error: error) { scope in
+        scope.setTag(value: "sim-receiver", key: "component")
+        scope.setFingerprint(["sim-receiver", "start"])
+      }
       Self.logger.error(
         "Error starting UDP server",
         metadata: [
@@ -158,6 +163,11 @@ final actor SimReceiver {
       }
       Self.logger.info("UDP server stopped")
     } catch {
+      SentrySDK.capture(error: error) { scope in
+        scope.setLevel(.warning)
+        scope.setTag(value: "sim-receiver", key: "component")
+        scope.setFingerprint(["sim-receiver", "stop"])
+      }
       Self.logger.error(
         "Error stopping UDP server",
         metadata: [

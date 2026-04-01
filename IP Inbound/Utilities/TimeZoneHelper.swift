@@ -1,5 +1,6 @@
 import CoreLocation
 import Foundation
+import Sentry
 
 @MainActor
 class TimeZoneHelper: NSObject {
@@ -39,7 +40,10 @@ class TimeZoneHelper: NSObject {
         completion(nil)
       }
     } catch {
-      print("Failed to fetch timezone for coordinate: \(error)")
+      SentrySDK.capture(error: error) { scope in
+        scope.setLevel(.warning)
+        scope.setTag(value: "geocoding", key: "component")
+      }
       completion(nil)
     }
   }
