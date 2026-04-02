@@ -28,7 +28,7 @@ extension Page {
     // If element already exists and is hittable, no scrolling needed
     if element.exists && element.isHittable { return element }
     // Wait briefly for element to appear (covers layout/animation delays)
-    if element.waitForExistence(timeout: 2) && element.isHittable { return element }
+    if element.waitForExistence(timeout: 5) && element.isHittable { return element }
     // Scroll the detail collection view to find the element
     // On iPad, multiple collection views may exist (sidebar + detail);
     // iterate to find the one that can make the element visible.
@@ -53,7 +53,7 @@ extension Page {
     // Ensure element is hittable before attempting to type
     let predicate = NSPredicate(format: "isHittable == true")
     let expectation = XCTNSPredicateExpectation(predicate: predicate, object: textField)
-    if XCTWaiter.wait(for: [expectation], timeout: 3) != .completed {
+    if XCTWaiter.wait(for: [expectation], timeout: 8) != .completed {
       ensureHittable(textField)
     }
     forceTap(textField)
@@ -99,11 +99,13 @@ extension Page {
     for char in input {
       guard char.isNumber || char.isLetter else { continue }
       let button = app.buttons["keypad-\(char)"]
-      XCTAssertTrue(button.waitForExistence(timeout: 4), "Keypad button '\(char)' should exist")
-      if !waitForHittable(button, timeout: 4) {
+      XCTAssertTrue(button.waitForExistence(timeout: 8), "Keypad button '\(char)' should exist")
+      if !waitForHittable(button, timeout: 8) {
         ensureHittable(button)
       }
       forceTap(button)
+      // Brief pause to let the simulator process the tap before the next keystroke
+      Thread.sleep(forTimeInterval: 0.15)
     }
   }
 

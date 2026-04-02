@@ -36,10 +36,10 @@ struct CoordinateEntryPage: Page {
 
   @MainActor
   func enterGridCoordinate(_ grid: String) {
-    // Wait for keypad to be ready
+    // Wait for keypad to be ready (longer timeout for CI where format switch is slow)
     let firstButton = app.buttons["keypad-1"]
-    XCTAssertTrue(firstButton.waitForExistence(timeout: 3), "Grid keypad should appear")
-    waitForHittable(firstButton)
+    XCTAssertTrue(firstButton.waitForExistence(timeout: 10), "Grid keypad should appear")
+    waitForHittable(firstButton, timeout: 10)
     enterOnKeypad(grid)
   }
 
