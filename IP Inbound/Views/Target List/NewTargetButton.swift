@@ -4,24 +4,44 @@ import SwiftUI
 
 struct NewTargetButton: View {
   @Binding var selectedTarget: Target?
-  var location: CLLocation
 
   @Environment(\.modelContext)
   private var modelContext
 
+  @Environment(\.previewLocation)
+  private var previewLocation
+
+  @State private var isCreating = false
+
   var body: some View {
     Button {
-      let target = Target(name: "New Target", coordinate: .init(location.coordinate))
-      modelContext.insert(target)
-      selectedTarget = target
+      guard !isCreating else { return }
+      isCreating = true
+      Task { @MainActor in
+        defer { isCreating = false }
+        guard let coordinate = await resolvedCoordinate() else { return }
+        let target = Target(name: "New Target", coordinate: .init(coordinate))
+        modelContext.insert(target)
+        selectedTarget = target
+      }
     } label: {
       Label("Add Target", systemImage: "plus")
-    }.accessibilityIdentifier("addTargetButton")
+    }
+    .disabled(isCreating)
+    .accessibilityIdentifier("addTargetButton")
+  }
+
+  private func resolvedCoordinate() async -> CLLocationCoordinate2D? {
+    if let previewCoord = previewLocation?.location?.coordinate {
+      return previewCoord
+    }
+    return await LocationStreamer.shared.currentEvent()?.location?.coordinate
   }
 }
 
 #Preview {
   let helper = PreviewHelper()
-  NewTargetButton(selectedTarget: .constant(helper.target()), location: PreviewHelper.preIPLocation)
+  NewTargetButton(selectedTarget: .constant(helper.target()))
     .modelContainer(helper.modelContainer)
+    .environment(\.previewLocation, helper.preIPEvent)
 }

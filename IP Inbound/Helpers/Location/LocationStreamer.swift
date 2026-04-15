@@ -92,6 +92,9 @@ final class LocationStreamer: Sendable {
   private var stream: AsyncThrowingStream<LocationEvent, any Error>?
   var producer: MulticastStream<LocationEvent, any Error>?
 
+  /// Most recently emitted location event.
+  private(set) var latestEvent: LocationEvent?
+
   private var realLocationTask: Task<Void, any Error>?
   private var simLocationTask: Task<Void, any Error>?
   private var combinedTask: Task<Void, any Error>?
@@ -118,13 +121,18 @@ final class LocationStreamer: Sendable {
         self.realLocationTask = Task {
           // Use San Francisco as default location (matches test setup)
           let defaultLocation = CLLocation(latitude: 37.7749, longitude: -122.4194)
-          continuation.yield(LocationEvent(location: defaultLocation))
+          let firstEvent = LocationEvent(location: defaultLocation)
+          self.latestEvent = firstEvent
+          continuation.yield(firstEvent)
 
           // Keep stream alive with infrequent updates to prevent stream termination
-          // but allow plenty of idle time for XCTest to interact with the UI
+          // but allow plenty of idle time for XCTest to interact with the UI. Each
+          // tick freshly stamps the CLLocation so extrapolate(to:) doesn't drift.
           while !Task.isCancelled {
             try? await Task.sleep(for: .seconds(5))
-            continuation.yield(LocationEvent(location: defaultLocation))
+            let event = LocationEvent(location: defaultLocation)
+            self.latestEvent = event
+            continuation.yield(event)
           }
         }
         continuation.onTermination = { _ in
@@ -205,6 +213,7 @@ final class LocationStreamer: Sendable {
       combinedTask = Task {
         do {
           for try await event in combined {
+            self.latestEvent = event
             continuation.yield(event)  // Already filtered non-nil
           }
           continuation.finish()
@@ -223,6 +232,14 @@ final class LocationStreamer: Sendable {
   func stop() async {
     listenerCount -= 1
     if listenerCount == 0 { await _stop() }
+  }
+
+  /// Extrapolate the most recent event forward to the current time. Callers that need a
+  /// position snapshot (e.g. at the moment of a button tap) should prefer this over reading
+  /// `latestEvent` directly, because the stream buffers at 200 ms intervals — at 400 kts,
+  /// that's ~40 m of stale position per sample.
+  func currentEvent() -> LocationEvent? {
+    latestEvent?.extrapolate(to: Date())
   }
 
   private func _stop() async {
