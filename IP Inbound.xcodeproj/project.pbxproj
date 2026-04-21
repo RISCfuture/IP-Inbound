@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 90;
+	objectVersion = 100;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -325,7 +325,7 @@
 				F48BBB649D7A4A6387FBF73C /* XCRemoteSwiftPackageReference "sentry-cocoa" */,
 				011479EB2F779D5F003AEBCC /* XCRemoteSwiftPackageReference "SwiftGeographic" */,
 			);
-			preferredProjectObjectVersion = 90;
+			preferredProjectObjectVersion = 100;
 			productRefGroup = 01ECF4B72CF3DF0D00BD0604 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
