@@ -77,11 +77,6 @@ final class LocationStreamer: Sendable {
   static let shared = LocationStreamer()
   private static let simPriorityTimeout = 5.0  // seconds
 
-  private static var isRunningUITests: Bool {
-    ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
-      || ProcessInfo.processInfo.arguments.contains("-UITests")
-  }
-
   private var listenerCount = 0
   private let manager = CLLocationManager()
   private let locationDelegate = EmptyDelegate()  // swiftlint:disable:this weak_delegate
@@ -116,7 +111,7 @@ final class LocationStreamer: Sendable {
     // During UI tests, use a static location stream that doesn't rely on
     // CLLocationUpdate.liveUpdates() which can have unpredictable timing behavior
     // in CI environments. This ensures XCTest can always detect the app as idle.
-    if Self.isRunningUITests {
+    if ProcessInfo.processInfo.isRunningUITests {
       stream = AsyncThrowingStream { continuation in
         self.realLocationTask = Task {
           // Use San Francisco as default location (matches test setup)

@@ -12,6 +12,14 @@ struct TargetSetupMap: View {
   }
 
   var body: some View {
+    if ProcessInfo.processInfo.isRunningUITests {
+      MapPlaceholder()
+    } else {
+      mapBody
+    }
+  }
+
+  private var mapBody: some View {
     Map(position: $cameraPosition, interactionModes: [.pan, .zoom]) {
       Annotation(target.name, coordinate: target.coordinate.toCoreLocation) {
         Image(systemName: "triangle.fill").foregroundStyle(.red)

@@ -5,6 +5,14 @@ struct IPSetupMap: View {
   @Bindable var target: Target
 
   var body: some View {
+    if ProcessInfo.processInfo.isRunningUITests {
+      MapPlaceholder()
+    } else {
+      mapBody
+    }
+  }
+
+  private var mapBody: some View {
     Map(initialPosition: .automatic, interactionModes: [.pan, .zoom]) {
       Annotation(target.name, coordinate: target.coordinate.toCoreLocation) {
         Image(systemName: "triangle.fill").foregroundStyle(.red)
