@@ -56,8 +56,18 @@ extension Page {
     if XCTWaiter.wait(for: [expectation], timeout: 8) != .completed {
       ensureHittable(textField)
     }
-    forceTap(textField)
-    textField.tap(withNumberOfTaps: 3, numberOfTouches: 1)
+    // iPadOS 26 interprets `tap(withNumberOfTaps: 3)` as word selection rather
+    // than select-all, so focus the field at its trailing edge (placing the
+    // caret after any existing text) and erase the current value by typing
+    // one backspace per character.
+    textField.coordinate(withNormalizedOffset: CGVector(dx: 0.95, dy: 0.5)).tap()
+    if let currentValue = textField.value as? String, !currentValue.isEmpty {
+      let deletion = String(
+        repeating: XCUIKeyboardKey.delete.rawValue,
+        count: currentValue.count
+      )
+      textField.typeText(deletion)
+    }
     textField.typeText(text)
   }
 
