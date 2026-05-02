@@ -1,5 +1,11 @@
 # IP Inbound
 
+[![CI](https://github.com/RISCfuture/IP-Inbound/actions/workflows/ci.yml/badge.svg)](https://github.com/RISCfuture/IP-Inbound/actions/workflows/ci.yml)
+[![Lint](https://github.com/RISCfuture/IP-Inbound/actions/workflows/lint.yml/badge.svg)](https://github.com/RISCfuture/IP-Inbound/actions/workflows/lint.yml)
+[![App Store](https://img.shields.io/itunes/v/6745743691.svg)](https://apps.apple.com/app/id6745743691)
+[![Platform](https://img.shields.io/badge/platform-iOS-lightgrey.svg)](https://developer.apple.com/ios/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 An application that helps pilots fly an IP-to-target run to an accurate time on
 target. This application is useful for formation demo pilots, or pilots who
 participate in simulated tactical events, and need to be over a target at a
