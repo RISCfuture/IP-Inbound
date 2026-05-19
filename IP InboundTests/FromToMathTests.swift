@@ -119,6 +119,44 @@ struct FromToMathTests {
     #expect(!fromTo.isLate)
   }
 
+  @Test("requiredGroundSpeed, calculates straight-line speed to make TOT")
+  func testFromToMathRequiredGroundSpeed() throws {
+    // SF→LA is ~559.12 km. With a TOT one hour out, the straight-line ground
+    // speed required is 559.12 km/h ≈ 301.9 knots, independent of current speed.
+    let fromTo = FromToMath(
+      from: SF,
+      to: LA,
+      speed: .init(value: 120, unit: .knots),
+      track: .init(angle: 0, reference: .true),
+      targetSpeed: .init(value: 120, unit: .knots),
+      timeOnTarget: .now.addingTimeInterval(60 * 60),
+      declination: .init(value: 0, unit: .degrees)
+    )
+
+    let requiredGroundSpeed = try #require(fromTo.requiredGroundSpeed)
+    #expect(
+      requiredGroundSpeed.converted(to: .knots).value.isApproximatelyEqual(
+        to: 301.9,
+        relativeTolerance: 0.01
+      )
+    )
+  }
+
+  @Test("requiredGroundSpeed, returns nil once TOT has passed")
+  func testFromToMathRequiredGroundSpeedAfterTOT() throws {
+    let fromTo = FromToMath(
+      from: SF,
+      to: LA,
+      speed: .init(value: 120, unit: .knots),
+      track: .init(angle: 0, reference: .true),
+      targetSpeed: .init(value: 120, unit: .knots),
+      timeOnTarget: .now.addingTimeInterval(-60),  // TOT was a minute ago
+      declination: .init(value: 0, unit: .degrees)
+    )
+
+    #expect(fromTo.requiredGroundSpeed == nil)
+  }
+
   @Test("turnTime, 90 degree turn, calculates correctly")
   func testTurnTime90Degrees() throws {
     let speed = Measurement(value: 120, unit: UnitSpeed.knots)

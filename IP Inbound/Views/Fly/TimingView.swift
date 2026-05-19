@@ -1,3 +1,4 @@
+import Defaults
 import SwiftUI
 
 struct TimingView: View {
@@ -5,6 +6,9 @@ struct TimingView: View {
   var fromTo: FromToMath
 
   var onTimeDeltaTOT: TimeInterval = 2.0  // seconds ±TOT to be considered "on time"
+
+  @Default(.distanceUnit)
+  private var distanceDefault
 
   private var cautionDeltaTOT: TimeInterval { onTimeDeltaTOT * 5 }
   private var onTimeRange: ClosedRange<Date> {
@@ -66,6 +70,20 @@ struct TimingView: View {
       .font(.title)
       .fontWeight(.black)
       .foregroundStyle(textColor)
+
+      if let requiredGroundSpeed = fromTo.requiredGroundSpeed {
+        let requiredSpeed = requiredGroundSpeed.converted(to: distanceDefault.speedUnit)
+        Text(
+          String(
+            localized: "Need \(requiredSpeed, format: speedFormatStyle) for TOT"
+          )
+        )
+        .font(.subheadline)
+        .fontWeight(.bold)
+        .foregroundStyle(textColor)
+        .contentTransition(.numericText())
+        .accessibilityIdentifier("requiredSpeedDisplay")
+      }
 
       TOTView(fromTo: fromTo, timeOnTarget: timeOnTarget, showSpeed: true)
     }

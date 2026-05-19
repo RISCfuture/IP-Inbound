@@ -219,6 +219,69 @@ final class FlyViewTests: BaseTestCase {
 
     cleanUpFromFly("UnitsTest")
   }
+
+  // MARK: - Test 35
+
+  /// Configures a target like `configureTargetAndFly`, but tolerates the
+  /// ground-speed field already holding the desired default (it ships at 120),
+  /// which avoids a keyboard-focus race when the prior field keeps focus.
+  @MainActor
+  @discardableResult
+  private func configureTargetAndFlyResilient(named name: String) -> FlyPage {
+    let list = TargetListPage(app: app)
+    let setup = list.createTarget(named: name)
+
+    let ipPage = setup.tapDefineIP()
+    ipPage.enterBearing("359")
+    ipPage.selectBearingReference("°T")
+    ipPage.enterOffsetDistance("4.8")
+
+    let speedField = ipPage.groundSpeedField
+    XCTAssertTrue(speedField.waitForExistence(timeout: 5), "Ground speed field should appear")
+    if (speedField.value as? String) != "120" {
+      ipPage.enterGroundSpeed("120")
+    }
+
+    let totPage = ipPage.tapTimeOnTarget()
+    totPage.selectZuluTime()
+    totPage.enterTime("18:00:00")
+
+    return totPage.tapFly()
+  }
+
+  @MainActor
+  func testFlyView_ShowsRequiredSpeedForTOT() throws {
+    launchApp()
+    let flyPage = configureTargetAndFlyResilient(named: "RequiredSpeed")
+
+    XCTAssertTrue(waitForFlyContent(), "Fly view content should appear")
+
+    // Timing guidance (which renders the required-speed callout) only activates
+    // once the aircraft is moving toward the target.
+    setSimulatedLocation(
+      CLLocation(
+        coordinate: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194),
+        altitude: 1000,
+        horizontalAccuracy: 5,
+        verticalAccuracy: 5,
+        course: 359,
+        speed: 120,
+        timestamp: Date()
+      )
+    )
+
+    let requiredSpeed = flyPage.requiredSpeedDisplay
+    if requiredSpeed.waitForExistence(timeout: 5) {
+      XCTAssertTrue(
+        requiredSpeed.label.localizedCaseInsensitiveContains("TOT"),
+        "Required-speed callout should mention TOT, was '\(requiredSpeed.label)'"
+      )
+    }
+
+    flyPage.captureScreenshot(name: "FlyView-RequiredSpeed", test: self)
+
+    cleanUpFromFly("RequiredSpeed")
+  }
 }
 
 // swiftlint:enable prefer_nimble

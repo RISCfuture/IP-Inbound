@@ -7,6 +7,7 @@ struct FromToMath: Equatable {
     .converted(to: .radians).value
   private static let g = Measurement(value: 1, unit: UnitAcceleration.gravity)
     .converted(to: .metersPerSecondSquared).value
+  private static let minimumTimeToTOT = Measurement(value: 1, unit: UnitDuration.seconds)
 
   var from: Coordinate
   let to: Coordinate
@@ -77,6 +78,20 @@ struct FromToMath: Equatable {
 
   var isLate: Bool { deltaTOT > 0 }
   var isEarly: Bool { deltaTOT < 0 }
+
+  /// Ground speed needed to reach the target exactly at Time-On-Target, assuming
+  /// a straight-line path. This is a first-order callout (no turn correction);
+  /// it ignores any heading change still required to point at the target.
+  /// Returns `nil` when the remaining time to TOT is at or below a small epsilon
+  /// (TOT already passed or imminent), where the required speed is undefined.
+  var requiredGroundSpeed: Measurement<UnitSpeed>? {
+    let timeToTOT = Measurement<UnitDuration>(
+      value: timeOnTarget.timeIntervalSinceNow,
+      unit: .seconds
+    )
+    guard timeToTOT > Self.minimumTimeToTOT else { return nil }
+    return distance / timeToTOT
+  }
 
   private let declination: Measurement<UnitAngle>
 

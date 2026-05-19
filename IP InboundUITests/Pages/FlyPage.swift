@@ -16,6 +16,7 @@ struct FlyPage: Page {
   @MainActor var countdown: XCUIElement { app.otherElements["countdown"] }
   @MainActor var simulatorBanner: XCUIElement { app.staticTexts["simulatorBanner"] }
   @MainActor var flySpeedDisplay: XCUIElement { app.staticTexts["flySpeedDisplay"] }
+  @MainActor var requiredSpeedDisplay: XCUIElement { app.staticTexts["requiredSpeedDisplay"] }
   @MainActor var flyDistanceDisplay: XCUIElement { app.staticTexts["flyDistanceDisplay"] }
   @MainActor var flyTOTDisplay: XCUIElement { app.staticTexts["flyTOTDisplay"] }
 
