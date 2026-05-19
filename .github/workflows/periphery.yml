@@ -22,6 +22,6 @@ jobs:
           swift-version: "6.3"
       - uses: actions/checkout@v6
       - name: Install Periphery
-        run: brew install peripheryapp/periphery/periphery
+        run: brew install periphery
       - name: Run Periphery
         run: periphery scan
