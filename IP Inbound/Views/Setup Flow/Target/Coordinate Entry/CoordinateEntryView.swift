@@ -44,7 +44,6 @@ struct CoordinateEntryView: View {
     self.onAccept = onAccept
     self.onCancel = onCancel
   }
-
 }
 
 #Preview {

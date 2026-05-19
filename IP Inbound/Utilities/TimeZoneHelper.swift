@@ -47,5 +47,4 @@ class TimeZoneHelper: NSObject {
       completion(nil)
     }
   }
-
 }

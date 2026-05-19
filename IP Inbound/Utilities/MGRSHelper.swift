@@ -205,6 +205,5 @@ enum MGRSHelper {
         case .oneM: .oneMeter
       }
     }
-
   }
 }
