@@ -3,6 +3,9 @@ import Foundation
 
 struct IPTargetMath: Equatable {
   private static let closeToIPTime = Measurement(value: 1, unit: UnitDuration.minutes)
+  private static let gravityMSS = 9.80665
+  private static let runInBankAngle = Measurement(value: 45, unit: UnitAngle.degrees)
+  private static let sequenceCutoffAngle = Measurement(value: 90, unit: UnitAngle.degrees)
 
   var coordinate: Coordinate
   var speed: Measurement<UnitSpeed>
@@ -49,23 +52,8 @@ struct IPTargetMath: Equatable {
   }
 
   var isPastIP: Bool {
-    // Vector from IP to target
-    let IPToTargetVector = Coordinate.vector(
-      from: target.IPCoordinate,
-      to: target.coordinate
-    ).normalized
-
-    // Vector from IP to current position
-    let IPToPosition = Coordinate.vector(
-      from: target.IPCoordinate,
-      to: coordinate
-    )
-
-    // Project position vector onto direction vector
-    let projection = IPToPosition.dot(IPToTargetVector)
-
-    // If the projection is positive, we are past the perpendicular through the IP
-    return projection > 0
+    guard let signedAlongM = signedAlongTrackDistanceM, let bufferM else { return false }
+    return signedAlongM >= bufferM
   }
 
   var IP_ETA: Date? { pposToIP?.timeOfArrival }
@@ -137,5 +125,62 @@ struct IPTargetMath: Equatable {
       course: .init(angle: location.course, reference: .true),
       target: target
     )
+  }
+}
+
+// MARK: - IP Sequencing Buffer
+
+extension IPTargetMath {
+  /// Distance, in meters, that the position lies past the perpendicular through the IP, measured
+  /// along the IP→target run-in course. Negative when the position is short of the IP. `nil` when
+  /// the position coincides with the IP (no meaningful along-track projection).
+  private var signedAlongTrackDistanceM: Double? {
+    let IPToTargetDirection = Coordinate.vector(
+      from: target.IPCoordinate,
+      to: target.coordinate
+    )
+    let IPToPositionVector = Coordinate.vector(
+      from: target.IPCoordinate,
+      to: coordinate
+    )
+
+    guard IPToTargetDirection.magnitude > 0, IPToPositionVector.magnitude > 0 else { return nil }
+
+    let cosineOfAngle = IPToPositionVector.normalized.dot(IPToTargetDirection.normalized)
+    let distanceFromIPM = target.IPCoordinate.distance(to: coordinate).converted(to: .meters).value
+
+    return distanceFromIPM * cosineOfAngle
+  }
+
+  /// Absolute angle between the current ground track and the IP→target run-in course, both in true
+  /// reference, clamped to `[0°, 180°]`.
+  private var trackToRunInAngle: Measurement<UnitAngle> {
+    let runInCourse = target.IPCoordinate.bearing(to: target.coordinate)
+    let differenceDeg = (course.toTrue(declination: declination) - runInCourse)
+      .absoluteValue
+      .normalized
+      .degrees
+    let clampedDeg = min(max(differenceDeg, 0), 180)
+    return .init(value: clampedDeg, unit: .degrees)
+  }
+
+  /// The level-turn radius, in meters, at the planned target ground speed and the run-in bank
+  /// angle.
+  private var turnRadiusM: Double {
+    let groundSpeedMS = target.targetGroundSpeedMeasurement
+      .converted(to: .metersPerSecond)
+      .value
+    let bankTangent = tan(Self.runInBankAngle.converted(to: .radians).value)
+    return (groundSpeedMS * groundSpeedMS) / (Self.gravityMSS * bankTangent)
+  }
+
+  /// Required along-track distance, in meters, past the perpendicular before the run-in may
+  /// sequence. Grows linearly with the track/run-in angle up to the turn radius; `nil` once the
+  /// angle reaches the cutoff (the aircraft is orbiting or reversing course, never sequence).
+  private var bufferM: Double? {
+    let thetaDeg = trackToRunInAngle.converted(to: .degrees).value
+    let cutoffDeg = Self.sequenceCutoffAngle.converted(to: .degrees).value
+    guard thetaDeg < cutoffDeg else { return nil }
+    return turnRadiusM * (thetaDeg / cutoffDeg)
   }
 }
