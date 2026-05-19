@@ -89,8 +89,6 @@ final class Target: CustomDebugStringConvertible, Identifiable, Equatable, Hasha
       "<Target “\(name)”: \(coordinate); \(offsetBearing)/\(offsetDistance)NM (\(offsetTime)min)>"
   }
 
-  private var targetGroundSpeedMinutes: Double { targetGroundSpeed / 60.0 }
-
   var desiredTrack: Bearing { offsetBearingMeasurement.reciprocal }
   var desiredTrackMagnetic: Bearing { desiredTrack.toMagnetic(declination: declinationMeasurement) }
   var desiredTrackTrue: Bearing { desiredTrack.toTrue(declination: declinationMeasurement) }

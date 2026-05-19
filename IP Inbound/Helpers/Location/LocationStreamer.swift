@@ -2,8 +2,6 @@ import AsyncAlgorithms
 import CoreLocation
 import Observation
 
-private let simDataTimeout: TimeInterval = 60.0
-
 struct LocationEvent: Sendable {
   let location: CLLocation?
   let simName: String?

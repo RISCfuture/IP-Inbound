@@ -7,10 +7,6 @@ struct TargetSetupMap: View {
   @State private var skipUpdate = false
   @State private var currentDistance: Double = 10_000
 
-  private var initialPosition: MapCameraPosition {
-    return .camera(.init(centerCoordinate: target.coordinate.toCoreLocation, distance: 10_000))
-  }
-
   var body: some View {
     if ProcessInfo.processInfo.isRunningUITests {
       MapPlaceholder()

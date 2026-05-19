@@ -15,13 +15,6 @@ public struct Coordinate: Codable, Equatable, Sendable, Hashable {
     )
   }
 
-  private var degrees: Self {
-    .init(
-      latitude: latitude.converted(to: .degrees),
-      longitude: longitude.converted(to: .degrees)
-    )
-  }
-
   var latitudeDeg: Double { latitude.converted(to: .degrees).value }
   var longitudeDeg: Double { longitude.converted(to: .degrees).value }
 
@@ -169,8 +162,6 @@ struct Line: Codable, Equatable, Sendable {
 }
 
 struct Vector: Codable, Equatable, Sendable {
-  static let zero: Self = .init(0, 0)
-
   let x: Double
   let y: Double
 
@@ -208,11 +199,6 @@ struct Bearing: Codable, Equatable, Sendable, CustomDebugStringConvertible {
     }
 
     return .init(angle: normalized, reference: reference)
-  }
-
-  var absoluteValue: Self {
-    precondition(reference == .relative, "cannot take abs of non-relative bearing")
-    return .init(angle: angle.value.magnitude, unit: angle.unit, reference: reference)
   }
 
   var debugDescription: String {

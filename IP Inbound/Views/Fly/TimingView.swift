@@ -6,7 +6,6 @@ struct TimingView: View {
 
   var onTimeDeltaTOT: TimeInterval = 2.0  // seconds ±TOT to be considered "on time"
 
-  private var cautionDeltaTOT: TimeInterval { onTimeDeltaTOT * 5 }
   private var onTimeRange: ClosedRange<Date> {
     timeOnTarget.addingTimeInterval(
       -onTimeDeltaTOT

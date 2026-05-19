@@ -14,9 +14,6 @@ struct FromToMath: Equatable {
   var speed: Measurement<UnitSpeed>
 
   var track: Bearing
-  var trackTrue: Bearing {
-    track.toTrue(declination: declination)
-  }
   var trackMagnetic: Bearing {
     track.toMagnetic(declination: declination)
   }
@@ -25,9 +22,6 @@ struct FromToMath: Equatable {
   let timeOnTarget: Date
 
   var bearing: Bearing { from.bearing(to: to) }  // deg
-  var bearingTrue: Bearing {
-    bearing.toTrue(declination: declination)
-  }
   var bearingMagnetic: Bearing {
     bearing.toMagnetic(declination: declination)
   }
@@ -69,10 +63,6 @@ struct FromToMath: Equatable {
   var timeOfArrival: Date { timeToGo.afterNow }
   var deltaTOT: TimeInterval {
     timeOfArrival.timeIntervalSince(timeOnTarget)
-  }
-
-  var deltaTOTMeasurement: Measurement<UnitDuration> {
-    .init(value: deltaTOT, unit: .seconds)
   }
 
   var isLate: Bool { deltaTOT > 0 }

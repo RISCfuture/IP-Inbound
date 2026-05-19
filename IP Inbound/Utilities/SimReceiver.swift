@@ -6,18 +6,6 @@ import NIOPosix
 import Sentry
 
 struct SimData: Sendable {
-  static var empty: Self {
-    .init(
-      simName: "",
-      latitudeDeg: 0,
-      longitudeDeg: 0,
-      altitudeMSL_m: 0,
-      trackTrueDeg: 0,
-      groundSpeedMps: 0,
-      date: Date(timeIntervalSinceReferenceDate: 0)
-    )
-  }
-
   let simName: String
   let latitudeDeg: Double
   let longitudeDeg: Double
@@ -28,18 +16,6 @@ struct SimData: Sendable {
 
   var coordinate: CLLocationCoordinate2D {
     .init(latitude: latitudeDeg, longitude: longitudeDeg)
-  }
-
-  var trackTrue: Bearing {
-    .init(angle: trackTrueDeg, reference: .true)
-  }
-
-  var groundspeed: Measurement<UnitSpeed> {
-    .init(value: groundSpeedMps, unit: .metersPerSecond)
-  }
-
-  var altitudeMSL: Measurement<UnitLength> {
-    .init(value: altitudeMSL_m, unit: .meters)
   }
 
   var location: CLLocation {

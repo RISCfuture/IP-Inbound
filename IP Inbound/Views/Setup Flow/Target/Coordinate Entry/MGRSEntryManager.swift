@@ -100,11 +100,6 @@ final class MGRSEntryManager {
     }
   }
 
-  init(mgrsString: String) {
-    // Initialize directly from an MGRS string (preserves user input)
-    parseMGRS(mgrsString)
-  }
-
   private func parseMGRS(_ mgrs: String) {
     let cleaned = mgrs.replacingOccurrences(of: " ", with: "")
     var index = cleaned.startIndex

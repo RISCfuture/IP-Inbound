@@ -33,26 +33,7 @@ final class CoordinateEntryManager {
   @MainActor private let UTMFormatter = CoordinateFormatStyle(format: .utm)
   private var formatChangeObserver: Task<Void, Never>?
 
-  var digitCount: Int { stringValue.count }
-
   var digitType: DigitType { digitType(for: currentIndex) }
-
-  var indexInLinesArray: (Int, Int) {
-    var lineIndex = 0
-    var charIndex = 0
-    for (globalIndex, char) in stringValue.enumerated() {
-      if globalIndex == currentIndex {
-        return (lineIndex, charIndex)
-      }
-      if char == "\n" {
-        lineIndex += 1
-        charIndex = -1  // the start of the next line is the character AFTER the newline
-      } else {
-        charIndex += 1
-      }
-    }
-    fatalError("currentIndex out of bounds")
-  }
 
   private var latitude: Double { coordinate.latitudeDeg }
   private var longitude: Double { coordinate.longitudeDeg }
@@ -131,8 +112,6 @@ final class CoordinateEntryManager {
       }
     }
   }
-
-  func digit(at index: Int) -> Character { Array(stringValue)[index] }
 
   func isValidCharacter(_ character: Character) -> Bool {
     var newCoordinateStr = stringValue

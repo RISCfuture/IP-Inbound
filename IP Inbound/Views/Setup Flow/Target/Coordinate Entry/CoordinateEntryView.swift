@@ -45,18 +45,6 @@ struct CoordinateEntryView: View {
     self.onCancel = onCancel
   }
 
-  private static func value(from coordinate: Coordinate, format: CoordinateFormat) -> String {
-    let style = CoordinateFormatStyle(format: format)
-    return coordinate.formatted(style)
-  }
-
-  private static func coordinate(from value: String, format: CoordinateFormat) -> Coordinate {
-    do {
-      return try Coordinate(value, format: format)
-    } catch {
-      return .init(latitude: 0, longitude: 0)
-    }
-  }
 }
 
 #Preview {

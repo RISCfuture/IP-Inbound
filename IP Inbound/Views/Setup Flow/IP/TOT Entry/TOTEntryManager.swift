@@ -22,25 +22,6 @@ final class TOTEntryManager {
   private(set) var currentIndex = 0
   private var formatChangeObserver: Task<Void, Never>?
 
-  var digitCount: Int { stringValue.count }
-
-  var indexInLinesArray: (Int, Int) {
-    var lineIndex = 0
-    var charIndex = 0
-    for (globalIndex, char) in stringValue.enumerated() {
-      if globalIndex == currentIndex {
-        return (lineIndex, charIndex)
-      }
-      if char == "\n" {
-        lineIndex += 1
-        charIndex = -1
-      } else {
-        charIndex += 1
-      }
-    }
-    fatalError("currentIndex out of bounds")
-  }
-
   var stringValue: String {
     let formatter = DateFormatter()
     formatter.dateFormat = "HHmmss"
@@ -151,8 +132,6 @@ final class TOTEntryManager {
     }
   }
 
-  func digit(at index: Int) -> Character { Array(stringValue)[index] }
-
   func isValidCharacter(_ character: Character) -> Bool {
     guard character.isNumber else { return false }
 
@@ -219,16 +198,6 @@ final class TOTEntryManager {
     if isValidIndex(newIndex) {
       currentIndex = newIndex
     }
-  }
-
-  func toggleDisplayMode() {
-    switch displayMode {
-      case .local:
-        displayMode = .zulu
-      case .zulu:
-        displayMode = .local
-    }
-    Defaults[.TOTDisplayMode] = displayMode
   }
 
   private func time(from string: String) -> Date? {
@@ -312,10 +281,6 @@ final class TOTEntryManager {
     let stringIndex = stringValue.index(stringValue.startIndex, offsetBy: index)
     let char = stringValue[stringIndex]
     return Int(String(char)) ?? 0
-  }
-
-  private func indexInString(_ index: Int) -> String.Index {
-    stringValue.index(stringValue.startIndex, offsetBy: index)
   }
 
   private func fetchTargetTimezone() async {

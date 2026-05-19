@@ -1,0 +1,6 @@
+project: IP Inbound.xcodeproj
+schemes:
+  - IP Inbound
+targets:
+  - IP Inbound
+retain_public: false

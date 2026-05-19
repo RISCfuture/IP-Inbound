@@ -18,11 +18,6 @@ struct GuidanceHelper {
   private let location: CLLocation
   private let target: Target
 
-  // Minimum target speed for timing calculations
-  private var minTargetSpeed: Measurement<UnitSpeed> {
-    target.targetGroundSpeedMeasurement * (1 - Target.allowableSpeedVariance)
-  }
-
   // Computed predicates for clear logic
   var isMoving: Bool { location.speed > Self.movementThreshold }
 
@@ -63,12 +58,6 @@ struct GuidanceHelper {
 
     // Within timing window - show PPOS to IP guidance with speed control (no CDI deviation)
     return .toIPWithSpeedGuidance
-  }
-
-  init(location: CLLocation, target: Target) {
-    self.location = location
-    self.target = target
-    self.math = IPTargetMath(location: location, target: target)
   }
 
   init(math: IPTargetMath, location: CLLocation, target: Target) {

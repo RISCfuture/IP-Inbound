@@ -75,22 +75,6 @@ struct KeypadButton: View {
   }
 }
 
-/// A grid-based keypad layout
-struct KeypadGrid<Content: View>: View {
-  let content: Content
-
-  var body: some View {
-    GeometryReader { _ in
-      content
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-  }
-
-  init(@ViewBuilder content: () -> Content) {
-    self.content = content()
-  }
-}
-
 #Preview {
   VStack(spacing: 20) {
     HStack(spacing: 10) {

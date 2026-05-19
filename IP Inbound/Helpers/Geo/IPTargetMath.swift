@@ -2,8 +2,6 @@ import CoreLocation
 import Foundation
 
 struct IPTargetMath: Equatable {
-  private static let closeToIPTime = Measurement(value: 1, unit: UnitDuration.minutes)
-
   var coordinate: Coordinate
   var speed: Measurement<UnitSpeed>
   var course: Bearing
@@ -35,19 +33,6 @@ struct IPTargetMath: Equatable {
     )
   }
 
-  var IPToTarget: FromToMath? {
-    guard let timeOnTarget = target.timeOnTarget else { return nil }
-    return .init(
-      from: target.IPCoordinate,
-      to: target.IPCoordinate,
-      speed: speed,
-      track: target.desiredTrack,
-      targetSpeed: target.targetGroundSpeedMeasurement,
-      timeOnTarget: timeOnTarget,
-      declination: declination
-    )
-  }
-
   var isPastIP: Bool {
     // Vector from IP to target
     let IPToTargetVector = Coordinate.vector(
@@ -72,11 +57,6 @@ struct IPTargetMath: Equatable {
 
   var IPDeltaTime: TimeInterval? {
     guard let IP_ETA, let desiredTimeOverIP = target.desiredTimeOverIP else { return nil }
-    return IP_ETA.timeIntervalSince(desiredTimeOverIP)
-  }
-
-  var latestIPDeltaTime: TimeInterval? {
-    guard let IP_ETA, let desiredTimeOverIP = target.maxAllowableTimeOverIP else { return nil }
     return IP_ETA.timeIntervalSince(desiredTimeOverIP)
   }
 

@@ -206,20 +206,5 @@ enum MGRSHelper {
       }
     }
 
-    var digitCount: Int {
-      switch self {
-        case .gridZone: return 0
-        case .hundredKm: return 0
-        case .tenKm: return 1
-        case .oneKm: return 2
-        case .hundredM: return 3
-        case .tenM: return 4
-        case .oneM: return 5
-      }
-    }
-
-    var digits: Int {
-      digitCount * 2  // Total digits for easting + northing
-    }
   }
 }
