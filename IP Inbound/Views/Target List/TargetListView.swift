@@ -15,7 +15,15 @@ struct TargetListView: View {
         )
       } detail: {
         if let selectedTarget {
-          SetupFlowView(target: selectedTarget)
+          SetupFlowView(
+            target: selectedTarget,
+            onSelectTarget: { selected in
+              selected.isConfigured = true
+              self.selectedTarget = selected
+            },
+            onChooseTarget: { self.selectedTarget = nil }
+          )
+          .id(selectedTarget.id)
         } else {
           Text("No Target").foregroundColor(.secondary)
         }

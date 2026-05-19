@@ -7,6 +7,7 @@ enum Guidance {
   case toTarget
   case toTargetBypassingIP
   case countdownOnly
+  case postPass
 }
 
 struct GuidanceHelper {
@@ -28,6 +29,8 @@ struct GuidanceHelper {
 
   var isPastIP: Bool { math.isPastIP }
 
+  var isPastTarget: Bool { math.isPastTarget }
+
   // Timing calculations
   var ipDeltaTime: TimeInterval { math.IPDeltaTime ?? 0 }
 
@@ -46,6 +49,9 @@ struct GuidanceHelper {
   var guidance: Guidance {
     // Not moving - just show countdown
     if !isMoving { return .countdownOnly }
+
+    // Past the target - show how the pass went and offer the next target
+    if isPastTarget, target.timeOnTarget != nil { return .postPass }
 
     // After IP - show IP to target guidance with CDI cross-track deviation and relative time indicator
     if isPastIP { return .toTarget }
