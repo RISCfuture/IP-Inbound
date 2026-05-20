@@ -7,6 +7,7 @@ enum Guidance {
   case toTarget
   case toTargetBypassingIP
   case countdownOnly
+  case postPass
 }
 
 struct GuidanceHelper {
@@ -28,6 +29,10 @@ struct GuidanceHelper {
 
   var isPastIP: Bool { math.isPastIP }
 
+  var isPastTarget: Bool { math.isPastTarget }
+
+  var isAfterTOT: Bool { math.isAfterTOT }
+
   // Timing calculations
   var ipDeltaTime: TimeInterval { math.IPDeltaTime ?? 0 }
 
@@ -46,6 +51,12 @@ struct GuidanceHelper {
   var guidance: Guidance {
     // Not moving - just show countdown
     if !isMoving { return .countdownOnly }
+
+    // Past the target AND past TOT - show how the pass went and offer the
+    // next target. Crossing the target before TOT (an early arrival on a
+    // holding pattern) keeps the IP→Target guidance until the planned time
+    // elapses.
+    if isPastTarget, isAfterTOT { return .postPass }
 
     // After IP - show IP to target guidance with CDI cross-track deviation and relative time indicator
     if isPastIP { return .toTarget }

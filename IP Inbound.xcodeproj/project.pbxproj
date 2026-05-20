@@ -784,8 +784,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/RISCfuture/SwiftGeographic";
 			requirement = {
-				branch = main;
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
 			};
 		};
 		016F3ED02DD4F1E1006EEC6D /* XCRemoteSwiftPackageReference "swift-numerics" */ = {
