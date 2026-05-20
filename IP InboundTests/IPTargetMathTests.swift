@@ -8,6 +8,7 @@ struct IPTargetMathTests {
   let target = Coordinate(latitude: 36.772367, longitude: -115.453840)
   let preIP = Coordinate(latitude: 36.876930, longitude: -115.481479)
   let postIP = Coordinate(latitude: 36.8078222222, longitude: -115.4840472222)
+  private let now = Date(timeIntervalSince1970: 1_700_000_000)
 
   @Test("isPastIP, is past, returns true")
   func testIPTargetMathIsPastIPWhenPast() throws {
@@ -19,7 +20,8 @@ struct IPTargetMathTests {
       coordinate: postIP,
       speed: Measurement(value: 500, unit: .knots),
       course: Bearing(angle: 180, reference: .true),
-      target: target
+      target: target,
+      now: now
     )
 
     #expect(ipTargetMath.isPastIP)
@@ -35,7 +37,8 @@ struct IPTargetMathTests {
       coordinate: preIP,
       speed: Measurement(value: 500, unit: .knots),
       course: Bearing(angle: 180, reference: .true),
-      target: target
+      target: target,
+      now: now
     )
 
     #expect(!ipTargetMath.isPastIP)
@@ -50,7 +53,7 @@ struct IPTargetMathTests {
     target.offsetBearingIsTrue = true
     target.offsetBearing = 180
     target.offsetDistance = 30
-    target.timeOnTarget = .now.addingTimeInterval(60 * 60)  // 1 hour from now
+    target.timeOnTarget = now.addingTimeInterval(60 * 60)  // 1 hour from now
 
     // Position is 60NM from IP, speed is 120 knots, so ETA should be 30 minutes
     let position = Coordinate(latitude: 37.0, longitude: -122.0)  // 60NM south of target, 30NM south of IP
@@ -58,12 +61,13 @@ struct IPTargetMathTests {
       coordinate: position,
       speed: .init(value: 120, unit: .knots),
       course: .init(angle: 0, reference: .true),
-      target: target
+      target: target,
+      now: now
     )
 
     // 30NM to IP at 120 kts = 15 min
     let ETA = try #require(ipTargetMath.IP_ETA)
-    #expect(ETA.timeIntervalSinceNow.isApproximatelyEqual(to: 15 * 60, relativeTolerance: 0.01))
+    #expect(ETA.timeIntervalSince(now).isApproximatelyEqual(to: 15 * 60, relativeTolerance: 0.01))
   }
 
   @Test("IPDeltaTime, calculates correctly")
@@ -75,14 +79,15 @@ struct IPTargetMathTests {
     target.offsetBearingIsTrue = true
     target.offsetBearing = 180
     target.offsetDistance = 30
-    target.timeOnTarget = .now.addingTimeInterval(60 * 60)  // 1 hour from now
+    target.timeOnTarget = now.addingTimeInterval(60 * 60)  // 1 hour from now
 
     let position = Coordinate(latitude: 37.0, longitude: -122.0)  // 60NM south of target, 30NM south of IP
     let ipTargetMath = IPTargetMath(
       coordinate: position,
       speed: .init(value: 120, unit: .knots),
       course: .init(angle: 0, reference: .true),
-      target: target
+      target: target,
+      now: now
     )
 
     // 30NM to IP at 120 kts = 15 min; we are 30 min early to IP (45 to target)
@@ -106,7 +111,8 @@ struct IPTargetMathTests {
       coordinate: .init(latitude: 37.0, longitude: -123.0),
       speed: .init(value: 120, unit: .knots),
       course: .init(angle: 270, reference: .true),
-      target: target
+      target: target,
+      now: now
     )
 
     // Cross track distance should be close to 1NM
@@ -123,7 +129,8 @@ struct IPTargetMathTests {
       coordinate: .init(latitude: 39.0, longitude: -123.0),
       speed: .init(value: 120, unit: .knots),
       course: .init(angle: 270, reference: .true),
-      target: target
+      target: target,
+      now: now
     )
 
     // Cross track distance should be close to 1NM

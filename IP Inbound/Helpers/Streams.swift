@@ -83,6 +83,7 @@ func extrapolate<T: Sendable, S: Sendable & AsyncSequence<T, any Error>>(
   stream: S,
   maxTime: TimeInterval,
   interval: TimeInterval,
+  dateProvider: DateProvider = .system,
   extrapolate: @Sendable @escaping (T, TimeInterval) -> T
 ) -> AsyncThrowingStream<T, any Error> {
   AsyncThrowingStream { continuation in
@@ -95,15 +96,14 @@ func extrapolate<T: Sendable, S: Sendable & AsyncSequence<T, any Error>>(
 
           extrapolationTask?.cancel()
           extrapolationTask = Task {
-            let extrapolationStart = Date()
+            let extrapolationStart = dateProvider.now()
             repeat {
               try? await Task.sleep(for: .seconds(interval))
-              let extrapolated = extrapolate(
-                element,
-                -extrapolationStart.timeIntervalSinceNow
-              )
+              let elapsed = dateProvider.now().timeIntervalSince(extrapolationStart)
+              let extrapolated = extrapolate(element, elapsed)
               continuation.yield(extrapolated)
-            } while !Task.isCancelled && extrapolationStart.timeIntervalSinceNow > -maxTime
+            } while !Task.isCancelled
+              && dateProvider.now().timeIntervalSince(extrapolationStart) < maxTime
           }
         }
       } catch {

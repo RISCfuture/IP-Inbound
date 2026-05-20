@@ -13,6 +13,9 @@ struct RequiresLocation<Content: View>: View {
   @Environment(\.previewLocation)
   private var previewLocation
 
+  @Environment(\.services)
+  private var services
+
   @State private var hasLocation = false
 
   var body: some View {
@@ -25,9 +28,9 @@ struct RequiresLocation<Content: View>: View {
     }
     .task {
       do {
-        await LocationStreamer.shared.start()
-        let stream = await LocationStreamer.shared.producer?.consume()
-        if let stream {
+        let provider = services.location
+        await provider.start()
+        if let stream = await provider.eventStream() {
           for try await event in stream {
             let present = (previewLocation?.location ?? event.location) != nil
             if present != hasLocation { hasLocation = present }
@@ -38,7 +41,8 @@ struct RequiresLocation<Content: View>: View {
       }
     }
     .onDisappear {
-      Task { await LocationStreamer.shared.stop() }
+      let provider = services.location
+      Task { await provider.stop() }
     }
   }
 

@@ -77,6 +77,7 @@ final class LocationStreamer: Sendable {
   static let shared = LocationStreamer()
   private static let simPriorityTimeout = 5.0  // seconds
 
+  private let dateProvider: DateProvider
   private var listenerCount = 0
   private let manager = CLLocationManager()
   private let locationDelegate = EmptyDelegate()  // swiftlint:disable:this weak_delegate
@@ -94,7 +95,8 @@ final class LocationStreamer: Sendable {
   private var simLocationTask: Task<Void, any Error>?
   private var combinedTask: Task<Void, any Error>?
 
-  private init() {
+  private init(dateProvider: DateProvider = .system) {
+    self.dateProvider = dateProvider
     manager.delegate = locationDelegate
     manager.requestLocation()
     manager.requestWhenInUseAuthorization()
@@ -107,36 +109,6 @@ final class LocationStreamer: Sendable {
 
   private func _start() async {
     guard stream == nil else { return }
-
-    // During UI tests, use a static location stream that doesn't rely on
-    // CLLocationUpdate.liveUpdates() which can have unpredictable timing behavior
-    // in CI environments. This ensures XCTest can always detect the app as idle.
-    if ProcessInfo.processInfo.isRunningUITests {
-      stream = AsyncThrowingStream { continuation in
-        self.realLocationTask = Task {
-          // Use San Francisco as default location (matches test setup)
-          let defaultLocation = CLLocation(latitude: 37.7749, longitude: -122.4194)
-          let firstEvent = LocationEvent(location: defaultLocation)
-          self.latestEvent = firstEvent
-          continuation.yield(firstEvent)
-
-          // Keep stream alive with infrequent updates to prevent stream termination
-          // but allow plenty of idle time for XCTest to interact with the UI. Each
-          // tick freshly stamps the CLLocation so extrapolate(to:) doesn't drift.
-          while !Task.isCancelled {
-            try? await Task.sleep(for: .seconds(5))
-            let event = LocationEvent(location: defaultLocation)
-            self.latestEvent = event
-            continuation.yield(event)
-          }
-        }
-        continuation.onTermination = { _ in
-          Task { @LocationActor in self.realLocationTask?.cancel() }
-        }
-      }
-      producer = .init(stream: stream!)
-      return
-    }
 
     await simReceiver.start()
 
@@ -181,7 +153,7 @@ final class LocationStreamer: Sendable {
       maxTime: 5,
       interval: 0.2
     ) { event, _ in
-      event?.extrapolate(to: Date())
+      event?.extrapolate(to: self.dateProvider.now())
     }
 
     // combineLatest won't emit a value until both streams have emitted at least one value
@@ -191,7 +163,7 @@ final class LocationStreamer: Sendable {
         maxTime: Self.simPriorityTimeout,
         interval: 0.2
       ) { event, _ in
-        event?.extrapolate(to: Date())
+        event?.extrapolate(to: self.dateProvider.now())
       },
       initial: LocationEvent()
     )
@@ -199,7 +171,8 @@ final class LocationStreamer: Sendable {
     let combined = combineLatest(smoothRealStream, smoothSimStream)
       //        let combined = combineLatest(realLocationStream, simLocationStream)
       .map { real, sim -> LocationEvent? in
-        let simTimedOut = sim?.location.map { $0.timestamp.timeIntervalSinceNow < -5 } ?? true
+        let now = self.dateProvider.now()
+        let simTimedOut = sim?.location.map { $0.timestamp.timeIntervalSince(now) < -5 } ?? true
         return !simTimedOut ? sim : real
       }
       .compactMap(\.self)
@@ -234,7 +207,7 @@ final class LocationStreamer: Sendable {
   /// `latestEvent` directly, because the stream buffers at 200 ms intervals — at 400 kts,
   /// that's ~40 m of stale position per sample.
   func currentEvent() -> LocationEvent? {
-    latestEvent?.extrapolate(to: Date())
+    latestEvent?.extrapolate(to: dateProvider.now())
   }
 
   private func _stop() async {

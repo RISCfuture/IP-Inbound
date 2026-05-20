@@ -6,9 +6,12 @@ struct FlyView: View {
   @Environment(\.errorStore)
   var errorStore
 
+  @Environment(\.services)
+  private var services
+
   var body: some View {
     NeedsLocationView { location, event in
-      let math = IPTargetMath(location: location, target: target)
+      let math = IPTargetMath(location: location, target: target, now: services.clock.now)
       let guidanceHelper = GuidanceHelper(math: math, location: location, target: target)
       let guidance = guidanceHelper.guidance
 
@@ -74,7 +77,10 @@ struct FlyView: View {
                 Text(
                   .currentDate,
                   format: .timer(
-                    countingDownIn: .now..<desiredTimeOverIP,
+                    countingDownIn:
+                      .now..<desiredTimeOverIP.addingTimeInterval(
+                        -Double(services.clock.offsetFromRealTimeSeconds)
+                      ),
                     maxPrecision: .seconds(1)
                   )
                 )

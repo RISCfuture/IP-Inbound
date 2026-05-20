@@ -23,6 +23,7 @@ struct FromToMath: Equatable {
 
   let targetSpeed: Measurement<UnitSpeed>
   let timeOnTarget: Date
+  let now: Date
 
   var bearing: Bearing { from.bearing(to: to) }  // deg
   var bearingTrue: Bearing {
@@ -66,7 +67,7 @@ struct FromToMath: Equatable {
     // Total time = time spent turning + time for remaining distance
     return turnTime + (remainingDistance / speed)
   }
-  var timeOfArrival: Date { timeToGo.afterNow }
+  var timeOfArrival: Date { timeToGo.after(date: now) }
   var deltaTOT: TimeInterval {
     timeOfArrival.timeIntervalSince(timeOnTarget)
   }
@@ -87,7 +88,8 @@ struct FromToMath: Equatable {
     track: Bearing,
     targetSpeed: Measurement<UnitSpeed>,
     timeOnTarget: Date,
-    declination: Measurement<UnitAngle>
+    declination: Measurement<UnitAngle>,
+    now: Date
   ) {
     self.from = from
     self.to = to
@@ -96,6 +98,7 @@ struct FromToMath: Equatable {
     self.targetSpeed = targetSpeed
     self.timeOnTarget = timeOnTarget
     self.declination = declination
+    self.now = now
   }
 
   static func turnAnticipationDistance(

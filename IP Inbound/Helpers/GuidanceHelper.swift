@@ -65,10 +65,10 @@ struct GuidanceHelper {
     return .toIPWithSpeedGuidance
   }
 
-  init(location: CLLocation, target: Target) {
+  init(location: CLLocation, target: Target, now: Date) {
     self.location = location
     self.target = target
-    self.math = IPTargetMath(location: location, target: target)
+    self.math = IPTargetMath(location: location, target: target, now: now)
   }
 
   init(math: IPTargetMath, location: CLLocation, target: Target) {

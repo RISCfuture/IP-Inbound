@@ -5,6 +5,19 @@ import XCTest
 
 class BaseTestCase: XCTestCase {
 
+  // MARK: - Type Properties
+
+  /// ISO-8601 with fractional seconds — matches `UITestClock` parsing.
+  @MainActor static let uiTestNowFormatter: ISO8601DateFormatter = {
+    let formatter = ISO8601DateFormatter()
+    formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+    return formatter
+  }()
+
+  /// Default static fix: San Francisco, speed 0 → guidance stays in countdown
+  /// mode, preserving the expectations of the pre-harness UI tests.
+  static let defaultFix = "37.7749,-122.4194,0,0,0"
+
   // MARK: - Instance Properties
 
   var app: XCUIApplication!
@@ -34,30 +47,36 @@ class BaseTestCase: XCTestCase {
 
   // MARK: - Methods
 
-  /// Call at the start of each test to set up the app. Must be called from @MainActor context.
   @MainActor
-  func launchApp() {
-    // Terminate other apps that may interfere with UI tests
+  func launchApp(
+    now: Date? = nil,
+    location: String? = defaultFix,
+    path: String? = nil
+  ) {
     let knownApps = ["codes.tim.FART"]
     for bundleID in knownApps {
       let other = XCUIApplication(bundleIdentifier: bundleID)
       if other.state != .notRunning { other.terminate() }
     }
 
-    // iPad: ensure landscape so NavigationSplitView shows sidebar persistently
     if UIDevice.current.userInterfaceIdiom == .pad {
       XCUIDevice.shared.orientation = .landscapeLeft
     }
 
     app = XCUIApplication()
     app.launchArguments.append("-UITests")
+    if let now {
+      app.launchEnvironment["UITEST_NOW"] = Self.uiTestNowFormatter.string(from: now)
+    }
+    if let path {
+      app.launchEnvironment["UITEST_LOCATION_PATH"] = path
+    } else if let location {
+      app.launchEnvironment["UITEST_LOCATION"] = location
+    }
     app.resetAuthorizationStatus(for: .location)
     app.launch()
     waitForAppStability()
-    setSimulatedLocation(latitude: 37.7749, longitude: -122.4194)
     handleLocationPermissionIfNeeded()
-    // Re-set location after permission grant — iPad may miss the initial update
-    setSimulatedLocation(latitude: 37.7749, longitude: -122.4194)
   }
 
   @MainActor

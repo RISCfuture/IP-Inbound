@@ -75,6 +75,10 @@ struct TimingView: View {
 
 #Preview {
   let helper = PreviewHelper()
-  let math = IPTargetMath(location: helper.postIPLocation, target: helper.target(minutesFromNow: 2))
+  let math = IPTargetMath(
+    location: helper.postIPLocation,
+    target: helper.target(minutesFromNow: 2),
+    now: .now
+  )
   TimingView(timeOnTarget: Date.now.addingTimeInterval(60), fromTo: math.pposToTarget!)
 }

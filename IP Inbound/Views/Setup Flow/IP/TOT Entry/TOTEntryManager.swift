@@ -15,6 +15,7 @@ final class TOTEntryManager {
 
   var timeOnTarget: Date
   let targetCoordinate: Coordinate
+  private let dateProvider: DateProvider
 
   @ObservableDefault(.TOTDisplayMode)
   @ObservationIgnored var displayMode: DisplayMode
@@ -111,16 +112,17 @@ final class TOTEntryManager {
   }
 
   var relativeTimeString: String {
-    let interval = timeOnTarget.timeIntervalSinceNow
+    let nowInstant = dateProvider.now()
+    let interval = timeOnTarget.timeIntervalSince(nowInstant)
 
     // Handle the edge case where time might be in the past but will be adjusted to tomorrow
     if interval < 0 {
       let tomorrowTime =
         Calendar.current.date(byAdding: .day, value: 1, to: timeOnTarget) ?? timeOnTarget
-      return Self.relativeDateFormatter.localizedString(for: tomorrowTime, relativeTo: Date())
+      return Self.relativeDateFormatter.localizedString(for: tomorrowTime, relativeTo: nowInstant)
     }
 
-    return Self.relativeDateFormatter.localizedString(for: timeOnTarget, relativeTo: Date())
+    return Self.relativeDateFormatter.localizedString(for: timeOnTarget, relativeTo: nowInstant)
   }
 
   private var targetTimezone: TimeZone?
@@ -131,13 +133,14 @@ final class TOTEntryManager {
     stringValue.index(stringValue.startIndex, offsetBy: currentIndex)
   }
 
-  init(timeOnTarget: Date?, targetCoordinate: Coordinate) {
+  init(timeOnTarget: Date?, targetCoordinate: Coordinate, dateProvider: DateProvider = .system) {
     self.targetCoordinate = targetCoordinate
+    self.dateProvider = dateProvider
 
     if let tot = timeOnTarget {
       self.timeOnTarget = tot
     } else {
-      self.timeOnTarget = Date().addingTimeInterval(30 * 60)
+      self.timeOnTarget = dateProvider.now().addingTimeInterval(30 * 60)
     }
 
     formatChangeObserver = Task { [weak self] in
@@ -254,8 +257,8 @@ final class TOTEntryManager {
     var calendar = Calendar.current
     calendar.timeZone = formatter.timeZone ?? TimeZone.current
 
-    let now = Date()
-    var components = calendar.dateComponents([.year, .month, .day], from: now)
+    let nowInstant = dateProvider.now()
+    var components = calendar.dateComponents([.year, .month, .day], from: nowInstant)
 
     guard let timeFromString = formatter.date(from: cleanString) else { return nil }
     let timeComponents = calendar.dateComponents([.hour, .minute, .second], from: timeFromString)
@@ -267,7 +270,7 @@ final class TOTEntryManager {
     guard var newDate = calendar.date(from: components) else { return nil }
 
     // Check if the time is in the past
-    if newDate.timeIntervalSinceNow < 0 {
+    if newDate.timeIntervalSince(dateProvider.now()) < 0 {
       newDate = calendar.date(byAdding: .day, value: 1, to: newDate) ?? newDate
     }
 

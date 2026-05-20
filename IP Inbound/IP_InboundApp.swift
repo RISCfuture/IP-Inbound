@@ -28,11 +28,26 @@ struct IP_InboundApp: App {
 
   private let modelContainer: ModelContainer
 
+  @State private var services: AppServices?
+
   var body: some Scene {
     WindowGroup {
-      ContentView()
-        .environment(\.errorStore, ErrorStore())
-        .environment(\.previewLocation, nil)
+      Group {
+        if let services {
+          ContentView()
+            .environment(\.services, services)
+        } else {
+          Color(.systemBackground)
+            .ignoresSafeArea()
+        }
+      }
+      .environment(\.errorStore, ErrorStore())
+      .environment(\.previewLocation, nil)
+      .task {
+        if services == nil {
+          services = await AppServices.make()
+        }
+      }
     }.modelContainer(modelContainer)
   }
 
@@ -77,9 +92,56 @@ struct IP_InboundApp: App {
     } catch {
       fatalError(error.localizedDescription)
     }
+    Self.seedUITestTargetIfNeeded(into: modelContainer)
   }
 
   // MARK: - Type Methods
+
+  private static func seedUITestTargetIfNeeded(into modelContainer: ModelContainer) {
+    let info = ProcessInfo.processInfo
+    guard info.isRunningUITests else { return }
+    let context = modelContainer.mainContext
+
+    if info.environment["UITEST_SEED_TARGET"] == "1" {
+      let name = info.environment["UITEST_SEED_TARGET_NAME"] ?? "Flythrough"
+      context.insert(makeSeedTarget(name: name, totISO: "2026-05-18T18:00:00.000Z"))
+    }
+
+    // Secondary seed for the post-pass flow: a second pre-configured target so
+    // PostPassView's "Fly next target" has a candidate. Inserts when both
+    // UITEST_SEED_TARGET=1 and UITEST_SEED_NEXT_TARGET=1 are set.
+    if info.environment["UITEST_SEED_NEXT_TARGET"] == "1" {
+      let name = info.environment["UITEST_SEED_NEXT_TARGET_NAME"] ?? "NextHop"
+      context.insert(
+        makeSeedTarget(
+          name: name,
+          totISO: "2026-05-18T18:15:00.000Z",
+          coordinate: Coordinate(latitude: 36.500000, longitude: -115.500000)
+        )
+      )
+    }
+
+    try? context.save()
+  }
+
+  private static func makeSeedTarget(
+    name: String,
+    totISO: String,
+    coordinate: Coordinate = Coordinate(latitude: 36.772367, longitude: -115.453840)
+  ) -> Target {
+    let isoFormatter = ISO8601DateFormatter()
+    isoFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+    let plainFormatter = ISO8601DateFormatter()
+    let tot = isoFormatter.date(from: totISO) ?? plainFormatter.date(from: totISO)
+    let target = Target(name: name, coordinate: coordinate)
+    target.offsetBearing = 359
+    target.offsetBearingIsTrue = true
+    target.offsetDistance = 4.8
+    target.targetGroundSpeed = 120
+    target.timeOnTarget = tot
+    target.isConfigured = true
+    return target
+  }
 
   private static func createCloudKitStore() throws -> ModelConfiguration {
     // Disable CloudKit entirely when running tests to avoid blocking the main

@@ -93,6 +93,7 @@ struct TOTEntryView: View {
   init(
     timeOnTarget: Date?,
     targetCoordinate: Coordinate,
+    dateProvider: DateProvider = .system,
     onAccept: @escaping (Date) -> Void,
     onCancel: @escaping () -> Void
   ) {
@@ -102,7 +103,8 @@ struct TOTEntryView: View {
     _entryManager = State(
       wrappedValue: .init(
         timeOnTarget: timeOnTarget,
-        targetCoordinate: targetCoordinate
+        targetCoordinate: targetCoordinate,
+        dateProvider: dateProvider
       )
     )
   }

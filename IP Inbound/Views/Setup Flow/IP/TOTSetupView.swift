@@ -3,6 +3,9 @@ import SwiftUI
 struct TOTSetupView: View {
   @Bindable var target: Target
 
+  @Environment(\.services)
+  private var services
+
   private let timeAdvanceNew = 30.0  // minutes after now, for new targets without TOTs
   private let timeAdvanceEdit = 5.0  // minutes after now, for TOTs in the past
 
@@ -11,6 +14,7 @@ struct TOTSetupView: View {
       TOTEntryView(
         timeOnTarget: target.timeOnTarget,
         targetCoordinate: target.coordinate,
+        dateProvider: services.clock.dateProvider,
         onAccept: { newTime in
           target.timeOnTarget = newTime
         },
@@ -40,18 +44,28 @@ struct TOTSetupView: View {
       }.padding(.horizontal)
     }
     .onAppear {
+      // UI-test affordance: when the harness pins a past `UITEST_NOW` to
+      // exercise post-pass behavior, the auto-bump below would silently
+      // overwrite the seeded TOT. The bypass is gated on both
+      // `isRunningUITests` and an explicit launch-env opt-in, so it is inert
+      // in production and only available to the harness.
+      if ProcessInfo.processInfo.isRunningUITests,
+        ProcessInfo.processInfo.environment["UITEST_BYPASS_TOT_RESET"] == "1"
+      {
+        return
+      }
       // Set default time if not already set
       if target.timeOnTarget == nil {
-        let defaultTime = Date().addingTimeInterval(60 * timeAdvanceNew)
+        let defaultTime = services.clock.now.addingTimeInterval(60 * timeAdvanceNew)
         var components = Calendar.current.dateComponents(
           [.year, .month, .day, .hour, .minute],
           from: defaultTime
         )
         components.second = 0
         target.timeOnTarget = Calendar.current.date(from: components) ?? defaultTime
-      } else if let targetTime = target.timeOnTarget, targetTime < Date() {
+      } else if let targetTime = target.timeOnTarget, targetTime < services.clock.now {
         // If the saved time is in the past, update it
-        let updatedTime = Date().addingTimeInterval(60 * timeAdvanceEdit)
+        let updatedTime = services.clock.now.addingTimeInterval(60 * timeAdvanceEdit)
         var components = Calendar.current.dateComponents(
           [.year, .month, .day, .hour, .minute],
           from: updatedTime

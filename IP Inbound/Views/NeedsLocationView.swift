@@ -10,6 +10,9 @@ struct NeedsLocationView<Content: View>: View {
   @Environment(\.previewLocation)
   var previewLocation
 
+  @Environment(\.services)
+  private var services
+
   @State private var event: LocationEvent?
 
   var body: some View {
@@ -22,9 +25,9 @@ struct NeedsLocationView<Content: View>: View {
     }
     .task {
       do {
-        await LocationStreamer.shared.start()
-        let stream = await LocationStreamer.shared.producer?.consume()
-        if let stream {
+        let provider = services.location
+        await provider.start()
+        if let stream = await provider.eventStream() {
           for try await event in stream {
             self.event = event
           }
@@ -34,7 +37,8 @@ struct NeedsLocationView<Content: View>: View {
       }
     }
     .onDisappear {
-      Task { await LocationStreamer.shared.stop() }
+      let provider = services.location
+      Task { await provider.stop() }
     }
   }
 

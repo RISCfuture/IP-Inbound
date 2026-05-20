@@ -28,9 +28,6 @@ func tan(_ measurement: Measurement<UnitAngle>) -> Double {
 // swiftlint:enable static_operator
 
 extension Measurement where UnitType == UnitDuration {
-  var afterNow: Date { after(date: Date()) }
-  var beforeNow: Date { before(date: Date()) }
-
   func after(date: Date) -> Date {
     date.addingTimeInterval(converted(to: .seconds).value)
   }

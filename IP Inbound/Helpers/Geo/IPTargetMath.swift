@@ -8,6 +8,7 @@ struct IPTargetMath: Equatable {
   var speed: Measurement<UnitSpeed>
   var course: Bearing
   let target: Target
+  let now: Date
 
   var pposToIP: FromToMath? {
     guard let timeOnTarget = target.timeOnTarget else { return nil }
@@ -18,7 +19,8 @@ struct IPTargetMath: Equatable {
       track: course,
       targetSpeed: target.targetGroundSpeedMeasurement,
       timeOnTarget: timeOnTarget,
-      declination: declination
+      declination: declination,
+      now: now
     )
   }
 
@@ -31,7 +33,8 @@ struct IPTargetMath: Equatable {
       track: course,
       targetSpeed: target.targetGroundSpeedMeasurement,
       timeOnTarget: timeOnTarget,
-      declination: declination
+      declination: declination,
+      now: now
     )
   }
 
@@ -44,7 +47,8 @@ struct IPTargetMath: Equatable {
       track: target.desiredTrack,
       targetSpeed: target.targetGroundSpeedMeasurement,
       timeOnTarget: timeOnTarget,
-      declination: declination
+      declination: declination,
+      now: now
     )
   }
 
@@ -118,24 +122,32 @@ struct IPTargetMath: Equatable {
     // Total time = PPOS to IP + IP to Target - turn anticipation
     let totalTime = totalTimeToIP + straightTimeIPToTarget - turnAnticipation
 
-    return Date.now.addingTimeInterval(totalTime.converted(to: .seconds).value)
+    return now.addingTimeInterval(totalTime.converted(to: .seconds).value)
   }
 
   private var declination: Measurement<UnitAngle> { target.declinationMeasurement }
 
-  init(coordinate: Coordinate, speed: Measurement<UnitSpeed>, course: Bearing, target: Target) {
+  init(
+    coordinate: Coordinate,
+    speed: Measurement<UnitSpeed>,
+    course: Bearing,
+    target: Target,
+    now: Date
+  ) {
     self.coordinate = coordinate
     self.speed = speed
     self.course = course
     self.target = target
+    self.now = now
   }
 
-  init(location: CLLocation, target: Target) {
+  init(location: CLLocation, target: Target, now: Date) {
     self.init(
       coordinate: .init(location.coordinate),
       speed: .init(value: location.speed, unit: .metersPerSecond),
       course: .init(angle: location.course, reference: .true),
-      target: target
+      target: target,
+      now: now
     )
   }
 }

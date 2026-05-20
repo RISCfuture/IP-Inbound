@@ -68,7 +68,7 @@ struct TOTView: View {
 #Preview {
   let helper = PreviewHelper()
   let target = helper.target()
-  let math = IPTargetMath(location: helper.preIPLocation, target: target)
+  let math = IPTargetMath(location: helper.preIPLocation, target: target, now: .now)
 
   TOTView(fromTo: math.pposToTarget!, timeOnTarget: target.timeOnTarget)
 }

@@ -7,6 +7,7 @@ import Testing
 struct FromToMathTests {
   private let SF = Coordinate(latitude: 37.7749, longitude: -122.4194)
   private let LA = Coordinate(latitude: 34.0522, longitude: -118.2437)
+  private let now = Date(timeIntervalSince1970: 1_700_000_000)
 
   @Test("bearing, calculates correctly")
   func testFromToMathBearing() throws {
@@ -16,8 +17,9 @@ struct FromToMathTests {
       speed: .init(value: 120, unit: .knots),
       track: .init(angle: 150, reference: .true),
       targetSpeed: .init(value: 120, unit: .knots),
-      timeOnTarget: .now.addingTimeInterval(60 * 60),
-      declination: .init(value: 13, unit: .degrees)
+      timeOnTarget: now.addingTimeInterval(60 * 60),
+      declination: .init(value: 13, unit: .degrees),
+      now: now
     )
 
     // Test bearing calculation (value is approximate)
@@ -32,8 +34,9 @@ struct FromToMathTests {
       speed: .init(value: 120, unit: .knots),
       track: .init(angle: 0, reference: .true),
       targetSpeed: .init(value: 120, unit: .knots),
-      timeOnTarget: .now.addingTimeInterval(60 * 60),
-      declination: .init(value: 0, unit: .degrees)
+      timeOnTarget: now.addingTimeInterval(60 * 60),
+      declination: .init(value: 0, unit: .degrees),
+      now: now
     )
 
     // Test distance calculation (should be about 60NM)
@@ -57,8 +60,9 @@ struct FromToMathTests {
       speed: .init(value: 120, unit: .knots),
       track: .init(angle: 0, reference: .true),  // Track aligned with bearing
       targetSpeed: .init(value: 120, unit: .knots),
-      timeOnTarget: .now.addingTimeInterval(60 * 60),
-      declination: .init(value: 0, unit: .degrees)
+      timeOnTarget: now.addingTimeInterval(60 * 60),
+      declination: .init(value: 0, unit: .degrees),
+      now: now
     )
 
     #expect(
@@ -83,8 +87,9 @@ struct FromToMathTests {
       speed: .init(value: 120, unit: .knots),
       track: .init(angle: 90, reference: .true),  // Track is 90 degrees off bearing to target
       targetSpeed: .init(value: 120, unit: .knots),
-      timeOnTarget: .now.addingTimeInterval(60 * 60),
-      declination: .init(value: 0, unit: .degrees)
+      timeOnTarget: now.addingTimeInterval(60 * 60),
+      declination: .init(value: 0, unit: .degrees),
+      now: now
     )
 
     // Test timeToGo calculation - 30 min + ~0.2 min to turn 90°
@@ -109,8 +114,9 @@ struct FromToMathTests {
       speed: .init(value: 120, unit: .knots),
       track: .init(angle: 0, reference: .true),
       targetSpeed: .init(value: 120, unit: .knots),
-      timeOnTarget: .now.addingTimeInterval(60 * 60),  // 1 hour from now
-      declination: .init(value: 0, unit: .degrees)
+      timeOnTarget: now.addingTimeInterval(60 * 60),  // 1 hour from now
+      declination: .init(value: 0, unit: .degrees),
+      now: now
     )
 
     // Test deltaTOT calculation - should be negative (early)
@@ -198,8 +204,9 @@ struct FromToMathTests {
       speed: .init(value: 120, unit: .knots),
       track: .init(angle: 90, reference: .true),  // Heading east
       targetSpeed: .init(value: 120, unit: .knots),
-      timeOnTarget: .now.addingTimeInterval(60 * 60),
-      declination: .init(value: 0, unit: .degrees)
+      timeOnTarget: now.addingTimeInterval(60 * 60),
+      declination: .init(value: 0, unit: .degrees),
+      now: now
     )
 
     // Physics calculation:

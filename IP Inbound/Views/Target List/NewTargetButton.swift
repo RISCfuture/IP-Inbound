@@ -11,6 +11,9 @@ struct NewTargetButton: View {
   @Environment(\.previewLocation)
   private var previewLocation
 
+  @Environment(\.services)
+  private var services
+
   @State private var isCreating = false
 
   var body: some View {
@@ -35,7 +38,7 @@ struct NewTargetButton: View {
     if let previewCoord = previewLocation?.location?.coordinate {
       return previewCoord
     }
-    return await LocationStreamer.shared.currentEvent()?.location?.coordinate
+    return await services.location.currentEvent()?.location?.coordinate
   }
 }
 

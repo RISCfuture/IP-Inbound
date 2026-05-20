@@ -3,15 +3,24 @@ import SwiftUI
 struct CountdownView: View {
   var timeOnTarget: Date
 
+  @Environment(\.services)
+  private var services
+
   var body: some View {
     VStack {
       Spacer()
 
-      if timeOnTarget > Date.now {
+      if timeOnTarget > services.clock.now {
         VStack(alignment: .center, spacing: 0) {
           Text(
             .currentDate,
-            format: .timer(countingDownIn: .now..<timeOnTarget, maxPrecision: .seconds(1))
+            format: .timer(
+              countingDownIn:
+                .now..<timeOnTarget.addingTimeInterval(
+                  -Double(services.clock.offsetFromRealTimeSeconds)
+                ),
+              maxPrecision: .seconds(1)
+            )
           )
           .font(.title)
           .contentTransition(.numericText())

@@ -66,24 +66,6 @@ struct MeasurementTests {
     #expect(result.isApproximatelyEqual(to: 1))
   }
 
-  @Test("Duration, afterNow, produces correct date")
-  func testDurationAfterNow() throws {
-    let duration = Measurement(value: 60, unit: UnitDuration.seconds)
-    let future = duration.afterNow
-
-    // Should be about 60 seconds after now
-    #expect(future.timeIntervalSince(.now).isApproximatelyEqual(to: 60, relativeTolerance: 0.01))
-  }
-
-  @Test("Duration, beforeNow ,produces correct date")
-  func testDurationBeforeNow() throws {
-    let duration = Measurement(value: 60, unit: UnitDuration.seconds)
-    let past = duration.beforeNow
-
-    // Should be about 60 seconds before now
-    #expect(Date.now.timeIntervalSince(past).isApproximatelyEqual(to: 60, relativeTolerance: 0.01))
-  }
-
   @Test("Duration, after, produces correct date")
   func testDurationAfterDate() throws {
     let duration = Measurement(value: 120, unit: UnitDuration.seconds)
