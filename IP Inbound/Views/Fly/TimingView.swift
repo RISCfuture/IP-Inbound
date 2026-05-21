@@ -5,6 +5,10 @@ struct TimingView: View {
   var fromTo: FromToMath
 
   var onTimeDeltaTOT: TimeInterval = 2.0  // seconds ±TOT to be considered "on time"
+  /// When `false`, hides the required-ground-speed callout. Used when the aircraft cannot make TOT
+  /// even at max speed (bypassing the IP), where a finite “req.” speed would wrongly imply the
+  /// time-on-target is still achievable.
+  var showRequiredSpeed = true
 
   private var cautionDeltaTOT: TimeInterval { onTimeDeltaTOT * 5 }
   private var onTimeRange: ClosedRange<Date> {
@@ -67,7 +71,15 @@ struct TimingView: View {
       .fontWeight(.black)
       .foregroundStyle(textColor)
 
-      TOTView(fromTo: fromTo, timeOnTarget: timeOnTarget, showSpeed: true)
+      let requiredSpeedColor: Color =
+        onTimeRange.contains(fromTo.timeOfArrival) ? .primary : textColor
+
+      TOTView(
+        fromTo: fromTo,
+        timeOnTarget: timeOnTarget,
+        showSpeed: true,
+        requiredSpeedColor: showRequiredSpeed ? requiredSpeedColor : nil
+      )
     }
     .accessibilityIdentifier("timingIndicator")
   }

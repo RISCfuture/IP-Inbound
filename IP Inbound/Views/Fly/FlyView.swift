@@ -151,9 +151,18 @@ struct FlyView: View {
             .padding(.bottom)
             TOTView(fromTo: fromTo, timeOnTarget: desiredTimeOverIP, isPush: true)
           }
-        case .toTarget, .toTargetBypassingIP:
+        case .toTarget:
           if let fromTo = math.pposToTarget, let timeOnTarget = target.timeOnTarget {
             TimingView(timeOnTarget: timeOnTarget, fromTo: fromTo, onTimeDeltaTOT: 30)
+          }
+        case .toTargetBypassingIP:
+          if let fromTo = math.pposToTarget, let timeOnTarget = target.timeOnTarget {
+            TimingView(
+              timeOnTarget: timeOnTarget,
+              fromTo: fromTo,
+              onTimeDeltaTOT: 30,
+              showRequiredSpeed: false
+            )
           }
         case .countdownOnly:
           if let fromTo = math.pposToTarget {

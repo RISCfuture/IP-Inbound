@@ -16,6 +16,14 @@ struct FlyPage: Page {
   @MainActor var countdown: XCUIElement { app.otherElements["countdown"] }
   @MainActor var simulatorBanner: XCUIElement { app.staticTexts["simulatorBanner"] }
   @MainActor var flySpeedDisplay: XCUIElement { app.staticTexts["flySpeedDisplay"] }
+  /// The required ground speed is appended to the tappable speed display as a "(… req.)" callout,
+  /// so it shares the `flySpeedDisplay` element — which carries the `.isButton` trait for
+  /// unit-cycling and is therefore exposed as a button, not a static text. Find it by its visible
+  /// "req." copy.
+  @MainActor var requiredSpeedDisplay: XCUIElement {
+    let predicate = NSPredicate(format: "label CONTAINS[c] %@", "req.")
+    return app.buttons.matching(predicate).firstMatch
+  }
   @MainActor var flyDistanceDisplay: XCUIElement { app.staticTexts["flyDistanceDisplay"] }
   @MainActor var flyTOTDisplay: XCUIElement { app.staticTexts["flyTOTDisplay"] }
 

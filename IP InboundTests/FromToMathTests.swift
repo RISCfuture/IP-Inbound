@@ -125,6 +125,73 @@ struct FromToMathTests {
     #expect(!fromTo.isLate)
   }
 
+  @Test("requiredGroundSpeed, with the track aligned, is the straight-line speed to make TOT")
+  func testFromToMathRequiredGroundSpeed() throws {
+    // SF→LA is ~559.12 km. With a TOT one hour out and the track already aligned with the bearing
+    // (no turn required), the required ground speed is 559.12 km/h ≈ 301.9 knots.
+    let fromTo = FromToMath(
+      from: SF,
+      to: LA,
+      speed: .init(value: 120, unit: .knots),
+      track: .init(angle: 136.5, reference: .true),  // aligned with the SF→LA bearing
+      targetSpeed: .init(value: 120, unit: .knots),
+      timeOnTarget: now.addingTimeInterval(60 * 60),
+      declination: .init(value: 0, unit: .degrees),
+      now: now
+    )
+
+    let requiredGroundSpeed = try #require(fromTo.requiredGroundSpeed)
+    #expect(
+      requiredGroundSpeed.converted(to: .knots).value.isApproximatelyEqual(
+        to: 301.9,
+        relativeTolerance: 0.01
+      )
+    )
+  }
+
+  @Test("requiredGroundSpeed, accounts for the turn so flying it arrives at TOT")
+  func testFromToMathRequiredGroundSpeedAccountsForTurn() throws {
+    let from = Coordinate(latitude: 37.0, longitude: -122.0)
+    let to = Coordinate(latitude: 38.0, longitude: -122.0)  // ~60NM due north
+    let tot = now.addingTimeInterval(20 * 60)
+
+    func fromTo(at speed: Measurement<UnitSpeed>) -> FromToMath {
+      FromToMath(
+        from: from,
+        to: to,
+        speed: speed,
+        track: .init(angle: 135, reference: .true),  // 135° off the run-in bearing
+        targetSpeed: .init(value: 120, unit: .knots),
+        timeOnTarget: tot,
+        declination: .init(value: 0, unit: .degrees),
+        now: now
+      )
+    }
+
+    let required = try #require(fromTo(at: .init(value: 120, unit: .knots)).requiredGroundSpeed)
+
+    // Flying exactly the required ground speed must arrive at TOT, turn time included — a
+    // straight-line callout would arrive several seconds late.
+    let arrival = fromTo(at: required).timeOfArrival
+    #expect(abs(arrival.timeIntervalSince(tot)) < 1.0)
+  }
+
+  @Test("requiredGroundSpeed, returns nil once TOT has passed")
+  func testFromToMathRequiredGroundSpeedAfterTOT() throws {
+    let fromTo = FromToMath(
+      from: SF,
+      to: LA,
+      speed: .init(value: 120, unit: .knots),
+      track: .init(angle: 0, reference: .true),
+      targetSpeed: .init(value: 120, unit: .knots),
+      timeOnTarget: now.addingTimeInterval(-60),  // TOT was a minute ago
+      declination: .init(value: 0, unit: .degrees),
+      now: now
+    )
+
+    #expect(fromTo.requiredGroundSpeed == nil)
+  }
+
   @Test("turnTime, 90 degree turn, calculates correctly")
   func testTurnTime90Degrees() throws {
     let speed = Measurement(value: 120, unit: UnitSpeed.knots)

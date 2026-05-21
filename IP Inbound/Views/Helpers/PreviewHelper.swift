@@ -9,7 +9,8 @@ class PreviewHelper {
   private static let postIP = (36.8078222222, -115.4840472222)
   private static let altitude = 1502.0
   private static let course = 359.0 - 180.0
-  private static let speed = 257.0
+  private static let speed = Measurement(value: 120, unit: UnitSpeed.knots)
+    .converted(to: .metersPerSecond).value  // run-in speed ≈ target ground speed
 
   static let IPBearingTrue = 359.0
   static let IPDistanceNM = 4.8
