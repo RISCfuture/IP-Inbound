@@ -1,22 +1,22 @@
 {
-  "images" : [
+  "images": [
     {
-      "filename" : "iPhone 15 Pro-0-define-target_framed.png",
-      "idiom" : "universal"
+      "filename": "iPhone 17 Pro Max-0-define-target_framed.png",
+      "idiom": "universal"
     },
     {
-      "appearances" : [
+      "appearances": [
         {
-          "appearance" : "luminosity",
-          "value" : "dark"
+          "appearance": "luminosity",
+          "value": "dark"
         }
       ],
-      "filename" : "iPhone 15 Pro-0-define-target_framed 1.png",
-      "idiom" : "universal"
+      "filename": "iPhone 17 Pro Max-0-define-target_framed 1.png",
+      "idiom": "universal"
     }
   ],
-  "info" : {
-    "author" : "xcode",
-    "version" : 1
+  "info": {
+    "author": "xcode",
+    "version": 1
   }
 }

@@ -263,6 +263,34 @@ struct TutorialView: View {
             )
           )
         }
+
+        Text("After the Pass").font(.title2)
+
+        ParagraphWithImage(imageName: "8-post-pass", imageLeading: false) {
+          Text(
+            AttributedString(
+              localized: """
+                Once you’ve flown past the target at or after TOT, IP Inbound shows a **post-pass \
+                summary** with how the run went — how many seconds early or late you were against \
+                your planned TOT, colored on the same scale as the in-flight speed deviation \
+                indicator.
+                """
+            )
+          )
+
+          Text(
+            AttributedString(
+              localized: """
+                **Chaining targets.** Tap the **Fly** button — labeled with the name of the target \
+                with the next-soonest TOT in your list — to jump straight to it, skipping the \
+                setup steps. This lets you fly back-to-back passes — set up several targets with \
+                sequential TOTs ahead of time, then chain them in flight with a single tap after \
+                each pass. Tap **Choose next target** to return to the target list and pick a \
+                different one.
+                """
+            )
+          )
+        }
       }
       .multilineTextAlignment(.leading)
       .frame(maxWidth: 600)  // Ideal for readability

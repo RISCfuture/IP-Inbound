@@ -12,7 +12,9 @@ struct TargetSetupMap: View {
   }
 
   var body: some View {
-    if ProcessInfo.processInfo.isRunningUITests {
+    if ProcessInfo.processInfo.isRunningUITests,
+      ProcessInfo.processInfo.environment["UITEST_RENDER_MAPS"] != "1"
+    {
       MapPlaceholder()
     } else {
       mapBody
