@@ -14,7 +14,7 @@ struct PostPassTests {
   // MARK: - isPastTarget (geometric)
 
   @Test("isPastTarget, beyond the target, returns true")
-  func isPastTargetWhenBeyond() throws {
+  func isPastTargetWhenBeyond() {
     let target = makeTarget()
 
     let math = IPTargetMath(
@@ -29,7 +29,7 @@ struct PostPassTests {
   }
 
   @Test("isPastTarget, before the target, returns false")
-  func isPastTargetWhenBeforeTarget() throws {
+  func isPastTargetWhenBeforeTarget() {
     let target = makeTarget()
 
     // postIP is between the IP and the target along the run-in axis, so the
@@ -48,28 +48,28 @@ struct PostPassTests {
   // MARK: - isAfterTOT (clock)
 
   @Test("isAfterTOT, now is past TOT, returns true")
-  func isAfterTOTPast() throws {
+  func isAfterTOTPast() {
     let target = makeTarget(timeOnTarget: now.addingTimeInterval(-1))
     let math = makePastTargetMath(for: target, at: now)
     #expect(math.isAfterTOT)
   }
 
   @Test("isAfterTOT, now exactly equals TOT, returns true")
-  func isAfterTOTBoundary() throws {
+  func isAfterTOTBoundary() {
     let target = makeTarget(timeOnTarget: now)
     let math = makePastTargetMath(for: target, at: now)
     #expect(math.isAfterTOT)
   }
 
   @Test("isAfterTOT, now is before TOT, returns false")
-  func isAfterTOTBefore() throws {
+  func isAfterTOTBefore() {
     let target = makeTarget(timeOnTarget: now.addingTimeInterval(30))
     let math = makePastTargetMath(for: target, at: now)
     #expect(!math.isAfterTOT)
   }
 
   @Test("isAfterTOT, TOT is unset, returns false")
-  func isAfterTOTNoTOT() throws {
+  func isAfterTOTNoTOT() {
     let target = makeTarget(timeOnTarget: nil)
     let math = makePastTargetMath(for: target, at: now)
     #expect(!math.isAfterTOT)
@@ -78,7 +78,7 @@ struct PostPassTests {
   // MARK: - .postPass gating (composition)
 
   @Test("guidance is .postPass only when past target AND past TOT")
-  func gatingRequiresBothConditions() throws {
+  func gatingRequiresBothConditions() {
     // Aircraft is moving fast enough to satisfy the movement threshold, on
     // the run-in course, at a position beyond the target along that axis.
     let location = makePastTargetLocation()
@@ -93,7 +93,7 @@ struct PostPassTests {
   }
 
   @Test("guidance is not .postPass when past TOT but before target")
-  func gatingRejectsPastTOTBeforeTarget() throws {
+  func gatingRejectsPastTOTBeforeTarget() {
     let location = makeLocation(at: postIP)  // between IP and target
     let target = makeTarget(timeOnTarget: now.addingTimeInterval(-30))
 
@@ -128,7 +128,7 @@ struct PostPassTests {
   }
 
   @Test("NextTarget.next, returns nil when no future targets qualify")
-  func nextTargetNilWhenNoneQualify() throws {
+  func nextTargetNilWhenNoneQualify() {
     let now = Date(timeIntervalSince1970: 1_000_000)
 
     let current = Target(name: "Current", coordinate: targetCoordinate)
@@ -179,7 +179,7 @@ struct PostPassTests {
   }
 
   @Test("PostPassResult.capture times an early crossing from the crossing, not from TOT")
-  func captureUsesCrossingTimeForEarlyPass() throws {
+  func captureUsesCrossingTimeForEarlyPass() {
     let result = PostPassResult()
     let tot = Date(timeIntervalSince1970: 1_700_000_000)
 
@@ -192,7 +192,7 @@ struct PostPassTests {
   }
 
   @Test("PostPassResult.capture falls back to now when no crossing was recorded")
-  func captureFallsBackToNowWithoutCrossing() throws {
+  func captureFallsBackToNowWithoutCrossing() {
     let result = PostPassResult()
     let tot = Date(timeIntervalSince1970: 1_700_000_000)
 

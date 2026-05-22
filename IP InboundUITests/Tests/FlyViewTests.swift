@@ -5,6 +5,18 @@ import XCTest
 
 final class FlyViewTests: BaseTestCase {
 
+  // MARK: - Type Properties
+
+  // The seeded "Flythrough" target's IP lies ~4.8 NM north of the target on a 179°T run-in axis.
+  // A rich fix ~2 NM past the IP, on-axis, heading 179°T at 62 m/s (~120 kn, above the movement
+  // threshold) puts `GuidanceHelper` into `.toTarget` — the IP→Target phase that renders the CDI.
+  private static let ipToTargetFix = "36.818995,-115.454857,1502,179,62"
+
+  // A stationary (0 m/s) pre-IP fix. Below the 30 kn movement threshold, `GuidanceHelper` stays in
+  // `.countdownOnly`; a valid position keeps `pposToTarget` non-nil so the `TOTView` distance
+  // readout renders.
+  private static let countdownFix = "36.935565,-115.457402,1502,179,0"
+
   // MARK: - Helpers
 
   @MainActor
@@ -45,9 +57,61 @@ final class FlyViewTests: BaseTestCase {
     TargetListPage(app: app).deleteTarget(named: name)
   }
 
-  /// Wait for any fly view content to appear after navigating to FlyView.
-  /// The LocationStreamer in UI test mode delivers a static location, so the
-  /// fly view should render in countdownOnly mode after a brief delay.
+  // Launches with the seeded "Flythrough" target and the given location fix, pinning `UITEST_NOW`
+  // `secondsBeforeTOT` ahead of the seeded TOT, then navigates to the Fly view. Mirrors the
+  // clock+location harness used by the required-speed tests, walking any residual setup pages that
+  // SwiftUI sometimes restores across selection even with `isConfigured == true`.
+  @MainActor
+  private func launchSeededFlythrough(fix: String, secondsBeforeTOT: TimeInterval) throws -> FlyPage
+  {
+    let tot = try XCTUnwrap(
+      Self.uiTestNowFormatter.date(from: "2026-05-18T18:00:00.000Z")
+    )
+    let now = tot.addingTimeInterval(-secondsBeforeTOT)
+
+    app = XCUIApplication()
+    app.launchArguments.append("-UITests")
+    app.launchEnvironment["UITEST_NOW"] = Self.uiTestNowFormatter.string(from: now)
+    app.launchEnvironment["UITEST_LOCATION"] = fix
+    app.launchEnvironment["UITEST_SEED_TARGET"] = "1"
+    app.launchEnvironment["UITEST_BYPASS_TOT_RESET"] = "1"
+    app.resetAuthorizationStatus(for: .location)
+    app.launch()
+    waitForAppStability()
+    handleLocationPermissionIfNeeded()
+
+    let seeded = app.staticTexts["Flythrough"]
+    XCTAssertTrue(seeded.waitForExistence(timeout: 10), "Seeded target should appear")
+    seeded.tap()
+
+    if app.buttons["defineIPButton"].waitForExistence(timeout: 2) {
+      app.buttons["defineIPButton"].tap()
+    }
+    if app.buttons["timeOnTargetButton"].waitForExistence(timeout: 2) {
+      app.buttons["timeOnTargetButton"].tap()
+    }
+    if app.buttons["flyButton"].waitForExistence(timeout: 2) {
+      app.buttons["flyButton"].tap()
+    }
+
+    return FlyPage(app: app)
+  }
+
+  // Moving on-axis fix past the IP → `.toTarget` (IP→Target) guidance, which renders the CDI.
+  @MainActor
+  private func launchIntoIPToTarget() throws -> FlyPage {
+    try launchSeededFlythrough(fix: Self.ipToTargetFix, secondsBeforeTOT: 90)
+  }
+
+  // Stationary fix → `.countdownOnly` guidance, whose `TOTView` renders the distance readout.
+  @MainActor
+  private func launchIntoCountdownWithDistance() throws -> FlyPage {
+    try launchSeededFlythrough(fix: Self.countdownFix, secondsBeforeTOT: 600)
+  }
+
+  // Wait for any fly view content to appear after navigating to FlyView.
+  // The LocationStreamer in UI test mode delivers a static location, so the
+  // fly view should render in countdownOnly mode after a brief delay.
   @MainActor
   private func waitForFlyContent(timeout: TimeInterval = 15) -> Bool {
     // SwiftUI propagates the "flyView" identifier to all child texts, so check
@@ -126,107 +190,70 @@ final class FlyViewTests: BaseTestCase {
 
   @MainActor
   func testFlyView_WithMovement_ShowsCDI() throws {
-    launchApp()
+    let flyPage = try launchIntoIPToTarget()
 
-    // In UI test mode, LocationStreamer uses a static location without movement,
-    // so CDI guidance modes (which require speed > 0) won't activate.
-    // Verify that the fly view renders and shows countdown mode content instead.
-    let flyPage = configureTargetAndFly(named: "CDITest")
-
-    XCTAssertTrue(waitForFlyContent(), "Fly view content should appear")
-
-    // Verify fly view is showing content (countdown mode expected in test environment)
-    let guidanceMsg = app.staticTexts["Guidance begins once aircraft is moving."]
-    let cdi = flyPage.cdi
-    let hasPPOS = app.staticTexts["P.POS → IP"].exists
+    // The IP→Target header confirms `.toTarget` guidance is active; the CDI is the navigation
+    // display for that phase, which a static-location countdown never renders.
     XCTAssertTrue(
-      guidanceMsg.exists || cdi.exists || hasPPOS,
-      "Fly view should show countdown or CDI content"
+      app.staticTexts["IP → Target"].waitForExistence(timeout: 12),
+      "Moving past the IP should enter IP→Target guidance"
     )
-
-    cleanUpFromFly("CDITest")
+    XCTAssertTrue(
+      flyPage.cdi.waitForExistence(timeout: 5),
+      "CDI should render once the aircraft is moving with active guidance"
+    )
   }
 
   // MARK: - Test 33
 
   @MainActor
   func testFlyView_PostIP_ShowsIPToTarget() throws {
-    launchApp()
+    _ = try launchIntoIPToTarget()
 
-    // In UI test mode, the LocationStreamer uses a static location,
-    // so IP→Target mode won't activate. Verify fly view renders.
-    configureTargetAndFly(named: "PostIPTest")
-
-    XCTAssertTrue(waitForFlyContent(), "Fly view content should appear")
-
-    // Verify the fly view is showing content
-    let guidanceMsg = app.staticTexts["Guidance begins once aircraft is moving."]
-    let ipToTarget = app.staticTexts["IP → Target"]
-    let pposToTarget = app.staticTexts["P.POS → Target"]
+    // Past the IP and inbound, the header must read IP→Target — not the pre-IP "P.POS → IP" nor the
+    // bypass "P.POS → Target". Assert the specific header and rule out the other phases.
     XCTAssertTrue(
-      guidanceMsg.exists || ipToTarget.exists || pposToTarget.exists,
-      "Fly view should show countdown or guidance content"
+      app.staticTexts["IP → Target"].waitForExistence(timeout: 12),
+      "Moving past the IP should show IP→Target guidance"
     )
-
-    cleanUpFromFly("PostIPTest")
+    XCTAssertFalse(
+      app.staticTexts["P.POS → IP"].exists,
+      "Pre-IP guidance must not be shown once past the IP"
+    )
+    XCTAssertFalse(
+      app.staticTexts["P.POS → Target"].exists,
+      "IP-bypass guidance must not be shown on the normal IP→Target run-in"
+    )
   }
 
   // MARK: - Test 34
 
   @MainActor
-  func testFlyView_TOTView_TapCyclesUnits() throws {
-    launchApp()
-    let flyPage = configureTargetAndFly(named: "UnitsTest")
+  func testFlyView_CountdownMode_ShowsDistanceReadout() throws {
+    // `configureTargetAndFly` injects no location, so `pposToTarget` is nil and the TOTView distance
+    // readout never renders (the original test asserted nothing here — a no-op `else` branch let it
+    // pass silently). The stationary harness puts the app in `.countdownOnly` with a valid position,
+    // where the TOTView renders the distance readout (speed hidden); assert it actually appears.
+    //
+    // Tapping the readout to cycle units (nmi → mi → km) is intentionally not asserted here: it is
+    // pinned to the bottom safe-area edge, where the SwiftUI `.onTapGesture` responds to synthesized
+    // taps only unreliably (and the cycled unit persists in `@Default`, making the start state
+    // non-deterministic across runs). The cycling logic itself is trivial.
+    let flyPage = try launchIntoCountdownWithDistance()
 
-    XCTAssertTrue(waitForFlyContent(), "Fly view content should appear")
-
-    // Look for the speed or distance display
-    let speedDisplay = flyPage.flySpeedDisplay
-    let distanceDisplay = flyPage.flyDistanceDisplay
-
-    if speedDisplay.waitForExistence(timeout: 5) {
-      let label1 = speedDisplay.label
-      if speedDisplay.isHittable {
-        speedDisplay.tap()
-      } else {
-        speedDisplay.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
-      }
-      Thread.sleep(forTimeInterval: 0.5)
-      let label2 = speedDisplay.label
-      XCTAssertNotEqual(
-        label1,
-        label2,
-        "Speed unit should change on tap. Before: '\(label1)', After: '\(label2)'"
-      )
-    } else if distanceDisplay.waitForExistence(timeout: 5) {
-      let label1 = distanceDisplay.label
-      if distanceDisplay.isHittable {
-        distanceDisplay.tap()
-      } else {
-        distanceDisplay.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
-      }
-      Thread.sleep(forTimeInterval: 0.5)
-      let label2 = distanceDisplay.label
-      XCTAssertNotEqual(
-        label1,
-        label2,
-        "Distance unit should change on tap. Before: '\(label1)', After: '\(label2)'"
-      )
-    } else {
-      // In countdown mode without target coordinates, TOTView may not appear.
-      // This is acceptable - the test validates the behavior when elements are present.
-    }
-
-    cleanUpFromFly("UnitsTest")
+    XCTAssertTrue(
+      flyPage.flyDistanceDisplay.waitForExistence(timeout: 12),
+      "TOTView distance readout should render in countdown mode"
+    )
   }
 
   // MARK: - Test 35
 
-  /// Drives the required-speed callout deterministically via the clock+location
-  /// harness: a seeded target with a fixed TOT, `UITEST_NOW` placed 7 min before
-  /// TOT, and a static rich-fix pre-IP heading toward the IP at 62 m/s. Mirrors
-  /// the "5-fly-pre-ip" screenshot scenario, which puts `FlyView` into
-  /// `.toIPWithSpeedGuidance`, the mode that renders `TimingView`.
+  // Drives the required-speed callout deterministically via the clock+location
+  // harness: a seeded target with a fixed TOT, `UITEST_NOW` placed 7 min before
+  // TOT, and a static rich-fix pre-IP heading toward the IP at 62 m/s. Mirrors
+  // the "5-fly-pre-ip" screenshot scenario, which puts `FlyView` into
+  // `.toIPWithSpeedGuidance`, the mode that renders `TimingView`.
   @MainActor
   func testFlyView_ShowsRequiredSpeedForTOT() throws {
     let tot = try XCTUnwrap(

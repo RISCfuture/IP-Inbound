@@ -50,7 +50,7 @@ enum MGRSHelper {
     return isSafeToParseForDisplay(cleaned)
   }
 
-  // More thorough validation to prevent MGRS.parse from crashing
+  // Validate structure before parsing, since MGRSCoordinate(string:) can crash on malformed input.
   private static func isSafeToParseForDisplay(_ cleaned: String) -> Bool {
     // Check minimum length
     guard cleaned.count >= 3 else {

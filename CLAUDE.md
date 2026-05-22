@@ -1,15 +1,16 @@
 ## Localization & Strings
 
-- All user-facing text should be localized with String(localized:) unless passed directly to a SwiftUI view like Text().
-- When interpolating values like numbers and dates, use FormatStyle, like "Expires in \(days, format: .number) days."
+- All user-facing text should be localized with `String(localized:)` unless passed directly to a SwiftUI view like` Text()`.
+- When interpolating values like numbers and dates, use `FormatStyle`, like `"Expires in \(days, format: .number) days."`
 - Use curly-quotes in user-facing strings.
+- Use String Catalog's vary-by-plural and vary-by-device configuration where appropriate.
 
 ## Formatting & Linting
 
-- Format all changes with swift format, and verify all changes with swiftlint.
+- Format all changes with swift format, and verify all changes with `swiftlint`.
 - Adhere to Swiftlint's `type_contents_order` setting:
 
-``` yaml
+```yaml
 type_contents_order:
   order:
     [
@@ -53,7 +54,7 @@ type_contents_order:
 
 ## Concurrency
 
-- Use Swift 6 concurrency wherever appropriate: move related into TaskGroups; use actors when access synchronization is appropriate, etc.
+- Use Swift 6 concurrency wherever appropriate: move related into `TaskGroup`s; use actors when access synchronization is appropriate, etc.
 - Avoid using `nonisolated(unsafe)` and `@unchecked Sendable` except in situations where it is unavoidable (e.g., working with pre-concurrency libraries that cannot be imported with `@preconcurrency import`).
 
 ## Units & Measurements
@@ -75,14 +76,15 @@ type_contents_order:
 - Major functionality should have unit tests. Major user flows should have UI tests.
 - Unit tests are written using Swift Testing. Use `#expect` for assertions and `#require` to verify non-null.
 - Do not write trivial or tautological unit tests that verify simple and obviously correct logic.
+- Do not write tests that only validate external library functionality; tests should validate functionality specific to this project.
 
 ## Errors
 
-- Create a protocol that inherits Error for each general category of errors.
+- Create a protocol that inherits `Error` for each general category of errors.
 - Errors should implement `LocalizedError`. `errorDescription` should be a general description of the error category, and typically is the same for all error cases (e.g., "Couldn’t download file."). `failureReason` should contain specific error details and interpolate occurrence-specific information (e.g., "Received HTTP error %lld when trying to download."). `recoverySuggestion` should only be provided if the error is user-actionable.
 - Use `fatalError` or `preconditionFailure` for errors that should never happen.
 
 # Output
 
-- Use xcbeautify to reduce the context load of build and test runs.
-- Use xclogparser and xcresultparser to efficiently parse Xcode output.
+- Use `xcbeautify` to reduce the context load of build and test runs.
+- Use `xclogparser` and `xcresultparser` to efficiently parse Xcode output.

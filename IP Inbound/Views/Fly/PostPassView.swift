@@ -2,13 +2,20 @@ import SwiftData
 import SwiftUI
 
 struct PostPassView: View {
-  /// On-time and caution tolerances that match the in-flight ``TimingView`` tiers shown during the
-  /// run-in: ``FlyView`` drives that view with a 30-second on-time window, and its caution band is
-  /// five times that. Matching them keeps the post-pass verdict consistent with the timing the
-  /// pilot was just flying to, instead of flipping a green pass to red after crossing.
+  /// On-time and caution tolerances for the post-pass verdict. The 30-second on-time window matches
+  /// the run-in window ``GuidanceContentView`` feeds to ``TimingView`` (`runInOnTimeDeltaTOT`); the
+  /// caution tolerance applies ``TimingView``’s `cautionMultiplier` (5×) to that window. Keeping them
+  /// aligned makes the post-pass verdict consistent with the timing the pilot was just flying to,
+  /// rather than flipping a green pass to red after crossing.
   private static let
     onTimeToleranceSeconds = 30.0,
     cautionToleranceSeconds = 150.0
+
+  private static let
+    sectionSpacing = 24.0,
+    titleSpacing = 8.0,
+    buttonStackSpacing = 12.0
+  private static let missFontSize = 36.0
 
   let capture: PostPassResult.Capture
   let currentTarget: Target
@@ -66,10 +73,10 @@ struct PostPassView: View {
   }
 
   var body: some View {
-    VStack(spacing: 24) {
+    VStack(spacing: Self.sectionSpacing) {
       Spacer()
 
-      VStack(spacing: 8) {
+      VStack(spacing: Self.titleSpacing) {
         Text("Past Target")
           .font(.title)
           .fontWeight(.bold)
@@ -78,19 +85,20 @@ struct PostPassView: View {
           .foregroundStyle(.secondary)
       }
 
-      HStack {
-        Image(systemName: missIcon)
-          .accessibilityHidden(true)
+      Label {
         Text(missText)
           .contentTransition(.numericText())
+      } icon: {
+        Image(systemName: missIcon)
+          .accessibilityHidden(true)
       }
-      .font(.system(size: 36, weight: .black))
+      .font(.system(size: Self.missFontSize, weight: .black))
       .foregroundStyle(missColor)
       .accessibilityIdentifier("postPassMiss")
 
       Spacer()
 
-      VStack(spacing: 12) {
+      VStack(spacing: Self.buttonStackSpacing) {
         if let nextTarget {
           Button {
             onSelectTarget(nextTarget)

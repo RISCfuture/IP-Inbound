@@ -2,9 +2,9 @@ import XCTest
 
 // swiftlint:disable prefer_nimble
 
-/// SwiftUI propagates the enclosing `flyView` accessibility identifier to every
-/// descendant, so the post-pass screen is located by its text content rather
-/// than by element identifiers (mirroring `FlyPage`).
+// SwiftUI propagates the enclosing `flyView` accessibility identifier to every
+// descendant, so the post-pass screen is located by its text content rather
+// than by element identifiers (mirroring `FlyPage`).
 struct PostPassPage: Page {
   let app: XCUIApplication
 

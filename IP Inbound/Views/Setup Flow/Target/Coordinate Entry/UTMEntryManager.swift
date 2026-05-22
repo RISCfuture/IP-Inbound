@@ -5,17 +5,22 @@ import SwiftUI
 @MainActor
 @Observable
 final class UTMEntryManager {
-  private(set) var zone: String = ""
-  private(set) var band: String = ""
-  private(set) var easting: String = ""
-  private(set) var northing: String = ""
+  private static let zoneWidth = 2
+  private static let eastingWidth = 6
+  private static let northingWidth = 7
+  private static let maxZone = 60
+
+  private(set) var zone = ""
+  private(set) var band = ""
+  private(set) var easting = ""
+  private(set) var northing = ""
   private(set) var currentIndex = 0
 
   var inputMode: InputMode {
-    if currentIndex < 2 {
+    if currentIndex < FieldIndex.bandIndex {
       return .zone
     }
-    if currentIndex == 2 {
+    if currentIndex == FieldIndex.bandIndex {
       return .band
     }
     return .numeric
@@ -30,12 +35,12 @@ final class UTMEntryManager {
   }
 
   var stringValue: String {
-    var result = zone.padding(toLength: 2, withPad: "0", startingAt: 0)
+    var result = zone.padding(toLength: Self.zoneWidth, withPad: "0", startingAt: 0)
     result += band.isEmpty ? "_" : band
     result += " "
-    result += easting.padding(toLength: 6, withPad: "0", startingAt: 0)
+    result += easting.padding(toLength: Self.eastingWidth, withPad: "0", startingAt: 0)
     result += " "
-    result += northing.padding(toLength: 7, withPad: "0", startingAt: 0)
+    result += northing.padding(toLength: Self.northingWidth, withPad: "0", startingAt: 0)
     return result
   }
 
@@ -57,7 +62,7 @@ final class UTMEntryManager {
   }
 
   var isValid: Bool {
-    guard let zoneNum = Int(zone), (1...60).contains(zoneNum) else {
+    guard let zoneNum = Int(zone), (1...Self.maxZone).contains(zoneNum) else {
       return false
     }
     guard !band.isEmpty && validBands.contains(Character(band)) else {
@@ -88,47 +93,37 @@ final class UTMEntryManager {
   }
 
   func add(_ character: Character) {
-    if currentIndex < 2 {
-      // Zone input (0-60)
+    if currentIndex < FieldIndex.bandIndex {
+      // Zone input (1-60).
       if character.isNumber {
-        if currentIndex == 0 {
+        if currentIndex == FieldIndex.zoneFirst {
           zone = String(character)
         } else {
           zone += String(character)
-          // Validate zone range
-          if let zoneNum = Int(zone), zoneNum > 60 {
-            zone = String(character)  // Reset to single digit
+          if let zoneNum = Int(zone), zoneNum > Self.maxZone {
+            zone = String(character)  // Reset to single digit.
           }
         }
       }
-    } else if currentIndex == 2 {
-      // Band input
+    } else if currentIndex == FieldIndex.bandIndex {
       if validBands.contains(character) {
         band = String(character)
       }
-    } else if currentIndex >= 4 && currentIndex < 10 {
-      // Easting input (6 digits)
+    } else if (FieldIndex.eastingStart..<FieldIndex.eastingEnd).contains(currentIndex) {
       if character.isNumber {
-        let position = currentIndex - 4
-        if position < easting.count {
-          var chars = Array(easting)
-          chars[position] = character
-          easting = String(chars)
-        } else {
-          easting += String(character)
-        }
+        easting = replacingDigit(
+          in: easting,
+          at: currentIndex - FieldIndex.eastingStart,
+          with: character
+        )
       }
-    } else if currentIndex >= 11 && currentIndex < 18 {
-      // Northing input (7 digits)
+    } else if (FieldIndex.northingStart..<FieldIndex.northingEnd).contains(currentIndex) {
       if character.isNumber {
-        let position = currentIndex - 11
-        if position < northing.count {
-          var chars = Array(northing)
-          chars[position] = character
-          northing = String(chars)
-        } else {
-          northing += String(character)
-        }
+        northing = replacingDigit(
+          in: northing,
+          at: currentIndex - FieldIndex.northingStart,
+          with: character
+        )
       }
     }
 
@@ -138,68 +133,31 @@ final class UTMEntryManager {
   func backspace() {
     retreat()
 
-    if currentIndex < 2 {
-      // Zone
-      if currentIndex == 0 && !zone.isEmpty {
+    if currentIndex < FieldIndex.bandIndex {
+      if currentIndex == FieldIndex.zoneFirst && !zone.isEmpty {
         zone = String(zone.dropFirst())
-      } else if currentIndex == 1 && zone.count > 1 {
+      } else if currentIndex == FieldIndex.zoneFirst + 1 && zone.count > 1 {
         zone = String(zone.dropLast())
       }
-    } else if currentIndex == 2 {
-      // Band
+    } else if currentIndex == FieldIndex.bandIndex {
       band = ""
-    } else if currentIndex >= 4 && currentIndex < 10 {
-      // Easting
-      let position = currentIndex - 4
-      if position < easting.count {
-        var chars = Array(easting)
-        chars[position] = "0"
-        easting = String(chars)
-      }
-    } else if currentIndex >= 11 && currentIndex < 18 {
-      // Northing
-      let position = currentIndex - 11
-      if position < northing.count {
-        var chars = Array(northing)
-        chars[position] = "0"
-        northing = String(chars)
-      }
-    }
-  }
-
-  func advance() {
-    currentIndex += 1
-    // Skip spaces
-    if currentIndex == 3 || currentIndex == 10 {
-      currentIndex += 1
-    }
-    if currentIndex >= 18 {
-      currentIndex = 0
-    }
-  }
-
-  func retreat() {
-    currentIndex -= 1
-    // Skip spaces
-    if currentIndex == 3 || currentIndex == 10 {
-      currentIndex -= 1
-    }
-    if currentIndex < 0 {
-      currentIndex = 17
+    } else if (FieldIndex.eastingStart..<FieldIndex.eastingEnd).contains(currentIndex) {
+      easting = clearingDigit(in: easting, at: currentIndex - FieldIndex.eastingStart)
+    } else if (FieldIndex.northingStart..<FieldIndex.northingEnd).contains(currentIndex) {
+      northing = clearingDigit(in: northing, at: currentIndex - FieldIndex.northingStart)
     }
   }
 
   func setIndex(_ index: Int) {
     if index < stringValue.count {
       currentIndex = index
-      // Skip spaces
-      if currentIndex == 3 || currentIndex == 10 {
+      if isSpaceIndex(currentIndex) {
         currentIndex += 1
       }
     }
   }
 
-  func getCoordinate() -> Coordinate? {
+  func coordinate() -> Coordinate? {
     guard isValid else { return nil }
 
     let hemisphere: Hemisphere = Character(band) < "N" ? .south : .north
@@ -216,9 +174,64 @@ final class UTMEntryManager {
     return Coordinate(latitude: geo.latitude, longitude: geo.longitude)
   }
 
+  private func advance() {
+    currentIndex += 1
+    if isSpaceIndex(currentIndex) {
+      currentIndex += 1
+    }
+    if currentIndex >= FieldIndex.northingEnd {
+      currentIndex = 0
+    }
+  }
+
+  private func retreat() {
+    currentIndex -= 1
+    if isSpaceIndex(currentIndex) {
+      currentIndex -= 1
+    }
+    if currentIndex < 0 {
+      currentIndex = FieldIndex.northingEnd - 1
+    }
+  }
+
+  private func isSpaceIndex(_ index: Int) -> Bool {
+    index == FieldIndex.firstSpace || index == FieldIndex.secondSpace
+  }
+
+  private func replacingDigit(in field: String, at position: Int, with character: Character)
+    -> String
+  {
+    if position < field.count {
+      var chars = Array(field)
+      chars[position] = character
+      return String(chars)
+    }
+    return field + String(character)
+  }
+
+  private func clearingDigit(in field: String, at position: Int) -> String {
+    guard position < field.count else { return field }
+    var chars = Array(field)
+    chars[position] = "0"
+    return String(chars)
+  }
+
   enum InputMode {
     case zone
     case band
     case numeric
+  }
+
+  /// Cursor positions within the formatted UTM string. Spaces sit at the gaps
+  /// between these field ranges and are skipped while navigating.
+  private enum FieldIndex {
+    static let zoneFirst = 0
+    static let bandIndex = 2
+    static let firstSpace = 3
+    static let eastingStart = 4
+    static let eastingEnd = 10  // Exclusive.
+    static let secondSpace = 10
+    static let northingStart = 11
+    static let northingEnd = 18  // Exclusive.
   }
 }

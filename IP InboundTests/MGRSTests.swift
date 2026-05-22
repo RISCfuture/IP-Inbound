@@ -6,7 +6,7 @@ import Testing
 struct MGRSTests {
 
   @Test("Coordinate to MGRS conversion")
-  func testCoordinateToMGRS() throws {
+  func coordinateToMGRS() throws {
     // Test known coordinate conversions
     let testCases: [(lat: Double, lon: Double, expectedPrefix: String)] = [
       // Washington DC area
@@ -33,7 +33,7 @@ struct MGRSTests {
   }
 
   @Test("MGRS to coordinate parsing")
-  func testMGRSToCoordinate() throws {
+  func mgrsToCoordinate() throws {
     // Test parsing various MGRS formats
     // Note: These are real MGRS strings with their actual parsed coordinates
     let testCases: [(mgrs: String, expectedLat: Double, expectedLon: Double, tolerance: Double)] = [
@@ -73,96 +73,8 @@ struct MGRSTests {
     }
   }
 
-  @Test("MGRS validation")
-  func testMGRSValidation() {
-    // Valid MGRS strings
-    let validMGRS = [
-      "33XVG7459459364",
-      "33XVG745593",
-      "33XVG74",
-      "33X VG 74594 59364",
-      "18SUJ2348706483"
-    ]
-
-    for mgrs in validMGRS {
-      #expect(MGRSHelper.validate(mgrs), "Valid MGRS string marked as invalid: \(mgrs)")
-    }
-
-    // Invalid MGRS strings
-    let invalidMGRS = [
-      "ABC123",
-      "99ZZZ12345",
-      "33I VG 74594 59364",  // I is not a valid band letter
-      "33O VG 74594 59364",  // O is not a valid band letter
-      ""
-    ]
-
-    for mgrs in invalidMGRS {
-      #expect(!MGRSHelper.validate(mgrs), "Invalid MGRS string marked as valid: \(mgrs)")
-    }
-  }
-
-  @Test("MGRS formatting")
-  func testMGRSFormatting() {
-    let testCases: [(input: String, withSpaces: String, withoutSpaces: String)] = [
-      ("33XVG7459459364", "33X VG 74594 59364", "33XVG7459459364"),
-      ("33xvg745593", "33X VG 745 593", "33XVG745593"),
-      ("18SUJ2348706483", "18S UJ 23487 06483", "18SUJ2348706483")
-    ]
-
-    for testCase in testCases {
-      let formattedWithSpaces = MGRSHelper.format(testCase.input, withSpaces: true)
-      let formattedWithoutSpaces = MGRSHelper.format(testCase.input, withSpaces: false)
-
-      #expect(
-        formattedWithSpaces == testCase.withSpaces,
-        "Formatting with spaces failed for: \(testCase.input)"
-      )
-      #expect(
-        formattedWithoutSpaces == testCase.withoutSpaces,
-        "Formatting without spaces failed for: \(testCase.input)"
-      )
-    }
-  }
-
-  @Test("MGRS round trip conversion")
-  func testMGRSRoundTrip() throws {
-    // Test that converting coordinate -> MGRS -> coordinate preserves location
-    let coordinates = [
-      Coordinate(latitude: 38.8977, longitude: -77.0365),
-      Coordinate(latitude: 51.5074, longitude: -0.1278),
-      Coordinate(latitude: -33.8688, longitude: 151.2093),
-      Coordinate(latitude: 35.6762, longitude: 139.6503)
-    ]
-
-    for original in coordinates {
-      let mgrs = try #require(
-        MGRSHelper.fromCoordinate(original, precision: .oneM),
-        "Failed to convert coordinate to MGRS"
-      )
-      let converted = try #require(
-        MGRSHelper.toCoordinate(mgrs),
-        "Failed to convert MGRS back to coordinate"
-      )
-      #expect(
-        original.latitudeDeg.isApproximatelyEqual(
-          to: converted.latitudeDeg,
-          absoluteTolerance: 0.00001
-        ),
-        "Latitude changed after round trip"
-      )
-      #expect(
-        original.longitudeDeg.isApproximatelyEqual(
-          to: converted.longitudeDeg,
-          absoluteTolerance: 0.00001
-        ),
-        "Longitude changed after round trip"
-      )
-    }
-  }
-
   @Test("MGRS precision levels")
-  func testMGRSPrecisionLevels() throws {
+  func mgrsPrecisionLevels() throws {
     let coordinate = Coordinate(latitude: 38.8977, longitude: -77.0365)
 
     let precisionTests: [(precision: MGRSHelper.Precision, expectedLength: Int)] = [

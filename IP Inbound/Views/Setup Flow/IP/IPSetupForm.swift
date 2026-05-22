@@ -3,11 +3,15 @@ import Foundation
 import SwiftUI
 
 struct IPSetupForm: View {
+  private static let defaultOffsetDistanceNM = 4.0
+  private static let defaultOffsetTimeMin = 2.0
+  private static let segmentedPickerInset = -12.0
+
   @Bindable var target: Target
 
   @State private var offsetType = IPOffsetType.distance
-  @State private var offsetDistance = 4.0
-  @State private var offsetTime = 2.0
+  @State private var offsetDistance = Self.defaultOffsetDistanceNM
+  @State private var offsetTime = Self.defaultOffsetTimeMin
 
   @Default(.distanceUnit)
   private var distanceDefault
@@ -75,7 +79,9 @@ struct IPSetupForm: View {
           }
           .pickerStyle(.segmented)
           .labelsHidden()
-          .padding(.horizontal, -12)
+          // Negative inset pulls the segmented picker out to the row edges,
+          // cancelling the LabeledContent label column's leading padding.
+          .padding(.horizontal, Self.segmentedPickerInset)
           .accessibilityIdentifier("offsetTypePicker")
         }
 

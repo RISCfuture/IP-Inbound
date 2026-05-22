@@ -11,7 +11,7 @@ struct IPTargetMathTests {
   private let now = Date(timeIntervalSince1970: 1_700_000_000)
 
   @Test("isPastIP, is past, returns true")
-  func testIPTargetMathIsPastIPWhenPast() throws {
+  func ipTargetMathIsPastIPWhenPast() {
     let target = Target(name: "Test Target", coordinate: target)
     target.offsetBearing = 359
     target.offsetDistance = 4.8
@@ -28,7 +28,7 @@ struct IPTargetMathTests {
   }
 
   @Test("isPastIP, is not past, returns false")
-  func testIPTargetMathIsPastIPWhenNotPast() throws {
+  func ipTargetMathIsPastIPWhenNotPast() {
     let target = Target(name: "Test Target", coordinate: target)
     target.offsetBearing = 359
     target.offsetDistance = 4.8
@@ -45,7 +45,7 @@ struct IPTargetMathTests {
   }
 
   @Test("IP_ETA, calculates correctly")
-  func testIPTargetMathIPETA() throws {
+  func ipTargetMathIPETA() throws {
     let target = Target(
       name: "Test Target",
       coordinate: Coordinate(latitude: 38.0, longitude: -122.0)
@@ -56,7 +56,8 @@ struct IPTargetMathTests {
     target.timeOnTarget = now.addingTimeInterval(60 * 60)  // 1 hour from now
 
     // Position is 60NM from IP, speed is 120 knots, so ETA should be 30 minutes
-    let position = Coordinate(latitude: 37.0, longitude: -122.0)  // 60NM south of target, 30NM south of IP
+    // 60NM south of target, 30NM south of IP
+    let position = Coordinate(latitude: 37.0, longitude: -122.0)
     let ipTargetMath = IPTargetMath(
       coordinate: position,
       speed: .init(value: 120, unit: .knots),
@@ -71,7 +72,7 @@ struct IPTargetMathTests {
   }
 
   @Test("IPDeltaTime, calculates correctly")
-  func testIPTargetMathDeltaTimes() throws {
+  func ipTargetMathDeltaTimes() throws {
     let target = Target(
       name: "Test Target",
       coordinate: Coordinate(latitude: 38.0, longitude: -122.0)
@@ -81,7 +82,8 @@ struct IPTargetMathTests {
     target.offsetDistance = 30
     target.timeOnTarget = now.addingTimeInterval(60 * 60)  // 1 hour from now
 
-    let position = Coordinate(latitude: 37.0, longitude: -122.0)  // 60NM south of target, 30NM south of IP
+    // 60NM south of target, 30NM south of IP
+    let position = Coordinate(latitude: 37.0, longitude: -122.0)
     let ipTargetMath = IPTargetMath(
       coordinate: position,
       speed: .init(value: 120, unit: .knots),
@@ -96,7 +98,7 @@ struct IPTargetMathTests {
   }
 
   @Test("pposToIP timing references the desired IP-crossing time, not the target TOT")
-  func testPposToIPTimingReferencesDesiredIPTime() throws {
+  func pposToIPTimingReferencesDesiredIPTime() throws {
     let target = Target(
       name: "Test Target",
       coordinate: Coordinate(latitude: 38.0, longitude: -122.0)
@@ -133,8 +135,8 @@ struct IPTargetMathTests {
 
   // MARK: - IP Sequencing Buffer
 
-  /// Builds a target whose run-in course (IP→target) points due north (true) with the IP roughly
-  /// ten nautical miles south of the target, at the given planned ground speed.
+  // Builds a target whose run-in course (IP→target) points due north (true) with the IP roughly
+  // ten nautical miles south of the target, at the given planned ground speed.
   private func runInTarget(groundSpeedKts: Double) -> Target {
     let target = Target(
       name: "Buffer Target",
@@ -148,7 +150,7 @@ struct IPTargetMathTests {
   }
 
   @Test("isPastIP, track straight at target, sequences at the perpendicular")
-  func testIsPastIPNoBufferWhenOnCourse() throws {
+  func isPastIPNoBufferWhenOnCourse() {
     let target = runInTarget(groundSpeedKts: 500)
     let IP = target.IPCoordinate
 
@@ -182,7 +184,7 @@ struct IPTargetMathTests {
   }
 
   @Test("isPastIP, track 90° off run-in, never sequences")
-  func testIsPastIPNeverSequencesAtNinetyDegrees() throws {
+  func isPastIPNeverSequencesAtNinetyDegrees() {
     let target = runInTarget(groundSpeedKts: 500)
     let IP = target.IPCoordinate
 
@@ -203,7 +205,7 @@ struct IPTargetMathTests {
   }
 
   @Test("isPastIP, track 45° off run-in, sequences only after ~r/2")
-  func testIsPastIPHalfRadiusBufferAtFortyFiveDegrees() throws {
+  func isPastIPHalfRadiusBufferAtFortyFiveDegrees() {
     let groundSpeedKts = 500.0
     let target = runInTarget(groundSpeedKts: groundSpeedKts)
     let IP = target.IPCoordinate
@@ -245,7 +247,7 @@ struct IPTargetMathTests {
   }
 
   @Test("isPastIP, orbiting at the IP with track 135° off, does not sequence")
-  func testIsPastIPOrbitDoesNotSequence() throws {
+  func isPastIPOrbitDoesNotSequence() {
     let target = runInTarget(groundSpeedKts: 500)
     let IP = target.IPCoordinate
 
@@ -266,7 +268,7 @@ struct IPTargetMathTests {
   }
 
   @Test("isPastIP, far off the run-in axis, projects along the true course")
-  func testIsPastIPUsesTrueAlongTrackOffAxis() throws {
+  func isPastIPUsesTrueAlongTrackOffAxis() {
     let target = runInTarget(groundSpeedKts: 500)
     let IP = target.IPCoordinate
 
@@ -294,7 +296,7 @@ struct IPTargetMathTests {
   }
 
   @Test("crossTrackDistance, calculates correctly")
-  func testIPTargetMathCrossTrackDistance() throws {
+  func ipTargetMathCrossTrackDistance() {
     // Set up a target
     let target = Target(
       name: "Test Target",
@@ -313,8 +315,8 @@ struct IPTargetMathTests {
       now: now
     )
 
-    // Cross track distance should be close to 1NM
-    // since we are
+    // The run-in axis runs due west through the target along 38°N, so a position
+    // ~1° (~60NM) south of it is ~60NM off-axis.
     #expect(
       southOfTarget.crossTrackDistance.converted(to: .nauticalMiles).value.isApproximatelyEqual(
         to: 60,

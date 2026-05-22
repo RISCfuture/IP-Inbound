@@ -11,7 +11,7 @@ struct CoordinateEntryView: View {
 
   var body: some View {
     VStack(spacing: 0) {
-      Picker("Coordinate format", selection: $coordinateFormat) {
+      Picker(String(localized: "Coordinate format"), selection: $coordinateFormat) {
         Text("DD").tag(CoordinateFormat.decimalDegrees)
         Text("DDM").tag(CoordinateFormat.degreesDecimalMinutes)
         Text("DMS").tag(CoordinateFormat.degreesMinutesSeconds)
@@ -23,14 +23,14 @@ struct CoordinateEntryView: View {
 
       if coordinateFormat == .utm {
         Spacer()
-        UTMEntryView(coordinate: coordinate, onAccept: { onAccept($0) }, onCancel: onCancel)
+        UTMEntryView(coordinate: coordinate, onAccept: onAccept, onCancel: onCancel)
         Spacer()
       } else if coordinateFormat == .mgrs {
         Spacer()
-        MGRSEntryView(coordinate: coordinate, onAccept: { onAccept($0) }, onCancel: onCancel)
+        MGRSEntryView(coordinate: coordinate, onAccept: onAccept, onCancel: onCancel)
         Spacer()
       } else {
-        LatLonEntryView(coordinate: coordinate, onAccept: { onAccept($0) }, onCancel: onCancel)
+        LatLonEntryView(coordinate: coordinate, onAccept: onAccept, onCancel: onCancel)
       }
     }
   }
@@ -44,28 +44,28 @@ struct CoordinateEntryView: View {
     self.onAccept = onAccept
     self.onCancel = onCancel
   }
-
-  private static func value(from coordinate: Coordinate, format: CoordinateFormat) -> String {
-    let style = CoordinateFormatStyle(format: format)
-    return coordinate.formatted(style)
-  }
-
-  private static func coordinate(from value: String, format: CoordinateFormat) -> Coordinate {
-    do {
-      return try Coordinate(value, format: format)
-    } catch {
-      return .init(latitude: 0, longitude: 0)
-    }
-  }
 }
 
-#Preview {
-  @Previewable @State var coordinate = Coordinate(
-    latitude: 37.123,
-    longitude: -121.345
-  )
+#Preview("Lat/Lon") {
+  @Previewable @State var coordinate = Coordinate(latitude: 37.123, longitude: -121.345)
 
-  Group {
-    CoordinateEntryView(coordinate: coordinate, onAccept: { coordinate = $0 }, onCancel: {})
-  }.padding()
+  CoordinateEntryView(coordinate: coordinate, onAccept: { coordinate = $0 }, onCancel: {})
+    .onAppear { Defaults[.coordinateFormat] = .decimalDegrees }
+    .padding()
+}
+
+#Preview("UTM") {
+  @Previewable @State var coordinate = Coordinate(latitude: 37.123, longitude: -121.345)
+
+  CoordinateEntryView(coordinate: coordinate, onAccept: { coordinate = $0 }, onCancel: {})
+    .onAppear { Defaults[.coordinateFormat] = .utm }
+    .padding()
+}
+
+#Preview("MGRS") {
+  @Previewable @State var coordinate = Coordinate(latitude: 37.123, longitude: -121.345)
+
+  CoordinateEntryView(coordinate: coordinate, onAccept: { coordinate = $0 }, onCancel: {})
+    .onAppear { Defaults[.coordinateFormat] = .mgrs }
+    .padding()
 }

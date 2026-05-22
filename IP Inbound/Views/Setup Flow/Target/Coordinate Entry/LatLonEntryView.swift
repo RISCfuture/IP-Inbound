@@ -2,6 +2,9 @@ import Defaults
 import SwiftUI
 
 struct LatLonEntryView: View {
+  private static let baselineDivisor: CGFloat = 8
+  private static let keypadHeightScale: CGFloat = 5
+
   let onAccept: (Coordinate) -> Void
   let onCancel: () -> Void
 
@@ -18,96 +21,39 @@ struct LatLonEntryView: View {
     (0...9).filter { entryManager.isValidCharacter(Character("\($0)")) }
   }
 
+  private var isLatLonFormat: Bool {
+    coordinateFormat == .decimalDegrees
+      || coordinateFormat == .degreesMinutesSeconds
+      || coordinateFormat == .degreesDecimalMinutes
+  }
+
   var body: some View {
-    if coordinateFormat != .decimalDegrees
-      && coordinateFormat != .degreesMinutesSeconds
-      && coordinateFormat != .degreesDecimalMinutes
-    {
-      Spacer()
-    } else {
+    if isLatLonFormat {
       GeometryReader { geometry in
-        let baseline = geometry.size.height / 8
-        let strings = entryManager.attributedStrings
+        let baseline = geometry.size.height / Self.baselineDivisor
 
         VStack(spacing: 0) {
-          VStack(spacing: 0) {
-            ForEach(0..<strings.count, id: \.self) { lineIndex in
-              HStack {
-                GeometryReader { geo in
-                  Text(strings[lineIndex])
-                    .font(.system(size: baseline * 0.7).monospaced())
-                    .minimumScaleFactor(0.5)
-                    .lineLimit(1)
-                    .frame(maxWidth: .infinity, maxHeight: baseline)
-                    .layoutPriority(1)
-                    .onTapGesture { location in
-                      let line = strings[lineIndex]
-                      let charCount = line.characters.count
-                      let widthPerChar = geo.size.width / CGFloat(charCount)
-                      let charIndex = Int(location.x / widthPerChar)
-                      if charCount > charIndex {
-                        entryManager.setIndex(lineIndex: lineIndex, charIndex: charIndex)
-                      }
-                    }
-                    .accessibilityAddTraits(.isButton)
-                }
-                .frame(idealHeight: baseline)
-              }
+          LatLonDisplayLines(
+            lines: entryManager.attributedStrings,
+            baseline: baseline,
+            onTapCharacter: { lineIndex, charIndex in
+              entryManager.setIndex(lineIndex: lineIndex, charIndex: charIndex)
             }
-          }
+          )
 
           Spacer(minLength: 0)
 
-          switch entryManager.digitType {
-            case .numeric:
-              NumericKeypadView(
-                activeDigits: activeDigits,
-                onKeyPress: { entryManager.add($0) },
-                onBackspace: { entryManager.backspace() }
-              )
-              .frame(height: baseline * 5)
-            case .hemisphere:
-              DirectionKeypadView(
-                activeDirections: activeDirections,
-                onKeyPress: { entryManager.add($0) },
-                onBackspace: { entryManager.backspace() }
-              )
-              .frame(height: baseline * 5)
-            default:
-              Spacer()
-                .frame(height: baseline * 5)
-          }
+          keypad(baseline: baseline)
 
-          HStack {
-            Spacer()
-            Button(
-              action: { onCancel() },
-              label: {
-                Image(systemName: "xmark")
-                  .resizable()
-                  .scaledToFit()
-                  .frame(height: baseline * 0.6)
-                  .accessibilityLabel("Cancel")
-              }
-            )
-            .scaledToFit()
-            .frame(height: baseline)
-            Spacer()
-            Button(
-              action: { onAccept(entryManager.coordinate) },
-              label: {
-                Image(systemName: "checkmark")
-                  .resizable()
-                  .scaledToFit()
-                  .frame(height: baseline * 0.6)
-                  .accessibilityLabel("Accept")
-              }
-            )
-            .frame(height: baseline)
-            Spacer()
-          }
+          AcceptCancelBar(
+            baseline: baseline,
+            onAccept: { onAccept(entryManager.coordinate) },
+            onCancel: onCancel
+          )
         }
       }
+    } else {
+      Spacer()
     }
   }
 
@@ -119,6 +65,31 @@ struct LatLonEntryView: View {
     self.onAccept = onAccept
     self.onCancel = onCancel
     _entryManager = State(wrappedValue: .init(coordinate: coordinate))
+  }
+
+  @ViewBuilder
+  private func keypad(baseline: CGFloat) -> some View {
+    let keypadHeight = baseline * Self.keypadHeightScale
+
+    switch entryManager.digitType {
+      case .numeric:
+        NumericKeypadView(
+          activeDigits: activeDigits,
+          onKeyPress: { entryManager.add($0) },
+          onBackspace: { entryManager.backspace() }
+        )
+        .frame(height: keypadHeight)
+      case .hemisphere:
+        DirectionKeypadView(
+          activeDirections: activeDirections,
+          onKeyPress: { entryManager.add($0) },
+          onBackspace: { entryManager.backspace() }
+        )
+        .frame(height: keypadHeight)
+      case .open:
+        Spacer()
+          .frame(height: keypadHeight)
+    }
   }
 }
 

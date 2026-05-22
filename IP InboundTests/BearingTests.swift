@@ -6,7 +6,7 @@ import Testing
 @Suite("Bearing")
 struct BearingTests {
   @Test("normalized, calculates correctly")
-  func testBearingNormalization() throws {
+  func bearingNormalization() {
     let bearing1 = Bearing(angle: 370, reference: .true)
     #expect(bearing1.normalized.degrees == 10)
 
@@ -14,8 +14,8 @@ struct BearingTests {
     #expect(bearing2.normalized.degrees == 350)
   }
 
-  @Test("reciprocal, calulates correctly")
-  func testBearingReciprocal() throws {
+  @Test("reciprocal, calculates correctly")
+  func bearingReciprocal() {
     let bearing = Bearing(angle: 30, reference: .true)
     #expect(bearing.reciprocal.degrees == 210)
     #expect(bearing.reciprocal.reference == bearing.reference)
@@ -26,7 +26,7 @@ struct BearingTests {
   }
 
   @Test("toMagnetic and toTrue, calculates correctly")
-  func testBearingConversion() throws {
+  func bearingConversion() {
     let trueBearing = Bearing(angle: 10, reference: .true)
     let declination = Measurement(value: 15, unit: UnitAngle.degrees)
 

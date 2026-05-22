@@ -2,11 +2,17 @@ import SwiftUI
 
 // swiftlint:disable accessibility_label_for_image
 
+/// Scrollable, illustrated walkthrough of how to plan and fly an IP-to-target run with the app,
+/// covering planning, the pre-IP phase, the run-in, late-to-target handling, and the post-pass
+/// summary.
 struct TutorialView: View {
+  private static let sectionSpacing: CGFloat = 24
+  private static let readableContentWidth: CGFloat = 600
+
   var body: some View {
     ScrollView {
       EmptyView().accessibilityIdentifier("tutorialView")
-      LazyVStack(alignment: .leading, spacing: 24) {
+      LazyVStack(alignment: .leading, spacing: Self.sectionSpacing) {
         Text("How to Use IP Inbound").font(.title)
         Text(
           """
@@ -111,65 +117,12 @@ struct TutorialView: View {
             )
           )
 
-          VStack {
-            HStack {
-              Image(systemName: "chevron.up.2").foregroundStyle(Color("TooSlowWarning"))
-                .padding(.horizontal, 4)
-              Text("Too slow")
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            .padding(.vertical, 8)
-            .background(.thinMaterial)
-            .cornerRadius(8)
-
-            HStack {
-              Image(systemName: "chevron.up").foregroundStyle(Color("TooSlowCaution"))
-                .padding(.horizontal, 4)
-              Text("Slightly slow")
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            .padding(.vertical, 8)
-            .background(.thinMaterial)
-            .cornerRadius(8)
-
-            HStack {
-              Image(systemName: "checkmark.circle.fill").foregroundStyle(Color("OnTime"))
-                .padding(.horizontal, 4)
-              Text("On time")
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            .padding(.vertical, 8)
-            .background(.thinMaterial)
-            .cornerRadius(8)
-
-            HStack {
-              Image(systemName: "chevron.down").foregroundStyle(Color("TooFastCaution"))
-                .padding(.horizontal, 4)
-              Text("Slightly fast")
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            .padding(.vertical, 8)
-            .background(.thinMaterial)
-            .cornerRadius(8)
-
-            HStack {
-              Image(systemName: "chevron.down.2").foregroundStyle(Color("TooFastWarning"))
-                .padding(.horizontal, 4)
-              Text("Too fast")
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            .padding(.vertical, 8)
-            .background(.thinMaterial)
-            .cornerRadius(8)
-          }
-          .padding()
-          .frame(maxWidth: .infinity, alignment: .center)
-          .cornerRadius(12)
+          SpeedDeviationLegend()
 
           Text(
             AttributedString(
               localized: """
-                 Your ground speed, the distance to the IP, and the calculated time over IP are \
+                Your ground speed, the distance to the IP, and the calculated time over IP are \
                 shown at the bottom. Tap the distance or speed to cycle between knots, MPH, or \
                 KPH, and tap the TOT to toggle between local and Zulu time (GMT).
                 """
@@ -257,7 +210,7 @@ struct TutorialView: View {
                 the target, given your TOT, the CDI will change to providing guidance directly to \
                 the target, bypassing the IP. This is indicated by the title **P.POS → Target** \
                 showing in red. The CDI shows _desired track_ guidance to the target. The **red \
-                chevron** with an inset “T” is the direct course to the target, and the **yelow \
+                chevron** with an inset “T” is the direct course to the target, and the **yellow \
                 chevron** with an inset “IP” is the direct course to the IP.
                 """
             )
@@ -293,13 +246,18 @@ struct TutorialView: View {
         }
       }
       .multilineTextAlignment(.leading)
-      .frame(maxWidth: 600)  // Ideal for readability
+      .frame(maxWidth: Self.readableContentWidth)  // Ideal for readability
       .frame(maxWidth: .infinity, alignment: .center)  // Center on larger screens
     }.padding()
   }
 }
 
+/// A tutorial paragraph paired with an illustrative image. On regular-width layouts the image sits
+/// alongside the text; on compact layouts it stacks above or below, depending on `imageLeading`.
 struct ParagraphWithImage<Content: View>: View {
+  private static var horizontalSpacing: CGFloat { 8 }
+  private static var paragraphSpacing: CGFloat { 16 }
+
   let imageName: String
   let imageLeading: Bool
   let content: () -> Content
@@ -307,19 +265,25 @@ struct ParagraphWithImage<Content: View>: View {
   @Environment(\.horizontalSizeClass)
   var sizeClass
 
+  private var image: some View {
+    Image(imageName)
+      .resizable()
+      .scaledToFit()
+  }
+
   var body: some View {
     switch sizeClass {
       case .regular:
-        HStack(alignment: .top, spacing: 8) {
+        HStack(alignment: .top, spacing: Self.horizontalSpacing) {
           if imageLeading {
             image
-            VStack(alignment: .leading, spacing: 16) { content() }
+            VStack(alignment: .leading, spacing: Self.paragraphSpacing) { content() }
           } else {
-            VStack(alignment: .leading, spacing: 16) { content() }
+            VStack(alignment: .leading, spacing: Self.paragraphSpacing) { content() }
             image
           }
         }
-      case .compact, .none, .some:
+      default:
         if imageLeading {
           image
           content()
@@ -328,12 +292,6 @@ struct ParagraphWithImage<Content: View>: View {
           image
         }
     }
-  }
-
-  private var image: some View {
-    Image(imageName)
-      .resizable()
-      .scaledToFit()
   }
 
   init(imageName: String, imageLeading: Bool, @ViewBuilder content: @escaping () -> Content) {
@@ -345,7 +303,12 @@ struct ParagraphWithImage<Content: View>: View {
 
 // swiftlint:enable accessibility_label_for_image
 
-#Preview {
+#Preview("Light") {
   TutorialView()
     .environment(\.colorScheme, .light)
+}
+
+#Preview("Dark") {
+  TutorialView()
+    .environment(\.colorScheme, .dark)
 }

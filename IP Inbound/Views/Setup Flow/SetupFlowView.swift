@@ -13,7 +13,6 @@ struct SetupFlowView: View {
   var onChooseTarget: () -> Void = {}
 
   @State private var path: [SetupFlowStep]
-  @State private var skipToFly = false
 
   var body: some View {
     NavigationStack(path: $path) {
@@ -41,17 +40,16 @@ struct SetupFlowView: View {
               }
           }
         }
-        .onAppear {
-          // Skip straight to the fly view when re-entering a target that has
-          // already been configured (selected from the list, or chosen via the
-          // post-pass screen's “Fly next target”).
-          if target.isConfigured && !skipToFly && path.count == 1
-            && path.first == .targetSetup
-          {
-            skipToFly = true
-            path = [.fly]
-          }
-        }
+    }
+    .onAppear {
+      // Jump straight to the fly view when entering — or re-entering — a target that has already
+      // been configured (selected from the list, or chosen via the post-pass screen's “Fly next
+      // target”). Attached to the `NavigationStack` rather than its root content so it fires on flow
+      // entry, not each time the user navigates back to the root within the flow — which would
+      // otherwise pull them out of the setup screens while reconfiguring.
+      if target.isConfigured && path.last != .fly {
+        path = [.fly]
+      }
     }
   }
 

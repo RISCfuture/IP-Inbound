@@ -17,7 +17,16 @@ final class IPSetupTests: BaseTestCase {
 
     // Dismiss keyboard by tapping elsewhere
     app.collectionViews.firstMatch.tap()
-    Thread.sleep(forTimeInterval: 0.5)
+
+    // Wait for the inbound label to populate with a computed value rather than
+    // sleeping a fixed interval before reading it.
+    let inboundLabel = app.staticTexts.element(
+      matching: NSPredicate(format: "label BEGINSWITH 'Inbound:'")
+    )
+    XCTAssertTrue(
+      inboundLabel.waitForExistence(timeout: 5),
+      "Inbound label should appear after entering bearing"
+    )
 
     let inbound = ipPage.inboundLabel()
     XCTAssertNotNil(inbound, "Inbound label should be visible")
@@ -47,14 +56,31 @@ final class IPSetupTests: BaseTestCase {
     ipPage.enterBearing("180")
     // Dismiss keyboard
     app.collectionViews.firstMatch.tap()
-    Thread.sleep(forTimeInterval: 0.5)
+
+    // Wait for the inbound label to populate before reading the magnetic value.
+    let inboundElement = app.staticTexts.element(
+      matching: NSPredicate(format: "label BEGINSWITH 'Inbound:'")
+    )
+    XCTAssertTrue(inboundElement.waitForExistence(timeout: 5), "Inbound label should appear")
 
     // Read inbound with magnetic (default)
     let inboundMagnetic = ipPage.inboundLabel()
 
-    // Switch to true
+    // Switch to true and wait for the inbound label to recompute to a value that
+    // differs from the magnetic reading rather than sleeping a fixed interval.
     ipPage.selectBearingReference("°T")
-    Thread.sleep(forTimeInterval: 0.5)
+    let inboundChanged = XCTNSPredicateExpectation(
+      predicate: NSPredicate(
+        format: "label BEGINSWITH 'Inbound:' AND label != %@",
+        inboundMagnetic ?? ""
+      ),
+      object: inboundElement
+    )
+    XCTAssertEqual(
+      XCTWaiter.wait(for: [inboundChanged], timeout: 5),
+      .completed,
+      "Inbound label should recompute after switching to a true bearing reference"
+    )
 
     let inboundTrue = ipPage.inboundLabel()
 
@@ -85,21 +111,21 @@ final class IPSetupTests: BaseTestCase {
 
     // Switch to Time
     ipPage.selectOffsetType("Time")
-    Thread.sleep(forTimeInterval: 0.5)
 
     let timeField = ipPage.offsetTimeField
     XCTAssertTrue(
       timeField.waitForExistence(timeout: 3),
       "Time field should appear after switching"
     )
-    XCTAssertFalse(
-      ipPage.offsetDistanceField.exists,
+    // Wait for the distance field to be torn down rather than reading it after a
+    // fixed sleep.
+    XCTAssertTrue(
+      ipPage.offsetDistanceField.waitForNonExistence(timeout: 3),
       "Distance field should be gone after switching to Time"
     )
 
     // Switch back to Distance
     ipPage.selectOffsetType("Distance")
-    Thread.sleep(forTimeInterval: 0.5)
 
     XCTAssertTrue(
       ipPage.offsetDistanceField.waitForExistence(timeout: 3),
@@ -120,17 +146,35 @@ final class IPSetupTests: BaseTestCase {
 
     // Enter offset distance
     ipPage.enterOffsetDistance("5")
-    // Dismiss keyboard
+    // Dismiss keyboard, then wait for the distance value to commit before
+    // switching offset type.
     app.collectionViews.firstMatch.tap()
-    Thread.sleep(forTimeInterval: 0.5)
+    let distanceCommitted = XCTNSPredicateExpectation(
+      predicate: NSPredicate(format: "value CONTAINS '5'"),
+      object: ipPage.offsetDistanceField
+    )
+    XCTAssertEqual(
+      XCTWaiter.wait(for: [distanceCommitted], timeout: 5),
+      .completed,
+      "Distance field should retain the entered value"
+    )
 
     // Switch to Time
     ipPage.selectOffsetType("Time")
-    Thread.sleep(forTimeInterval: 0.5)
 
-    // Time field should show a non-zero computed value
+    // Time field should show a non-zero computed value. Wait for the field to
+    // appear and then for a non-empty value rather than sleeping.
     let timeField = ipPage.offsetTimeField
     XCTAssertTrue(timeField.waitForExistence(timeout: 3), "Time field should appear")
+    let timePopulated = XCTNSPredicateExpectation(
+      predicate: NSPredicate(format: "value != nil AND value != ''"),
+      object: timeField
+    )
+    XCTAssertEqual(
+      XCTWaiter.wait(for: [timePopulated], timeout: 5),
+      .completed,
+      "Time field should populate with a computed value"
+    )
     let timeValue = timeField.value as? String ?? ""
     XCTAssertFalse(timeValue.isEmpty, "Time field should have a computed value")
     // The value should be a non-zero number
@@ -155,9 +199,16 @@ final class IPSetupTests: BaseTestCase {
 
     // Set speed to 120 and verify inbound label updates
     ipPage.enterGroundSpeed("120")
-    // Dismiss keyboard
+    // Dismiss keyboard, then wait for the inbound label to populate before
+    // reading it.
     app.collectionViews.firstMatch.tap()
-    Thread.sleep(forTimeInterval: 0.5)
+    let inboundElement = app.staticTexts.element(
+      matching: NSPredicate(format: "label BEGINSWITH 'Inbound:'")
+    )
+    XCTAssertTrue(
+      inboundElement.waitForExistence(timeout: 5),
+      "Inbound label should appear with speed 120"
+    )
 
     // Read inbound label with speed 120
     let inbound1 = ipPage.inboundLabel()
@@ -165,10 +216,18 @@ final class IPSetupTests: BaseTestCase {
 
     // Switch to time view to verify time is computed
     ipPage.selectOffsetType("Time")
-    Thread.sleep(forTimeInterval: 0.5)
 
     let timeField = ipPage.offsetTimeField
     XCTAssertTrue(timeField.waitForExistence(timeout: 3), "Time field should appear")
+    let timePopulated = XCTNSPredicateExpectation(
+      predicate: NSPredicate(format: "value != nil AND value != ''"),
+      object: timeField
+    )
+    XCTAssertEqual(
+      XCTWaiter.wait(for: [timePopulated], timeout: 5),
+      .completed,
+      "Time field should populate with a computed value"
+    )
     let timeValue = timeField.value as? String ?? ""
     let numericTime = Double(timeValue) ?? 0
     XCTAssertGreaterThan(

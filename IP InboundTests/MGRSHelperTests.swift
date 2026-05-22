@@ -6,7 +6,7 @@ import Testing
 struct MGRSHelperTests {
 
   @Test("Partial MGRS validation doesn't crash")
-  func testPartialMGRSValidation() {
+  func partialMGRSValidation() {
     // These should all return false without crashing
     #expect(!MGRSHelper.validate(""))  // Empty
     #expect(!MGRSHelper.validate("3"))  // Just zone start
@@ -24,7 +24,7 @@ struct MGRSHelperTests {
   }
 
   @Test("Invalid character validation doesn't crash")
-  func testInvalidCharacterValidation() {
+  func invalidCharacterValidation() {
     #expect(!MGRSHelper.validate("33I"))  // Invalid band letter I
     #expect(!MGRSHelper.validate("33O"))  // Invalid band letter O
     #expect(!MGRSHelper.validate("61X"))  // Invalid zone > 60
@@ -34,7 +34,7 @@ struct MGRSHelperTests {
   }
 
   @Test("MGRS formatting works correctly")
-  func testMGRSFormatting() {
+  func mgrsFormatting() {
     // Test with spaces
     #expect(MGRSHelper.format("33XVG745593", withSpaces: true) == "33X VG 745 593")
     #expect(MGRSHelper.format("33XVG", withSpaces: true) == "33X VG")
@@ -48,33 +48,30 @@ struct MGRSHelperTests {
   }
 
   @Test("Coordinate conversion works with valid strings")
-  func testCoordinateConversion() throws {
+  func coordinateConversion() throws {
     // Known coordinate: Oslo, Norway
     let oslo = Coordinate(latitude: 59.9139, longitude: 10.7522)
-    if let mgrs = MGRSHelper.fromCoordinate(oslo, precision: .oneM) {
-      // Should produce something like "32V NM 89455 60642"
-      #expect(mgrs.contains("32V"))
-      #expect(mgrs.contains("NM") || mgrs.contains("NN"))  // Grid square may vary
-    }
+    let mgrs = try #require(MGRSHelper.fromCoordinate(oslo, precision: .oneM))
+    // Should produce something like "32V NM 89455 60642"
+    #expect(mgrs.contains("32V"))
+    #expect(mgrs.contains("NM") || mgrs.contains("NN"))  // Grid square may vary
 
     // Test roundtrip
-    if let mgrs = MGRSHelper.fromCoordinate(oslo, precision: .hundredM),
-      let backToCoord = MGRSHelper.toCoordinate(mgrs)
-    {
-      #expect(
-        backToCoord.latitudeDeg.isApproximatelyEqual(to: oslo.latitudeDeg, absoluteTolerance: 0.01)
+    let hundredMeterMGRS = try #require(MGRSHelper.fromCoordinate(oslo, precision: .hundredM))
+    let backToCoord = try #require(MGRSHelper.toCoordinate(hundredMeterMGRS))
+    #expect(
+      backToCoord.latitudeDeg.isApproximatelyEqual(to: oslo.latitudeDeg, absoluteTolerance: 0.01)
+    )
+    #expect(
+      backToCoord.longitudeDeg.isApproximatelyEqual(
+        to: oslo.longitudeDeg,
+        absoluteTolerance: 0.01
       )
-      #expect(
-        backToCoord.longitudeDeg.isApproximatelyEqual(
-          to: oslo.longitudeDeg,
-          absoluteTolerance: 0.01
-        )
-      )
-    }
+    )
   }
 
   @Test("toCoordinate returns nil for invalid inputs without crashing")
-  func testSafeCoordinateParsing() {
+  func safeCoordinateParsing() {
     #expect(MGRSHelper.toCoordinate("") == nil)
     #expect(MGRSHelper.toCoordinate("33") == nil)
     // "33X" is valid MGRS (zone + band) and can be parsed to a coordinate

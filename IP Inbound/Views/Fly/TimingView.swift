@@ -1,6 +1,11 @@
 import SwiftUI
 
 struct TimingView: View {
+  /// Multiplier applied to the on-time window to derive the caution band: arrivals beyond this
+  /// wider band are shown in the warning palette rather than caution.
+  private static let cautionMultiplier = 5.0
+  private static let secondsPerMinute = 60.0
+
   var timeOnTarget: Date
   var fromTo: FromToMath
 
@@ -10,7 +15,7 @@ struct TimingView: View {
   /// time-on-target is still achievable.
   var showRequiredSpeed = true
 
-  private var cautionDeltaTOT: TimeInterval { onTimeDeltaTOT * 5 }
+  private var cautionDeltaTOT: TimeInterval { onTimeDeltaTOT * Self.cautionMultiplier }
   private var onTimeRange: ClosedRange<Date> {
     timeOnTarget.addingTimeInterval(
       -onTimeDeltaTOT
@@ -18,61 +23,59 @@ struct TimingView: View {
   }
   private var cautionRange: ClosedRange<Date> {
     let baseTime = fromTo.distance / fromTo.targetSpeed
-    let timeDeviation = baseTime * speedDeviation * 60
+    let timeDeviation = baseTime * speedDeviation * Self.secondsPerMinute
     let minTime = timeDeviation.before(date: timeOnTarget)
     let maxTime = timeDeviation.after(date: timeOnTarget)
     return minTime...maxTime
   }
 
+  private var isOnTime: Bool { onTimeRange.contains(fromTo.timeOfArrival) }
+  private var isWithinCaution: Bool { cautionRange.contains(fromTo.timeOfArrival) }
+
+  /// Color tier for the arrival readout: green on-time, then the too-slow or too-fast palette in
+  /// caution or warning shades by how far the arrival falls outside the on-time window.
+  private var textColor: Color {
+    if isOnTime { return .init("OnTime") }
+    if fromTo.isLate {
+      return .init(isWithinCaution ? "TooSlowCaution" : "TooSlowWarning")
+    }
+    return .init(isWithinCaution ? "TooFastCaution" : "TooFastWarning")
+  }
+
+  /// Chevron direction matching the arrival tier: up when late, down when early, doubled at the
+  /// warning threshold, checkmark on-time.
+  private var icon: String {
+    if isOnTime { return "checkmark.circle.fill" }
+    if fromTo.isLate {
+      return isWithinCaution ? "chevron.up" : "chevron.up.2"
+    }
+    return isWithinCaution ? "chevron.down" : "chevron.down.2"
+  }
+
+  private var arrivalText: String {
+    let lateOrEarly = fromTo.isLate ? String(localized: "late") : String(localized: "early")
+    return String(
+      localized:
+        "\(fromTo.timeOfArrival, format: .offset(to: timeOnTarget, maxFieldCount: 1, sign: .never)) \(lateOrEarly)"
+    )
+  }
+
+  private var requiredSpeedColor: Color {
+    isOnTime ? .primary : textColor
+  }
+
   var body: some View {
     VStack {
-      let textColor: Color =
-        if onTimeRange.contains(fromTo.timeOfArrival) {
-          .init("OnTime")
-        } else if fromTo.deltaTOT > 0 {
-          if cautionRange.contains(fromTo.timeOfArrival) {
-            .init("TooSlowCaution")
-          } else {
-            .init("TooSlowWarning")
-          }
-        } else if cautionRange.contains(fromTo.timeOfArrival) {
-          .init("TooFastCaution")
-        } else {
-          .init("TooFastWarning")
-        }
-
-      let icon =
-        if onTimeRange.contains(fromTo.timeOfArrival) {
-          "checkmark.circle.fill"
-        } else if fromTo.deltaTOT > 0 {
-          if cautionRange.contains(fromTo.timeOfArrival) {
-            "chevron.up"
-          } else {
-            "chevron.up.2"
-          }
-        } else if cautionRange.contains(fromTo.timeOfArrival) {
-          "chevron.down"
-        } else {
-          "chevron.down.2"
-        }
-      let lateOrEarly = fromTo.isLate ? String(localized: "late") : String(localized: "early")
-      let TOAFormatted = String(
-        localized:
-          "\(fromTo.timeOfArrival, format: .offset(to: timeOnTarget, maxFieldCount: 1, sign: .never)) \(lateOrEarly)"
-      )
-
-      HStack {
+      Label {
+        Text(arrivalText)
+          .contentTransition(.numericText())
+      } icon: {
         Image(systemName: icon)
           .accessibilityHidden(true)
-        Text(TOAFormatted)
-          .contentTransition(.numericText())
       }
       .font(.title)
       .fontWeight(.black)
       .foregroundStyle(textColor)
-
-      let requiredSpeedColor: Color =
-        onTimeRange.contains(fromTo.timeOfArrival) ? .primary : textColor
 
       TOTView(
         fromTo: fromTo,
@@ -85,12 +88,56 @@ struct TimingView: View {
   }
 }
 
-#Preview {
+#Preview("On Time") {
   let helper = PreviewHelper()
   let math = IPTargetMath(
     location: helper.postIPLocation,
-    target: helper.target(minutesFromNow: 2),
+    target: helper.target(minutesFromNow: 1),
     now: .now
   )
-  TimingView(timeOnTarget: Date.now.addingTimeInterval(60), fromTo: math.pposToTarget!)
+  TimingView(timeOnTarget: math.pposToTarget!.timeOfArrival, fromTo: math.pposToTarget!)
+}
+
+#Preview("Early — Caution") {
+  let helper = PreviewHelper()
+  let math = IPTargetMath(
+    location: helper.postIPLocation,
+    target: helper.target(minutesFromNow: 1),
+    now: .now
+  )
+  let fromTo = math.pposToTarget!
+  TimingView(timeOnTarget: fromTo.timeOfArrival.addingTimeInterval(20), fromTo: fromTo)
+}
+
+#Preview("Early — Warning") {
+  let helper = PreviewHelper()
+  let math = IPTargetMath(
+    location: helper.postIPLocation,
+    target: helper.target(minutesFromNow: 1),
+    now: .now
+  )
+  let fromTo = math.pposToTarget!
+  TimingView(timeOnTarget: fromTo.timeOfArrival.addingTimeInterval(600), fromTo: fromTo)
+}
+
+#Preview("Late — Caution") {
+  let helper = PreviewHelper()
+  let math = IPTargetMath(
+    location: helper.postIPLocation,
+    target: helper.target(minutesFromNow: 1),
+    now: .now
+  )
+  let fromTo = math.pposToTarget!
+  TimingView(timeOnTarget: fromTo.timeOfArrival.addingTimeInterval(-20), fromTo: fromTo)
+}
+
+#Preview("Late — Warning") {
+  let helper = PreviewHelper()
+  let math = IPTargetMath(
+    location: helper.postIPLocation,
+    target: helper.target(minutesFromNow: 1),
+    now: .now
+  )
+  let fromTo = math.pposToTarget!
+  TimingView(timeOnTarget: fromTo.timeOfArrival.addingTimeInterval(-600), fromTo: fromTo)
 }

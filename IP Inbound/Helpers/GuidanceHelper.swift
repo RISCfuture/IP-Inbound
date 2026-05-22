@@ -66,7 +66,7 @@ struct GuidanceHelper {
       return .countdownOnly
     }
 
-    // If more than 1 minute early at min speed - show PPOS to IP with countdown timer (no CDI deviation)
+    // If more than 60 seconds early at current speed - show PPOS to IP with countdown timer (no CDI deviation)
     if wouldArriveEarlyAtIP { return .toIPWithCountdown }
 
     // If late even at max speed - show direct-to-target guidance with CDI cross-track deviation

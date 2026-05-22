@@ -83,15 +83,18 @@ final class TargetManagementTests: BaseTestCase {
 
     // Delete Charlie
     list2.deleteTarget(named: "Charlie")
-    Thread.sleep(forTimeInterval: 1.0)
 
     // Assert Delta remains (check this first since Charlie lookup has a 5s timeout)
     let deltaText = app.staticTexts["Delta"]
     XCTAssertTrue(deltaText.waitForExistence(timeout: 10), "Delta should remain in list")
 
-    // Assert Charlie is gone
+    // Assert Charlie is gone — wait for its cell to leave the list rather than
+    // relying on a fixed settle after the delete animation.
     let charlieText = app.staticTexts["Charlie"]
-    XCTAssertFalse(charlieText.exists, "Charlie should be deleted")
+    XCTAssertTrue(
+      charlieText.waitForNonExistence(timeout: 5),
+      "Charlie should be deleted"
+    )
 
     // Clean up
     list2.deleteTarget(named: "Delta")

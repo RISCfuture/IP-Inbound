@@ -25,7 +25,7 @@ struct TargetListView: View {
           )
           .id(selectedTarget.id)
         } else {
-          Text("No Target").foregroundColor(.secondary)
+          Text("No Target").foregroundStyle(.secondary)
         }
       }
     }
@@ -35,9 +35,15 @@ struct TargetListView: View {
   }
 }
 
-#Preview {
+#Preview("With Targets") {
   let helper = PreviewHelper()
   TargetListView()
     .modelContainer(helper.modelContainer)
     .onAppear { helper.createTarget() }
+}
+
+#Preview("No Selection") {
+  let helper = PreviewHelper()
+  TargetListView()
+    .modelContainer(helper.modelContainer)
 }

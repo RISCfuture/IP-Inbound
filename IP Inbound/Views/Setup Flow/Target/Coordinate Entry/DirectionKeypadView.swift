@@ -1,84 +1,106 @@
 import SwiftUI
 
 struct DirectionKeypadView: View {
+  private static let columnsPerRow: CGFloat = 3.5
+  private static let rowsHigh: CGFloat = 3.5
+  private static let spacingFraction: CGFloat = 0.15
+
   let activeDirections: [Character]
   let onKeyPress: (Character) -> Void
   let onBackspace: () -> Void
 
   var body: some View {
     GeometryReader { geometry in
-      // Ensure minimum button size of 44 points (Apple's minimum touch target)
-      let buttonSize = max(44, min(geometry.size.width / 3.5, geometry.size.height / 3.5))
-      let spacing = buttonSize * 0.15
+      let buttonSize = max(
+        KeypadButton.minTouchTarget,
+        min(
+          geometry.size.width / Self.columnsPerRow,
+          geometry.size.height / Self.rowsHigh
+        )
+      )
+      let spacing = buttonSize * Self.spacingFraction
 
       VStack(spacing: spacing) {
-        // Row 1: _ N _
         HStack(spacing: spacing) {
           Color.clear
             .frame(width: buttonSize, height: buttonSize)
 
-          KeypadButton(
-            label: "N",
-            isActive: activeDirections.contains("N"),
-            action: { onKeyPress("N") }
+          directionButton(
+            "N",
+            accessibilityLabel: String(localized: "North"),
+            buttonSize: buttonSize
           )
-          .frame(width: buttonSize, height: buttonSize)
-          .accessibilityLabel("North")
 
           Color.clear
             .frame(width: buttonSize, height: buttonSize)
         }
 
-        // Row 2: W _ E
         HStack(spacing: spacing) {
-          KeypadButton(
-            label: "W",
-            isActive: activeDirections.contains("W"),
-            action: { onKeyPress("W") }
+          directionButton(
+            "W",
+            accessibilityLabel: String(localized: "West"),
+            buttonSize: buttonSize
           )
-          .frame(width: buttonSize, height: buttonSize)
-          .accessibilityLabel("West")
 
           Color.clear
             .frame(width: buttonSize, height: buttonSize)
 
-          KeypadButton(
-            label: "E",
-            isActive: activeDirections.contains("E"),
-            action: { onKeyPress("E") }
+          directionButton(
+            "E",
+            accessibilityLabel: String(localized: "East"),
+            buttonSize: buttonSize
           )
-          .frame(width: buttonSize, height: buttonSize)
-          .accessibilityLabel("East")
         }
 
-        // Row 3: _ S ⌫
         HStack(spacing: spacing) {
           Color.clear
             .frame(width: buttonSize, height: buttonSize)
 
-          KeypadButton(
-            label: "S",
-            isActive: activeDirections.contains("S"),
-            action: { onKeyPress("S") }
+          directionButton(
+            "S",
+            accessibilityLabel: String(localized: "South"),
+            buttonSize: buttonSize
           )
-          .frame(width: buttonSize, height: buttonSize)
-          .accessibilityLabel("South")
 
           KeypadButton(
             systemImage: "delete.left",
-            accessibilityLabel: "Delete",
+            accessibilityLabel: String(localized: "Delete"),
             isBackspace: true,
             action: onBackspace
           )
           .frame(width: buttonSize, height: buttonSize)
-          .accessibilityLabel("Backspace")
         }
       }
       .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
   }
+
+  @ViewBuilder
+  private func directionButton(
+    _ direction: Character,
+    accessibilityLabel: String,
+    buttonSize: CGFloat
+  ) -> some View {
+    KeypadButton(
+      label: String(direction),
+      isActive: activeDirections.contains(direction),
+      action: { onKeyPress(direction) }
+    )
+    .frame(width: buttonSize, height: buttonSize)
+    .accessibilityLabel(accessibilityLabel)
+  }
 }
 
-#Preview {
+#Preview("All directions") {
+  DirectionKeypadView(
+    activeDirections: ["N", "S", "E", "W"],
+    onKeyPress: { _ in },
+    onBackspace: {}
+  )
+  .padding()
+}
+
+#Preview("Restricted directions") {
   DirectionKeypadView(activeDirections: ["N", "S"], onKeyPress: { _ in }, onBackspace: {})
+    .padding()
 }

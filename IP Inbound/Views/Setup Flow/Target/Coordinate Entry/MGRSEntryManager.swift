@@ -4,25 +4,29 @@ import SwiftUI
 @MainActor
 @Observable
 final class MGRSEntryManager {
-  private(set) var zone: String = ""
-  private(set) var band: String = ""
-  private(set) var column: String = ""
-  private(set) var row: String = ""
-  private(set) var easting: String = ""
-  private(set) var northing: String = ""
+  private static let zoneWidth = 2
+  private static let coordinatePrecision = 5  // 1m precision.
+  private static let maxZone = 60
+
+  private(set) var zone = ""
+  private(set) var band = ""
+  private(set) var column = ""
+  private(set) var row = ""
+  private(set) var easting = ""
+  private(set) var northing = ""
   private(set) var currentIndex = 0
 
   var inputMode: InputMode {
-    if currentIndex < 2 {
+    if currentIndex < FieldIndex.bandIndex {
       return .zone
     }
-    if currentIndex == 2 {
+    if currentIndex == FieldIndex.bandIndex {
       return .band
     }
-    if currentIndex == 4 {  // Account for space at index 3
+    if currentIndex == FieldIndex.columnIndex {
       return .column
     }
-    if currentIndex == 5 {
+    if currentIndex == FieldIndex.rowIndex {
       return .row
     }
     return .numeric
@@ -54,18 +58,16 @@ final class MGRSEntryManager {
   }
 
   var stringValue: String {
-    var result = zone.padding(toLength: 2, withPad: "0", startingAt: 0)
+    var result = zone.padding(toLength: Self.zoneWidth, withPad: "0", startingAt: 0)
     result += band.isEmpty ? "_" : band
     result += " "  // Space after band letter
     result += column.isEmpty ? "_" : column
     result += row.isEmpty ? "_" : row
     result += " "
 
-    // Show easting and northing with appropriate precision
-    let precision = 6  // Default to 1m precision
-    result += easting.padding(toLength: precision, withPad: "0", startingAt: 0)
+    result += easting.padding(toLength: Self.coordinatePrecision, withPad: "0", startingAt: 0)
     result += " "
-    result += northing.padding(toLength: precision, withPad: "0", startingAt: 0)
+    result += northing.padding(toLength: Self.coordinatePrecision, withPad: "0", startingAt: 0)
 
     return result
   }
@@ -159,57 +161,45 @@ final class MGRSEntryManager {
   }
 
   func add(_ character: Character) {
-    if currentIndex < 2 {
-      // Zone input (1-60)
+    if currentIndex < FieldIndex.bandIndex {
+      // Zone input (1-60).
       if character.isNumber {
-        if currentIndex == 0 {
+        if currentIndex == FieldIndex.zoneFirst {
           zone = String(character)
         } else {
           zone += String(character)
-          // Validate zone range
-          if let zoneNum = Int(zone), zoneNum > 60 {
-            zone = String(character)  // Reset to single digit
+          if let zoneNum = Int(zone), zoneNum > Self.maxZone {
+            zone = String(character)  // Reset to single digit.
           }
         }
       }
-    } else if currentIndex == 2 {
-      // Band input
+    } else if currentIndex == FieldIndex.bandIndex {
       if validBands.contains(character) {
         band = String(character)
       }
-    } else if currentIndex == 4 {  // Account for space at index 3
-      // Column input
+    } else if currentIndex == FieldIndex.columnIndex {
       if validColumns.contains(character) {
         column = String(character)
       }
-    } else if currentIndex == 5 {
-      // Row input
+    } else if currentIndex == FieldIndex.rowIndex {
       if validRows.contains(character) {
         row = String(character)
       }
-    } else if currentIndex >= 7 && currentIndex < 12 {  // Account for spaces
-      // Easting input (up to 5 digits)
+    } else if (FieldIndex.eastingStart..<FieldIndex.eastingEnd).contains(currentIndex) {
       if character.isNumber {
-        let position = currentIndex - 7
-        if position < easting.count {
-          var chars = Array(easting)
-          chars[position] = character
-          easting = String(chars)
-        } else {
-          easting += String(character)
-        }
+        easting = replacingDigit(
+          in: easting,
+          at: currentIndex - FieldIndex.eastingStart,
+          with: character
+        )
       }
-    } else if currentIndex >= 13 && currentIndex < 18 {  // Account for spaces
-      // Northing input (up to 5 digits)
+    } else if (FieldIndex.northingStart..<FieldIndex.northingEnd).contains(currentIndex) {
       if character.isNumber {
-        let position = currentIndex - 13
-        if position < northing.count {
-          var chars = Array(northing)
-          chars[position] = character
-          northing = String(chars)
-        } else {
-          northing += String(character)
-        }
+        northing = replacingDigit(
+          in: northing,
+          at: currentIndex - FieldIndex.northingStart,
+          with: character
+        )
       }
     }
 
@@ -219,77 +209,81 @@ final class MGRSEntryManager {
   func backspace() {
     retreat()
 
-    if currentIndex < 2 {
-      // Zone
-      if currentIndex == 0 && !zone.isEmpty {
+    if currentIndex < FieldIndex.bandIndex {
+      if currentIndex == FieldIndex.zoneFirst && !zone.isEmpty {
         zone = String(zone.dropFirst())
-      } else if currentIndex == 1 && zone.count > 1 {
+      } else if currentIndex == FieldIndex.zoneFirst + 1 && zone.count > 1 {
         zone = String(zone.dropLast())
       }
-    } else if currentIndex == 2 {
-      // Band
+    } else if currentIndex == FieldIndex.bandIndex {
       band = ""
-    } else if currentIndex == 4 {  // Account for space at index 3
-      // Column
+    } else if currentIndex == FieldIndex.columnIndex {
       column = ""
-    } else if currentIndex == 5 {
-      // Row
+    } else if currentIndex == FieldIndex.rowIndex {
       row = ""
-    } else if currentIndex >= 7 && currentIndex < 12 {  // Account for spaces
-      // Easting
-      let position = currentIndex - 7
-      if position < easting.count {
-        var chars = Array(easting)
-        chars[position] = "0"
-        easting = String(chars)
-      }
-    } else if currentIndex >= 13 && currentIndex < 18 {  // Account for spaces
-      // Northing
-      let position = currentIndex - 13
-      if position < northing.count {
-        var chars = Array(northing)
-        chars[position] = "0"
-        northing = String(chars)
-      }
-    }
-  }
-
-  private func advance() {
-    currentIndex += 1
-    // Skip spaces (after band at 3, after row at 6, after easting at 12)
-    if currentIndex == 3 || currentIndex == 6 || currentIndex == 12 {
-      currentIndex += 1
-    }
-    if currentIndex >= 18 {
-      currentIndex = 0
-    }
-  }
-
-  private func retreat() {
-    currentIndex -= 1
-    // Skip spaces (after band at 3, after row at 6, after easting at 12)
-    if currentIndex == 3 || currentIndex == 6 || currentIndex == 12 {
-      currentIndex -= 1
-    }
-    if currentIndex < 0 {
-      currentIndex = 17
+    } else if (FieldIndex.eastingStart..<FieldIndex.eastingEnd).contains(currentIndex) {
+      easting = clearingDigit(in: easting, at: currentIndex - FieldIndex.eastingStart)
+    } else if (FieldIndex.northingStart..<FieldIndex.northingEnd).contains(currentIndex) {
+      northing = clearingDigit(in: northing, at: currentIndex - FieldIndex.northingStart)
     }
   }
 
   func setIndex(_ index: Int) {
     if index < stringValue.count {
       currentIndex = index
-      // Skip spaces (after band at 3, after row at 6, after easting at 12)
-      if currentIndex == 3 || currentIndex == 6 || currentIndex == 12 {
+      if isSpaceIndex(currentIndex) {
         currentIndex += 1
       }
     }
   }
 
-  func getCoordinate() -> Coordinate? {
+  func coordinate() -> Coordinate? {
     guard isValid else { return nil }
     let mgrsString = buildMGRSString()
     return MGRSHelper.toCoordinate(mgrsString)
+  }
+
+  private func advance() {
+    currentIndex += 1
+    if isSpaceIndex(currentIndex) {
+      currentIndex += 1
+    }
+    if currentIndex >= FieldIndex.northingEnd {
+      currentIndex = 0
+    }
+  }
+
+  private func retreat() {
+    currentIndex -= 1
+    if isSpaceIndex(currentIndex) {
+      currentIndex -= 1
+    }
+    if currentIndex < 0 {
+      currentIndex = FieldIndex.northingEnd - 1
+    }
+  }
+
+  private func isSpaceIndex(_ index: Int) -> Bool {
+    index == FieldIndex.firstSpace || index == FieldIndex.secondSpace
+      || index == FieldIndex.thirdSpace
+  }
+
+  private func replacingDigit(in field: String, at position: Int, with character: Character)
+    -> String
+  {
+    if position < field.count {
+      var chars = Array(field)
+      chars[position] = character
+      return String(chars)
+    }
+    return field + String(character)
+  }
+
+  private func clearingDigit(in field: String, at position: Int) -> String {
+    guard position < field.count else { return field }
+    var chars = Array(field)
+    chars[position] = "0"
+    return String(chars)
   }
 
   enum InputMode {
@@ -298,5 +292,21 @@ final class MGRSEntryManager {
     case column
     case row
     case numeric
+  }
+
+  /// Cursor positions within the formatted MGRS string. Spaces sit at the gaps
+  /// between these field ranges and are skipped while navigating.
+  private enum FieldIndex {
+    static let zoneFirst = 0
+    static let bandIndex = 2
+    static let columnIndex = 4  // Index 3 is a space.
+    static let rowIndex = 5
+    static let firstSpace = 3
+    static let secondSpace = 6
+    static let thirdSpace = 12
+    static let eastingStart = 7
+    static let eastingEnd = 12  // Exclusive.
+    static let northingStart = 13
+    static let northingEnd = 18  // Exclusive.
   }
 }

@@ -3,26 +3,26 @@ import XCTest
 
 // swiftlint:disable prefer_nimble
 
-/// Deterministic post-pass flow driven by the clock+location harness:
-/// pinned `UITEST_NOW` past the seeded target's TOT, a static
-/// `UITEST_LOCATION` placed beyond the target along the run-in axis, and two
-/// pre-configured seed targets so the "Fly next target" button has a candidate.
+// Deterministic post-pass flow driven by the clock+location harness:
+// pinned `UITEST_NOW` past the seeded target's TOT, a static
+// `UITEST_LOCATION` placed beyond the target along the run-in axis, and two
+// pre-configured seed targets so the "Fly next target" button has a candidate.
 final class PostPassFlowTests: BaseTestCase {
 
   // MARK: - Type Properties
 
-  /// Flythrough's TOT (from the harness seed). Miss-seconds in the post-pass
-  /// readout is `UITEST_NOW − totFlythrough`.
+  // Flythrough's TOT (from the harness seed). Miss-seconds in the post-pass
+  // readout is `UITEST_NOW − totFlythrough`.
   private static let totFlythroughISO = "2026-05-18T18:00:00.000Z"
 
-  /// Pin `now` to 8 seconds past the seeded target's TOT — the post-pass
-  /// readout becomes "8 seconds late" because the harness synthesizes the
-  /// CLLocation's timestamp from the injected clock.
+  // Pin `now` to 8 seconds past the seeded target's TOT — the post-pass
+  // readout becomes "8 seconds late" because the harness synthesizes the
+  // CLLocation's timestamp from the injected clock.
   private static let nowISO = "2026-05-18T18:00:08.000Z"
 
-  /// Static fix: ~1 nmi south of Flythrough's coordinate (36.772367, -115.453840)
-  /// on course 179°T at 257 m/s — past the target along the IP→target run-in
-  /// axis (offsetBearing = 359°T from target), 500 kn.
+  // Static fix: ~1 nmi south of Flythrough's coordinate (36.772367, -115.453840)
+  // on course 179°T at 257 m/s — past the target along the IP→target run-in
+  // axis (offsetBearing = 359°T from target), 500 kn.
   private static let pastTargetFix = "36.755664,-115.453840,0,179,257"
 
   // MARK: - Methods
@@ -122,10 +122,10 @@ final class PostPassFlowTests: BaseTestCase {
     handleLocationPermissionIfNeeded()
   }
 
-  /// Screenshot capture on the next target's screen. Uses a generic `Page`
-  /// wrapper because the visible screen after "Fly next target" depends on
-  /// SwiftUI's navigation reset behavior — the assertion above already verified
-  /// the target is active; this just attaches the rendered state.
+  // Screenshot capture on the next target's screen. Uses a generic `Page`
+  // wrapper because the visible screen after "Fly next target" depends on
+  // SwiftUI's navigation reset behavior — the assertion above already verified
+  // the target is active; this just attaches the rendered state.
   @MainActor
   private func captureNextTargetScreenshot() {
     let screenshot = XCUIScreen.main.screenshot()

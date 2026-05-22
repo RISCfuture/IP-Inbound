@@ -1,6 +1,14 @@
 import SwiftUI
 
 struct CDIView: View {
+  private static let scaleWidth = 0.75  // fraction of radius
+  private static let compassRoseLineWidth: CGFloat = 2,
+    lubberLineWidth: CGFloat = 5
+
+  private static let trackColor = Color.purple,
+    ipColor = Color.yellow,
+    targetColor = Color.red
+
   var heading: Bearing
   var bearing: Bearing?
   var bearingColor = Color.accentColor
@@ -8,8 +16,6 @@ struct CDIView: View {
   var targetDirectBearing: Bearing?
   var crossTrackDistance: Measurement<UnitLength>?
   var distanceScale = Measurement(value: 4, unit: UnitLength.nauticalMiles)
-
-  private let scaleWidth = 0.75  // fraction of radius
 
   private var deflection: CGFloat? {
     guard let crossTrackDistance else { return nil }
@@ -25,60 +31,62 @@ struct CDIView: View {
 
       ZStack {
         Text("TRK")
-          .foregroundStyle(.purple)
+          .foregroundStyle(Self.trackColor)
           .fontWeight(.bold)
+          .accessibilityHidden(true)
 
         FixedRotatingView(targetAngle: -heading.degrees) { angle in
           Group {
             CompassRose()
-              .stroke(lineWidth: 2)
+              .stroke(lineWidth: Self.compassRoseLineWidth)
             CompassNumbers(rotation: heading.degrees)
               .drawingGroup()
-          }.rotationEffect(.degrees(angle))
+          }
+          .rotationEffect(.degrees(angle))
         }
+        .accessibilityHidden(true)
 
-        // IP chevron - only animate when necessary
         if let ipRelative = relative(bearing: IPDirectBearing) {
-          FixedRotatingView(targetAngle: ipRelative) { angle in
-            DirectPointer(label: "IP", color: .yellow)
-              .position(x: center.x, y: center.y - radius * 0.8)
-              .rotationEffect(.degrees(angle), anchor: .center)
-              .animation(.linear, value: ipRelative)
-              .drawingGroup()
-          }
+          CDIDirectPointerLayer(
+            relativeAngle: ipRelative,
+            label: "IP",
+            color: Self.ipColor,
+            accessibilityDescription: "Direction to initial point",
+            radius: radius,
+            center: center,
+            animatesRotation: true
+          )
         }
 
-        // target chevron - only animate when necessary
         if let targetRelative = relative(bearing: targetDirectBearing) {
-          FixedRotatingView(targetAngle: targetRelative) { angle in
-            DirectPointer(label: "T", color: .red)
-              .position(x: center.x, y: center.y - radius * 0.8)
-              .rotationEffect(.degrees(angle), anchor: .center)
-              .drawingGroup()
-          }
+          CDIDirectPointerLayer(
+            relativeAngle: targetRelative,
+            label: "T",
+            color: Self.targetColor,
+            accessibilityDescription: "Direction to target",
+            radius: radius,
+            center: center
+          )
         }
 
-        // bearing pointer - only animate when necessary
         if let relativeBearing = relative(bearing: bearing) {
-          FixedRotatingView(targetAngle: relativeBearing) { angle in
-            Group {
-              DeflectionMarkers(scaleWidth: scaleWidth)
-                .drawingGroup()
-              BearingLine(deflection: deflection, maxDeflection: scaleWidth)
-                .stroke(lineWidth: 5)
-                .foregroundColor(bearingColor)
-                .drawingGroup()
-            }
-            .rotationEffect(.degrees(angle))
-          }
+          CDIBearingPointerLayer(
+            relativeAngle: relativeBearing,
+            deflection: deflection,
+            scaleWidth: Self.scaleWidth,
+            bearingColor: bearingColor
+          )
         }
 
-        // lubber line
         LubberLine()
-          .stroke(.accent, lineWidth: 5)
+          .stroke(.accent, lineWidth: Self.lubberLineWidth)
           .drawingGroup()
+          .accessibilityHidden(true)
       }
     }
+    .accessibilityElement(children: .ignore)
+    .accessibilityLabel(Text("Course deviation indicator"))
+    .accessibilityValue(Text(accessibilityValue))
   }
 
   private func relative(bearing: Bearing?) -> Double? {
@@ -89,13 +97,72 @@ struct CDIView: View {
   }
 }
 
-#Preview {
+extension CDIView {
+  private var accessibilityValue: String {
+    var components = [String]()
+
+    components.append(
+      String(localized: "Track heading \(heading, format: .bearing).")
+    )
+
+    if let bearing {
+      components.append(
+        String(localized: "Bearing \(bearing, format: .bearing).")
+      )
+    }
+
+    if let deviationDescription {
+      components.append(deviationDescription)
+    }
+
+    return components.joined(separator: " ")
+  }
+
+  private var deviationDescription: String? {
+    guard let crossTrackDistance else { return nil }
+
+    let magnitude = abs(crossTrackDistance.value)
+    guard magnitude > 0 else { return String(localized: "On course.") }
+
+    let distance = Measurement(value: magnitude, unit: crossTrackDistance.unit)
+    let formattedDistance = distance.formatted(distanceFormatStyle)
+
+    if crossTrackDistance.value > 0 {
+      return String(localized: "\(formattedDistance) right of course.")
+    }
+    return String(localized: "\(formattedDistance) left of course.")
+  }
+}
+
+#Preview("Full deflection") {
   CDIView(
     heading: .init(angle: 277, reference: .magnetic),
     bearing: .init(angle: 218, reference: .magnetic),
     IPDirectBearing: .init(angle: 121, reference: .magnetic),
     targetDirectBearing: .init(angle: 213, reference: .magnetic),
     crossTrackDistance: .init(value: 1, unit: .nauticalMiles)
+  )
+  .padding()
+}
+
+#Preview("Maximum deflection") {
+  CDIView(
+    heading: .init(angle: 360, reference: .magnetic),
+    bearing: .init(angle: 30, reference: .magnetic),
+    IPDirectBearing: .init(angle: 121, reference: .magnetic),
+    targetDirectBearing: .init(angle: 213, reference: .magnetic),
+    crossTrackDistance: .init(value: 8, unit: .nauticalMiles)
+  )
+  .padding()
+}
+
+#Preview("No bearing") {
+  CDIView(
+    heading: .init(angle: 90, reference: .magnetic),
+    bearing: nil,
+    IPDirectBearing: nil,
+    targetDirectBearing: nil,
+    crossTrackDistance: nil
   )
   .padding()
 }

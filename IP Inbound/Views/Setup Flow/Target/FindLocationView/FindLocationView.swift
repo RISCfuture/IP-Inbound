@@ -1,39 +1,35 @@
 import CoreLocation
+import MapKit
 import SwiftUI
 
 struct FindLocationView: View {
+  var onLocationSelected: (CLLocationCoordinate2D, String) -> Void
+
   @State private var searchText = ""
   @State private var searchCompleter = SearchCompleter()
 
-  var onLocationSelected: (CLLocationCoordinate2D, String) -> Void
-
   var body: some View {
     NavigationStack {
-      EmptyView().accessibilityIdentifier("findLocationView")
-      VStack {
-        List(searchCompleter.suggestions, id: \.self) { suggestion in
-          VStack(alignment: .leading) {
-            Text(suggestion.title).bold()
-            if !suggestion.subtitle.isEmpty {
-              Text(suggestion.subtitle).font(.subheadline).foregroundColor(.secondary)
-            }
-          }
+      List(searchCompleter.suggestions, id: \.self) { suggestion in
+        SuggestionRow(suggestion: suggestion)
           .contentShape(Rectangle())
-          .onTapGesture {
-            searchCompleter.lookupCoordinates(for: suggestion) { coordinate in
-              if let coordinate {
-                onLocationSelected(coordinate, suggestion.title)
-              }
-            }
-          }
+          .onTapGesture { select(suggestion) }
           .accessibilityAddTraits(.isButton)
           .accessibilityHint("Use this location")
-        }
       }
+      .accessibilityIdentifier("findLocationView")
     }
     .searchable(text: $searchText)
     .onChange(of: searchText) {
       searchCompleter.queryFragment = searchText
+    }
+  }
+
+  private func select(_ suggestion: MKLocalSearchCompletion) {
+    searchCompleter.lookupCoordinates(for: suggestion) { coordinate in
+      if let coordinate {
+        onLocationSelected(coordinate, suggestion.title)
+      }
     }
   }
 }

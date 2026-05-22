@@ -2,6 +2,10 @@ import Defaults
 import SwiftUI
 
 struct TOTEntryView: View {
+  private static let baselineDivisor = 10.0
+  private static let timeDisplayBottomPaddingFactor = 0.3
+  private static let keypadHeightFactor = 5.0
+
   let onAccept: (Date) -> Void
   let onCancel: () -> Void
   let targetCoordinate: Coordinate
@@ -17,7 +21,7 @@ struct TOTEntryView: View {
 
   var body: some View {
     GeometryReader { geometry in
-      let baseline = geometry.size.height / 10
+      let baseline = geometry.size.height / Self.baselineDivisor
 
       VStack(spacing: 0) {
         Picker("Time Display Mode", selection: $entryManager.displayMode) {
@@ -29,42 +33,11 @@ struct TOTEntryView: View {
         .padding(.horizontal)
         .padding(.bottom)
 
-        // Main time display
-        HStack {
-          Spacer()
-          let strings = entryManager.attributedStrings
-          if !strings.isEmpty {
-            Text(strings[0])
-              .font(.system(size: baseline * 0.8).monospaced())
-              .minimumScaleFactor(0.5)
-              .lineLimit(1)
-              .onTapGesture { location in
-                let line = strings[0]
-                let charCount = line.characters.count
-                let widthPerChar = UIScreen.main.bounds.width / CGFloat(charCount + 2)
-                let charIndex = Int(location.x / widthPerChar)
-                if charIndex < charCount {
-                  entryManager.setIndex(lineIndex: 0, charIndex: charIndex)
-                }
-              }
-              .accessibilityAddTraits(.isButton)
-              .accessibilityIdentifier("timeEntryField")
-          }
-          Spacer()
-        }
-        .padding(.bottom, baseline * 0.3)
+        TOTTimeDisplayView(entryManager: entryManager, baseline: baseline)
+          .padding(.bottom, baseline * Self.timeDisplayBottomPaddingFactor)
 
-        // Secondary info
-        VStack(spacing: 4) {
-          Text(entryManager.secondaryTimeString)
-            .font(.headline)
-            .foregroundStyle(.secondary)
-
-          Text(entryManager.relativeTimeString)
-            .font(.headline)
-            .foregroundStyle(.secondary)
-        }
-        .padding(.bottom)
+        TOTSecondaryInfoView(entryManager: entryManager)
+          .padding(.bottom)
 
         Spacer()
 
@@ -79,7 +52,7 @@ struct TOTEntryView: View {
             onAccept(entryManager.timeOnTarget)
           }
         )
-        .frame(height: baseline * 5)
+        .frame(height: baseline * Self.keypadHeightFactor)
         .padding(.horizontal)
 
         Spacer()

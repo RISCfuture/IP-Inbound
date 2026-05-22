@@ -169,7 +169,6 @@ final class LocationStreamer: Sendable {
     )
 
     let combined = combineLatest(smoothRealStream, smoothSimStream)
-      //        let combined = combineLatest(realLocationStream, simLocationStream)
       .map { real, sim -> LocationEvent? in
         let now = self.dateProvider.now()
         let simTimedOut = sim?.location.map { $0.timestamp.timeIntervalSince(now) < -5 } ?? true

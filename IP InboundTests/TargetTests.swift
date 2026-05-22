@@ -6,7 +6,7 @@ import Testing
 @Suite("Target")
 struct TargetTests {
   @Test("offsetBearing, normalizes correctly")
-  func testTargetNormalizesBearing() throws {
+  func targetNormalizesBearing() {
     let target = Target(name: "Test", coordinate: .zero)
     target.offsetBearing = 370
     #expect(target.offsetBearing == 10)
@@ -16,7 +16,7 @@ struct TargetTests {
   }
 
   @Test("IPCoordinate, calculates correctly")
-  func testTargetIPCoordinate() throws {
+  func targetIPCoordinate() {
     let target = Target(name: "Test", coordinate: Coordinate(latitude: 38.0, longitude: -122.0))
     target.offsetBearing = 180
     target.offsetDistance = 4
@@ -28,7 +28,7 @@ struct TargetTests {
   }
 
   @Test("setOffset, updates distance")
-  func testTargetOffsetTypeChangeDistanceToTime() throws {
+  func targetOffsetTypeChangeDistanceToTime() {
     let target = Target(name: "Test", coordinate: Coordinate(latitude: 38.0, longitude: -122.0))
     target.targetGroundSpeed = 120  // 120 knots
 
@@ -38,7 +38,7 @@ struct TargetTests {
   }
 
   @Test("setOffset, updates time")
-  func testTargetOffsetTypeChangeTimeToDistance() throws {
+  func targetOffsetTypeChangeTimeToDistance() {
     let target = Target(name: "Test", coordinate: Coordinate(latitude: 38.0, longitude: -122.0))
     target.targetGroundSpeed = 120  // 120 knots
 
@@ -48,7 +48,7 @@ struct TargetTests {
   }
 
   @Test("desiredTrack, calculates correctly")
-  func testTargetDesiredTracks() throws {
+  func targetDesiredTracks() {
     let target = Target(name: "Test", coordinate: Coordinate(latitude: 38.0, longitude: -122.0))
     target.offsetBearing = 45
     target.offsetBearingIsTrue = false  // magnetic
@@ -76,7 +76,7 @@ struct TargetTests {
   }
 
   @Test("desiredTimeOverIP, calculates correctly")
-  func testTargetDesiredTimeOverIP() throws {
+  func targetDesiredTimeOverIP() throws {
     let target = Target(name: "Test", coordinate: Coordinate(latitude: 38.0, longitude: -122.0))
 
     // Configure target
@@ -97,7 +97,7 @@ struct TargetTests {
   }
 
   @Test("maxAllowableTimeOverIP, calculates correctly")
-  func testTargetMaxAllowableTimeOverIP() throws {
+  func targetMaxAllowableTimeOverIP() throws {
     let target = Target(name: "Test", coordinate: Coordinate(latitude: 38.0, longitude: -122.0))
 
     // Configure target
@@ -122,7 +122,7 @@ struct TargetTests {
   }
 
   @Test("calculateDeclination, calculates correctly")
-  func testTargetCalculateDeclination() throws {
+  func targetCalculateDeclination() {
     let target = Target(name: "Test", coordinate: Coordinate(latitude: 38.0, longitude: -122.0))
     target.calculateDeclination()
 

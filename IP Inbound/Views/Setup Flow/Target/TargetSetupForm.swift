@@ -10,9 +10,17 @@ struct TargetSetupForm: View {
   @State private var editingCoordinates = false
   @State private var findLocationShown = false
 
+  @ViewBuilder private var formattedCoordinate: some View {
+    if let formatted = format(coordinate: target.coordinate) {
+      Text(formatted)
+    } else {
+      Text("—")
+    }
+  }
+
   var body: some View {
     Form {
-      Section("") {
+      Section {
         LabeledContent {
           TextField("", text: $target.name)
             .accessibilityIdentifier("targetNameField")
@@ -21,16 +29,8 @@ struct TargetSetupForm: View {
         }
 
         LabeledContent {
-          Text(format(coordinate: target.coordinate) ?? "<n/a>")
-            .onTapGesture {
-              switch coordinateFormat {
-                case .degreesMinutesSeconds: Defaults[.coordinateFormat] = .degreesDecimalMinutes
-                case .degreesDecimalMinutes: Defaults[.coordinateFormat] = .decimalDegrees
-                case .decimalDegrees: Defaults[.coordinateFormat] = .utm
-                case .utm: Defaults[.coordinateFormat] = .mgrs
-                case .mgrs: Defaults[.coordinateFormat] = .degreesMinutesSeconds
-              }
-            }
+          formattedCoordinate
+            .onTapGesture(perform: cycleCoordinateFormat)
             .accessibilityAddTraits(.isButton)
             .accessibilityHint("Change coordinate format")
             .accessibilityIdentifier("targetCoordinates")
@@ -63,6 +63,16 @@ struct TargetSetupForm: View {
         target.name = title
         findLocationShown = false
       }
+    }
+  }
+
+  private func cycleCoordinateFormat() {
+    switch coordinateFormat {
+      case .degreesMinutesSeconds: Defaults[.coordinateFormat] = .degreesDecimalMinutes
+      case .degreesDecimalMinutes: Defaults[.coordinateFormat] = .decimalDegrees
+      case .decimalDegrees: Defaults[.coordinateFormat] = .utm
+      case .utm: Defaults[.coordinateFormat] = .mgrs
+      case .mgrs: Defaults[.coordinateFormat] = .degreesMinutesSeconds
     }
   }
 }

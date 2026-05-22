@@ -3,12 +3,13 @@
 import CoreLocation
 import SwiftData
 
-class PreviewHelper {
+final class PreviewHelper {
   private static let target = (36.772367, -115.453840)
   private static let preIP = (36.876930, -115.481479)
   private static let postIP = (36.8078222222, -115.4840472222)
   private static let altitude = 1502.0
-  private static let course = 359.0 - 180.0
+  private static let headingReciprocalOffset = 180.0
+  private static let course = IPBearingTrue - headingReciprocalOffset
   private static let speed = Measurement(value: 120, unit: UnitSpeed.knots)
     .converted(to: .metersPerSecond).value  // run-in speed ≈ target ground speed
 

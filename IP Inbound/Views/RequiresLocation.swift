@@ -53,8 +53,17 @@ struct RequiresLocation<Content: View>: View {
   }
 }
 
-#Preview {
+#Preview("Location Available") {
+  let helper = PreviewHelper()
   RequiresLocation {
     Text("Location available!")
   }
+  .environment(\.previewLocation, helper.preIPEvent)
+}
+
+#Preview("No Location") {
+  RequiresLocation {
+    Text("Location available!")
+  }
+  .environment(\.previewLocation, nil)
 }

@@ -4,7 +4,8 @@ struct DeflectionMarkers: View {
   var scaleWidth: Double  // fraction of radius
   var markerCount = 4  // must be even
 
-  private let circleSize: CGFloat = 10
+  private let circleSize: CGFloat = 10,
+    circleLineWidth: CGFloat = 2
 
   @State private var markerPositions: [MarkerPosition] = []
 
@@ -13,11 +14,12 @@ struct DeflectionMarkers: View {
       ZStack {
         ForEach(markerPositions) { position in
           Circle()
-            .stroke(lineWidth: 2)
+            .stroke(lineWidth: circleLineWidth)
             .frame(width: circleSize, height: circleSize)
             .position(x: position.x, y: position.y)
         }
       }
+      .accessibilityHidden(true)
       .onAppear {
         calculateMarkerPositions(in: geometry)
       }
@@ -53,4 +55,10 @@ struct DeflectionMarkers: View {
     let x: CGFloat
     let y: CGFloat
   }
+}
+
+#Preview {
+  DeflectionMarkers(scaleWidth: 0.75)
+    .frame(width: 300, height: 300)
+    .padding()
 }

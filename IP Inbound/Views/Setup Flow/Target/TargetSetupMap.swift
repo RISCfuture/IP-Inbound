@@ -2,14 +2,14 @@ import MapKit
 import SwiftUI
 
 struct TargetSetupMap: View {
+  private static let defaultCameraDistanceMeters: Double = 10_000
+  private static let targetMarkerSize: CGFloat = 20
+
   @Bindable var target: Target
+
   @State private var cameraPosition: MapCameraPosition = .automatic
   @State private var skipUpdate = false
-  @State private var currentDistance: Double = 10_000
-
-  private var initialPosition: MapCameraPosition {
-    return .camera(.init(centerCoordinate: target.coordinate.toCoreLocation, distance: 10_000))
-  }
+  @State private var currentDistance: Double = Self.defaultCameraDistanceMeters
 
   var body: some View {
     if ProcessInfo.processInfo.isRunningUITests,
@@ -25,7 +25,7 @@ struct TargetSetupMap: View {
     Map(position: $cameraPosition, interactionModes: [.pan, .zoom]) {
       Annotation(target.name, coordinate: target.coordinate.toCoreLocation) {
         Image(systemName: "triangle.fill").foregroundStyle(.red)
-          .frame(width: 20, height: 20)
+          .frame(width: Self.targetMarkerSize, height: Self.targetMarkerSize)
           .accessibilityHidden(true)
       }
     }
@@ -37,7 +37,10 @@ struct TargetSetupMap: View {
     }
     .onAppear {
       cameraPosition = .camera(
-        .init(centerCoordinate: target.coordinate.toCoreLocation, distance: 10_000)
+        .init(
+          centerCoordinate: target.coordinate.toCoreLocation,
+          distance: Self.defaultCameraDistanceMeters
+        )
       )
     }
     .onMapCameraChange(frequency: .continuous) { context in

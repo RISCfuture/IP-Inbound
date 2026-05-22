@@ -30,7 +30,7 @@ final class CoordinateEntryManager {
 
   private(set) var currentIndex = 0
   private var indexInString: String.Index { indexInString(currentIndex) }
-  @MainActor private let UTMFormatter = CoordinateFormatStyle(format: .utm)
+  @MainActor private let utmFormatter = CoordinateFormatStyle(format: .utm)
   private var formatChangeObserver: Task<Void, Never>?
 
   var digitCount: Int { stringValue.count }
@@ -59,6 +59,8 @@ final class CoordinateEntryManager {
   private var northing: String { coordinate.latitudeDeg.sign == .minus ? "S" : "N" }
   private var easting: String { coordinate.longitudeDeg.sign == .minus ? "W" : "E" }
 
+  // `String(format:)` is used here so each field is zero-padded to a fixed width,
+  // keeping the monospaced digits vertically aligned and the cursor positions stable.
   var stringValue: String {
     switch format {
       case .decimalDegrees:
@@ -92,7 +94,7 @@ final class CoordinateEntryManager {
           longitude.seconds
         )
       case .utm:
-        return coordinate.formatted(UTMFormatter)
+        return coordinate.formatted(utmFormatter)
       case .mgrs:
         return MGRSHelper.fromCoordinate(coordinate, precision: .oneM) ?? ""
     }
@@ -175,7 +177,11 @@ final class CoordinateEntryManager {
     switch digitType {
       case .numeric: add("0", advanceCursor: false)
       case .hemisphere:
-        let resetChar = [Character("N"), Character("E")].first(where: { isValidCharacter($0) })!
+        guard
+          let resetChar = [Character("N"), Character("E")].first(where: { isValidCharacter($0) })
+        else {
+          preconditionFailure("No valid hemisphere character at index")
+        }
         add(resetChar, advanceCursor: false)
       case .open: preconditionFailure("Invalid index position")
     }

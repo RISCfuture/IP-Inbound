@@ -2,6 +2,10 @@ import MapKit
 import SwiftUI
 
 struct IPSetupMap: View {
+  private static let annotationSize = 20.0
+  private static let routeLineWidth = 5.0
+  private static let routeLineOpacity = 0.75
+
   @Bindable var target: Target
 
   var body: some View {
@@ -18,16 +22,16 @@ struct IPSetupMap: View {
     Map(initialPosition: .automatic, interactionModes: [.pan, .zoom]) {
       Annotation(target.name, coordinate: target.coordinate.toCoreLocation) {
         Image(systemName: "triangle.fill").foregroundStyle(.red)
-          .frame(width: 20, height: 20)
+          .frame(width: Self.annotationSize, height: Self.annotationSize)
           .accessibilityHidden(true)
       }
       Annotation("IP", coordinate: target.IPCoordinate.toCoreLocation) {
         Image(systemName: "square.fill").foregroundStyle(.yellow)
-          .frame(width: 20, height: 20)
+          .frame(width: Self.annotationSize, height: Self.annotationSize)
           .accessibilityHidden(true)
       }
       MapPolyline(coordinates: [target.coordinate, target.IPCoordinate].map(\.toCoreLocation))
-        .stroke(.gray.opacity(0.75), lineWidth: 5)
+        .stroke(.gray.opacity(Self.routeLineOpacity), lineWidth: Self.routeLineWidth)
     }
     .padding()
     .mapStyle(.imagery)

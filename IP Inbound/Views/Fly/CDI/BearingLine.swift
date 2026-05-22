@@ -4,10 +4,12 @@ struct BearingLine: Shape {
   var deflection: CGFloat?  // fraction of radius
   var maxDeflection = 0.75  // fraction of radius, represents 100% deflection
 
-  private let inset = 0.1  // fraction of radius
-  private let deviationSegmentSize = 0.6  // fraction of radius
-  private let arrowheadInset = 0.15  // fraction of radius
-  private let arrowheadSize: CGFloat = 10
+  // Fractions of radius
+  private let inset = 0.1,
+    deviationSegmentSize = 0.6,
+    arrowheadInset = 0.15
+
+  private let arrowheadSizePoints: CGFloat = 10
 
   func path(in rect: CGRect) -> Path {
     let center = CGPoint(x: rect.midX, y: rect.midY)
@@ -38,11 +40,11 @@ struct BearingLine: Shape {
     // Arrowhead
     path.move(to: CGPoint(x: center.x, y: center.y - radius * (1 - inset)))
     path.addLine(
-      to: CGPoint(x: center.x - arrowheadSize, y: center.y - radius * (1 - arrowheadInset))
+      to: CGPoint(x: center.x - arrowheadSizePoints, y: center.y - radius * (1 - arrowheadInset))
     )
     path.move(to: CGPoint(x: center.x, y: center.y - radius * (1 - inset)))
     path.addLine(
-      to: CGPoint(x: center.x + arrowheadSize, y: center.y - radius * (1 - arrowheadInset))
+      to: CGPoint(x: center.x + arrowheadSizePoints, y: center.y - radius * (1 - arrowheadInset))
     )
 
     return path

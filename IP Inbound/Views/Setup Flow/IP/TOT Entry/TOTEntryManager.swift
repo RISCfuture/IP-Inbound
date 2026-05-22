@@ -6,6 +6,22 @@ import SwiftUI
 @MainActor
 @Observable
 final class TOTEntryManager {
+  private static let defaultLeadTimeSec = 30.0 * 60.0
+  private static let expectedDigitCount = 6
+
+  private static let zuluModeIndicator = String(
+    localized: "Z",
+    comment: "Zulu (UTC) time designator"
+  )
+  private static let localFallbackIndicator = String(
+    localized: "L",
+    comment: "Fallback local-time designator when a timezone abbreviation is unavailable"
+  )
+  private static let localTimezoneFallbackName = String(
+    localized: "Local",
+    comment: "Fallback name for the target’s local timezone when no abbreviation is available"
+  )
+
   private static let relativeDateFormatter: RelativeDateTimeFormatter = {
     let formatter = RelativeDateTimeFormatter()
     formatter.unitsStyle = .abbreviated
@@ -13,15 +29,29 @@ final class TOTEntryManager {
     return formatter
   }()
 
+  private static let compactTimeFormatter: DateFormatter = {
+    let formatter = DateFormatter()
+    formatter.dateFormat = "HHmmss"
+    return formatter
+  }()
+
+  private static let colonSeparatedTimeFormatter: DateFormatter = {
+    let formatter = DateFormatter()
+    formatter.dateFormat = "HH:mm:ss"
+    return formatter
+  }()
+
   var timeOnTarget: Date
   let targetCoordinate: Coordinate
-  private let dateProvider: DateProvider
 
   @ObservableDefault(.TOTDisplayMode)
   @ObservationIgnored var displayMode: DisplayMode
 
   private(set) var currentIndex = 0
+
+  private let dateProvider: DateProvider
   private var formatChangeObserver: Task<Void, Never>?
+  private var targetTimezone: TimeZone?
 
   var digitCount: Int { stringValue.count }
 
@@ -43,8 +73,7 @@ final class TOTEntryManager {
   }
 
   var stringValue: String {
-    let formatter = DateFormatter()
-    formatter.dateFormat = "HHmmss"
+    let formatter = Self.compactTimeFormatter
 
     switch displayMode {
       case .local:
@@ -62,11 +91,10 @@ final class TOTEntryManager {
     let modeIndicator: String
     switch displayMode {
       case .zulu:
-        modeIndicator = "Z"
+        modeIndicator = Self.zuluModeIndicator
       case .local:
-        // Show the actual timezone abbreviation (e.g., PST, EDT, etc.)
-        let tz = targetTimezone ?? TimeZone.current
-        modeIndicator = tz.abbreviation(for: timeOnTarget) ?? "L"
+        let timezone = targetTimezone ?? TimeZone.current
+        modeIndicator = timezone.abbreviation(for: timeOnTarget) ?? Self.localFallbackIndicator
     }
     return "\(hours):\(minutes):\(seconds) \(modeIndicator)"
   }
@@ -94,20 +122,18 @@ final class TOTEntryManager {
   }
 
   var secondaryTimeString: String {
-    let formatter = DateFormatter()
-    formatter.dateFormat = "HH:mm:ss"
+    let formatter = Self.colonSeparatedTimeFormatter
 
     switch displayMode {
       case .local:
-        // When in local mode, show Zulu time as secondary
         formatter.timeZone = TimeZone(identifier: "UTC")
-        return formatter.string(from: timeOnTarget) + " Z"
+        return "\(formatter.string(from: timeOnTarget)) \(Self.zuluModeIndicator)"
       case .zulu:
-        // When in Zulu mode, show target local time as secondary with its timezone abbreviation
-        let tz = targetTimezone ?? TimeZone.current
-        formatter.timeZone = tz
-        let abbreviation = tz.abbreviation(for: timeOnTarget) ?? "Local"
-        return formatter.string(from: timeOnTarget) + " \(abbreviation)"
+        let timezone = targetTimezone ?? TimeZone.current
+        formatter.timeZone = timezone
+        let abbreviation =
+          timezone.abbreviation(for: timeOnTarget) ?? Self.localTimezoneFallbackName
+        return "\(formatter.string(from: timeOnTarget)) \(abbreviation)"
     }
   }
 
@@ -125,8 +151,6 @@ final class TOTEntryManager {
     return Self.relativeDateFormatter.localizedString(for: timeOnTarget, relativeTo: nowInstant)
   }
 
-  private var targetTimezone: TimeZone?
-
   private var currentIndexIsValid: Bool { isValidIndex(currentIndex) }
 
   private var indexInString: String.Index {
@@ -137,10 +161,10 @@ final class TOTEntryManager {
     self.targetCoordinate = targetCoordinate
     self.dateProvider = dateProvider
 
-    if let tot = timeOnTarget {
-      self.timeOnTarget = tot
+    if let timeOnTarget {
+      self.timeOnTarget = timeOnTarget
     } else {
-      self.timeOnTarget = dateProvider.now().addingTimeInterval(30 * 60)
+      self.timeOnTarget = dateProvider.now().addingTimeInterval(Self.defaultLeadTimeSec)
     }
 
     formatChangeObserver = Task { [weak self] in
@@ -159,7 +183,7 @@ final class TOTEntryManager {
   func isValidCharacter(_ character: Character) -> Bool {
     guard character.isNumber else { return false }
 
-    let position = getTimePosition(for: currentIndex)
+    let position = timePosition(for: currentIndex)
     guard let position else { return false }
 
     let digit = Int(String(character))!
@@ -168,7 +192,7 @@ final class TOTEntryManager {
       case .hourTens:
         return digit <= 2
       case .hourOnes:
-        let hourTens = getDigit(at: getIndexForPosition(.hourTens))
+        let hourTens = digitValue(at: index(of: .hourTens))
         return hourTens == 2 ? digit <= 3 : true
       case .minuteTens:
         return digit <= 5
@@ -217,11 +241,24 @@ final class TOTEntryManager {
     } while !currentIndexIsValid
   }
 
-  func setIndex(lineIndex _: Int, charIndex: Int) {
-    let newIndex = charIndex
-    if isValidIndex(newIndex) {
-      currentIndex = newIndex
+  func setIndex(charIndex: Int) {
+    if isValidIndex(charIndex) {
+      currentIndex = charIndex
     }
+  }
+
+  /// Maps a horizontal tap location within the monospaced time display to the corresponding
+  /// character index and selects it. `lineWidth` is the rendered width of the display, supplied by
+  /// the view's `GeometryReader` so hit-testing matches what the user actually sees.
+  func selectIndex(atTapX tapX: CGFloat, lineWidth: CGFloat) {
+    let characterCount = stringValue.count
+    guard characterCount > 0, lineWidth > 0 else { return }
+
+    let widthPerCharacter = lineWidth / CGFloat(characterCount)
+    let charIndex = Int(tapX / widthPerCharacter)
+    guard charIndex < characterCount else { return }
+
+    setIndex(charIndex: charIndex)
   }
 
   func toggleDisplayMode() {
@@ -241,10 +278,9 @@ final class TOTEntryManager {
       cleanString = String(cleanString[..<spaceIndex])
     }
 
-    guard cleanString.count == 6 else { return nil }
+    guard cleanString.count == Self.expectedDigitCount else { return nil }
 
-    let formatter = DateFormatter()
-    formatter.dateFormat = "HHmmss"
+    let formatter = Self.compactTimeFormatter
 
     switch displayMode {
       case .local:
@@ -285,40 +321,20 @@ final class TOTEntryManager {
     return char.isNumber
   }
 
-  private func getTimePosition(for index: Int) -> TimePosition? {
-    // Account for the space before timezone abbreviation
-    // Format is HH:MM:SS TZ, so positions are:
-    // 0,1 = hours, 2 = colon, 3,4 = minutes, 5 = colon, 6,7 = seconds, 8 = space, 9+ = timezone
-    switch index {
-      case 0: return .hourTens
-      case 1: return .hourOnes
-      case 3: return .minuteTens
-      case 4: return .minuteOnes
-      case 6: return .secondTens
-      case 7: return .secondOnes
-      default: return nil
-    }
+  /// The editable digit at a given character index within the `HH:MM:SS TZ` display, or `nil` for
+  /// the colons, the space, and the timezone characters.
+  private func timePosition(for index: Int) -> TimePosition? {
+    TimePosition.allCases.first { $0.characterIndex == index }
   }
 
-  private func getIndexForPosition(_ position: TimePosition) -> Int {
-    switch position {
-      case .hourTens: return 0
-      case .hourOnes: return 1
-      case .minuteTens: return 3
-      case .minuteOnes: return 4
-      case .secondTens: return 6
-      case .secondOnes: return 7
-    }
+  private func index(of position: TimePosition) -> Int {
+    position.characterIndex
   }
 
-  private func getDigit(at index: Int) -> Int {
+  private func digitValue(at index: Int) -> Int {
     let stringIndex = stringValue.index(stringValue.startIndex, offsetBy: index)
     let char = stringValue[stringIndex]
     return Int(String(char)) ?? 0
-  }
-
-  private func indexInString(_ index: Int) -> String.Index {
-    stringValue.index(stringValue.startIndex, offsetBy: index)
   }
 
   private func fetchTargetTimezone() async {
@@ -327,7 +343,20 @@ final class TOTEntryManager {
     }
   }
 
-  enum TimePosition {
+  /// An editable digit within the `HH:MM:SS TZ` display, paired with its character index.
+  /// Indices skip the colons (2, 5), the space (8), and the trailing timezone (9+).
+  enum TimePosition: CaseIterable {
     case hourTens, hourOnes, minuteTens, minuteOnes, secondTens, secondOnes
+
+    var characterIndex: Int {
+      switch self {
+        case .hourTens: return 0
+        case .hourOnes: return 1
+        case .minuteTens: return 3
+        case .minuteOnes: return 4
+        case .secondTens: return 6
+        case .secondOnes: return 7
+      }
+    }
   }
 }

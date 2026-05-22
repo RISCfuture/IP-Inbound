@@ -11,11 +11,8 @@ struct IPSetupView: View {
 
       HStack {
         NavigationLink(value: SetupFlowStep.targetSetup) {
-          HStack {
-            Image(systemName: "chevron.backward")
-              .accessibilityHidden(true)
-            Text("Define Target")
-          }
+          Label("Define Target", systemImage: "chevron.backward")
+            .labelStyle(.titleAndIcon)
         }.accessibilityIdentifier("targetSetupButton")
         Spacer()
         NavigationLink(value: SetupFlowStep.timeOnTarget) {

@@ -7,15 +7,14 @@ class BaseTestCase: XCTestCase {
 
   // MARK: - Type Properties
 
-  /// ISO-8601 with fractional seconds — matches `UITestClock` parsing.
+  // ISO-8601 with fractional seconds — matches `UITestClock` parsing.
   @MainActor static let uiTestNowFormatter: ISO8601DateFormatter = {
     let formatter = ISO8601DateFormatter()
     formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
     return formatter
   }()
 
-  /// Default static fix: San Francisco, speed 0 → guidance stays in countdown
-  /// mode, preserving the expectations of the pre-harness UI tests.
+  // Default static fix: San Francisco, speed 0 → guidance stays in countdown mode.
   static let defaultFix = "37.7749,-122.4194,0,0,0"
 
   // MARK: - Instance Properties

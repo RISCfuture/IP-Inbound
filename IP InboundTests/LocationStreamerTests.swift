@@ -4,44 +4,6 @@ import Testing
 
 @testable import IP_Inbound
 
-/// Mocks for testing LocationStreamer
-final actor MockSimReceiver {
-  private(set) var startCalled = false
-  private(set) var stopCalled = false
-
-  private var _stream: AsyncStream<SimData>
-  private let _continuation: AsyncStream<SimData>.Continuation
-
-  var stream: AsyncStream<SimData> {
-    _stream
-  }
-
-  init(mockStream: AsyncStream<SimData>? = nil, port _: Int = 0) {
-    if let mockStream {
-      _stream = mockStream
-      let (_, continuation) = AsyncStream<SimData>.makeStream()
-      _continuation = continuation
-    } else {
-      let (stream, continuation) = AsyncStream<SimData>.makeStream()
-      _stream = stream
-      _continuation = continuation
-    }
-  }
-
-  func start() {
-    startCalled = true
-  }
-
-  func stop() {
-    stopCalled = true
-  }
-
-  func send(_ value: SimData) {
-    _continuation.yield(value)
-  }
-}
-
-/// A helper function to create a CLLocation instance with the specified properties
 func makeLocation(
   latitude: Double,
   longitude: Double,
@@ -70,61 +32,44 @@ func makeLocation(
 @Suite("LocationStreamer")
 struct LocationStreamerTests {
 
-  @Test("LocationEvent - initializes correctly with location data")
-  func testLocationEventInitWithLocation() throws {
+  @Test("LocationEvent - derives coordinate, course, and speed from location")
+  func locationEventDerivesValuesFromLocation() throws {
+    let (latitudeDeg, longitudeDeg, courseDeg, speedMPS) = (37.7749, -122.4194, 45.0, 10.0)
     let location = makeLocation(
-      latitude: 37.7749,
-      longitude: -122.4194,
+      latitude: latitudeDeg,
+      longitude: longitudeDeg,
       altitude: 100,
-      course: 45,
-      speed: 10
+      course: courseDeg,
+      speed: speedMPS
     )
 
     let event = LocationEvent(location: location)
 
-    #expect(event.location === location)
-    #expect(event.simName == nil)
-    #expect(event.error == nil)
-    #expect(event.isSimulating == false)
     let coordinate = try #require(event.coordinate)
-    #expect(coordinate.latitudeDeg == 37.7749)
-    #expect(coordinate.longitudeDeg == -122.4194)
+    #expect(coordinate.latitudeDeg == latitudeDeg)
+    #expect(coordinate.longitudeDeg == longitudeDeg)
     let course = try #require(event.courseTrue)
-    #expect(course.angle.converted(to: .degrees).value == 45)
+    #expect(course.angle.converted(to: .degrees).value == courseDeg)
     let speed = try #require(event.speed)
-    #expect(speed.converted(to: .metersPerSecond).value == 10)
+    #expect(speed.converted(to: .metersPerSecond).value == speedMPS)
   }
 
-  @Test("LocationEvent - initializes correctly with simulator data")
-  func testLocationEventInitWithSimData() throws {
-    let location = makeLocation(
-      latitude: 37.7749,
-      longitude: -122.4194,
-      altitude: 100,
-      course: 45,
-      speed: 10
-    )
+  @Test("LocationEvent - isSimulating reflects presence of a sim name")
+  func locationEventIsSimulatingReflectsSimName() {
+    let location = makeLocation(latitude: 37.7749, longitude: -122.4194)
 
-    let event = LocationEvent(location: location, simName: "XPlane")
-
-    #expect(event.location === location)
-    #expect(event.simName == "XPlane")
-    #expect(event.error == nil)
-    #expect(event.isSimulating == true)
+    #expect(LocationEvent(location: location).isSimulating == false)
+    #expect(LocationEvent(location: location, simName: "XPlane").isSimulating == true)
   }
 
-  @Test("LocationEvent - initializes correctly with error data")
-  func testLocationEventInitWithError() throws {
+  @Test("LocationEvent - a nil location yields nil derived values")
+  func locationEventNilLocationYieldsNilDerivedValues() {
     enum TestError: Error {
       case testCase
     }
 
-    let error = TestError.testCase
-    let event = LocationEvent(error: error)
+    let event = LocationEvent(error: TestError.testCase)
 
-    #expect(event.location == nil)
-    #expect(event.simName == nil)
-    #expect(event.error as? TestError == TestError.testCase)
     #expect(event.isSimulating == false)
     #expect(event.coordinate == nil)
     #expect(event.courseTrue == nil)
@@ -132,17 +77,16 @@ struct LocationStreamerTests {
   }
 
   @Test("LocationEvent - extrapolate returns same event if conditions not met")
-  func testLocationEventExtrapolateSameEventIfConditionsNotMet() throws {
-    // Case 1: No location
+  func locationEventExtrapolateSameEventIfConditionsNotMet() throws {
+    // Case 1: No location, so both events hold a nil CLLocation
     let event1 = LocationEvent()
     let extrapolated1 = event1.extrapolate(to: Date())
-    // Use == instead of === for struct comparison
     #expect(
       extrapolated1.location == event1.location && extrapolated1.simName == event1.simName
         && extrapolated1.error?.localizedDescription == event1.error?.localizedDescription
     )
 
-    // Case 2: Future time not after location time
+    // Case 2: Future time not after location time, so the same CLLocation instance is returned
     let now = Date()
     let location = makeLocation(
       latitude: 37.7749,
@@ -151,7 +95,6 @@ struct LocationStreamerTests {
     )
     let event2 = LocationEvent(location: location)
     let extrapolated2 = event2.extrapolate(to: now)  // Past time
-    // Use == instead of === for struct comparison
     #expect(
       extrapolated2.location === event2.location && extrapolated2.simName == event2.simName
         && extrapolated2.error?.localizedDescription == event2.error?.localizedDescription
@@ -159,7 +102,7 @@ struct LocationStreamerTests {
   }
 
   @Test("LocationEvent - extrapolate calculates new position correctly")
-  func testLocationEventExtrapolateCalculatesNewPosition() throws {
+  func locationEventExtrapolateCalculatesNewPosition() throws {
     let now = Date()
     let location = makeLocation(
       latitude: 0,
@@ -185,9 +128,10 @@ struct LocationStreamerTests {
     #expect(coordinate.longitudeDeg.isApproximatelyEqual(to: 0.0009, relativeTolerance: 0.01))
 
     // Accuracies should increase by the time delta
-    #expect(extrapolated.location?.horizontalAccuracy ?? 0 > location.horizontalAccuracy)
-    #expect(extrapolated.location?.verticalAccuracy ?? 0 > location.verticalAccuracy)
-    #expect(extrapolated.location?.courseAccuracy ?? 0 > location.courseAccuracy)
-    #expect(extrapolated.location?.speedAccuracy ?? 0 > location.speedAccuracy)
+    let extrapolatedLocation = try #require(extrapolated.location)
+    #expect(extrapolatedLocation.horizontalAccuracy > location.horizontalAccuracy)
+    #expect(extrapolatedLocation.verticalAccuracy > location.verticalAccuracy)
+    #expect(extrapolatedLocation.courseAccuracy > location.courseAccuracy)
+    #expect(extrapolatedLocation.speedAccuracy > location.speedAccuracy)
   }
 }

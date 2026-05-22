@@ -7,6 +7,8 @@ import SwiftUI
 /// with the child that follows it and is shown only when that child stays on the current row. When
 /// the following child wraps, the separator is dropped — so a row never begins or ends with one.
 struct FlowLayout: Layout {
+  private static let offscreenParkingDistance: CGFloat = 10_000
+
   var spacing: CGFloat = 6
   var rowSpacing: CGFloat = 4
 
@@ -45,7 +47,7 @@ struct FlowLayout: Layout {
       y += row.height + rowSpacing
     }
     // Dropped separators still must be placed; park them well off-screen so they don't render.
-    let offscreen = CGPoint(x: bounds.maxX + 10_000, y: bounds.minY)
+    let offscreen = CGPoint(x: bounds.maxX + Self.offscreenParkingDistance, y: bounds.minY)
     for index in subviews.indices where !placed.contains(index) {
       subviews[index].place(at: offscreen, anchor: .topLeading, proposal: .zero)
     }

@@ -6,25 +6,36 @@ struct FlyPage: Page {
   let app: XCUIApplication
 
   @MainActor var isDisplayed: Bool {
-    // Fly view is displayed if we see the target name or CDI or countdown
+    // Displayed if the flyView, CDI, or countdown element exists.
     app.otherElements["flyView"].waitForExistence(timeout: 5)
       || app.otherElements["cdi"].waitForExistence(timeout: 2)
       || app.otherElements["countdown"].waitForExistence(timeout: 2)
   }
 
-  @MainActor var cdi: XCUIElement { app.otherElements["cdi"] }
+  // The guidance content sets `.accessibilityIdentifier("cdi")`, but the ancestor `flyView` identifier
+  // propagates onto its descendants and overrides it, so the element is found by its label.
+  @MainActor var cdi: XCUIElement {
+    app.otherElements.matching(NSPredicate(format: "label == %@", "Course deviation indicator"))
+      .firstMatch
+  }
   @MainActor var countdown: XCUIElement { app.otherElements["countdown"] }
   @MainActor var simulatorBanner: XCUIElement { app.staticTexts["simulatorBanner"] }
   @MainActor var flySpeedDisplay: XCUIElement { app.staticTexts["flySpeedDisplay"] }
-  /// The required ground speed is appended to the tappable speed display as a "(… req.)" callout,
-  /// so it shares the `flySpeedDisplay` element — which carries the `.isButton` trait for
-  /// unit-cycling and is therefore exposed as a button, not a static text. Find it by its visible
-  /// "req." copy.
+  // The required ground speed is appended to the tappable speed display as a "(… req.)" callout,
+  // so it shares the `flySpeedDisplay` element — which carries the `.isButton` trait for
+  // unit-cycling and is therefore exposed as a button, not a static text. Find it by its visible
+  // "req." copy.
   @MainActor var requiredSpeedDisplay: XCUIElement {
     let predicate = NSPredicate(format: "label CONTAINS[c] %@", "req.")
     return app.buttons.matching(predicate).firstMatch
   }
-  @MainActor var flyDistanceDisplay: XCUIElement { app.staticTexts["flyDistanceDisplay"] }
+  // The distance readout carries the `.isButton` trait (for unit cycling) and the ancestor
+  // `flyView` identifier propagates over its own, so it is found as a button by its distance label
+  // (e.g. "9.8 nmi"), which cycles through nmi / mi / km on tap.
+  @MainActor var flyDistanceDisplay: XCUIElement {
+    let predicate = NSPredicate(format: "label MATCHES %@", ".*[0-9].*(nmi|mi|km)")
+    return app.buttons.matching(predicate).firstMatch
+  }
   @MainActor var flyTOTDisplay: XCUIElement { app.staticTexts["flyTOTDisplay"] }
 
   @MainActor var guidanceMode: String? {

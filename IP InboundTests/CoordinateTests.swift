@@ -6,7 +6,7 @@ import Testing
 @Suite("Coordinate")
 struct CoordinateTests {
   @Test("distance, calculates correctly")
-  func testCoordinateDistance() throws {
+  func coordinateDistance() {
     let coord1 = Coordinate(latitude: 0, longitude: 0)
     let coord2 = Coordinate(latitude: 1, longitude: 0)
 
@@ -16,7 +16,7 @@ struct CoordinateTests {
   }
 
   @Test("bearing, calculates correctly")
-  func testCoordinateBearing() throws {
+  func coordinateBearing() {
     let coord1 = Coordinate(latitude: 0, longitude: 0)
     let coord2 = Coordinate(latitude: 0, longitude: 1)  // Due east
 
@@ -29,7 +29,7 @@ struct CoordinateTests {
   }
 
   @Test("offsetBy, calculates correctly")
-  func testCoordinateOffset() throws {
+  func coordinateOffset() {
     let start = Coordinate(latitude: 0, longitude: 0)
 
     // Offset 60NM north
@@ -48,7 +48,4 @@ struct CoordinateTests {
     #expect(abs(eastOffset.latitudeDeg - 0) < 0.01)
     #expect(abs(eastOffset.longitudeDeg - 1) < 0.01)
   }
-
-  // MARK: - Bearing Tests
-
 }

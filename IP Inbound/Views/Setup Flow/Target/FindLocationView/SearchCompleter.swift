@@ -25,6 +25,7 @@ class SearchCompleter: NSObject, MKLocalSearchCompleterDelegate {
 
   func completerDidUpdateResults(_ completer: MKLocalSearchCompleter) {
     suggestions = completer.results
+    error = nil
   }
 
   func completer(_: MKLocalSearchCompleter, didFailWithError error: Error) {
@@ -32,6 +33,7 @@ class SearchCompleter: NSObject, MKLocalSearchCompleterDelegate {
     self.error = error
   }
 
+  @MainActor
   func lookupCoordinates(
     for completion: MKLocalSearchCompletion,
     completionHandler: @MainActor @escaping (CLLocationCoordinate2D?) -> Void
@@ -43,9 +45,28 @@ class SearchCompleter: NSObject, MKLocalSearchCompleterDelegate {
       if let coordinate = response?.mapItems.first?.placemark.coordinate {
         completionHandler(coordinate)
       } else {
-        print("Search error: \(error?.localizedDescription ?? "Unknown error")")
+        self.error = error ?? LocationSearchError.noResults
         completionHandler(nil)
       }
     }
+  }
+}
+
+enum LocationSearchError: LocalizedError {
+  case noResults
+
+  var errorDescription: String? {
+    String(localized: "Couldn’t find that location.")
+  }
+
+  var failureReason: String? {
+    switch self {
+      case .noResults:
+        return String(localized: "No matching place was found for the selected suggestion.")
+    }
+  }
+
+  var recoverySuggestion: String? {
+    String(localized: "Try a different search term.")
   }
 }

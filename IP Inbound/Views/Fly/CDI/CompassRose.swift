@@ -5,8 +5,9 @@ struct CompassRose: Shape {
   var minorTickInterval = 5  // degrees
   var majorTickInterval = 10  // degrees, must be a multiple of minorTickInterval
 
-  private let majorTickInset = 0.9  // fraction of radius
-  private let minorTickInset = 0.95  // fraction of radius
+  // Fractions of radius
+  private let majorTickInset = 0.9,
+    minorTickInset = 0.95
 
   func path(in rect: CGRect) -> Path {
     let center = rect.center

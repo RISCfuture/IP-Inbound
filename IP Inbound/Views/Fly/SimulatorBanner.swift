@@ -1,6 +1,10 @@
 import SwiftUI
 
 struct SimulatorBanner: View {
+  private static let
+    horizontalPadding = 16.0,
+    verticalPadding = 8.0
+
   var simName: String?
 
   private var title: String {
@@ -12,14 +16,18 @@ struct SimulatorBanner: View {
     Text(title)
       .font(.headline)
       .foregroundStyle(.white)
-      .padding(.horizontal, 16)
-      .padding(.vertical, 8)
+      .padding(.horizontal, Self.horizontalPadding)
+      .padding(.vertical, Self.verticalPadding)
       .background(Color.orange)
       .clipShape(Capsule())
       .accessibilityIdentifier("simulatorBanner")
   }
 }
 
-#Preview {
+#Preview("Generic") {
   SimulatorBanner()
+}
+
+#Preview("Named simulator") {
+  SimulatorBanner(simName: "X-Plane")
 }

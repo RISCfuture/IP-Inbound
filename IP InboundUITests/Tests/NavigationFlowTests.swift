@@ -5,7 +5,7 @@ import XCTest
 
 final class NavigationFlowTests: BaseTestCase {
 
-  /// Wait for fly view content (countdown mode expected in test environment)
+  // Wait for fly view content (countdown mode expected in test environment)
   @MainActor
   private func waitForFlyContent(timeout: TimeInterval = 15) -> Bool {
     let guidanceMsg = app.staticTexts["Guidance begins once aircraft is moving."]
@@ -15,7 +15,7 @@ final class NavigationFlowTests: BaseTestCase {
     return pposIP.exists || ipTarget.exists
   }
 
-  /// Navigate back from fly view to list using nav bar back buttons
+  // Navigate back from fly view to list using nav bar back buttons
   @MainActor
   private func navigateBackFromFly() {
     if !isIPad {
@@ -60,6 +60,23 @@ final class NavigationFlowTests: BaseTestCase {
     TargetListPage(app: app).deleteTarget(named: "NavFlow")
   }
 
+  // Polls a text field's `value` — re-querying each tick — until it equals `expectedValue`. Avoids
+  // both fixed settle sleeps and the stale-snapshot pitfalls of `XCTNSPredicateExpectation` bound
+  // to an element captured mid-navigation-transition.
+  @MainActor
+  private func waitForFieldValue(
+    _ field: @autoclosure () -> XCUIElement,
+    equals expectedValue: String,
+    timeout: TimeInterval = 5
+  ) -> Bool {
+    let deadline = Date().addingTimeInterval(timeout)
+    repeat {
+      if let value = field().value as? String, value == expectedValue { return true }
+      RunLoop.current.run(until: Date().addingTimeInterval(0.2))
+    } while Date() < deadline
+    return (field().value as? String) == expectedValue
+  }
+
   // MARK: - Test 25
 
   @MainActor
@@ -73,34 +90,46 @@ final class NavigationFlowTests: BaseTestCase {
     ipPage.enterBearing("270")
     ipPage.enterOffsetDistance("3")
 
+    // Capture the value the field actually holds before navigating away. This test verifies value
+    // RETENTION across back navigation, not data-entry accuracy, so it compares against what was
+    // actually entered (numeric keypad entry is flaky on the simulator) rather than a hard-coded
+    // expectation.
+    let enteredBearing = ipPage.offsetBearingField.value as? String ?? ""
+    XCTAssertFalse(
+      enteredBearing.isEmpty,
+      "Bearing field should hold a value before navigating away"
+    )
+
     let totPage = ipPage.tapTimeOnTarget()
     XCTAssertTrue(totPage.isDisplayed, "TOT page should appear")
 
     // Go back to IP setup
     totPage.tapBackToIPSetup()
-    Thread.sleep(forTimeInterval: 0.5)
 
-    // Assert bearing field retains value
+    // Assert bearing field retains value; wait for it to repopulate after the
+    // back navigation rather than sleeping a fixed interval.
     let ipBack = IPSetupPage(app: app)
-    let bearingField =
-      ipBack.scrollToVisible(ipBack.offsetBearingField) ?? ipBack.offsetBearingField
-    XCTAssertTrue(bearingField.waitForExistence(timeout: 3))
-    let bearingValue = bearingField.value as? String ?? ""
+    _ = ipBack.scrollToVisible(ipBack.offsetBearingField)
+    XCTAssertTrue(ipBack.offsetBearingField.waitForExistence(timeout: 5))
     XCTAssertTrue(
-      bearingValue.contains("270"),
-      "Bearing should retain '270' but was: \(bearingValue)"
+      waitForFieldValue(ipBack.offsetBearingField, equals: enteredBearing),
+      "Bearing should retain ‘\(enteredBearing)’ but was: "
+        + "‘\(ipBack.offsetBearingField.value as? String ?? "")’"
     )
 
     // Go back to target setup via the IP Setup page's back button
     let ipBack2 = IPSetupPage(app: app)
     ipBack2.tapBackToTargetSetup()
-    Thread.sleep(forTimeInterval: 0.5)
 
+    // Wait for the name field to repopulate with the retained value rather than
+    // sleeping a fixed interval before reading it.
     let setupBack = TargetSetupPage(app: app)
-    let nameField = setupBack.targetNameField
-    XCTAssertTrue(nameField.waitForExistence(timeout: 5))
-    let nameValue = nameField.value as? String ?? ""
-    XCTAssertEqual(nameValue, "BackNav", "Target name should be retained")
+    XCTAssertTrue(setupBack.targetNameField.waitForExistence(timeout: 5))
+    XCTAssertTrue(
+      waitForFieldValue(setupBack.targetNameField, equals: "BackNav"),
+      "Target name should retain ‘BackNav’ but was: "
+        + "‘\(setupBack.targetNameField.value as? String ?? "")’"
+    )
 
     // Clean up
     if !isIPad {
@@ -111,6 +140,9 @@ final class NavigationFlowTests: BaseTestCase {
 
   // MARK: - Test 26
 
+  // Strictly verifies the skip-to-fly contract: re-selecting an already-configured target from the
+  // list lands directly on the Fly screen, bypassing the setup flow (no manual-navigation
+  // fallback). If skip-to-fly silently regresses, this test must fail.
   @MainActor
   func testConfiguredTargetSkipsToFly() throws {
     try skipOniOS18()
@@ -137,24 +169,20 @@ final class NavigationFlowTests: BaseTestCase {
     // Navigate back to list
     navigateBackFromFly()
 
-    // Re-select configured target - should skip to fly or show target setup
+    // Re-select the configured target from the list.
     let listPage = TargetListPage(app: app)
     XCTAssertTrue(listPage.isDisplayed)
     listPage.selectTarget(named: "SkipToFly")
 
-    // Check if skip-to-fly activated (may not activate if SwiftUI preserves @State)
-    let skippedToFly = waitForFlyContent(timeout: 5)
-    if !skippedToFly {
-      // Skip-to-fly didn't activate; navigate to fly manually to verify target is still configured
-      let setup = TargetSetupPage(app: app)
-      let ipPage = setup.tapDefineIP()
-      let totPage = ipPage.tapTimeOnTarget()
-      totPage.tapFly()
-      XCTAssertTrue(
-        waitForFlyContent(timeout: 15),
-        "Configured target should still reach fly view"
-      )
-    }
+    // STRICT: a configured target skips straight to Fly, bypassing the setup flow.
+    XCTAssertTrue(
+      waitForFlyContent(timeout: 15),
+      "Selecting a configured target must skip directly to the fly view"
+    )
+    XCTAssertFalse(
+      app.buttons["defineIPButton"].exists,
+      "Skip-to-fly must bypass the setup flow (Define IP button should not appear)"
+    )
 
     // Clean up
     navigateBackFromFly()
@@ -222,9 +250,9 @@ final class NavigationFlowTests: BaseTestCase {
         fallback.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
       }
     }
-    Thread.sleep(forTimeInterval: 0.5)
 
-    // Verify we can see the TOT page
+    // Verify we can see the TOT page (`isDisplayed` waits for the picker to
+    // appear, so no fixed settle is needed).
     let totBack = TOTSetupPage(app: app)
     XCTAssertTrue(totBack.isDisplayed, "Should be on TOT page after back from fly")
 

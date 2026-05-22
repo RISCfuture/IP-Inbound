@@ -6,7 +6,8 @@ struct FindLocationPage: Page {
   let app: XCUIApplication
 
   @MainActor var isDisplayed: Bool {
-    app.otherElements["findLocationView"].waitForExistence(timeout: 3)
+    // The identifier sits on a SwiftUI `List`, which XCUITest exposes as a collection view.
+    app.collectionViews["findLocationView"].waitForExistence(timeout: 5)
   }
 
   @MainActor var searchField: XCUIElement { app.searchFields.firstMatch }

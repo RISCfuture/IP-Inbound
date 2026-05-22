@@ -21,6 +21,7 @@ struct CompassNumbers: View {
             .position(x: position.x, y: position.y)
             .fontWeight(.bold)
             .foregroundStyle(Color.accentColor)
+            .accessibilityHidden(true)
         }
       }
       .onAppear {
@@ -41,7 +42,7 @@ struct CompassNumbers: View {
         id: index,
         x: x,
         y: y,
-        text: "\(index * increments)"
+        text: (index * increments).formatted()
       )
     }
   }
@@ -53,4 +54,10 @@ struct CompassNumbers: View {
     let y: CGFloat
     let text: String
   }
+}
+
+#Preview {
+  CompassNumbers(rotation: 0)
+    .frame(width: 300, height: 300)
+    .padding()
 }

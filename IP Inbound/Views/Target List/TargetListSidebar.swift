@@ -35,7 +35,7 @@ struct TargetListSidebar: View {
   }
 }
 
-#Preview {
+#Preview("With Targets") {
   @Previewable @State var selectedTarget: Target?
   @Previewable @State var showingTutorial = false
   let helper = PreviewHelper()
@@ -49,4 +49,19 @@ struct TargetListSidebar: View {
   }
   .modelContainer(helper.modelContainer)
   .onAppear { helper.createTarget() }
+}
+
+#Preview("Empty List") {
+  @Previewable @State var selectedTarget: Target?
+  @Previewable @State var showingTutorial = false
+  let helper = PreviewHelper()
+  NavigationSplitView {
+    TargetListSidebar(
+      selectedTarget: $selectedTarget,
+      showingTutorial: $showingTutorial
+    )
+  } detail: {
+    Text("Detail")
+  }
+  .modelContainer(helper.modelContainer)
 }

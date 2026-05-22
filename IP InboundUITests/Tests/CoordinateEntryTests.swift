@@ -194,30 +194,56 @@ final class CoordinateEntryTests: BaseTestCase {
     let returned = coordPage.tapAccept()
     XCTAssertTrue(returned.isDisplayed)
 
+    // Starting format is decimal degrees, which uses the degree symbol.
+    let degreeSymbol = "°"
     let label1 = returned.coordinatesLabel()
-
-    // Tap to cycle format
-    returned.tapCoordinatesToCycleFormat()
-    // Brief wait for UI update
-    Thread.sleep(forTimeInterval: 0.5)
-    let label2 = returned.coordinatesLabel()
-
-    // Tap again
-    returned.tapCoordinatesToCycleFormat()
-    Thread.sleep(forTimeInterval: 0.5)
-    let label3 = returned.coordinatesLabel()
-
-    // At least one of the subsequent labels should differ from the first
-    let changed = (label1 != label2) || (label2 != label3)
     XCTAssertTrue(
-      changed,
-      "Tapping coordinates should cycle format. Got: '\(label1)', '\(label2)', '\(label3)'"
+      label1.contains(degreeSymbol),
+      "Initial label should be decimal degrees but was: '\(label1)'"
+    )
+
+    // First tap cycles DD → UTM. Wait for the label to actually change rather
+    // than sleeping a fixed interval, then verify it advanced to a grid format
+    // (zone-based, no degree symbol).
+    returned.tapCoordinatesToCycleFormat()
+    let label2 = waitForCoordinatesLabelToChange(from: label1, on: returned)
+    XCTAssertNotEqual(label1, label2, "First tap should advance the coordinate format")
+    XCTAssertFalse(
+      label2.contains(degreeSymbol),
+      "After cycling to UTM the label should be a grid format but was: '\(label2)'"
+    )
+
+    // Second tap cycles UTM → MGRS, another distinct grid format.
+    returned.tapCoordinatesToCycleFormat()
+    let label3 = waitForCoordinatesLabelToChange(from: label2, on: returned)
+    XCTAssertNotEqual(label2, label3, "Second tap should advance the coordinate format")
+    XCTAssertFalse(
+      label3.contains(degreeSymbol),
+      "After cycling to MGRS the label should be a grid format but was: '\(label3)'"
     )
 
     navigateToListAndDelete("Cycle Test")
   }
 
   // MARK: - Helper
+
+  // Waits until the displayed coordinates label differs from `previous`
+  // (e.g. after a format-cycle tap) and returns the new value. Returns the
+  // last observed value if it never changes within the timeout.
+  @MainActor
+  private func waitForCoordinatesLabelToChange(
+    from previous: String,
+    on page: TargetSetupPage,
+    timeout: TimeInterval = 5
+  ) -> String {
+    let coords = app.buttons["targetCoordinates"]
+    let changed = XCTNSPredicateExpectation(
+      predicate: NSPredicate(format: "label != %@", previous),
+      object: coords
+    )
+    _ = XCTWaiter.wait(for: [changed], timeout: timeout)
+    return page.coordinatesLabel()
+  }
 
   @MainActor
   private func navigateToListAndDelete(_ name: String) {

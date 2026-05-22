@@ -1,11 +1,13 @@
 import SwiftUI
 
 struct NoLocationView: View {
+  private static let stackSpacing: CGFloat = 20
+
   var body: some View {
-    VStack(spacing: 20) {
+    VStack(spacing: Self.stackSpacing) {
       Image(systemName: "location.slash")
         .imageScale(.large)
-        .foregroundStyle(.blue)
+        .foregroundStyle(.secondary)
         .accessibilityHidden(true)
       Text("No location.")
         .font(.title)

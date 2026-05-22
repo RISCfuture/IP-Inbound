@@ -1,16 +1,27 @@
 import SwiftUI
 
 struct TOTSetupView: View {
+  private static let timeAdvanceNewMin = 30.0
+  private static let timeAdvancePastMin = 5.0
+  private static let contentSpacing = 20.0
+  private static let secondsPerMinute = 60.0
+
   @Bindable var target: Target
 
   @Environment(\.services)
   private var services
 
-  private let timeAdvanceNew = 30.0  // minutes after now, for new targets without TOTs
-  private let timeAdvanceEdit = 5.0  // minutes after now, for TOTs in the past
+  /// UI-test affordance: when the harness pins a past `UITEST_NOW` to exercise post-pass behavior,
+  /// the auto-bump in ``seedTimeOnTargetIfNeeded()`` would silently overwrite the seeded TOT. This
+  /// bypass is gated on both `isRunningUITests` and an explicit launch-env opt-in, so it is inert in
+  /// production and only available to the harness.
+  private var shouldBypassTimeOnTargetReset: Bool {
+    ProcessInfo.processInfo.isRunningUITests
+      && ProcessInfo.processInfo.environment["UITEST_BYPASS_TOT_RESET"] == "1"
+  }
 
   var body: some View {
-    VStack(spacing: 20) {
+    VStack(spacing: Self.contentSpacing) {
       TOTEntryView(
         timeOnTarget: target.timeOnTarget,
         targetCoordinate: target.coordinate,
@@ -27,11 +38,8 @@ struct TOTSetupView: View {
 
       HStack {
         NavigationLink(value: SetupFlowStep.IPSetup) {
-          HStack {
-            Image(systemName: "chevron.backward")
-              .accessibilityHidden(true)
-            Text("Define IP")
-          }
+          Label("Define IP", systemImage: "chevron.backward")
+            .labelStyle(.titleAndIcon)
         }.accessibilityIdentifier("defineIPButton")
         Spacer()
         NavigationLink(value: SetupFlowStep.fly) {
@@ -43,41 +51,36 @@ struct TOTSetupView: View {
         }.accessibilityIdentifier("flyButton")
       }.padding(.horizontal)
     }
-    .onAppear {
-      // UI-test affordance: when the harness pins a past `UITEST_NOW` to
-      // exercise post-pass behavior, the auto-bump below would silently
-      // overwrite the seeded TOT. The bypass is gated on both
-      // `isRunningUITests` and an explicit launch-env opt-in, so it is inert
-      // in production and only available to the harness.
-      if ProcessInfo.processInfo.isRunningUITests,
-        ProcessInfo.processInfo.environment["UITEST_BYPASS_TOT_RESET"] == "1"
-      {
-        return
-      }
-      // Set default time if not already set
-      if target.timeOnTarget == nil {
-        let defaultTime = services.clock.now.addingTimeInterval(60 * timeAdvanceNew)
-        var components = Calendar.current.dateComponents(
-          [.year, .month, .day, .hour, .minute],
-          from: defaultTime
-        )
-        components.second = 0
-        target.timeOnTarget = Calendar.current.date(from: components) ?? defaultTime
-      } else if let targetTime = target.timeOnTarget, targetTime < services.clock.now {
-        // If the saved time is in the past, update it
-        let updatedTime = services.clock.now.addingTimeInterval(60 * timeAdvanceEdit)
-        var components = Calendar.current.dateComponents(
-          [.year, .month, .day, .hour, .minute],
-          from: updatedTime
-        )
-        components.second = 0
-        target.timeOnTarget = Calendar.current.date(from: components) ?? updatedTime
-      }
+    .onAppear(perform: seedTimeOnTargetIfNeeded)
+  }
+
+  private func seedTimeOnTargetIfNeeded() {
+    guard !shouldBypassTimeOnTargetReset else { return }
+
+    if target.timeOnTarget == nil {
+      target.timeOnTarget = defaultTimeOnTarget(advanceMin: Self.timeAdvanceNewMin)
+    } else if let currentTime = target.timeOnTarget, currentTime < services.clock.now {
+      target.timeOnTarget = defaultTimeOnTarget(advanceMin: Self.timeAdvancePastMin)
     }
+  }
+
+  private func defaultTimeOnTarget(advanceMin: Double) -> Date {
+    let advanced = services.clock.now.addingTimeInterval(Self.secondsPerMinute * advanceMin)
+    return normalizedToMinute(advanced)
+  }
+
+  private func normalizedToMinute(_ date: Date) -> Date {
+    var components = Calendar.current.dateComponents(
+      [.year, .month, .day, .hour, .minute],
+      from: date
+    )
+    components.second = 0
+    return Calendar.current.date(from: components) ?? date
   }
 }
 
 #Preview {
   let helper = PreviewHelper()
   TOTSetupView(target: helper.target())
+    .modelContainer(helper.modelContainer)
 }

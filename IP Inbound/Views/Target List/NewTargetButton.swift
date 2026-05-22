@@ -23,7 +23,7 @@ struct NewTargetButton: View {
       Task { @MainActor in
         defer { isCreating = false }
         guard let coordinate = await resolvedCoordinate() else { return }
-        let target = Target(name: "New Target", coordinate: .init(coordinate))
+        let target = Target(name: String(localized: "New Target"), coordinate: .init(coordinate))
         modelContext.insert(target)
         selectedTarget = target
       }

@@ -8,6 +8,16 @@ struct TargetListItem: View {
   @Default(.TOTDisplayMode)
   private var displayMode
 
+  private var formattedTimeOnTarget: String? {
+    guard let timeOnTarget = target.timeOnTarget else { return nil }
+    switch displayMode {
+      case .local:
+        return timeOnTarget.formatted(localTOTFormatStyle)
+      case .zulu:
+        return timeOnTarget.formatted(zuluTOTFormatStyle)
+    }
+  }
+
   var body: some View {
     HStack {
       VStack(alignment: .leading) {
@@ -21,33 +31,57 @@ struct TargetListItem: View {
 
       Spacer()
 
-      if let timeOnTarget = target.timeOnTarget {
-        switch displayMode {
-          case .local:
-            Text(timeOnTarget, format: localTOTFormatStyle)
-              .foregroundStyle(.secondary)
-              .accessibilityIdentifier("timeOnTarget")
-          case .zulu:
-            Text(timeOnTarget, format: zuluTOTFormatStyle)
-              .foregroundStyle(.secondary)
-              .accessibilityIdentifier("timeOnTarget")
-        }
+      if let formattedTimeOnTarget {
+        Text(formattedTimeOnTarget)
+          .foregroundStyle(.secondary)
+          .accessibilityIdentifier("timeOnTarget")
       }
 
       Image(systemName: "chevron.forward")
-        .foregroundStyle(Color.accentColor)
-        .accessibilityLabel("Edit Target")
+        .foregroundStyle(.secondary)
+        .accessibilityLabel(Text("Edit Target"))
     }.onTapGesture { selectedTarget = target }
       .accessibilityIdentifier("targetListItem")
       .accessibilityAddTraits(.isLink)
   }
 }
 
-#Preview {
+#Preview("With TOT") {
   @Previewable @State var selectedTarget: Target?
   let helper = PreviewHelper()
 
   List {
     TargetListItem(target: helper.target(), selectedTarget: $selectedTarget)
   }
+}
+
+#Preview("No TOT") {
+  @Previewable @State var selectedTarget: Target?
+  let helper = PreviewHelper()
+  let target = helper.target()
+
+  List {
+    TargetListItem(target: target, selectedTarget: $selectedTarget)
+  }
+  .onAppear { target.timeOnTarget = nil }
+}
+
+#Preview("Local Time") {
+  @Previewable @State var selectedTarget: Target?
+  let helper = PreviewHelper()
+
+  List {
+    TargetListItem(target: helper.target(), selectedTarget: $selectedTarget)
+  }
+  .onAppear { Defaults[.TOTDisplayMode] = .local }
+}
+
+#Preview("Zulu Time") {
+  @Previewable @State var selectedTarget: Target?
+  let helper = PreviewHelper()
+
+  List {
+    TargetListItem(target: helper.target(), selectedTarget: $selectedTarget)
+  }
+  .onAppear { Defaults[.TOTDisplayMode] = .zulu }
 }

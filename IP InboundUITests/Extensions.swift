@@ -28,7 +28,7 @@ extension XCUIElement {
     return self.swipe(to: element) ? element : nil
   }
 
-  // Use the collection view's scrollToItem method via coordinate-based scrolling
+  // Coordinate-drag the scroll view until the element becomes visible.
   private func scroll(to element: XCUIElement) -> Bool {
     var attempts = 0
 

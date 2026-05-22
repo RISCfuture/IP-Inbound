@@ -1,270 +1,183 @@
 import Foundation
+import Numerics
 import Testing
 
 @testable import IP_Inbound
 
-@Suite(.disabled("Streams (non-deterministic)"))
+@Suite("Streams")
 struct StreamsTests {
 
   @Test("MulticastStream - can broadcast to multiple consumers")
-  func testMulticastStreamBroadcast() async throws {
-    // Set up a simple input stream
+  func multicastStreamBroadcast() async throws {
     let (stream, continuation) = AsyncThrowingStream<Int, Error>.makeStream()
-
-    // Create the multicast stream
     let multicastStream = MulticastStream(stream: stream)
 
-    // Set up two consumer streams
     let consumer1 = await multicastStream.consume()
     let consumer2 = await multicastStream.consume()
 
-    // Use actors to collect values safely across tasks
-    actor ResultsCollector {
-      var values: [Int] = []
+    let expected = [1, 2, 3]
 
-      func append(_ value: Int) {
-        values.append(value)
-      }
+    let task1 = Task { try await collect(expected.count, from: consumer1) }
+    let task2 = Task { try await collect(expected.count, from: consumer2) }
 
-      func getValues() -> [Int] {
-        values
-      }
-    }
+    for value in expected { continuation.yield(value) }
 
-    let collector1 = ResultsCollector()
-    let collector2 = ResultsCollector()
+    let results1 = try await task1.value
+    let results2 = try await task2.value
 
-    let task1 = Task {
-      for try await value in consumer1 {
-        await collector1.append(value)
-        if value == 3 { break }  // Stop after receiving 3
-      }
-    }
+    #expect(results1 == expected)
+    #expect(results2 == expected)
 
-    let task2 = Task {
-      for try await value in consumer2 {
-        await collector2.append(value)
-        if value == 3 { break }  // Stop after receiving 3
-      }
-    }
-
-    // Send values through the original stream
-    continuation.yield(1)
-    continuation.yield(2)
-    continuation.yield(3)
-
-    // Wait for tasks to complete
-    _ = await task1.result
-    _ = await task2.result
-
-    // Check that both consumers received the values
-    let results1 = await collector1.getValues()
-    let results2 = await collector2.getValues()
-    #expect(results1 == [1, 2, 3])
-    #expect(results2 == [1, 2, 3])
-
-    // Clean up
     await multicastStream.stop()
     continuation.finish()
   }
 
   @Test("MulticastStream - handles errors correctly")
-  func testMulticastStreamErrors() async throws {
-    // Define a test error
+  func multicastStreamErrors() async throws {
     enum TestError: Error {
       case testCase
     }
 
-    // Set up a stream that will throw an error
     let (stream, continuation) = AsyncThrowingStream<Int, Error>.makeStream()
-
-    // Create the multicast stream
     let multicastStream = MulticastStream(stream: stream)
-
-    // Set up a consumer stream
     let consumer = await multicastStream.consume()
 
-    // Use an actor to store the error safely
-    actor ErrorCollector {
-      var error: Error?
-
-      func setError(_ error: Error) {
-        self.error = error
-      }
-
-      func getError() -> Error? {
-        error
-      }
-    }
-
-    let errorCollector = ErrorCollector()
-
-    let task = Task {
+    let task = Task { () -> Error? in
       do {
         for try await value in consumer where value == 2 {
           continuation.finish(throwing: TestError.testCase)
         }
+        return nil
       } catch {
-        await errorCollector.setError(error)
+        return error
       }
     }
 
-    // Send values through the original stream
     continuation.yield(1)
     continuation.yield(2)
 
-    // Wait a moment for the error to propagate
-    try await Task.sleep(for: .milliseconds(100))
-
-    // Wait for task to complete
-    _ = await task.result
-
-    // Check that the consumer received the error
-    let receivedError = await errorCollector.getError()
+    let receivedError = await task.value
     #expect(receivedError is TestError)
 
-    // Clean up
     await multicastStream.stop()
   }
 
   @Test("bootstrap - prepends initial value to stream")
-  func testBootstrap() async throws {
-    // Set up a simple input stream
+  func bootstrapPrependsInitialValue() async throws {
     let (stream, continuation) = AsyncThrowingStream<Int, Error>.makeStream()
-
-    // Create the bootstrapped stream with initial value 0
     let bootstrappedStream = bootstrap(stream: stream, initial: 0)
 
-    // Use an actor to collect values safely
-    actor ResultsCollector {
-      var values: [Int] = []
+    let expected = [0, 1, 2, 3]
 
-      func append(_ value: Int) {
-        values.append(value)
-      }
+    let task = Task { try await collect(expected.count, from: bootstrappedStream) }
 
-      func getValues() -> [Int] {
-        values
-      }
-    }
-
-    let collector = ResultsCollector()
-
-    let task = Task {
-      for try await value in bootstrappedStream {
-        await collector.append(value)
-        if value == 3 { break }  // Stop after receiving 3
-      }
-    }
-
-    // Send values through the original stream (after a small delay)
-    try await Task.sleep(for: .milliseconds(100))
     continuation.yield(1)
     continuation.yield(2)
     continuation.yield(3)
 
-    // Wait for task to complete
-    _ = await task.result
+    let results = try await task.value
+    #expect(results == expected)
 
-    // Check that the bootstrapped stream received the initial value followed by the stream values
-    let results = await collector.getValues()
-    #expect(results == [0, 1, 2, 3])
-
-    // Clean up
     continuation.finish()
   }
 
-  @Test("extrapolate - extrapolates values at specified intervals")
-  func testExtrapolate() async throws {
-    // Set up a simple input stream with timestamps
-    let (stream, continuation) = AsyncThrowingStream<TestEvent, Error>.makeStream()
+  @Test("extrapolate - extrapolates values driven by an injected clock")
+  func extrapolateEmitsClockDrivenValues() async throws {
+    let interval = 0.2
+    let maxTime = 1.0
+    let valueRatePerSecond = 10.0
 
-    // Create the extrapolated stream with a maxTime of 1 second and interval of 0.2 seconds
+    // A deterministic clock that advances by a fixed step on every `now()` call. Because
+    // the step is positive and monotonic, `extrapolate`'s `now() - start < maxTime` loop
+    // condition is guaranteed to fail after a bounded number of iterations, so the number
+    // of emitted events is deterministic — it does not depend on wall-clock pacing of the
+    // production `Task.sleep`.
+    let clock = SteppingClock(start: Date(timeIntervalSinceReferenceDate: 0), step: interval)
+    let dateProvider = DateProvider(now: { clock.advance() }, offsetFromRealTimeSeconds: 0)
+
+    let (stream, continuation) = AsyncThrowingStream<TestEvent, Error>.makeStream()
     let extrapolatedStream = extrapolate(
       stream: stream,
-      maxTime: 1.0,
-      interval: 0.2
+      maxTime: maxTime,
+      interval: interval,
+      dateProvider: dateProvider
     ) { event, timeOffset in
-      // Simple extrapolation logic - increment value by timeOffset
       TestEvent(
-        value: event.value + timeOffset * 10,  // Increment by 10 per second
+        value: event.value + timeOffset * valueRatePerSecond,
         timestamp: event.timestamp.addingTimeInterval(timeOffset)
       )
     }
 
-    // Use an actor to collect values safely
-    actor EventCollector {
-      var events: [TestEvent] = []
+    let originalTimestamp = Date(timeIntervalSinceReferenceDate: 1000)
+    let expectedCount = 4  // original element + 3 clock-bounded extrapolations
 
-      func append(_ event: TestEvent) {
-        events.append(event)
-      }
+    let task = Task { try await collect(expectedCount, from: extrapolatedStream) }
+    continuation.yield(TestEvent(value: 0, timestamp: originalTimestamp))
 
-      func getEvents() -> [TestEvent] {
-        events
-      }
-
-      func count() -> Int {
-        events.count
-      }
-    }
-
-    let collector = EventCollector()
-
-    let task = Task {
-      for try await value in extrapolatedStream {
-        await collector.append(value)
-        let count = await collector.count()
-        if count == 6 {
-          break
-        }
-      }
-    }
-
-    // Send a value through the original stream
-    let startTime = Date()
-    continuation.yield(TestEvent(value: 0, timestamp: startTime))
-
-    // Wait for the task to collect all values with timeout
-    let timeoutTask = Task {
-      try await Task.sleep(for: .seconds(2))
-      task.cancel()
-    }
-
-    _ = await task.result
-    timeoutTask.cancel()
-
-    // Clean up
+    let results = try await task.value
     continuation.finish()
 
-    // Get the collected results
-    let results = await collector.getEvents()
+    #expect(results.count == expectedCount)
+    #expect(results[0].value == 0)
+    #expect(results[0].timestamp == originalTimestamp)
 
-    // Check that we got exactly 6 values (original + 5 extrapolated)
-    #expect(results.count == 6)
-    #expect(results[0].value == 0)  // Original value
+    // Each extrapolated value must satisfy the extrapolation formula relative to its own
+    // (clock-derived) timestamp. This is an internal-consistency invariant that holds
+    // regardless of how many `now()` calls the production loop makes per iteration.
+    for event in results.dropFirst() {
+      let offset = event.timestamp.timeIntervalSince(originalTimestamp)
+      #expect(offset > 0)
+      #expect(event.value.isApproximatelyEqual(to: offset * valueRatePerSecond))
+    }
 
-    // Check the extrapolated values match the formula with tolerance
-    for i in 1..<results.count {
-      let actualOffset = results[i].timestamp.timeIntervalSince(startTime)
-      let expectedValue = actualOffset * 10
+    // Offsets must be strictly increasing, proving the clock drives each successive event.
+    let offsets = results.dropFirst().map { $0.timestamp.timeIntervalSince(originalTimestamp) }
+    #expect(offsets == offsets.sorted())
+    #expect(Set(offsets).count == offsets.count)
+  }
 
-      // Value should match our extrapolation formula (based on actual elapsed time)
-      #expect(results[i].value.isApproximatelyEqual(to: expectedValue, relativeTolerance: 0.05))
+  // MARK: Helpers
 
-      // Timestamp should be close to expected intervals (within 50ms tolerance)
-      let expectedOffset = Double(i) * 0.2
-      #expect(actualOffset.isApproximatelyEqual(to: expectedOffset, absoluteTolerance: 0.05))
+  // Collects exactly `count` elements from `stream`, returning once that many have arrived.
+  private func collect<S: AsyncSequence>(
+    _ count: Int,
+    from stream: S
+  ) async throws -> [S.Element] {
+    var collected = [S.Element]()
+    collected.reserveCapacity(count)
+    for try await element in stream {
+      collected.append(element)
+      if collected.count == count { break }
+    }
+    return collected
+  }
+
+  // MARK: Subtypes
+
+  // A monotonic, deterministic clock for driving time-based streams in tests. Each call to
+  // ``advance()`` returns the next instant, `step` seconds after the previous one.
+  private final class SteppingClock: @unchecked Sendable {
+    private let lock = NSLock()
+    private let start: Date
+    private let step: TimeInterval
+    private var tick = 0
+
+    init(start: Date, step: TimeInterval) {
+      self.start = start
+      self.step = step
+    }
+
+    func advance() -> Date {
+      lock.lock()
+      defer { lock.unlock() }
+      let now = start.addingTimeInterval(Double(tick) * step)
+      tick += 1
+      return now
     }
   }
 
-  // A helper struct for unit tests
   private struct TestEvent: Sendable, Equatable {
     var value: Double
     var timestamp: Date
-
-    static func == (lhs: Self, rhs: Self) -> Bool {
-      lhs.value == rhs.value && lhs.timestamp == rhs.timestamp
-    }
   }
 }

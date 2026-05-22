@@ -35,7 +35,7 @@ final class HarnessFlythroughTests: BaseTestCase {
 
     let list = TargetListPage(app: app)
     XCTAssertTrue(list.isDisplayed, "Target list should appear with the seeded target")
-    let flyPage = list.selectTarget(named: "Flythrough")
+    let setupPage = list.selectTarget(named: "Flythrough")
 
     // `Target.isConfigured == true` should trigger skip-to-fly. If it doesn't
     // (SwiftUI sometimes preserves @State across selection), fall back to a
@@ -49,9 +49,7 @@ final class HarnessFlythroughTests: BaseTestCase {
     let movingLabel = app.staticTexts.matching(movingGuidance).firstMatch
     if !movingLabel.waitForExistence(timeout: 12) {
       // Fallback: tap through configured pages to Fly (no keyboard input).
-      _ = flyPage  // not yet on Fly; flyPage from list.selectTarget is a TargetSetupPage proxy
-      let setup = TargetSetupPage(app: app)
-      let ipPage = setup.tapDefineIP()
+      let ipPage = setupPage.tapDefineIP()
       let totPage = ipPage.tapTimeOnTarget()
       totPage.tapFly()
       XCTAssertTrue(
@@ -66,21 +64,23 @@ final class HarnessFlythroughTests: BaseTestCase {
     // realistic guidance (course+speed inject correctly).
     fly.captureScreenshot(name: "Flythrough-MovingGuidance", test: self)
 
-    // Hold ~6 s so the scripted path advances toward/over the target, then
-    // capture the timing readout — deterministic because now + path + TOT
-    // are all pinned at launch.
-    Thread.sleep(forTimeInterval: 6)
-    fly.captureScreenshot(name: "Flythrough-TimingReadout", test: self)
-
+    // Wait for the scripted path to advance toward/over the target so the
+    // deterministic seconds-early/late readout renders, rather than sleeping a
+    // fixed interval. The readout's appearance is the path-advanced signal —
+    // deterministic because now + path + TOT are all pinned at launch.
     let timingPredicate = NSPredicate(
       format: "label MATCHES %@",
       "(?i).*\\d+ seconds? (early|late).*"
     )
     let timingText = app.staticTexts.matching(timingPredicate).firstMatch
     XCTAssertTrue(
-      timingText.waitForExistence(timeout: 5),
+      timingText.waitForExistence(timeout: 12),
       "Deterministic seconds-early/late timing readout should be rendered from injected clock"
     )
+
+    // Capture the timing readout now that the path has advanced and it is
+    // on-screen.
+    fly.captureScreenshot(name: "Flythrough-TimingReadout", test: self)
   }
 }
 

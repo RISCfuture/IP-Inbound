@@ -71,9 +71,9 @@ private struct FallbackLocationProvider: LocationProviding {
 
 extension EnvironmentValues {
   /// `@MainActor` accessor with a lazily-built system default for previews and
-  /// any view rendered before `@main` injects the real aggregate. Mirrors the
-  /// crew-ios optional-key + MainActor-getter pattern (an `EnvironmentKey`
-  /// default cannot itself be `@MainActor`-isolated).
+  /// any view rendered before `@main` injects the real aggregate. Uses the
+  /// optional-key + `@MainActor` getter pattern because an `EnvironmentKey`
+  /// default cannot itself be `@MainActor`-isolated.
   @MainActor var services: AppServices {
     get { self[AppServicesKey.self] ?? defaultAppServices }
     set { self[AppServicesKey.self] = newValue }

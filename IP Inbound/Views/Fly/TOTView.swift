@@ -6,6 +6,11 @@ struct TOTView: View {
   /// required ground speed; clamping keeps the readout on-screen and away from formatter overflow.
   private static let maxRequiredGroundSpeed = Measurement(value: 999, unit: UnitSpeed.knots)
 
+  private static let
+    readoutSpacing = 6.0,
+    readoutRowSpacing = 2.0,
+    timeReadoutSpacing = 4.0
+
   var fromTo: FromToMath
   var timeOnTarget: Date?
   var showSpeed = true
@@ -46,12 +51,12 @@ struct TOTView: View {
   // Each readout (speed, distance, TOT) stays intact; the row wraps a whole readout to the next
   // line when it can't fit, and the dot separators show only between readouts on the same line.
   var body: some View {
-    FlowLayout(spacing: 6, rowSpacing: 2) {
+    FlowLayout(spacing: Self.readoutSpacing, rowSpacing: Self.readoutRowSpacing) {
       if showSpeed {
-        speedButton
+        speedReadout
         dotSeparator
       }
-      distanceButton
+      distanceReadout
       if let timeOnTarget {
         dotSeparator
         timeReadout(timeOnTarget)
@@ -65,7 +70,7 @@ struct TOTView: View {
     Text("•").flowSeparator().accessibilityHidden(true)
   }
 
-  private var speedButton: some View {
+  private var speedReadout: some View {
     speedText
       .onTapGesture { cycleUnits() }
       .accessibilityAddTraits(.isButton)
@@ -73,7 +78,7 @@ struct TOTView: View {
       .accessibilityIdentifier("flySpeedDisplay")
   }
 
-  private var distanceButton: some View {
+  private var distanceReadout: some View {
     Text(fromTo.distance.converted(to: distanceDefault.distanceUnit), format: distanceFormatStyle)
       .onTapGesture { cycleUnits() }
       .accessibilityAddTraits(.isButton)
@@ -93,7 +98,7 @@ struct TOTView: View {
 
   @ViewBuilder
   private func timeReadout(_ timeOnTarget: Date) -> some View {
-    HStack(alignment: .firstTextBaseline, spacing: 4) {
+    HStack(alignment: .firstTextBaseline, spacing: Self.timeReadoutSpacing) {
       switch displayMode {
         case .local:
           Text(timeOnTarget, format: localTOTFormatStyle)

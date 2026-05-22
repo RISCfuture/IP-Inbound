@@ -19,30 +19,62 @@ private struct OpenChevron: Shape {
 }
 
 struct DirectPointer: View {
+  private static let chevronLineWidth: CGFloat = 3,
+    chevronMiterLimit: CGFloat = 4
+  private static let chevronWidth: CGFloat = 40,
+    chevronHeight: CGFloat = 25
+  private static let labelFontSize: CGFloat = 12
+  private static let labelHorizontalPadding: CGFloat = 4,
+    labelCornerRadius: CGFloat = 4,
+    labelVerticalOffset: CGFloat = 10
+
   let label: String
   let color: Color
+  let accessibilityDescription: LocalizedStringResource
 
   var body: some View {
     ZStack {
       OpenChevron()
-        .stroke(color, style: .init(lineWidth: 3, lineCap: .round, lineJoin: .miter, miterLimit: 4))
-        .frame(width: 40, height: 25)
+        .stroke(
+          color,
+          style: .init(
+            lineWidth: Self.chevronLineWidth,
+            lineCap: .round,
+            lineJoin: .miter,
+            miterLimit: Self.chevronMiterLimit
+          )
+        )
+        .frame(width: Self.chevronWidth, height: Self.chevronHeight)
 
       Text(label)
-        .font(.system(size: 12, weight: .black))
+        .font(.system(size: Self.labelFontSize, weight: .black))
         .foregroundColor(color)
-        .padding(.horizontal, 4)
-        .background(RoundedRectangle(cornerRadius: 4).fill(Color(UIColor.systemBackground)))
-        .offset(y: 10)
+        .padding(.horizontal, Self.labelHorizontalPadding)
+        .background(
+          RoundedRectangle(cornerRadius: Self.labelCornerRadius).fill(
+            Color(UIColor.systemBackground)
+          )
+        )
+        .offset(y: Self.labelVerticalOffset)
     }
+    .accessibilityElement(children: .ignore)
+    .accessibilityLabel(Text(accessibilityDescription))
   }
 }
 
 #Preview {
   VStack {
-    DirectPointer(label: "IP", color: .yellow)
-      .padding()
-    DirectPointer(label: "T", color: .red)
-      .padding()
+    DirectPointer(
+      label: "IP",
+      color: .yellow,
+      accessibilityDescription: "Direction to initial point"
+    )
+    .padding()
+    DirectPointer(
+      label: "T",
+      color: .red,
+      accessibilityDescription: "Direction to target"
+    )
+    .padding()
   }
 }

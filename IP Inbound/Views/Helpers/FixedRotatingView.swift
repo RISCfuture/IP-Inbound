@@ -1,7 +1,9 @@
 import SwiftUI
 
+/// Animates rotation to a target angle while avoiding the jump that occurs when interpolated values
+/// cross the 0°/360° boundary, by always turning through the shortest direction.
 struct FixedRotatingView<Content: View>: View {
-  // Fixes rotation errors caused by interpolating values that cross 0°/360°
+  private static var rotationDuration: Double { 0.3 }
 
   let targetAngle: Double
   let content: (Double) -> Content
@@ -16,10 +18,27 @@ struct FixedRotatingView<Content: View>: View {
       .onChange(of: targetAngle) {
         let normalizedTarget = targetAngle.normalizedAngle
         let delta = currentAngle.shortestAngle(to: normalizedTarget)
-        withAnimation(.linear(duration: 0.3)) {
+        withAnimation(.linear(duration: Self.rotationDuration)) {
           currentAngle += delta
         }
       }
+  }
+}
+
+#Preview {
+  @Previewable @State var targetAngle = 0.0
+
+  FixedRotatingView(targetAngle: targetAngle) { angle in
+    Image(systemName: "chevron.up")
+      .font(.system(size: 64))
+      .rotationEffect(.degrees(angle))
+      .accessibilityHidden(true)
+  }
+  .task {
+    while !Task.isCancelled {
+      try? await Task.sleep(for: .seconds(1))
+      targetAngle += 90
+    }
   }
 }
 

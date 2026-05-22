@@ -92,11 +92,15 @@ final class TOTEntryTests: BaseTestCase {
     // Read secondary time string
     let zuluSecondary = totPage.secondaryTimeString()
 
-    // Switch to local
+    // Switch to local and poll until the secondary string recomputes to a value
+    // that differs from the Zulu reading rather than sleeping a fixed interval.
     totPage.selectLocalTime()
-    Thread.sleep(forTimeInterval: 0.5)
-
-    let localSecondary = totPage.secondaryTimeString()
+    var localSecondary = totPage.secondaryTimeString()
+    let deadline = Date().addingTimeInterval(5)
+    while localSecondary == zuluSecondary, Date() < deadline {
+      _ = XCTWaiter.wait(for: [XCTestExpectation(description: "poll")], timeout: 0.1)
+      localSecondary = totPage.secondaryTimeString()
+    }
 
     // The secondary string should change (different timezone abbreviation)
     XCTAssertNotEqual(

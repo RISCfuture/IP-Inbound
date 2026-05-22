@@ -22,12 +22,12 @@ actor MulticastStream<T: Sendable, E: Error> {
             continuation.yield(element)
           }
         }
-      } catch let error as E {
+      } catch {
+        // Forward any failure to consumers (whose continuations are typed `any Error`) rather than
+        // trapping on an error whose concrete type doesn't match `E`.
         for continuation in consumers.values {
           continuation.finish(throwing: error)
         }
-      } catch {
-        fatalError(error.localizedDescription)
       }
     }
   }

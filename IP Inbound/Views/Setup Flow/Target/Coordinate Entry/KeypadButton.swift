@@ -1,34 +1,42 @@
 import SwiftUI
 
-/// A consistent button style for all keypad views
+/// A consistent button style for all keypad views.
 struct KeypadButton: View {
+  /// Apple's minimum recommended touch-target size, shared by all keypad layouts.
+  static let minTouchTarget: CGFloat = 44
+
+  private static let cornerRadius: CGFloat = 8
+  private static let labelFontSize: CGFloat = 24
+  private static let imageFontSize: CGFloat = 20
+
   let label: String?
   let systemImage: String?
   let accessibilityLabel: String?
   let isActive: Bool
   let isBackspace: Bool
+  let accessibilityIdentifier: String
   let action: () -> Void
 
   var body: some View {
     Button(action: action) {
       ZStack {
-        RoundedRectangle(cornerRadius: 8)
+        RoundedRectangle(cornerRadius: Self.cornerRadius)
           .fill(backgroundColor)
 
         if let label {
           Text(label)
-            .font(.system(size: 24, weight: .medium))
-            .foregroundColor(foregroundColor)
+            .font(.system(size: Self.labelFontSize, weight: .medium))
+            .foregroundStyle(foregroundStyle)
         } else if let systemImage, let accessibilityLabel {
           Image(systemName: systemImage)
-            .font(.system(size: 20))
-            .foregroundColor(foregroundColor)
+            .font(.system(size: Self.imageFontSize))
+            .foregroundStyle(foregroundStyle)
             .accessibilityLabel(accessibilityLabel)
         }
       }
     }
     .disabled(!isActive && !isBackspace)
-    .accessibilityIdentifier("keypad-\((label ?? accessibilityLabel)!)")
+    .accessibilityIdentifier(accessibilityIdentifier)
   }
 
   private var backgroundColor: Color {
@@ -41,14 +49,14 @@ struct KeypadButton: View {
     return Color.gray.opacity(0.3)
   }
 
-  private var foregroundColor: Color {
+  private var foregroundStyle: Color {
     if isBackspace {
       return Color.accentColor
     }
     if isActive {
-      return .white
+      return Color(.systemBackground)
     }
-    return .gray
+    return Color.gray
   }
 
   init(label: String, isActive: Bool = true, action: @escaping () -> Void) {
@@ -57,6 +65,7 @@ struct KeypadButton: View {
     self.accessibilityLabel = nil
     self.isActive = isActive
     self.isBackspace = false
+    self.accessibilityIdentifier = "keypad-\(label)"
     self.action = action
   }
 
@@ -71,23 +80,8 @@ struct KeypadButton: View {
     self.accessibilityLabel = accessibilityLabel
     self.isActive = true
     self.isBackspace = isBackspace
+    self.accessibilityIdentifier = "keypad-\(accessibilityLabel)"
     self.action = action
-  }
-}
-
-/// A grid-based keypad layout
-struct KeypadGrid<Content: View>: View {
-  let content: Content
-
-  var body: some View {
-    GeometryReader { _ in
-      content
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-  }
-
-  init(@ViewBuilder content: () -> Content) {
-    self.content = content()
   }
 }
 
