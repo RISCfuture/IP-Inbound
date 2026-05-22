@@ -126,8 +126,8 @@ struct FlyView: View {
 
       switch guidance {
         case .toIPWithSpeedGuidance:
-          if let fromTo = math.pposToIP, let timeOnTarget = target.timeOnTarget {
-            TimingView(timeOnTarget: timeOnTarget, fromTo: fromTo, onTimeDeltaTOT: 30)
+          if let fromTo = math.pposToIP, let desiredTimeOverIP = target.desiredTimeOverIP {
+            TimingView(timeOnTarget: desiredTimeOverIP, fromTo: fromTo, onTimeDeltaTOT: 30)
           }
         case .toIPWithCountdown:
           if let fromTo = math.pposToIP, let desiredTimeOverIP = target.desiredTimeOverIP {
@@ -180,25 +180,13 @@ struct FlyView: View {
   }
 }
 
-#Preview("On Ground - Portrait") {
+#Preview("On Ground") {
   let helper = PreviewHelper()
   FlyView(target: helper.target(minutesFromNow: 10))
     .environment(\.previewLocation, helper.groundEvent)
 }
 
-#Preview("On Ground - Landscape", traits: .landscapeLeft) {
-  let helper = PreviewHelper()
-  FlyView(target: helper.target(minutesFromNow: 10))
-    .environment(\.previewLocation, helper.groundEvent)
-}
-
-#Preview("Pre-IP, Early - Portrait") {
-  let helper = PreviewHelper()
-  FlyView(target: helper.target(minutesFromNow: 10))
-    .environment(\.previewLocation, helper.preIPEvent)
-}
-
-#Preview("Pre-IP, Early - Landscape", traits: .landscapeLeft) {
+#Preview("Pre-IP, Early") {
   let helper = PreviewHelper()
   FlyView(target: helper.target(minutesFromNow: 10))
     .environment(\.previewLocation, helper.preIPEvent)

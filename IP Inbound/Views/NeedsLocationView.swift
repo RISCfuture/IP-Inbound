@@ -15,10 +15,12 @@ struct NeedsLocationView<Content: View>: View {
 
   @State private var event: LocationEvent?
 
+  private var resolvedEvent: LocationEvent? { previewLocation ?? event }
+
   var body: some View {
     Group {
-      if let event, let location = previewLocation?.location ?? event.location {
-        content(location, event)
+      if let resolvedEvent, let location = resolvedEvent.location {
+        content(location, resolvedEvent)
       } else {
         NoLocationView()
       }

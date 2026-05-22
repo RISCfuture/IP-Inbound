@@ -13,15 +13,18 @@ struct IPTargetMath: Equatable {
   let target: Target
   let now: Date
 
+  /// Timing toward the IP. Because the destination is the IP, the run-to time reference is the
+  /// desired IP-crossing time (`desiredTimeOverIP`) — not the target's time-on-target — so
+  /// early/late and required-ground-speed read against when the aircraft should cross the IP.
   var pposToIP: FromToMath? {
-    guard let timeOnTarget = target.timeOnTarget else { return nil }
+    guard let desiredTimeOverIP = target.desiredTimeOverIP else { return nil }
     return .init(
       from: coordinate,
       to: target.IPCoordinate,
       speed: speed,
       track: course,
       targetSpeed: target.targetGroundSpeedMeasurement,
-      timeOnTarget: timeOnTarget,
+      timeOnTarget: desiredTimeOverIP,
       declination: declination,
       now: now
     )

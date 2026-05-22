@@ -95,6 +95,42 @@ struct IPTargetMathTests {
     #expect(deltaTime.isApproximatelyEqual(to: -30 * 60, relativeTolerance: 0.01))
   }
 
+  @Test("pposToIP timing references the desired IP-crossing time, not the target TOT")
+  func testPposToIPTimingReferencesDesiredIPTime() throws {
+    let target = Target(
+      name: "Test Target",
+      coordinate: Coordinate(latitude: 38.0, longitude: -122.0)
+    )
+    target.offsetBearingIsTrue = true
+    target.offsetBearing = 180
+    target.offsetDistance = 30
+    target.timeOnTarget = now.addingTimeInterval(60 * 60)  // 1 hour from now
+
+    let position = Coordinate(latitude: 37.0, longitude: -122.0)  // 30NM south of IP
+    let ipTargetMath = IPTargetMath(
+      coordinate: position,
+      speed: .init(value: 120, unit: .knots),
+      course: .init(angle: 0, reference: .true),
+      target: target,
+      now: now
+    )
+
+    let fromTo = try #require(ipTargetMath.pposToIP)
+    let desiredTimeOverIP = try #require(target.desiredTimeOverIP)
+
+    // Early/late reads against the desired IP-crossing time: 30 min early to the IP, not the
+    // 45 min early it would read against the target TOT.
+    #expect(fromTo.timeOnTarget == desiredTimeOverIP)
+    #expect(fromTo.deltaTOT.isApproximatelyEqual(to: -30 * 60, relativeTolerance: 0.01))
+
+    // Required ground speed makes the IP time (30NM in 45 min = 40 kts), not the TOT (30 kts).
+    let requiredGroundSpeed = try #require(fromTo.requiredGroundSpeed)
+    #expect(
+      requiredGroundSpeed.converted(to: .knots).value
+        .isApproximatelyEqual(to: 40, relativeTolerance: 0.01)
+    )
+  }
+
   // MARK: - IP Sequencing Buffer
 
   /// Builds a target whose run-in course (IP→target) points due north (true) with the IP roughly

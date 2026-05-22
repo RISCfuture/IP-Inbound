@@ -18,9 +18,11 @@ struct RequiresLocation<Content: View>: View {
 
   @State private var hasLocation = false
 
+  private var locationPresent: Bool { hasLocation || previewLocation?.location != nil }
+
   var body: some View {
     Group {
-      if hasLocation {
+      if locationPresent {
         content()
       } else {
         NoLocationView()
