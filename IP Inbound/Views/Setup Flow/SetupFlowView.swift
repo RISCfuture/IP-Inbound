@@ -41,27 +41,18 @@ struct SetupFlowView: View {
           }
         }
     }
-    .onAppear {
-      // Jump straight to the fly view when entering — or re-entering — a target that has already
-      // been configured (selected from the list, or chosen via the post-pass screen's “Fly next
-      // target”). Attached to the `NavigationStack` rather than its root content so it fires on flow
-      // entry, not each time the user navigates back to the root within the flow — which would
-      // otherwise pull them out of the setup screens while reconfiguring.
-      if target.isConfigured && path.last != .fly {
-        path = [.fly]
-      }
-    }
   }
 
   init(
     target: Target,
+    startAtFly: Bool = false,
     onSelectTarget: @escaping (Target) -> Void = { _ in },
     onChooseTarget: @escaping () -> Void = {}
   ) {
     self.target = target
     self.onSelectTarget = onSelectTarget
     self.onChooseTarget = onChooseTarget
-    _path = State(initialValue: target.isConfigured ? [.fly] : [.targetSetup])
+    _path = State(initialValue: startAtFly ? [.fly] : [.targetSetup])
   }
 }
 

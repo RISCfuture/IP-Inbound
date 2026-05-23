@@ -140,17 +140,17 @@ final class NavigationFlowTests: BaseTestCase {
 
   // MARK: - Test 26
 
-  // Strictly verifies the skip-to-fly contract: re-selecting an already-configured target from the
-  // list lands directly on the Fly screen, bypassing the setup flow (no manual-navigation
-  // fallback). If skip-to-fly silently regresses, this test must fail.
+  // Verifies the post-auto-advance contract: re-selecting an already-configured target from the list
+  // lands on the setup flow (Define Target), not the fly view. Auto-advance to fly was removed; only
+  // the post-pass “Fly <target>” shortcut jumps straight to fly.
   @MainActor
-  func testConfiguredTargetSkipsToFly() throws {
+  func testConfiguredTargetLandsOnSetup() throws {
     try skipOniOS18()
     launchApp()
     let list = TargetListPage(app: app)
 
     // Fully configure target
-    let setup = list.createTarget(named: "SkipToFly")
+    let setup = list.createTarget(named: "ConfiguredSetup")
 
     let ipPage = setup.tapDefineIP()
     ipPage.enterBearing("090")
@@ -172,21 +172,23 @@ final class NavigationFlowTests: BaseTestCase {
     // Re-select the configured target from the list.
     let listPage = TargetListPage(app: app)
     XCTAssertTrue(listPage.isDisplayed)
-    listPage.selectTarget(named: "SkipToFly")
+    listPage.selectTarget(named: "ConfiguredSetup")
 
-    // STRICT: a configured target skips straight to Fly, bypassing the setup flow.
+    // A configured target re-selected from the list lands on the setup flow; it does not skip to fly.
     XCTAssertTrue(
-      waitForFlyContent(timeout: 15),
-      "Selecting a configured target must skip directly to the fly view"
+      app.buttons["defineIPButton"].waitForExistence(timeout: 15),
+      "Re-selecting a configured target should land on the setup flow (Define IP visible)"
     )
     XCTAssertFalse(
-      app.buttons["defineIPButton"].exists,
-      "Skip-to-fly must bypass the setup flow (Define IP button should not appear)"
+      app.otherElements["flyView"].exists,
+      "Re-selecting a configured target must not skip to the fly view"
     )
 
     // Clean up
-    navigateBackFromFly()
-    TargetListPage(app: app).deleteTarget(named: "SkipToFly")
+    if !isIPad {
+      _ = TargetSetupPage(app: app).navigateBackToList()
+    }
+    TargetListPage(app: app).deleteTarget(named: "ConfiguredSetup")
   }
 
   // MARK: - Test 27
