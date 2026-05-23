@@ -204,13 +204,13 @@ struct FromToMathTests {
       speed: speed
     )
 
-    // For a 90° turn at 120 knots with 45° bank:
+    // For a 90° turn at 120 knots with 30° bank:
     // Speed = 120 knots ≈ 61.73 m/s
-    // Turn rate = g * tan(45°) / v = 9.80665 / 61.73 ≈ 0.1588 rad/s
-    // Turn time = (π/2) / 0.1588 ≈ 9.89 seconds
+    // Turn rate = g * tan(30°) / v = 9.80665 * 0.5774 / 61.73 ≈ 0.0917 rad/s
+    // Turn time = (π/2) / 0.0917 ≈ 17.13 seconds
     #expect(
       turnTime.converted(to: .seconds).value.isApproximatelyEqual(
-        to: 9.89,
+        to: 17.13,
         relativeTolerance: 0.02
       )
     )
@@ -231,7 +231,7 @@ struct FromToMathTests {
     // For a 180° turn, should be exactly 2x the 90° turn time
     #expect(
       turnTime.converted(to: .seconds).value.isApproximatelyEqual(
-        to: 19.78,
+        to: 34.25,
         relativeTolerance: 0.02
       )
     )
@@ -278,13 +278,13 @@ struct FromToMathTests {
 
     // Physics calculation:
     // Speed = 120 knots ≈ 61.73 m/s
-    // Turn radius = v²/(g*tan(45°)) = 61.73² / 9.80665 ≈ 388.8 m
-    // Turn time for 90° ≈ 9.89 seconds
-    // Chord length = 2 * r * sin(45°) = 2 * 388.8 * 0.7071 ≈ 549.7 m
+    // Turn radius = v²/(g*tan(30°)) = 61.73² / (9.80665 * 0.5774) ≈ 673 m
+    // Turn time for 90° ≈ 17.13 seconds
+    // Chord length = 2 * r * sin(45°) = 2 * 673 * 0.7071 ≈ 951.7 m
     // Distance to target ≈ 10,000 m
-    // Remaining distance = 10,000 - 549.7 = 9,450.3 m
-    // Time for remaining = 9,450.3 / 61.73 ≈ 153.1 seconds
-    // Total time = 9.89 + 153.1 = 163 seconds ≈ 2.72 minutes
+    // Remaining distance = 10,000 - 951.7 = 9,048.3 m
+    // Time for remaining = 9,048.3 / 61.73 ≈ 146.6 seconds
+    // Total time = 17.13 + 146.6 = 163.7 seconds ≈ 2.73 minutes
 
     let timeToGoSeconds = fromTo.timeToGo.converted(to: .seconds).value
 
@@ -293,7 +293,7 @@ struct FromToMathTests {
     let straightLineTime = fromTo.distance / fromTo.speed
     #expect(timeToGoSeconds > straightLineTime.converted(to: .seconds).value)
 
-    // Time should be approximately 163 seconds (2.72 minutes)
+    // Time should be approximately 163 seconds (2.73 minutes)
     #expect(
       timeToGoSeconds.isApproximatelyEqual(
         to: 163,
@@ -315,11 +315,11 @@ struct FromToMathTests {
     )
 
     // Turn anticipation is typically half the turn time worth of distance
-    // Turn time ≈ 9.89 seconds, speed = 61.73 m/s
-    // Anticipation = 0.5 * 9.89 * 61.73 ≈ 305 meters ≈ 0.165 NM
+    // Turn time ≈ 17.13 seconds, speed = 61.73 m/s
+    // Anticipation = 0.5 * 17.13 * 61.73 ≈ 529 meters ≈ 0.285 NM
     #expect(
       anticipationDistance.converted(to: .nauticalMiles).value.isApproximatelyEqual(
-        to: 0.165,
+        to: 0.285,
         relativeTolerance: 0.05
       )
     )

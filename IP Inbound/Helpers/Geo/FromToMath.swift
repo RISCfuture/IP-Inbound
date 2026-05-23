@@ -1,7 +1,7 @@
 import Foundation
 
 struct FromToMath: Equatable {
-  private static let bankAngle = Measurement(value: 45, unit: UnitAngle.degrees)
+  private static let bankAngle = Measurement(value: 30, unit: UnitAngle.degrees)
     .converted(to: .radians).value
   private static let smallTurn = Measurement(value: 10, unit: UnitAngle.degrees)
     .converted(to: .radians).value

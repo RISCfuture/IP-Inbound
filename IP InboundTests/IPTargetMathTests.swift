@@ -214,7 +214,7 @@ struct IPTargetMathTests {
     let groundSpeedMS = Measurement(value: groundSpeedKts, unit: UnitSpeed.knots)
       .converted(to: .metersPerSecond)
       .value
-    let turnRadiusM = (groundSpeedMS * groundSpeedMS) / (gravityMSS * tan(.pi / 4))
+    let turnRadiusM = (groundSpeedMS * groundSpeedMS) / (gravityMSS * tan(.pi / 6))
     let halfRadiusM = turnRadiusM / 2
 
     // Just past the perpendicular but short of the r/2 buffer: must not sequence.

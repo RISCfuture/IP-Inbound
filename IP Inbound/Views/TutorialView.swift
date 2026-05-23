@@ -135,7 +135,7 @@ struct TutorialView: View {
             localized: """
               Speed deviation is calculated factoring in turning required, both your turn from \
               your present heading to the IP, as well as your IP-to-target turn. IP Inbound \
-              assumes that you will make each turn a level, 45°-banked turn in the shortest \
+              assumes that you will make each turn a level, 30°-banked turn in the shortest \
               direction.
               """
           )

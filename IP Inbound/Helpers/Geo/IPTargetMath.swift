@@ -4,7 +4,7 @@ import Foundation
 struct IPTargetMath: Equatable {
   private static let closeToIPTime = Measurement(value: 1, unit: UnitDuration.minutes)
   private static let gravityMSS = 9.80665
-  private static let runInBankAngle = Measurement(value: 45, unit: UnitAngle.degrees)
+  private static let runInBankAngle = Measurement(value: 30, unit: UnitAngle.degrees)
   private static let sequenceCutoffAngle = Measurement(value: 90, unit: UnitAngle.degrees)
 
   var coordinate: Coordinate
