@@ -60,10 +60,6 @@ struct TimingView: View {
     )
   }
 
-  private var requiredSpeedColor: Color {
-    isOnTime ? .primary : textColor
-  }
-
   var body: some View {
     VStack {
       Label {
@@ -81,7 +77,7 @@ struct TimingView: View {
         fromTo: fromTo,
         timeOnTarget: timeOnTarget,
         showSpeed: true,
-        requiredSpeedColor: showRequiredSpeed ? requiredSpeedColor : nil
+        requiredSpeedColor: (showRequiredSpeed && !isOnTime) ? textColor : nil
       )
     }
     .accessibilityIdentifier("timingIndicator")

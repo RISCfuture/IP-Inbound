@@ -251,7 +251,7 @@ final class FlyViewTests: BaseTestCase {
 
   // Drives the required-speed callout deterministically via the clock+location
   // harness: a seeded target with a fixed TOT, `UITEST_NOW` placed 7 min before
-  // TOT, and a static rich-fix pre-IP heading toward the IP at 62 m/s. Mirrors
+  // TOT, and a static rich-fix pre-IP heading toward the IP at 35 m/s. Mirrors
   // the "5-fly-pre-ip" screenshot scenario, which puts `FlyView` into
   // `.toIPWithSpeedGuidance`, the mode that renders `TimingView`.
   @MainActor
@@ -259,16 +259,18 @@ final class FlyViewTests: BaseTestCase {
     let tot = try XCTUnwrap(
       Self.uiTestNowFormatter.date(from: "2026-05-18T18:00:00.000Z")
     )
-    // The aircraft is 5 NM north of the IP on the run-in axis (no turn) and can still make the TOT
-    // at the planned speed, so FlyView is in `.toIPWithSpeedGuidance` — the mode that renders
-    // `TimingView` and its required-speed callout. UITEST_NOW is set ~330 s before TOT so the
-    // speed-guidance window holds through navigation and the wait below.
-    let now = tot.addingTimeInterval(-330)
+    // The aircraft is 5 NM north of the IP on the run-in axis (no turn) but flying ~35 m/s — well
+    // below the run-in speed — so it reaches the IP more than the on-time window late while still
+    // recoverable at max speed. FlyView is therefore in `.toIPWithSpeedGuidance`, and because the
+    // arrival sits outside the green on-time window it renders the required-speed callout (which is
+    // hidden while on time). The clock ticks from UITEST_NOW, so it is set ~360 s before TOT to keep
+    // this off-time, pre-bypass state through navigation and the wait below.
+    let now = tot.addingTimeInterval(-360)
 
     app = XCUIApplication()
     app.launchArguments.append("-UITests")
     app.launchEnvironment["UITEST_NOW"] = Self.uiTestNowFormatter.string(from: now)
-    app.launchEnvironment["UITEST_LOCATION"] = "36.935565,-115.457402,1502,179,62"
+    app.launchEnvironment["UITEST_LOCATION"] = "36.935565,-115.457402,1502,179,35"
     app.launchEnvironment["UITEST_SEED_TARGET"] = "1"
     app.launchEnvironment["UITEST_BYPASS_TOT_RESET"] = "1"
     app.resetAuthorizationStatus(for: .location)
