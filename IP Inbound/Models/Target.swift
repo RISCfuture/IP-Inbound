@@ -64,11 +64,6 @@ final class Target: CustomDebugStringConvertible, Identifiable, Equatable, Hasha
     set { offsetDistance = newValue.converted(to: .nauticalMiles).value }
   }
 
-  @Transient var offsetTimeMeasurement: Measurement<UnitDuration> {
-    get { .init(value: offsetTime, unit: .minutes) }
-    set { offsetTime = newValue.converted(to: .minutes).value }
-  }
-
   @Transient var targetGroundSpeedMeasurement: Measurement<UnitSpeed> {
     get { .init(value: targetGroundSpeed, unit: .knots) }
     set { targetGroundSpeed = newValue.converted(to: .knots).value }
@@ -88,8 +83,6 @@ final class Target: CustomDebugStringConvertible, Identifiable, Equatable, Hasha
     return
       "<Target “\(name)”: \(coordinate); \(offsetBearing)/\(offsetDistance)NM (\(offsetTime)min)>"
   }
-
-  private var targetGroundSpeedMinutes: Double { targetGroundSpeed / 60.0 }
 
   var desiredTrack: Bearing { offsetBearingMeasurement.reciprocal }
   var desiredTrackMagnetic: Bearing { desiredTrack.toMagnetic(declination: declinationMeasurement) }

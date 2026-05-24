@@ -21,10 +21,6 @@ func * (lhs: Measurement<UnitSpeed>, rhs: Measurement<UnitDuration>) -> Measurem
   return .init(value: value, unit: .meters)
 }
 
-func tan(_ measurement: Measurement<UnitAngle>) -> Double {
-  tan(measurement.converted(to: .radians).value)
-}
-
 // swiftlint:enable static_operator
 
 extension Measurement where UnitType == UnitDuration {

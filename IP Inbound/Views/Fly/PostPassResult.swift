@@ -6,8 +6,6 @@ final class PostPassResult {
   private(set) var capture: Capture?
   private(set) var crossingTime: Date?
 
-  var isCaptured: Bool { capture != nil }
-
   /// Records when the aircraft actually crossed the target. Only the first crossing is kept, so an
   /// early overfly is timed at the crossing rather than later when the post-pass state is entered.
   func recordCrossing(at time: Date) {

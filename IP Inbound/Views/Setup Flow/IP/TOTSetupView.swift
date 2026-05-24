@@ -28,9 +28,6 @@ struct TOTSetupView: View {
         dateProvider: services.clock.dateProvider,
         onAccept: { newTime in
           target.timeOnTarget = newTime
-        },
-        onCancel: {
-          // In this context, cancel doesn't do anything since we're always showing the entry
         }
       )
 

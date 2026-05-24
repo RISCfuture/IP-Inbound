@@ -47,8 +47,4 @@ class TimeZoneHelper: NSObject {
       completion(nil)
     }
   }
-
-  func clearCache() {
-    timeZoneCache.removeAll()
-  }
 }

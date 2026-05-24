@@ -1,9 +1,6 @@
 import SwiftUI
 
 struct TimingView: View {
-  /// Multiplier applied to the on-time window to derive the caution band: arrivals beyond this
-  /// wider band are shown in the warning palette rather than caution.
-  private static let cautionMultiplier = 5.0
   private static let secondsPerMinute = 60.0
 
   var timeOnTarget: Date
@@ -15,7 +12,6 @@ struct TimingView: View {
   /// time-on-target is still achievable.
   var showRequiredSpeed = true
 
-  private var cautionDeltaTOT: TimeInterval { onTimeDeltaTOT * Self.cautionMultiplier }
   private var onTimeRange: ClosedRange<Date> {
     timeOnTarget.addingTimeInterval(
       -onTimeDeltaTOT

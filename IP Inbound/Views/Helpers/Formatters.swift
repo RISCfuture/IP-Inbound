@@ -76,8 +76,4 @@ extension Bearing {
 
 extension FormatStyle where Self == Bearing.FormatStyle {
   static var bearing: Bearing.FormatStyle { .init() }
-
-  static func bearing(measurementStyle: Measurement<UnitAngle>.FormatStyle) -> Bearing.FormatStyle {
-    .init(measurementStyle: measurementStyle)
-  }
 }

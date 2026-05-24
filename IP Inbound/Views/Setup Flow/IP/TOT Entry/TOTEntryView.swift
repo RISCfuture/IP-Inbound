@@ -1,4 +1,3 @@
-import Defaults
 import SwiftUI
 
 struct TOTEntryView: View {
@@ -7,13 +6,8 @@ struct TOTEntryView: View {
   private static let keypadHeightFactor = 5.0
 
   let onAccept: (Date) -> Void
-  let onCancel: () -> Void
-  let targetCoordinate: Coordinate
 
   @State private var entryManager: TOTEntryManager
-
-  @Default(.TOTDisplayMode)
-  private var displayMode
 
   private var activeDigits: [Int] {
     (0...9).filter { entryManager.isValidCharacter(Character("\($0)")) }
@@ -67,12 +61,9 @@ struct TOTEntryView: View {
     timeOnTarget: Date?,
     targetCoordinate: Coordinate,
     dateProvider: DateProvider = .system,
-    onAccept: @escaping (Date) -> Void,
-    onCancel: @escaping () -> Void
+    onAccept: @escaping (Date) -> Void
   ) {
     self.onAccept = onAccept
-    self.onCancel = onCancel
-    self.targetCoordinate = targetCoordinate
     _entryManager = State(
       wrappedValue: .init(
         timeOnTarget: timeOnTarget,
@@ -90,8 +81,7 @@ struct TOTEntryView: View {
   TOTEntryView(
     timeOnTarget: tot,
     targetCoordinate: coordinate,
-    onAccept: { tot = $0 },
-    onCancel: {}
+    onAccept: { tot = $0 }
   )
   .padding()
 }

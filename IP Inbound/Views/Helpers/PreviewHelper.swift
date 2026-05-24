@@ -14,8 +14,6 @@ final class PreviewHelper {
     .converted(to: .metersPerSecond).value  // run-in speed ≈ target ground speed
 
   static let IPBearingTrue = 359.0
-  static let IPDistanceNM = 4.8
-  static let targetGroundSpeed = 500
 
   static var preIPLocation: CLLocation {
     .init(

@@ -1,0 +1,9 @@
+project: IP Inbound.xcodeproj
+schemes:
+  - IP Inbound
+retain_public: false
+retain_swift_ui_previews: true
+report_exclude:
+  - "**/IP InboundTests/**"
+  - "**/IP InboundUITests/**"
+  - "**/Generate Screenshots/**"

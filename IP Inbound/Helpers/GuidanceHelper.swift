@@ -19,11 +19,6 @@ struct GuidanceHelper {
   private let location: CLLocation
   private let target: Target
 
-  // Minimum target speed for timing calculations
-  private var minTargetSpeed: Measurement<UnitSpeed> {
-    target.targetGroundSpeedMeasurement * (1 - Target.allowableSpeedVariance)
-  }
-
   // Computed predicates for clear logic
   var isMoving: Bool { location.speed > Self.movementThreshold }
 

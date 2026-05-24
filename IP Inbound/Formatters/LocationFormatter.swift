@@ -143,7 +143,6 @@ public struct CoordinateFormatStyle: FormatStyle, Codable, Equatable, Hashable {
 
   public struct Precision: Codable, Equatable, Hashable, Sendable {
     public static let standard = Self(degrees: 5, minutes: 3, seconds: 0)
-    public static let high = Self(degrees: 7, minutes: 5, seconds: 2)
 
     public let degrees: Int
     public let minutes: Int
@@ -173,14 +172,10 @@ public struct CoordinateFormatStyle: FormatStyle, Codable, Equatable, Hashable {
 
 // MARK: - Parse Strategy
 
-public struct CoordinateParseStrategy: ParseStrategy {
-  public let format: CoordinateFormat
+struct CoordinateParseStrategy: ParseStrategy {
+  let format: CoordinateFormat
 
-  public init(format: CoordinateFormat) {
-    self.format = format
-  }
-
-  public func parse(_ value: String) throws -> Coordinate {
+  func parse(_ value: String) throws -> Coordinate {
     switch format {
       case .decimalDegrees:
         return try parseDecimalDegrees(value)
@@ -377,19 +372,5 @@ extension Coordinate {
   /// - Returns: A formatted string representation of the coordinate.
   public func formatted(_ style: CoordinateFormatStyle) -> String {
     style.format(self)
-  }
-}
-
-extension FormatStyle where Self == CoordinateFormatStyle {
-  /// Creates a coordinate format style.
-  /// - Parameters:
-  ///   - format: The coordinate format to use.
-  ///   - precision: The precision settings for formatting.
-  /// - Returns: A configured coordinate format style.
-  public static func coordinate(
-    _ format: CoordinateFormat,
-    precision: CoordinateFormatStyle.Precision = .standard
-  ) -> CoordinateFormatStyle {
-    CoordinateFormatStyle(format: format, precision: precision)
   }
 }

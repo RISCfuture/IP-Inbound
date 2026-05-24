@@ -53,25 +53,6 @@ final class TOTEntryManager {
   private var formatChangeObserver: Task<Void, Never>?
   private var targetTimezone: TimeZone?
 
-  var digitCount: Int { stringValue.count }
-
-  var indexInLinesArray: (Int, Int) {
-    var lineIndex = 0
-    var charIndex = 0
-    for (globalIndex, char) in stringValue.enumerated() {
-      if globalIndex == currentIndex {
-        return (lineIndex, charIndex)
-      }
-      if char == "\n" {
-        lineIndex += 1
-        charIndex = -1
-      } else {
-        charIndex += 1
-      }
-    }
-    fatalError("currentIndex out of bounds")
-  }
-
   var stringValue: String {
     let formatter = Self.compactTimeFormatter
 
@@ -178,8 +159,6 @@ final class TOTEntryManager {
     }
   }
 
-  func digit(at index: Int) -> Character { Array(stringValue)[index] }
-
   func isValidCharacter(_ character: Character) -> Bool {
     guard character.isNumber else { return false }
 
@@ -259,16 +238,6 @@ final class TOTEntryManager {
     guard charIndex < characterCount else { return }
 
     setIndex(charIndex: charIndex)
-  }
-
-  func toggleDisplayMode() {
-    switch displayMode {
-      case .local:
-        displayMode = .zulu
-      case .zulu:
-        displayMode = .local
-    }
-    Defaults[.TOTDisplayMode] = displayMode
   }
 
   private func time(from string: String) -> Date? {
