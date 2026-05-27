@@ -15,22 +15,29 @@ final class NavigationFlowTests: BaseTestCase {
     return pposIP.exists || ipTarget.exists
   }
 
-  // Navigate back from fly view to list using nav bar back buttons
+  // Navigate back from fly view to the setup root.
+  // iPhone: pops the SetupFlowView off the master nav stack, ending on the
+  // target list. iPad: rewinds the detail panel's NavigationStack to Define
+  // Target — the sidebar stays visible. Re-selecting the same cell on iPad
+  // does not reset the detail (SetupFlowView is `.id`-bound to the target),
+  // so the test has to drive this back-traversal explicitly.
   @MainActor
   private func navigateBackFromFly() {
-    if !isIPad {
-      for _ in 0..<6 {
-        let addTarget = app.buttons["addTargetButton"]
-        if addTarget.waitForExistence(timeout: 1) { break }
-        let backButton = app.navigationBars.buttons.element(boundBy: 0)
-        guard backButton.waitForExistence(timeout: 3) else { break }
-        if backButton.isHittable {
-          backButton.tap()
-        } else {
-          backButton.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
-        }
-        Thread.sleep(forTimeInterval: 0.5)
+    // Use `targetNameField` (only present on the root TargetSetupView, not on
+    // TOT/IP/Fly) so the back loop doesn't stop early. `defineIPButton` also
+    // appears on TOTSetupView as a back-to-IP link, so it's not unique enough.
+    let exitMarker: XCUIElement =
+      isIPad ? app.textFields["targetNameField"] : app.buttons["addTargetButton"]
+    for _ in 0..<6 {
+      if exitMarker.waitForExistence(timeout: 1) { break }
+      let backButton = app.navigationBars.buttons.element(boundBy: 0)
+      guard backButton.waitForExistence(timeout: 3) else { break }
+      if backButton.isHittable {
+        backButton.tap()
+      } else {
+        backButton.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
       }
+      Thread.sleep(forTimeInterval: 0.5)
     }
   }
 

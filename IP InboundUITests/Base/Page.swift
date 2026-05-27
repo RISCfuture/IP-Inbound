@@ -60,7 +60,18 @@ extension Page {
     // than select-all, so focus the field at its trailing edge (placing the
     // caret after any existing text) and erase the current value by typing
     // one backspace per character.
-    textField.coordinate(withNormalizedOffset: CGVector(dx: 0.95, dy: 0.5)).tap()
+    //
+    // Re-tap up to three times if the keyboard doesn't surface within 2 s —
+    // under CI load the first tap can land before the field is ready to
+    // accept focus, and the next `typeText` then dispatches into a
+    // window with no first responder ("Neither element nor any descendant
+    // has keyboard focus"). The simulator runs without a hardware keyboard,
+    // so soft-keyboard presence is a reliable focus signal.
+    let keyboard = app.keyboards.firstMatch
+    for _ in 0..<3 {
+      textField.coordinate(withNormalizedOffset: CGVector(dx: 0.95, dy: 0.5)).tap()
+      if keyboard.waitForExistence(timeout: 2) { break }
+    }
     if let currentValue = textField.value as? String, !currentValue.isEmpty {
       let deletion = String(
         repeating: XCUIKeyboardKey.delete.rawValue,

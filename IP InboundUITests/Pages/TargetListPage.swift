@@ -69,6 +69,14 @@ struct TargetListPage: Page {
 
   @MainActor
   func deleteTarget(named name: String) {
+    // Match the swipe-action Delete button only — exclude the numeric/coordinate
+    // keypad's backspace (accessibilityIdentifier `keypad-Delete`, label "Delete"),
+    // which stays in the iPad split-view detail pane during sidebar cleanup.
+    let swipeActionDelete = NSPredicate(
+      format: "label == %@ AND NOT (identifier BEGINSWITH %@)",
+      "Delete",
+      "keypad-"
+    )
     var iterations = 0
     while iterations < 5 {
       iterations += 1
@@ -77,7 +85,7 @@ struct TargetListPage: Page {
       let start = cell.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5))
       let end = cell.coordinate(withNormalizedOffset: CGVector(dx: 0.1, dy: 0.5))
       start.press(forDuration: 0.1, thenDragTo: end)
-      let deleteButton = app.buttons["Delete"]
+      let deleteButton = app.buttons.matching(swipeActionDelete).firstMatch
       if deleteButton.waitForExistence(timeout: 2) {
         deleteButton.tap()
         _ = deleteButton.waitForNonExistence(timeout: 2)

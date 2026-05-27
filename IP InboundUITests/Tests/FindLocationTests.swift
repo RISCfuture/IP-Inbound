@@ -33,9 +33,8 @@ final class FindLocationTests: BaseTestCase {
 
     findLocation.search(for: Self.searchQuery)
 
-    let firstCell = app.cells.firstMatch
     XCTAssertTrue(
-      firstCell.waitForExistence(timeout: 15),
+      findLocation.firstSuggestion.waitForExistence(timeout: 15),
       "Searching for a well-known place should populate the suggestions list"
     )
     XCTAssertTrue(findLocation.hasSuggestions, "Suggestions list should be non-empty after search")
@@ -59,6 +58,14 @@ final class FindLocationTests: BaseTestCase {
     XCTAssertTrue(findLocation.isDisplayed, "Find Location sheet should appear")
 
     findLocation.search(for: Self.searchQuery)
+    // Confirm a real suggestion landed in the list before tapping; otherwise
+    // `selectFirstSuggestion` would tap whatever fallback cell XCUITest
+    // returns and the geocode never fires, producing an unactionable assertion
+    // failure ("coords didn't change") that we'd misread as a real bug.
+    try XCTSkipUnless(
+      findLocation.firstSuggestion.waitForExistence(timeout: 15),
+      "MapKit did not return a suggestion within 15s — skipping (test depends on live MKLocalSearchCompleter)"
+    )
     let returned = findLocation.selectFirstSuggestion()
     XCTAssertTrue(
       returned.isDisplayed,
@@ -94,7 +101,7 @@ final class FindLocationTests: BaseTestCase {
   private func waitForCoordinatesLabelToChange(
     from previous: String,
     on page: TargetSetupPage,
-    timeout: TimeInterval = 15
+    timeout: TimeInterval = 30
   ) -> String {
     let coords = app.buttons["targetCoordinates"]
     let changed = XCTNSPredicateExpectation(

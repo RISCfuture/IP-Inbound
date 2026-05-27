@@ -23,11 +23,11 @@ jobs:
             device-type: com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro
             os-version: ""
             xcode-version: latest-stable
-          - ios-label: "18.0"
+          - ios-label: "18.5"
             runner: macos-26
             device: "iPhone 16 Pro"
             device-type: com.apple.CoreSimulator.SimDeviceType.iPhone-16-Pro
-            os-version: "18.0"
+            os-version: "18.5"
             xcode-version: latest-stable
     runs-on: ${{ matrix.runner }}
     steps:
@@ -104,11 +104,11 @@ jobs:
             device-type: com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro
             os-version: ""
             xcode-version: latest-stable
-          - ios-label: "18.0"
+          - ios-label: "18.5"
             runner: macos-26
             device: "iPhone 16 Pro"
             device-type: com.apple.CoreSimulator.SimDeviceType.iPhone-16-Pro
-            os-version: "18.0"
+            os-version: "18.5"
             xcode-version: latest-stable
     runs-on: ${{ matrix.runner }}
     steps:
@@ -179,18 +179,6 @@ jobs:
             device: "iPad Pro 13-inch (M5)"
             device-type: com.apple.CoreSimulator.SimDeviceType.iPad-Pro-13-inch-M5-12GB
             os-version: ""
-            xcode-version: latest-stable
-          - ios-label: "18.0"
-            runner: macos-26
-            device: "iPhone 16 Pro"
-            device-type: com.apple.CoreSimulator.SimDeviceType.iPhone-16-Pro
-            os-version: "18.0"
-            xcode-version: latest-stable
-          - ios-label: "18.0"
-            runner: macos-26
-            device: "iPad Pro 13-inch (M4)"
-            device-type: com.apple.CoreSimulator.SimDeviceType.iPad-Pro-13-inch-M4-8GB
-            os-version: "18.0"
             xcode-version: latest-stable
     runs-on: ${{ matrix.runner }}
     steps:

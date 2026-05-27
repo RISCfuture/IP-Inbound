@@ -12,9 +12,18 @@ struct FindLocationPage: Page {
 
   @MainActor var searchField: XCUIElement { app.searchFields.firstMatch }
 
-  @MainActor var hasSuggestions: Bool {
-    app.cells.count > 0  // swiftlint:disable:this empty_count
+  // Suggestions live in the `findLocationView`-tagged List (a UICollectionView
+  // under SwiftUI). Scope the cell query so the iPad sidebar's target cells
+  // — also `XCUIElement.cell` — don't shadow the first match.
+  @MainActor private var suggestionList: XCUIElementQuery {
+    app.collectionViews["findLocationView"].cells
   }
+
+  @MainActor var hasSuggestions: Bool {
+    suggestionList.count > 0  // swiftlint:disable:this empty_count
+  }
+
+  @MainActor var firstSuggestion: XCUIElement { suggestionList.firstMatch }
 
   // MARK: - Actions
 
@@ -28,7 +37,7 @@ struct FindLocationPage: Page {
   @MainActor
   @discardableResult
   func selectFirstSuggestion() -> TargetSetupPage {
-    let cell = app.cells.firstMatch
+    let cell = suggestionList.firstMatch
     XCTAssertTrue(cell.waitForExistence(timeout: 10), "Suggestion should appear")
     forceTap(cell)
     return TargetSetupPage(app: app)
@@ -38,7 +47,7 @@ struct FindLocationPage: Page {
   @discardableResult
   func selectSuggestion(containing text: String) -> TargetSetupPage {
     let predicate = NSPredicate(format: "label CONTAINS[c] %@", text)
-    let match = app.staticTexts.element(matching: predicate)
+    let match = suggestionList.containing(predicate).firstMatch
     XCTAssertTrue(
       match.waitForExistence(timeout: 10),
       "Suggestion containing '\(text)' should appear"
