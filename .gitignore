@@ -1,18 +1,19 @@
-# SwiftLint Remote Config Cache
+# Xcode
+build/
+DerivedData/
+xcuserdata/
+*.xcuserstate
+
+# Swift Package Manager
+.build/
+.swiftpm/
+
+# SwiftLint / swift-format
 .swiftlint/RemoteConfigCache
 .swift-format
 
 # Sentry CLI config
 .sentryclirc
-
-# Xcode
-DerivedData/
-build/
-*.xcuserstate
-xcuserdata/
-
-# macOS
-.DS_Store
 
 # Signing keys and credentials
 *.p8
