@@ -54,32 +54,37 @@ struct IP_InboundApp: App {
   // MARK: - Initializers
 
   init() {
-    SentrySDK.start { options in
-      options.dsn =
-        "https://6d826473ed575a590d160fa29163b480@o4510156629475328.ingest.us.sentry.io/4510161641996288"
-      options.debug = true
+    // Skip Sentry under UI tests: its debug logging, profiling, and structured
+    // logging do main-thread work that keeps the run loop from going idle,
+    // which stalls XCUITest's wait-for-idle and times tests out (matches FART).
+    if !ProcessInfo.processInfo.isRunningUITests {
+      SentrySDK.start { options in
+        options.dsn =
+          "https://6d826473ed575a590d160fa29163b480@o4510156629475328.ingest.us.sentry.io/4510161641996288"
+        options.debug = true
 
-      options.tracesSampleRate = 0.2
+        options.tracesSampleRate = 0.2
 
-      options.configureProfiling = {
-        $0.sessionSampleRate = 0.2
-        $0.lifecycle = .trace
-      }
+        options.configureProfiling = {
+          $0.sessionSampleRate = 0.2
+          $0.lifecycle = .trace
+        }
 
-      // Uncomment the following lines to add more data to your events
-      // options.attachScreenshot = true // This adds a screenshot to the error events
-      // options.attachViewHierarchy = true // This adds the view hierarchy to the error events
+        // Uncomment the following lines to add more data to your events
+        // options.attachScreenshot = true // This adds a screenshot to the error events
+        // options.attachViewHierarchy = true // This adds the view hierarchy to the error events
 
-      // Enable structured logging
-      options.enableLogs = true
+        // Enable structured logging
+        options.enableLogs = true
 
-      // Discard all events when running on simulator
-      options.beforeSend = { event in
-        #if targetEnvironment(simulator)
-          return nil
-        #else
-          return event
-        #endif
+        // Discard all events when running on simulator
+        options.beforeSend = { event in
+          #if targetEnvironment(simulator)
+            return nil
+          #else
+            return event
+          #endif
+        }
       }
     }
 

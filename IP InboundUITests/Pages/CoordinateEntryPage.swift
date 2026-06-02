@@ -1,4 +1,5 @@
 import XCTest
+import XCUITestKit
 
 // swiftlint:disable prefer_nimble
 
@@ -20,7 +21,7 @@ struct CoordinateEntryPage: Page {
   @MainActor
   func selectFormat(_ format: String) {
     XCTAssertTrue(formatPicker.waitForExistence(timeout: 3), "Format picker should appear")
-    forceTap(formatPicker.buttons[format])
+    formatPicker.buttons[format].forceTap()
   }
 
   @MainActor
@@ -39,7 +40,7 @@ struct CoordinateEntryPage: Page {
     // Wait for keypad to be ready (longer timeout for CI where format switch is slow)
     let firstButton = app.buttons["keypad-1"]
     XCTAssertTrue(firstButton.waitForExistence(timeout: 10), "Grid keypad should appear")
-    waitForHittable(firstButton, timeout: 10)
+    firstButton.waitUntilHittable(timeout: 10)
     enterOnKeypad(grid)
   }
 
@@ -53,14 +54,14 @@ struct CoordinateEntryPage: Page {
       object: acceptButton
     )
     _ = XCTWaiter.wait(for: [enabledPredicate], timeout: 3)
-    forceTap(acceptButton)
+    acceptButton.forceTap()
     return TargetSetupPage(app: app)
   }
 
   @MainActor
   @discardableResult
   func tapCancel() -> TargetSetupPage {
-    forceTap(cancelButton)
+    cancelButton.forceTap()
     return TargetSetupPage(app: app)
   }
 }

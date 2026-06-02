@@ -1,4 +1,5 @@
 import XCTest
+import XCUITestKit
 
 // swiftlint:disable prefer_nimble
 
@@ -30,7 +31,7 @@ struct FindLocationPage: Page {
   @MainActor
   func search(for query: String) {
     XCTAssertTrue(searchField.waitForExistence(timeout: 3), "Search field should appear")
-    forceTap(searchField)
+    searchField.forceTap()
     searchField.typeText(query)
   }
 
@@ -39,7 +40,7 @@ struct FindLocationPage: Page {
   func selectFirstSuggestion() -> TargetSetupPage {
     let cell = suggestionList.firstMatch
     XCTAssertTrue(cell.waitForExistence(timeout: 10), "Suggestion should appear")
-    forceTap(cell)
+    cell.forceTap()
     return TargetSetupPage(app: app)
   }
 
@@ -52,7 +53,7 @@ struct FindLocationPage: Page {
       match.waitForExistence(timeout: 10),
       "Suggestion containing '\(text)' should appear"
     )
-    forceTap(match)
+    match.forceTap()
     return TargetSetupPage(app: app)
   }
 }

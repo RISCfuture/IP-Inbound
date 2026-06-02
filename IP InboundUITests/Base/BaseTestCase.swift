@@ -1,5 +1,6 @@
 import CoreLocation
 import XCTest
+import XCUITestKit
 
 // swiftlint:disable final_test_case test_case_accessibility
 
@@ -27,21 +28,17 @@ class BaseTestCase: XCTestCase {
 
   // MARK: - XCTestCase
 
-  override func setUpWithError() throws {
+  @MainActor
+  override func setUp() async throws {
     continueAfterFailure = false
 
     // Handle location permission alerts that appear during test interaction.
-    // XCUITest's default handler taps "Don't Allow" which breaks tests.
-    addUIInterruptionMonitor(withDescription: "Location Permission") { alert in
-      MainActor.assumeIsolated {
-        let allowButton = alert.buttons["Allow While Using App"]
-        if allowButton.exists {
-          allowButton.tap()
-          return true
-        }
-        return false
-      }
-    }
+    // XCUITest's default handler taps "Don't Allow" which breaks tests, so
+    // register a monitor that grants the prompt (taps "Allow While Using App").
+    addSystemAlertMonitor(
+      description: "Location Permission",
+      buttonLabels: ["Allow While Using App"]
+    )
   }
 
   // MARK: - Methods
@@ -63,6 +60,7 @@ class BaseTestCase: XCTestCase {
     }
 
     app = XCUIApplication()
+    app.disableLogStderrMirroring()
     app.launchArguments.append("-UITests")
     if let now {
       app.launchEnvironment["UITEST_NOW"] = Self.uiTestNowFormatter.string(from: now)
@@ -92,11 +90,11 @@ class BaseTestCase: XCTestCase {
 
   @MainActor
   func handleLocationPermissionIfNeeded() {
-    let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
-    let allowButton = springboard.alerts.buttons["Allow While Using App"]
-    if allowButton.waitForExistence(timeout: 2) {
-      allowButton.tap()
-    }
+    // Tap the location prompt's "Allow While Using App" on SpringBoard directly,
+    // at this known point in the flow, without depending on a follow-up
+    // interaction (unlike `addUIInterruptionMonitor`). Safe to call defensively:
+    // returns without failing if no prompt is present.
+    SystemAlert.dismiss(labels: ["Allow While Using App"])
   }
 
   @MainActor

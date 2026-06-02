@@ -1,4 +1,5 @@
 import XCTest
+import XCUITestKit
 
 // swiftlint:disable prefer_nimble
 
@@ -8,20 +9,6 @@ protocol Page {
 }
 
 extension Page {
-  @MainActor
-  @discardableResult
-  func waitForElement(_ element: XCUIElement, timeout: TimeInterval = 5) -> Bool {
-    element.waitForExistence(timeout: timeout)
-  }
-
-  @MainActor
-  @discardableResult
-  func waitForHittable(_ element: XCUIElement, timeout: TimeInterval = 3) -> Bool {
-    let predicate = NSPredicate(format: "isHittable == true")
-    let expectation = XCTNSPredicateExpectation(predicate: predicate, object: element)
-    return XCTWaiter.wait(for: [expectation], timeout: timeout) == .completed
-  }
-
   @MainActor
   @discardableResult
   func scrollToVisible(_ element: XCUIElement) -> XCUIElement? {
@@ -48,47 +35,39 @@ extension Page {
     return nil
   }
 
+  /// Tap the button identified by `identifier` and confirm `expected` appears,
+  /// retrying a few times. On the iPad split view a `NavigationLink` push in the
+  /// detail column can need more than one attempt, the live button can be a
+  /// later (non-stale) match, and it may sit below the fold — so each attempt
+  /// re-resolves a hittable match and scrolls it into view before tapping.
+  ///
+  /// This is XCUITestKit's `Retry.untilVerified` (the action-and-confirm
+  /// pattern) with the IP-Inbound-specific live-match re-resolution and
+  /// scroll-into-view kept inside the action closure.
   @MainActor
-  func clearAndType(in textField: XCUIElement, text: String) {
-    // Ensure element is hittable before attempting to type
-    let predicate = NSPredicate(format: "isHittable == true")
-    let expectation = XCTNSPredicateExpectation(predicate: predicate, object: textField)
-    if XCTWaiter.wait(for: [expectation], timeout: 8) != .completed {
-      ensureHittable(textField)
-    }
-    // iPadOS 26 interprets `tap(withNumberOfTaps: 3)` as word selection rather
-    // than select-all, so focus the field at its trailing edge (placing the
-    // caret after any existing text) and erase the current value by typing
-    // one backspace per character.
-    //
-    // Re-tap up to three times if the keyboard doesn't surface within 2 s —
-    // under CI load the first tap can land before the field is ready to
-    // accept focus, and the next `typeText` then dispatches into a
-    // window with no first responder ("Neither element nor any descendant
-    // has keyboard focus"). The simulator runs without a hardware keyboard,
-    // so soft-keyboard presence is a reliable focus signal.
-    let keyboard = app.keyboards.firstMatch
-    for _ in 0..<3 {
-      textField.coordinate(withNormalizedOffset: CGVector(dx: 0.95, dy: 0.5)).tap()
-      if keyboard.waitForExistence(timeout: 2) { break }
-    }
-    if let currentValue = textField.value as? String, !currentValue.isEmpty {
-      let deletion = String(
-        repeating: XCUIKeyboardKey.delete.rawValue,
-        count: currentValue.count
-      )
-      textField.typeText(deletion)
-    }
-    textField.typeText(text)
-  }
-
-  @MainActor
-  func forceTap(_ element: XCUIElement) {
-    if element.isHittable {
-      element.tap()
-    } else {
-      element.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
-    }
+  @discardableResult
+  func tapButton(
+    _ identifier: String,
+    toReveal expected: XCUIElement,
+    attempts: UInt = 3
+  ) -> Bool {
+    Retry.untilVerified(
+      maxAttempts: attempts,
+      interval: 0,
+      action: {
+        let matches = app.buttons.matching(identifier: identifier)
+        var target = matches.firstMatch
+        for index in 0..<matches.count {
+          let candidate = matches.element(boundBy: index)
+          if candidate.exists, candidate.isHittable {
+            target = candidate
+            break
+          }
+        }
+        (scrollToVisible(target) ?? target).forceTap()
+      },
+      until: { expected.waitForExistence(timeout: 5) }
+    )
   }
 
   @MainActor
@@ -121,10 +100,10 @@ extension Page {
       guard char.isNumber || char.isLetter else { continue }
       let button = app.buttons["keypad-\(char)"]
       XCTAssertTrue(button.waitForExistence(timeout: 8), "Keypad button '\(char)' should exist")
-      if !waitForHittable(button, timeout: 8) {
+      if !button.waitUntilHittable(timeout: 8) {
         ensureHittable(button)
       }
-      forceTap(button)
+      button.forceTap()
       // Brief pause to let the simulator process the tap before the next keystroke
       Thread.sleep(forTimeInterval: 0.15)
     }
@@ -134,10 +113,10 @@ extension Page {
   func tapDirection(_ direction: String) {
     let button = app.buttons["keypad-\(direction)"]
     XCTAssertTrue(button.waitForExistence(timeout: 3), "\(direction) button should exist")
-    if !waitForHittable(button) {
+    if !button.waitUntilHittable() {
       ensureHittable(button)
     }
-    forceTap(button)
+    button.forceTap()
     // Wait for direction button to disappear (keypad switches to numeric)
     let gone = XCTNSPredicateExpectation(
       predicate: NSPredicate(format: "isHittable == false"),
@@ -151,13 +130,13 @@ extension Page {
     // Wait for numeric keypad to be ready
     let numericButton = app.buttons["keypad-1"]
     XCTAssertTrue(numericButton.waitForExistence(timeout: 2), "Numeric keypad should appear")
-    waitForHittable(numericButton)
+    numericButton.waitUntilHittable()
   }
 
   @MainActor
   func tapBackButton() {
     let backButton = app.navigationBars.buttons.element(boundBy: 0)
-    forceTap(backButton)
+    backButton.forceTap()
   }
 
   @MainActor

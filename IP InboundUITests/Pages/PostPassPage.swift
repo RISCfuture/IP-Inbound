@@ -1,4 +1,5 @@
 import XCTest
+import XCUITestKit
 
 // swiftlint:disable prefer_nimble
 
@@ -47,7 +48,7 @@ struct PostPassPage: Page {
       flyNextTargetButton.waitForExistence(timeout: 5),
       "Fly next target button should appear"
     )
-    forceTap(flyNextTargetButton)
+    flyNextTargetButton.forceTap()
     return FlyPage(app: app)
   }
 
@@ -58,7 +59,7 @@ struct PostPassPage: Page {
       chooseTargetButton.waitForExistence(timeout: 5),
       "Choose target button should appear"
     )
-    forceTap(chooseTargetButton)
+    chooseTargetButton.forceTap()
     return TargetListPage(app: app)
   }
 }

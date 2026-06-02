@@ -1,4 +1,5 @@
 import XCTest
+import XCUITestKit
 
 // swiftlint:disable prefer_nimble
 
@@ -6,19 +7,18 @@ struct FlyPage: Page {
   let app: XCUIApplication
 
   @MainActor var isDisplayed: Bool {
-    // Displayed if the flyView, CDI, or countdown element exists.
-    app.otherElements["flyView"].waitForExistence(timeout: 5)
-      || app.otherElements["cdi"].waitForExistence(timeout: 2)
-      || app.otherElements["countdown"].waitForExistence(timeout: 2)
+    // Displayed if the flyView, CDI, or countdown element exists. On iPad the
+    // `flyView` identifier propagates onto a descendant button ("Recenter map"),
+    // so match across any element type.
+    anyElement(identifier: "flyView").waitForExistence(timeout: 5)
+      || cdi.waitForExistence(timeout: 2)
+      || countdown.waitForExistence(timeout: 2)
   }
 
   // The guidance content sets `.accessibilityIdentifier("cdi")`, but the ancestor `flyView` identifier
   // propagates onto its descendants and overrides it, so the element is found by its label.
-  @MainActor var cdi: XCUIElement {
-    app.otherElements.matching(NSPredicate(format: "label == %@", "Course deviation indicator"))
-      .firstMatch
-  }
-  @MainActor var countdown: XCUIElement { app.otherElements["countdown"] }
+  @MainActor var cdi: XCUIElement { anyElement(label: "Course deviation indicator") }
+  @MainActor var countdown: XCUIElement { anyElement(identifier: "countdown") }
   @MainActor var simulatorBanner: XCUIElement { app.staticTexts["simulatorBanner"] }
   @MainActor var flySpeedDisplay: XCUIElement { app.staticTexts["flySpeedDisplay"] }
   // The required ground speed is appended to the tappable speed display as a "(… req.)" callout,
@@ -39,9 +39,9 @@ struct FlyPage: Page {
   @MainActor var flyTOTDisplay: XCUIElement { app.staticTexts["flyTOTDisplay"] }
 
   @MainActor var guidanceMode: String? {
-    if app.staticTexts["P.POS → IP"].exists { return "P.POS → IP" }
-    if app.staticTexts["IP → Target"].exists { return "IP → Target" }
-    if app.staticTexts["P.POS → Target"].exists { return "P.POS → Target" }
+    if anyElement(label: "P.POS → IP").exists { return "P.POS → IP" }
+    if anyElement(label: "IP → Target").exists { return "IP → Target" }
+    if anyElement(label: "P.POS → Target").exists { return "P.POS → Target" }
     return nil
   }
 
@@ -55,29 +55,45 @@ struct FlyPage: Page {
   func tapSpeedToCycleUnits() {
     let speed = flySpeedDisplay
     if speed.waitForExistence(timeout: 3) {
-      forceTap(speed)
+      speed.forceTap()
     } else {
       // Fallback: tap distance display which also cycles units
       let distance = flyDistanceDisplay
       XCTAssertTrue(distance.waitForExistence(timeout: 3), "Distance display should exist")
-      forceTap(distance)
+      distance.forceTap()
     }
   }
 
   @MainActor
   func tapTOTToToggleTimeMode() {
     XCTAssertTrue(flyTOTDisplay.waitForExistence(timeout: 3), "TOT display should exist")
-    forceTap(flyTOTDisplay)
+    flyTOTDisplay.forceTap()
+  }
+
+  // On iPad the `flyView` accessibility identifier propagates onto its
+  // descendants, so the Fly screen's content surfaces with identifier "flyView"
+  // and the real text in the label. Match by identifier or label across any
+  // element type so the same queries resolve on both iPhone and iPad.
+  @MainActor
+  private func anyElement(identifier: String) -> XCUIElement {
+    app.descendants(matching: .any).matching(identifier: identifier).firstMatch
+  }
+
+  @MainActor
+  private func anyElement(label: String) -> XCUIElement {
+    app.descendants(matching: .any)
+      .matching(NSPredicate(format: "label == %@", label))
+      .firstMatch
   }
 
   @MainActor
   func hasTargetName(_ name: String) -> Bool {
-    app.staticTexts[name].waitForExistence(timeout: 5)
+    anyElement(label: name).waitForExistence(timeout: 5)
   }
 
   @MainActor
   func hasText(_ text: String) -> Bool {
-    app.staticTexts[text].waitForExistence(timeout: 5)
+    anyElement(label: text).waitForExistence(timeout: 5)
   }
 
   @MainActor

@@ -8,12 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		011479ED2F779D5F003AEBCC /* SwiftGeographic in Frameworks */ = {isa = PBXBuildFile; productRef = 011479EC2F779D5F003AEBCC /* SwiftGeographic */; };
+		0159221F2FCA2B28007FB6BB /* XCUITestKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0159221E2FCA2B28007FB6BB /* XCUITestKit */; };
 		0166FA742DCA685800970EFD /* DefaultsMacros in Frameworks */ = {isa = PBXBuildFile; productRef = 0166FA732DCA685800970EFD /* DefaultsMacros */; };
 		016F3ED22DD4F1E1006EEC6D /* Numerics in Frameworks */ = {isa = PBXBuildFile; productRef = 016F3ED12DD4F1E1006EEC6D /* Numerics */; };
-		0198B2AD2E9860B2003CB126 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
-		0198B2AE2E9860B2003CB126 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
-		0198B2AF2E9860B2003CB126 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		01C059A72DBF49C600D733C1 /* AsyncAlgorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 01C059A62DBF49C600D733C1 /* AsyncAlgorithms */; };
+		01EB04182FCA2D0B007C3D1E /* XCUITestKit in Frameworks */ = {isa = PBXBuildFile; productRef = 01EB04172FCA2D0B007C3D1E /* XCUITestKit */; };
 		01ECF4F32CF3E2F800BD0604 /* Defaults in Frameworks */ = {isa = PBXBuildFile; productRef = 01ECF4F22CF3E2F800BD0604 /* Defaults */; };
 		01F13CF52DBEE074000E58A2 /* NIO in Frameworks */ = {isa = PBXBuildFile; productRef = 01F13CF42DBEE074000E58A2 /* NIO */; };
 		01F13CF72DBEE074000E58A2 /* NIOPosix in Frameworks */ = {isa = PBXBuildFile; productRef = 01F13CF62DBEE074000E58A2 /* NIOPosix */; };
@@ -54,13 +53,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		011EBCA72E850CB70012E257 /* Exceptions for "IP InboundUITests" folder in "Generate Screenshots" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Extensions.swift,
-			);
-			target = 016F3C1A2DC08E7A00F2A1AE /* Generate Screenshots */;
-		};
 		0123BC7F2F67F35400FF7A8E /* Exceptions for "IP InboundTests" folder in "IP InboundTests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -100,7 +92,6 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				0123BC802F67F35700FF7A8E /* Exceptions for "IP InboundUITests" folder in "IP InboundUITests" target */,
-				011EBCA72E850CB70012E257 /* Exceptions for "IP InboundUITests" folder in "Generate Screenshots" target */,
 			);
 			path = "IP InboundUITests";
 			sourceTree = "<group>";
@@ -111,7 +102,7 @@
 		016F3C182DC08E7A00F2A1AE /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
-				0198B2AD2E9860B2003CB126 /* (null) in Frameworks */,
+				01EB04182FCA2D0B007C3D1E /* XCUITestKit in Frameworks */,
 			);
 		};
 		01ECF4B32CF3DF0D00BD0604 /* Frameworks */ = {
@@ -131,13 +122,12 @@
 			isa = PBXFrameworksBuildPhase;
 			files = (
 				016F3ED22DD4F1E1006EEC6D /* Numerics in Frameworks */,
-				0198B2AE2E9860B2003CB126 /* (null) in Frameworks */,
 			);
 		};
 		01ECF4CD2CF3DF0F00BD0604 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
-				0198B2AF2E9860B2003CB126 /* (null) in Frameworks */,
+				0159221F2FCA2B28007FB6BB /* XCUITestKit in Frameworks */,
 			);
 		};
 /* End PBXFrameworksBuildPhase section */
@@ -202,6 +192,9 @@
 				016F3C1C2DC08E7A00F2A1AE /* Generate Screenshots */,
 			);
 			name = "Generate Screenshots";
+			packageProductDependencies = (
+				01EB04172FCA2D0B007C3D1E /* XCUITestKit */,
+			);
 			productName = "Generate Screenshots";
 			productReference = 016F3C1B2DC08E7A00F2A1AE /* Generate Screenshots.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
@@ -276,6 +269,9 @@
 				01ECF4D32CF3DF0F00BD0604 /* IP InboundUITests */,
 			);
 			name = "IP InboundUITests";
+			packageProductDependencies = (
+				0159221E2FCA2B28007FB6BB /* XCUITestKit */,
+			);
 			productName = "IP InboundUITests";
 			productReference = 01ECF4D02CF3DF0F00BD0604 /* IP InboundUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
@@ -324,6 +320,7 @@
 				016F3ED02DD4F1E1006EEC6D /* XCRemoteSwiftPackageReference "swift-numerics" */,
 				F48BBB649D7A4A6387FBF73C /* XCRemoteSwiftPackageReference "sentry-cocoa" */,
 				011479EB2F779D5F003AEBCC /* XCRemoteSwiftPackageReference "SwiftGeographic" */,
+				0159221D2FCA2B28007FB6BB /* XCRemoteSwiftPackageReference "XCUITestKit" */,
 			);
 			preferredProjectObjectVersion = 100;
 			productRefGroup = 01ECF4B72CF3DF0D00BD0604 /* Products */;
@@ -788,6 +785,14 @@
 				minimumVersion = 1.0.0;
 			};
 		};
+		0159221D2FCA2B28007FB6BB /* XCRemoteSwiftPackageReference "XCUITestKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/RISCfuture/XCUITestKit";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		016F3ED02DD4F1E1006EEC6D /* XCRemoteSwiftPackageReference "swift-numerics" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/apple/swift-numerics.git";
@@ -846,6 +851,11 @@
 			package = 011479EB2F779D5F003AEBCC /* XCRemoteSwiftPackageReference "SwiftGeographic" */;
 			productName = SwiftGeographic;
 		};
+		0159221E2FCA2B28007FB6BB /* XCUITestKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0159221D2FCA2B28007FB6BB /* XCRemoteSwiftPackageReference "XCUITestKit" */;
+			productName = XCUITestKit;
+		};
 		0166FA732DCA685800970EFD /* DefaultsMacros */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 01ECF4F12CF3E2F800BD0604 /* XCRemoteSwiftPackageReference "Defaults" */;
@@ -860,6 +870,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 01C059A52DBF49C600D733C1 /* XCRemoteSwiftPackageReference "swift-async-algorithms" */;
 			productName = AsyncAlgorithms;
+		};
+		01EB04172FCA2D0B007C3D1E /* XCUITestKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0159221D2FCA2B28007FB6BB /* XCRemoteSwiftPackageReference "XCUITestKit" */;
+			productName = XCUITestKit;
 		};
 		01ECF4F22CF3E2F800BD0604 /* Defaults */ = {
 			isa = XCSwiftPackageProductDependency;

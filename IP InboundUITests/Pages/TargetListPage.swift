@@ -1,4 +1,5 @@
 import XCTest
+import XCUITestKit
 
 // swiftlint:disable prefer_nimble
 
@@ -22,7 +23,7 @@ struct TargetListPage: Page {
   @discardableResult
   func tapAddTarget() -> TargetSetupPage {
     XCTAssertTrue(addTargetButton.waitForExistence(timeout: 15), "addTargetButton should appear")
-    forceTap(addTargetButton)
+    addTargetButton.forceTap()
     return TargetSetupPage(app: app)
   }
 
@@ -63,7 +64,7 @@ struct TargetListPage: Page {
   func selectTarget(named name: String) -> TargetSetupPage {
     let cell = targetCell(named: name)
     XCTAssertNotNil(cell, "Target '\(name)' should exist in list")
-    if let cell { forceTap(cell) }
+    if let cell { cell.forceTap() }
     return TargetSetupPage(app: app)
   }
 

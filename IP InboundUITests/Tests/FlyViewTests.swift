@@ -1,5 +1,6 @@
 import CoreLocation
 import XCTest
+import XCUITestKit
 
 // swiftlint:disable prefer_nimble
 
@@ -70,6 +71,7 @@ final class FlyViewTests: BaseTestCase {
     let now = tot.addingTimeInterval(-secondsBeforeTOT)
 
     app = XCUIApplication()
+    app.disableLogStderrMirroring()
     app.launchArguments.append("-UITests")
     app.launchEnvironment["UITEST_NOW"] = Self.uiTestNowFormatter.string(from: now)
     app.launchEnvironment["UITEST_LOCATION"] = fix
@@ -268,6 +270,7 @@ final class FlyViewTests: BaseTestCase {
     let now = tot.addingTimeInterval(-360)
 
     app = XCUIApplication()
+    app.disableLogStderrMirroring()
     app.launchArguments.append("-UITests")
     app.launchEnvironment["UITEST_NOW"] = Self.uiTestNowFormatter.string(from: now)
     app.launchEnvironment["UITEST_LOCATION"] = "36.935565,-115.457402,1502,179,35"
@@ -319,6 +322,7 @@ final class FlyViewTests: BaseTestCase {
     let now = tot.addingTimeInterval(-5 * 60)
 
     app = XCUIApplication()
+    app.disableLogStderrMirroring()
     app.launchArguments.append("-UITests")
     app.launchEnvironment["UITEST_NOW"] = Self.uiTestNowFormatter.string(from: now)
     app.launchEnvironment["UITEST_LOCATION"] = "36.853375,-115.593249,1502,179,62"

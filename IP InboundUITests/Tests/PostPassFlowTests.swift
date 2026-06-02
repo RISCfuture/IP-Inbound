@@ -1,5 +1,6 @@
 import CoreLocation
 import XCTest
+import XCUITestKit
 
 // swiftlint:disable prefer_nimble
 
@@ -107,6 +108,7 @@ final class PostPassFlowTests: BaseTestCase {
     }
 
     app = XCUIApplication()
+    app.disableLogStderrMirroring()
     app.launchArguments.append("-UITests")
     app.launchEnvironment["UITEST_NOW"] = Self.uiTestNowFormatter.string(from: now)
     app.launchEnvironment["UITEST_LOCATION"] = location

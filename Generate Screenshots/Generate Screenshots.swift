@@ -3,6 +3,7 @@
 
 import CoreLocation
 import XCTest
+import XCUITestKit
 
 @MainActor
 final class Generate_Screenshots: XCTestCase {

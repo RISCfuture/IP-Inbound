@@ -1,4 +1,5 @@
 import XCTest
+import XCUITestKit
 
 // swiftlint:disable prefer_nimble
 
@@ -30,14 +31,16 @@ struct TOTSetupPage: Page {
 
   @MainActor
   func selectLocalTime() {
-    XCTAssertTrue(timeDisplayModePicker.waitForExistence(timeout: 3))
-    forceTap(timeDisplayModePicker.buttons["Target Local"])
+    let picker = scrollToVisible(timeDisplayModePicker) ?? timeDisplayModePicker
+    XCTAssertTrue(picker.waitForExistence(timeout: 3))
+    picker.buttons["Target Local"].forceTap()
   }
 
   @MainActor
   func selectZuluTime() {
-    XCTAssertTrue(timeDisplayModePicker.waitForExistence(timeout: 3))
-    forceTap(timeDisplayModePicker.buttons["Zulu"])
+    let picker = scrollToVisible(timeDisplayModePicker) ?? timeDisplayModePicker
+    XCTAssertTrue(picker.waitForExistence(timeout: 3))
+    picker.buttons["Zulu"].forceTap()
   }
 
   @MainActor
@@ -48,15 +51,20 @@ struct TOTSetupPage: Page {
   @MainActor
   @discardableResult
   func tapFly() -> FlyPage {
-    XCTAssertTrue(flyButton.waitForExistence(timeout: 3), "Fly button should appear")
-    forceTap(flyButton)
+    // The `flyView` identifier resolves to an otherElement on iPhone but
+    // propagates onto a descendant button ("Recenter map") on iPad, so match it
+    // regardless of element type.
+    tapButton(
+      "flyButton",
+      toReveal: app.descendants(matching: .any).matching(identifier: "flyView").firstMatch
+    )
     return FlyPage(app: app)
   }
 
   @MainActor
   @discardableResult
   func tapBackToIPSetup() -> IPSetupPage {
-    forceTap(defineIPButton)
+    tapButton("defineIPButton", toReveal: app.buttons["timeOnTargetButton"])
     return IPSetupPage(app: app)
   }
 

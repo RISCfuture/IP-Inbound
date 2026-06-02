@@ -1,4 +1,5 @@
 import XCTest
+import XCUITestKit
 
 // swiftlint:disable prefer_nimble
 
@@ -44,56 +45,66 @@ struct IPSetupPage: Page {
   func enterBearing(_ value: String) {
     let field = scrollToVisible(offsetBearingField) ?? offsetBearingField
     XCTAssertTrue(field.waitForExistence(timeout: 5), "Bearing field should appear")
-    clearAndType(in: field, text: value)
+    field.clearAndType(value, app: app)
   }
 
   @MainActor
   func selectBearingReference(_ reference: String) {
     let picker = scrollToVisible(bearingReferencePicker) ?? bearingReferencePicker
     XCTAssertTrue(picker.waitForExistence(timeout: 3), "Bearing reference picker should appear")
-    forceTap(picker.buttons[reference])
+    picker.buttons[reference].forceTap()
   }
 
   @MainActor
   func enterOffsetDistance(_ value: String) {
     let field = scrollToVisible(offsetDistanceField) ?? offsetDistanceField
     XCTAssertTrue(field.waitForExistence(timeout: 3), "Offset distance field should appear")
-    clearAndType(in: field, text: value)
+    field.clearAndType(value, app: app)
+  }
+
+  /// Commit a pending offset-distance edit by moving focus to another field.
+  /// numberPad keyboards have no Return key, and on the iPad the form fits
+  /// without scrolling, so the keyboard can't be dismissed by tapping a blank
+  /// area or swiping — only a focus change ends editing and writes the
+  /// `TextField(value:format:)` binding.
+  @MainActor
+  func commitOffsetDistance() {
+    let target = scrollToVisible(offsetBearingField) ?? offsetBearingField
+    offsetDistanceField.commitByMovingFocus(to: target)
   }
 
   @MainActor
   func enterOffsetTime(_ value: String) {
     let field = scrollToVisible(offsetTimeField) ?? offsetTimeField
     XCTAssertTrue(field.waitForExistence(timeout: 3), "Offset time field should appear")
-    clearAndType(in: field, text: value)
+    field.clearAndType(value, app: app)
   }
 
   @MainActor
   func selectOffsetType(_ type: String) {
     let picker = scrollToVisible(offsetTypePicker) ?? offsetTypePicker
     XCTAssertTrue(picker.waitForExistence(timeout: 3), "Offset type picker should appear")
-    forceTap(picker.buttons[type])
+    picker.buttons[type].forceTap()
   }
 
   @MainActor
   func enterGroundSpeed(_ value: String) {
     let field = scrollToVisible(groundSpeedField) ?? groundSpeedField
     XCTAssertTrue(field.waitForExistence(timeout: 3), "Ground speed field should appear")
-    clearAndType(in: field, text: value)
+    field.clearAndType(value, app: app)
   }
 
   @MainActor
   @discardableResult
   func tapTimeOnTarget() -> TOTSetupPage {
-    XCTAssertTrue(timeOnTargetButton.waitForExistence(timeout: 5))
-    forceTap(timeOnTargetButton)
+    tapButton("timeOnTargetButton", toReveal: app.segmentedControls["timeDisplayModePicker"])
     return TOTSetupPage(app: app)
   }
 
   @MainActor
   @discardableResult
   func tapBackToTargetSetup() -> TargetSetupPage {
-    forceTap(targetSetupButton)
+    tapButton("targetSetupButton", toReveal: app.textFields["targetNameField"])
     return TargetSetupPage(app: app)
   }
 }

@@ -146,9 +146,11 @@ final class IPSetupTests: BaseTestCase {
 
     // Enter offset distance
     ipPage.enterOffsetDistance("5")
-    // Dismiss keyboard, then wait for the distance value to commit before
-    // switching offset type.
-    app.collectionViews.firstMatch.tap()
+    // Commit the value before switching offset type. numberPad has no Return key
+    // and the iPad form fits without scrolling, so the keyboard can't be
+    // dismissed by tapping a blank area or swiping; moving focus to another
+    // field ends editing and writes the binding.
+    ipPage.commitOffsetDistance()
     let distanceCommitted = XCTNSPredicateExpectation(
       predicate: NSPredicate(format: "value CONTAINS '5'"),
       object: ipPage.offsetDistanceField

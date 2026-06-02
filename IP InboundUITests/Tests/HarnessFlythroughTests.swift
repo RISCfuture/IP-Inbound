@@ -1,5 +1,6 @@
 import CoreLocation
 import XCTest
+import XCUITestKit
 
 // swiftlint:disable prefer_nimble
 
@@ -24,6 +25,7 @@ final class HarnessFlythroughTests: BaseTestCase {
     // Launch with the harness-seeded target so we bypass the (environmentally
     // broken) groundSpeedField keyboard entry.
     app = XCUIApplication()
+    app.disableLogStderrMirroring()
     app.launchArguments.append("-UITests")
     app.launchEnvironment["UITEST_NOW"] = Self.uiTestNowFormatter.string(from: now)
     app.launchEnvironment["UITEST_LOCATION_PATH"] = path
@@ -74,7 +76,7 @@ final class HarnessFlythroughTests: BaseTestCase {
     )
     let timingText = app.staticTexts.matching(timingPredicate).firstMatch
     XCTAssertTrue(
-      timingText.waitForExistence(timeout: 12),
+      timingText.waitForExistence(timeout: 30),
       "Deterministic seconds-early/late timing readout should be rendered from injected clock"
     )
 

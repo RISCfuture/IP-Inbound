@@ -1,4 +1,5 @@
 import XCTest
+import XCUITestKit
 
 // swiftlint:disable prefer_nimble
 
@@ -23,14 +24,14 @@ struct TargetSetupPage: Page {
   func enterTargetName(_ name: String) {
     let field = scrollToVisible(targetNameField) ?? targetNameField
     XCTAssertTrue(field.waitForExistence(timeout: 5), "Target name field should appear")
-    clearAndType(in: field, text: name)
+    field.clearAndType(name, app: app)
   }
 
   @MainActor
   func tapCoordinatesToCycleFormat() {
     let coords = scrollToVisible(targetCoordinates) ?? targetCoordinates
     XCTAssertTrue(coords.waitForExistence(timeout: 3), "Coordinates should be displayed")
-    forceTap(coords)
+    coords.forceTap()
   }
 
   @MainActor
@@ -38,7 +39,7 @@ struct TargetSetupPage: Page {
   func tapSetCoordinates() -> CoordinateEntryPage {
     let button = scrollToVisible(setCoordinatesButton) ?? setCoordinatesButton
     XCTAssertTrue(button.waitForExistence(timeout: 3), "Set Coordinates button should appear")
-    forceTap(button)
+    button.forceTap()
     return CoordinateEntryPage(app: app)
   }
 
@@ -46,7 +47,7 @@ struct TargetSetupPage: Page {
   @discardableResult
   func tapFindLocation() -> FindLocationPage {
     let button = scrollToVisible(findLocationButton) ?? findLocationButton
-    forceTap(button)
+    button.forceTap()
     return FindLocationPage(app: app)
   }
 
@@ -54,7 +55,7 @@ struct TargetSetupPage: Page {
   @discardableResult
   func tapDefineIP() -> IPSetupPage {
     XCTAssertTrue(defineIPButton.waitForExistence(timeout: 5), "Define IP button should appear")
-    forceTap(defineIPButton)
+    defineIPButton.forceTap()
     return IPSetupPage(app: app)
   }
 

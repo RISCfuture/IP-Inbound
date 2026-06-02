@@ -1,4 +1,5 @@
 import XCTest
+import XCUITestKit
 
 struct TutorialPage: Page {
   let app: XCUIApplication
@@ -22,9 +23,9 @@ struct TutorialPage: Page {
   @discardableResult
   func dismiss() -> TargetListPage {
     if doneButton.exists {
-      forceTap(doneButton)
+      doneButton.forceTap()
     } else if closeButton.exists {
-      forceTap(closeButton)
+      closeButton.forceTap()
     } else {
       app.swipeDown()
     }
