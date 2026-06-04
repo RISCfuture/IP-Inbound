@@ -46,6 +46,6 @@ jobs:
         env:
           SIM_UDID: ${{ steps.sim.outputs.udid }}
         run: |
-          periphery scan -- \
+          periphery scan --strict -- \
             -destination "platform=iOS Simulator,id=${SIM_UDID}" \
             -destination-timeout 300
