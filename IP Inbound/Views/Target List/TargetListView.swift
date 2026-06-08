@@ -57,11 +57,13 @@ struct TargetListView: View {
   let helper = PreviewHelper()
   TargetListView()
     .modelContainer(helper.modelContainer)
-    .onAppear { helper.createTarget() }
+    .environment(\.previewLocation, helper.preIPEvent)
+    .onAppear { helper.createTargets() }
 }
 
 #Preview("No Selection") {
   let helper = PreviewHelper()
   TargetListView()
     .modelContainer(helper.modelContainer)
+    .environment(\.previewLocation, helper.preIPEvent)
 }

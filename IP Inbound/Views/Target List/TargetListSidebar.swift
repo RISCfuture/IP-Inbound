@@ -11,14 +11,27 @@ struct TargetListSidebar: View {
   @Environment(\.modelContext)
   private var modelContext
 
+  /// Targets without a time on target sort by name at the top, followed by targets with a
+  /// time on target in chronological order.
+  private var sortedTargets: [Target] {
+    targets.sorted { lhs, rhs in
+      switch (lhs.timeOnTarget, rhs.timeOnTarget) {
+        case let (lhsTOT?, rhsTOT?): lhsTOT < rhsTOT
+        case (nil, nil): lhs.name.localizedStandardCompare(rhs.name) == .orderedAscending
+        case (nil, _): true
+        case (_, nil): false
+      }
+    }
+  }
+
   var body: some View {
     VStack {
       List(selection: $selectedTarget) {
-        ForEach(targets, id: \.self) { target in
+        ForEach(sortedTargets, id: \.self) { target in
           TargetListItem(target: target, selectedTarget: $selectedTarget)
         }.onDelete { offsets in
           for offset in offsets {
-            modelContext.delete(targets[offset])
+            modelContext.delete(sortedTargets[offset])
           }
         }
       }
@@ -48,7 +61,7 @@ struct TargetListSidebar: View {
     Text("Detail")
   }
   .modelContainer(helper.modelContainer)
-  .onAppear { helper.createTarget() }
+  .onAppear { helper.createTargets() }
 }
 
 #Preview("Empty List") {

@@ -74,18 +74,31 @@ final class PreviewHelper {
     )
   }
 
-  func target(minutesFromNow: Double = 4.0) -> Target {
+  func target(name: String = "My Target", minutesFromNow: Double? = 4.0) -> Target {
     let target = Target(
-      name: "My Target",
+      name: name,
       coordinate: .init(latitude: Self.target.0, longitude: Self.target.1)
     )
-    target.timeOnTarget = Date().addingTimeInterval(minutesFromNow * 60)
+    if let minutesFromNow {
+      target.timeOnTarget = Date().addingTimeInterval(minutesFromNow * 60)
+    }
     return target
   }
 
   @MainActor
   func createTarget() {
     modelContainer.mainContext.insert(target(minutesFromNow: 1))
+  }
+
+  /// Inserts a mix of targets with and without a time on target, so previews exercise the
+  /// list's sort order: no-TOT targets sorted by name at the top, then TOT targets by time.
+  @MainActor
+  func createTargets() {
+    let context = modelContainer.mainContext
+    context.insert(target(name: "Bravo", minutesFromNow: nil))
+    context.insert(target(name: "Mike", minutesFromNow: nil))
+    context.insert(target(name: "Zulu", minutesFromNow: 3))
+    context.insert(target(name: "Alpha", minutesFromNow: 9))
   }
 }
 
