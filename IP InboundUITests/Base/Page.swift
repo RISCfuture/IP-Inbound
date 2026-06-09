@@ -116,17 +116,13 @@ extension Page {
     if !button.waitUntilHittable() {
       ensureHittable(button)
     }
-    button.forceTap()
-    // Wait for direction button to disappear (keypad switches to numeric)
-    let gone = XCTNSPredicateExpectation(
-      predicate: NSPredicate(format: "isHittable == false"),
-      object: button
-    )
-    XCTAssertEqual(
-      XCTWaiter.wait(for: [gone], timeout: 3),
-      .completed,
-      "\(direction) button should disappear after tap"
-    )
+    // Tapping a direction swaps the keypad to numeric, so the key becomes
+    // non-hittable. A single forceTap is intermittently dropped on iPad,
+    // leaving the keypad on the direction page; retry the tap until it switches.
+    let switched = button.tap(until: {
+      button.waitFor(NSPredicate(format: "isHittable == false"), timeout: ScaledTimeouts.short)
+    })
+    XCTAssertTrue(switched, "\(direction) button should disappear after tap")
     // Wait for numeric keypad to be ready
     let numericButton = app.buttons["keypad-1"]
     XCTAssertTrue(numericButton.waitForExistence(timeout: 2), "Numeric keypad should appear")
