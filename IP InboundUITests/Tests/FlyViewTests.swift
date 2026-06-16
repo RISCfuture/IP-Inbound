@@ -41,21 +41,9 @@ final class FlyViewTests: BaseTestCase {
 
   @MainActor
   private func cleanUpFromFly(_ name: String) {
-    if !isIPad {
-      for _ in 0..<6 {
-        let addTarget = app.buttons["addTargetButton"]
-        if addTarget.waitForExistence(timeout: 1) { break }
-        let backButton = app.navigationBars.buttons.element(boundBy: 0)
-        guard backButton.waitForExistence(timeout: 3) else { break }
-        if backButton.isHittable {
-          backButton.tap()
-        } else {
-          backButton.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
-        }
-        Thread.sleep(forTimeInterval: 0.5)
-      }
-    }
-    TargetListPage(app: app).deleteTarget(named: name)
+    let list = TargetListPage(app: app)
+    list.navigateBackToList()
+    list.deleteTarget(named: name)
   }
 
   // Launches with the seeded "Flythrough" target and the given location fix, pinning `UITEST_NOW`
@@ -82,21 +70,10 @@ final class FlyViewTests: BaseTestCase {
     waitForAppStability()
     handleLocationPermissionIfNeeded()
 
-    let seeded = app.staticTexts["Flythrough"]
-    XCTAssertTrue(seeded.waitForExistence(timeout: 10), "Seeded target should appear")
-    seeded.tap()
-
-    if app.buttons["defineIPButton"].waitForExistence(timeout: 2) {
-      app.buttons["defineIPButton"].tap()
-    }
-    if app.buttons["timeOnTargetButton"].waitForExistence(timeout: 2) {
-      app.buttons["timeOnTargetButton"].tap()
-    }
-    if app.buttons["flyButton"].waitForExistence(timeout: 2) {
-      app.buttons["flyButton"].tap()
-    }
-
-    return FlyPage(app: app)
+    let list = TargetListPage(app: app)
+    XCTAssertTrue(list.isDisplayed, "Seeded target list should appear")
+    let setup = list.selectTarget(named: "Flythrough")
+    return setup.advanceThroughSetupToFly()
   }
 
   // Moving on-axis fix past the IP → `.toTarget` (IP→Target) guidance, which renders the CDI.
@@ -258,46 +235,16 @@ final class FlyViewTests: BaseTestCase {
   // `.toIPWithSpeedGuidance`, the mode that renders `TimingView`.
   @MainActor
   func testFlyView_ShowsRequiredSpeedForTOT() throws {
-    let tot = try XCTUnwrap(
-      Self.uiTestNowFormatter.date(from: "2026-05-18T18:00:00.000Z")
-    )
     // The aircraft is 5 NM north of the IP on the run-in axis (no turn) but flying ~35 m/s — well
     // below the run-in speed — so it reaches the IP more than the on-time window late while still
     // recoverable at max speed. FlyView is therefore in `.toIPWithSpeedGuidance`, and because the
     // arrival sits outside the green on-time window it renders the required-speed callout (which is
     // hidden while on time). The clock ticks from UITEST_NOW, so it is set ~360 s before TOT to keep
     // this off-time, pre-bypass state through navigation and the wait below.
-    let now = tot.addingTimeInterval(-360)
-
-    app = XCUIApplication()
-    app.disableLogStderrMirroring()
-    app.launchArguments.append("-UITests")
-    app.launchEnvironment["UITEST_NOW"] = Self.uiTestNowFormatter.string(from: now)
-    app.launchEnvironment["UITEST_LOCATION"] = "36.935565,-115.457402,1502,179,35"
-    app.launchEnvironment["UITEST_SEED_TARGET"] = "1"
-    app.launchEnvironment["UITEST_BYPASS_TOT_RESET"] = "1"
-    app.resetAuthorizationStatus(for: .location)
-    app.launch()
-    waitForAppStability()
-    handleLocationPermissionIfNeeded()
-
-    let seeded = app.staticTexts["Flythrough"]
-    XCTAssertTrue(seeded.waitForExistence(timeout: 10), "Seeded target should appear")
-    seeded.tap()
-
-    // Walk any residual setup pages — SwiftUI sometimes restores them across
-    // selection even with `isConfigured == true`. Mirrors the screenshot harness.
-    if app.buttons["defineIPButton"].waitForExistence(timeout: 2) {
-      app.buttons["defineIPButton"].tap()
-    }
-    if app.buttons["timeOnTargetButton"].waitForExistence(timeout: 2) {
-      app.buttons["timeOnTargetButton"].tap()
-    }
-    if app.buttons["flyButton"].waitForExistence(timeout: 2) {
-      app.buttons["flyButton"].tap()
-    }
-
-    let flyPage = FlyPage(app: app)
+    let flyPage = try launchSeededFlythrough(
+      fix: "36.935565,-115.457402,1502,179,35",
+      secondsBeforeTOT: 360
+    )
     let requiredSpeed = flyPage.requiredSpeedDisplay
     XCTAssertTrue(
       requiredSpeed.waitForExistence(timeout: 12),
@@ -313,39 +260,13 @@ final class FlyViewTests: BaseTestCase {
 
   @MainActor
   func testFlyView_HidesRequiredSpeedWhenBypassingIP() throws {
-    let tot = try XCTUnwrap(
-      Self.uiTestNowFormatter.date(from: "2026-05-18T18:00:00.000Z")
-    )
     // Off the run-in axis with a large turn still required, this geometry can't make the TOT even
     // at max speed, so FlyView bypasses the IP. The required-speed callout must be hidden there: a
     // finite “req.” speed would wrongly imply the time-on-target is still achievable.
-    let now = tot.addingTimeInterval(-5 * 60)
-
-    app = XCUIApplication()
-    app.disableLogStderrMirroring()
-    app.launchArguments.append("-UITests")
-    app.launchEnvironment["UITEST_NOW"] = Self.uiTestNowFormatter.string(from: now)
-    app.launchEnvironment["UITEST_LOCATION"] = "36.853375,-115.593249,1502,179,62"
-    app.launchEnvironment["UITEST_SEED_TARGET"] = "1"
-    app.launchEnvironment["UITEST_BYPASS_TOT_RESET"] = "1"
-    app.resetAuthorizationStatus(for: .location)
-    app.launch()
-    waitForAppStability()
-    handleLocationPermissionIfNeeded()
-
-    let seeded = app.staticTexts["Flythrough"]
-    XCTAssertTrue(seeded.waitForExistence(timeout: 10), "Seeded target should appear")
-    seeded.tap()
-
-    if app.buttons["defineIPButton"].waitForExistence(timeout: 2) {
-      app.buttons["defineIPButton"].tap()
-    }
-    if app.buttons["timeOnTargetButton"].waitForExistence(timeout: 2) {
-      app.buttons["timeOnTargetButton"].tap()
-    }
-    if app.buttons["flyButton"].waitForExistence(timeout: 2) {
-      app.buttons["flyButton"].tap()
-    }
+    let flyPage = try launchSeededFlythrough(
+      fix: "36.853375,-115.593249,1502,179,62",
+      secondsBeforeTOT: 5 * 60
+    )
 
     // The bypass title confirms the mode; once it’s on screen the timing readout has rendered.
     let bypassTitle = app.staticTexts["P.POS → Target"]
@@ -354,7 +275,6 @@ final class FlyViewTests: BaseTestCase {
       "This geometry should bypass the IP"
     )
 
-    let flyPage = FlyPage(app: app)
     XCTAssertFalse(
       flyPage.requiredSpeedDisplay.exists,
       "Required-speed callout must be hidden when bypassing the IP"

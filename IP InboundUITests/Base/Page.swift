@@ -104,8 +104,10 @@ extension Page {
         ensureHittable(button)
       }
       button.forceTap()
-      // Brief pause to let the simulator process the tap before the next keystroke
-      Thread.sleep(forTimeInterval: 0.15)
+      // Let the simulator process the tap before the next keystroke. Waiting for
+      // the key to settle back to a hittable state forces a fresh UI snapshot
+      // round-trip instead of sleeping a fixed interval.
+      _ = button.waitUntilHittable(timeout: ScaledTimeouts.short)
     }
   }
 

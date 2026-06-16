@@ -164,23 +164,10 @@ final class TargetManagementTests: BaseTestCase {
     totPage.selectZuluTime()
     totPage.enterTime("18:00:00")
 
-    // Navigate back to list via nav bar back buttons
-    if !isIPad {
-      for _ in 0..<5 {
-        let addTarget = app.buttons["addTargetButton"]
-        if addTarget.waitForExistence(timeout: 1) { break }
-        let backButton = app.navigationBars.buttons.element(boundBy: 0)
-        guard backButton.waitForExistence(timeout: 3) else { break }
-        if backButton.isHittable {
-          backButton.tap()
-        } else {
-          backButton.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
-        }
-        Thread.sleep(forTimeInterval: 0.5)
-      }
-    }
-
+    // Navigate back to the list (the page object pops the nav stack and waits
+    // for the list to appear).
     let listPage = TargetListPage(app: app)
+    listPage.navigateBackToList()
     XCTAssertTrue(listPage.isDisplayed)
 
     // Assert cell contains time text

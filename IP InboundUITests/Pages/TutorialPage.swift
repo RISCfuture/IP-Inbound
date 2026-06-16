@@ -44,11 +44,12 @@ struct TutorialPage: Page {
     let text = app.staticTexts[title]
     // Wait briefly for initial render (LazyVStack may need a moment)
     if text.waitForExistence(timeout: 2) { return true }
-    // Scroll until we find it or exhaust attempts
+    // Scroll until we find it or exhaust attempts. After each swipe, give the
+    // newly laid-out content a short auto-waiting probe rather than a fixed
+    // settle: `waitForExistence` returns as soon as the title renders.
     for _ in 0..<10 {
       app.swipeUp()
-      Thread.sleep(forTimeInterval: 0.3)
-      if text.exists { return true }
+      if text.waitForExistence(timeout: 0.5) { return true }
     }
     return false
   }

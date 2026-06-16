@@ -37,7 +37,6 @@ final class NavigationFlowTests: BaseTestCase {
       } else {
         backButton.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
       }
-      Thread.sleep(forTimeInterval: 0.5)
     }
   }
 

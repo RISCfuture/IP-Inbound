@@ -44,9 +44,10 @@ struct TargetListPage: Page {
     // Try tapping the button up to 3 times (may fail if another app interrupts)
     for attempt in 0..<3 {
       if attempt > 0 {
-        // Re-activate our app in case another app stole focus
+        // Re-activate our app in case another app stole focus, then wait for it
+        // to return to the foreground rather than sleeping a fixed interval.
         app.activate()
-        Thread.sleep(forTimeInterval: 0.5)
+        _ = app.wait(for: .runningForeground, timeout: 5)
       }
       if tutorialButton.isHittable {
         tutorialButton.tap()
@@ -66,6 +67,28 @@ struct TargetListPage: Page {
     XCTAssertNotNil(cell, "Target '\(name)' should exist in list")
     if let cell { cell.forceTap() }
     return TargetSetupPage(app: app)
+  }
+
+  /// Pop the master navigation stack back to the target list, one nav-bar back
+  /// tap at a time, until `addTargetButton` is showing. On iPad the list lives
+  /// in the always-visible sidebar, so there is nothing to pop and this returns
+  /// immediately. Each iteration waits for the next state rather than sleeping a
+  /// fixed interval: `addTargetButton.waitForExistence` is the loop's settle.
+  @MainActor
+  @discardableResult
+  func navigateBackToList() -> Self {
+    guard UIDevice.current.userInterfaceIdiom != .pad else { return self }
+    for _ in 0..<6 {
+      if addTargetButton.waitForExistence(timeout: 1) { break }
+      let backButton = app.navigationBars.buttons.element(boundBy: 0)
+      guard backButton.waitForExistence(timeout: 3) else { break }
+      if backButton.isHittable {
+        backButton.tap()
+      } else {
+        backButton.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+      }
+    }
+    return self
   }
 
   @MainActor
@@ -90,8 +113,10 @@ struct TargetListPage: Page {
       if deleteButton.waitForExistence(timeout: 2) {
         deleteButton.tap()
         _ = deleteButton.waitForNonExistence(timeout: 2)
-        // Wait for deletion animation to complete before retrying
-        Thread.sleep(forTimeInterval: 1.0)
+        // Wait for the removed row's text to leave the hierarchy (the deletion
+        // animation finishing) rather than sleeping a fixed interval before
+        // re-querying for any remaining duplicate.
+        _ = app.staticTexts[name].firstMatch.waitForNonExistence(timeout: 2)
       }
     }
   }

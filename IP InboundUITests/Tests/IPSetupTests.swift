@@ -277,21 +277,9 @@ final class IPSetupTests: BaseTestCase {
 
   @MainActor
   private func navigateToListAndDelete(_ name: String) {
-    if !isIPad {
-      for _ in 0..<5 {
-        let addTarget = app.buttons["addTargetButton"]
-        if addTarget.waitForExistence(timeout: 1) { break }
-        let backButton = app.navigationBars.buttons.element(boundBy: 0)
-        guard backButton.waitForExistence(timeout: 3) else { break }
-        if backButton.isHittable {
-          backButton.tap()
-        } else {
-          backButton.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
-        }
-        Thread.sleep(forTimeInterval: 0.5)
-      }
-    }
-    TargetListPage(app: app).deleteTarget(named: name)
+    let list = TargetListPage(app: app)
+    list.navigateBackToList()
+    list.deleteTarget(named: name)
   }
 }
 
