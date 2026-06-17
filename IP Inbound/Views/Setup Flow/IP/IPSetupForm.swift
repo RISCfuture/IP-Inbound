@@ -3,18 +3,32 @@ import Foundation
 import SwiftUI
 
 struct IPSetupForm: View {
-  private static let defaultOffsetDistanceNM = 4.0
-  private static let defaultOffsetTimeMin = 2.0
   private static let segmentedPickerInset = -12.0
 
   @Bindable var target: Target
 
   @State private var offsetType = IPOffsetType.distance
-  @State private var offsetDistance = Self.defaultOffsetDistanceNM
-  @State private var offsetTime = Self.defaultOffsetTimeMin
 
   @Default(.distanceUnit)
   private var distanceDefault
+
+  // The offset's distance and time are two views of the same value, kept in sync
+  // by `Target.setOffset(…)`. Binding both fields to `target` (the single source
+  // of truth) rather than to mirrored `@State` avoids a write-back feedback loop
+  // between the two representations.
+  private var offsetDistance: Binding<Double> {
+    .init(
+      get: { target.offsetDistanceMeasurement.converted(to: distanceDefault.distanceUnit).value },
+      set: { target.setOffset(distance: .init(value: $0, unit: distanceDefault.distanceUnit)) }
+    )
+  }
+
+  private var offsetTime: Binding<Double> {
+    .init(
+      get: { target.offsetTime },
+      set: { target.setOffset(time: .init(value: $0, unit: .minutes)) }
+    )
+  }
 
   var body: some View {
     Form {
@@ -50,7 +64,7 @@ struct IPSetupForm: View {
           switch offsetType {
             case .distance:
               HStack {
-                TextField("", value: $offsetDistance, format: .number)
+                TextField("", value: offsetDistance, format: .number)
                   .multilineTextAlignment(.trailing)
                   .keyboardType(.numberPad)
                   .accessibilityIdentifier("offsetDistanceField")
@@ -65,7 +79,7 @@ struct IPSetupForm: View {
               }
             case .time:
               HStack {
-                TextField("", value: $offsetTime, format: .number)
+                TextField("", value: offsetTime, format: .number)
                   .multilineTextAlignment(.trailing)
                   .keyboardType(.numberPad)
                   .accessibilityIdentifier("offsetTimeField")
@@ -105,24 +119,6 @@ struct IPSetupForm: View {
             .foregroundStyle(.secondary)
         }
       }
-    }
-    .onChange(of: offsetDistance) {
-      target.setOffset(
-        distance: .init(
-          value: offsetDistance,
-          unit: distanceDefault.distanceUnit
-        )
-      )
-      offsetTime = target.offsetTime
-    }
-    .onChange(of: offsetTime) {
-      target.setOffset(
-        time: .init(
-          value: offsetTime,
-          unit: .minutes
-        )
-      )
-      offsetDistance = target.offsetDistance
     }
   }
 }
