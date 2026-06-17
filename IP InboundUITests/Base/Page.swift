@@ -104,7 +104,10 @@ extension Page {
         ensureHittable(button)
       }
       button.forceTap()
-      // Brief pause to let the simulator process the tap before the next keystroke
+      // Input debounce: let the simulator finish processing this keystroke before
+      // the next interaction. Without it, tapping the following field can land
+      // while the keypad is still animating, leaving the app non-idle and hanging
+      // XCUITest's implicit idle wait (observed as a 7-minute timeout on iPad).
       Thread.sleep(forTimeInterval: 0.15)
     }
   }

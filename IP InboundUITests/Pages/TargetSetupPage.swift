@@ -66,6 +66,26 @@ struct TargetSetupPage: Page {
     return TargetListPage(app: app)
   }
 
+  /// Advance an already-configured target through any residual setup pages to
+  /// the Fly view. Selecting a configured target usually lands directly on Fly,
+  /// but SwiftUI sometimes restores the Define Target / IP / TOT pages across
+  /// selection even with `isConfigured == true`; this walks whichever forward
+  /// links are present (each guarded by an existence wait, never a fixed sleep).
+  @MainActor
+  @discardableResult
+  func advanceThroughSetupToFly() -> FlyPage {
+    if defineIPButton.waitForExistence(timeout: 2) {
+      defineIPButton.tap()
+    }
+    if app.buttons["timeOnTargetButton"].waitForExistence(timeout: 2) {
+      app.buttons["timeOnTargetButton"].tap()
+    }
+    if app.buttons["flyButton"].waitForExistence(timeout: 2) {
+      app.buttons["flyButton"].tap()
+    }
+    return FlyPage(app: app)
+  }
+
   // MARK: - Queries
 
   @MainActor
