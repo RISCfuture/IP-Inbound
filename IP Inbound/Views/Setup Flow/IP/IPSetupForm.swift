@@ -5,6 +5,13 @@ import SwiftUI
 struct IPSetupForm: View {
   private static let segmentedPickerInset = -12.0
 
+  // `Target.setOffset(…)` rounds the active representation to a whole unit, so the
+  // stored value is already integral. This format is a display safeguard: it drops
+  // any fractional digits the nautical-mile→display-unit reconversion might
+  // reintroduce, so the field never shows conversion noise like "37.000032".
+  private static let offsetValueFormat = FloatingPointFormatStyle<Double>.number
+    .precision(.fractionLength(0))
+
   @Bindable var target: Target
 
   @State private var offsetType = IPOffsetType.distance
@@ -64,7 +71,7 @@ struct IPSetupForm: View {
           switch offsetType {
             case .distance:
               HStack {
-                TextField("", value: offsetDistance, format: .number)
+                TextField("", value: offsetDistance, format: Self.offsetValueFormat)
                   .multilineTextAlignment(.trailing)
                   .keyboardType(.numberPad)
                   .accessibilityIdentifier("offsetDistanceField")
@@ -79,7 +86,7 @@ struct IPSetupForm: View {
               }
             case .time:
               HStack {
-                TextField("", value: offsetTime, format: .number)
+                TextField("", value: offsetTime, format: Self.offsetValueFormat)
                   .multilineTextAlignment(.trailing)
                   .keyboardType(.numberPad)
                   .accessibilityIdentifier("offsetTimeField")
@@ -118,6 +125,21 @@ struct IPSetupForm: View {
           Text("Target Ground Speed")
             .foregroundStyle(.secondary)
         }
+      }
+    }
+    // Switching representation re-rounds the now-active value into the store
+    // (via `Target.setOffset(…)`) so the displayed whole number is exactly the
+    // value used for run-in timing — not a rounded view of a fractional offset.
+    // This keys off the discrete picker selection, not the field values, so it
+    // cannot re-enter the distance↔time feedback loop.
+    .onChange(of: offsetType) {
+      switch offsetType {
+        case .distance:
+          target.setOffset(
+            distance: .init(value: offsetDistance.wrappedValue, unit: distanceDefault.distanceUnit)
+          )
+        case .time:
+          target.setOffset(time: .init(value: offsetTime.wrappedValue, unit: .minutes))
       }
     }
   }

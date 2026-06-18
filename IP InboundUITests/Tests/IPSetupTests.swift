@@ -179,10 +179,19 @@ final class IPSetupTests: BaseTestCase {
     )
     let timeValue = timeField.value as? String ?? ""
     XCTAssertFalse(timeValue.isEmpty, "Time field should have a computed value")
-    // The value should be a non-zero number
-    if let numericValue = Double(timeValue) {
-      XCTAssertGreaterThan(numericValue, 0, "Time equivalent should be non-zero")
-    }
+    let numericValue = try XCTUnwrap(
+      Double(timeValue),
+      "Time field should hold a number, got: '\(timeValue)'"
+    )
+    XCTAssertGreaterThan(numericValue, 0, "Time equivalent should be non-zero")
+    // 5 NM at the default 120 kt ground speed is 2.5 min. The field must round
+    // to the nearest whole minute rather than surfacing the fractional
+    // conversion (e.g. "2.5" or "37.000032").
+    XCTAssertEqual(
+      numericValue,
+      numericValue.rounded(),
+      "Offset time should be rounded to a whole number, got: '\(timeValue)'"
+    )
 
     navigateFromIPToListAndDelete("Conversion Test")
   }

@@ -127,18 +127,30 @@ final class Target: CustomDebugStringConvertible, Identifiable, Equatable, Hasha
     lhs.id == rhs.id
   }
 
+  /// Sets the offset from a time, rounded to a whole minute. The distance is
+  /// re-derived from the rounded time so the two representations stay
+  /// consistent and timing matches the displayed value exactly.
   func setOffset(time: Measurement<UnitDuration>) {
-    offsetTime = time.converted(to: .minutes).value
+    let wholeTime = Measurement(
+      value: time.converted(to: .minutes).value.rounded(),
+      unit: UnitDuration.minutes
+    )
+    offsetTime = wholeTime.value
     offsetDistance =
-      (targetGroundSpeedMeasurement * time)
+      (targetGroundSpeedMeasurement * wholeTime)
       .converted(to: .nauticalMiles)
       .value
   }
 
+  /// Sets the offset from a distance, rounded to a whole unit of the supplied
+  /// measurement. The time is re-derived from the rounded distance so the two
+  /// representations stay consistent and timing matches the displayed value
+  /// exactly.
   func setOffset(distance: Measurement<UnitLength>) {
-    offsetDistance = distance.converted(to: .nauticalMiles).value
+    let wholeDistance = Measurement(value: distance.value.rounded(), unit: distance.unit)
+    offsetDistance = wholeDistance.converted(to: .nauticalMiles).value
     offsetTime =
-      (distance / targetGroundSpeedMeasurement)
+      (wholeDistance / targetGroundSpeedMeasurement)
       .converted(to: .minutes)
       .value
   }

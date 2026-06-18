@@ -27,24 +27,29 @@ struct TargetTests {
     #expect(ipCoord.longitudeDeg == -122)
   }
 
-  @Test("setOffset, updates distance")
+  @Test("setOffset, rounds distance to a whole unit and derives time from it")
   func targetOffsetTypeChangeDistanceToTime() {
     let target = Target(name: "Test", coordinate: Coordinate(latitude: 38.0, longitude: -122.0))
     target.targetGroundSpeed = 120  // 120 knots
 
-    target.setOffset(distance: .init(value: 10, unit: .nauticalMiles))
-    #expect(target.offsetTime.isApproximatelyEqual(to: 5, relativeTolerance: 0.01))
+    target.setOffset(distance: .init(value: 9.6, unit: .nauticalMiles))
+    // Distance rounds to a whole 10 NM, and the time is re-derived from that
+    // rounded distance (10 NM at 120 kt = 5 min) — not from the 9.6 NM input.
     #expect(target.offsetDistance == 10)
+    #expect(target.offsetTime.isApproximatelyEqual(to: 5, relativeTolerance: 0.01))
   }
 
-  @Test("setOffset, updates time")
+  @Test("setOffset, rounds time to a whole minute and derives distance from it")
   func targetOffsetTypeChangeTimeToDistance() {
     let target = Target(name: "Test", coordinate: Coordinate(latitude: 38.0, longitude: -122.0))
     target.targetGroundSpeed = 120  // 120 knots
 
-    target.setOffset(time: .init(value: 5, unit: .minutes))
-    #expect(target.offsetDistance.isApproximatelyEqual(to: 10, relativeTolerance: 0.01))
-    #expect(target.offsetTime == 5)
+    target.setOffset(time: .init(value: 3.7, unit: .minutes))
+    // Time rounds to a whole 4 min, and the distance is re-derived from that
+    // rounded time (4 min at 120 kt = 8 NM) — so timing matches the displayed
+    // whole-minute value exactly.
+    #expect(target.offsetTime == 4)
+    #expect(target.offsetDistance.isApproximatelyEqual(to: 8, relativeTolerance: 0.01))
   }
 
   @Test("desiredTrack, calculates correctly")
