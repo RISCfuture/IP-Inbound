@@ -1,8 +1,9 @@
 import MapKit
 import Observation
 
+@MainActor
 @Observable
-class SearchCompleter: NSObject, MKLocalSearchCompleterDelegate {
+class SearchCompleter: NSObject, @preconcurrency MKLocalSearchCompleterDelegate {
   private(set) var suggestions: [MKLocalSearchCompletion] = []
   private(set) var error: Error?
 
@@ -33,21 +34,18 @@ class SearchCompleter: NSObject, MKLocalSearchCompleterDelegate {
     self.error = error
   }
 
-  @MainActor
-  func lookupCoordinates(
-    for completion: MKLocalSearchCompletion,
-    completionHandler: @MainActor @escaping (CLLocationCoordinate2D?) -> Void
-  ) {
-    let searchRequest = MKLocalSearch.Request(completion: completion)
-    let search = MKLocalSearch(request: searchRequest)
-
-    search.start { response, error in
-      if let coordinate = response?.mapItems.first?.placemark.coordinate {
-        completionHandler(coordinate)
-      } else {
-        self.error = error ?? LocationSearchError.noResults
-        completionHandler(nil)
+  func lookupCoordinates(for completion: MKLocalSearchCompletion) async -> CLLocationCoordinate2D? {
+    let search = MKLocalSearch(request: .init(completion: completion))
+    do {
+      let response = try await search.start()
+      guard let coordinate = response.mapItems.first?.placemark.coordinate else {
+        error = LocationSearchError.noResults
+        return nil
       }
+      return coordinate
+    } catch {
+      self.error = error
+      return nil
     }
   }
 }

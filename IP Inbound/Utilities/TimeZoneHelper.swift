@@ -13,16 +13,9 @@ class TimeZoneHelper: NSObject {
     super.init()
   }
 
-  func fetchTimeZone(
-    for coordinate: Coordinate,
-    completion: @escaping (TimeZone?) -> Void
-  ) async {
+  func timeZone(for coordinate: Coordinate) async -> TimeZone? {
     let cacheKey = "\(coordinate.latitudeDeg),\(coordinate.longitudeDeg)"
-
-    if let cachedTimeZone = timeZoneCache[cacheKey] {
-      completion(cachedTimeZone)
-      return
-    }
+    if let cachedTimeZone = timeZoneCache[cacheKey] { return cachedTimeZone }
 
     let location = CLLocation(
       latitude: coordinate.latitudeDeg,
@@ -31,20 +24,15 @@ class TimeZoneHelper: NSObject {
 
     do {
       let placemarks = try await geocoder.reverseGeocodeLocation(location)
-      if let placemark = placemarks.first,
-        let timeZone = placemark.timeZone
-      {
-        timeZoneCache[cacheKey] = timeZone
-        completion(timeZone)
-      } else {
-        completion(nil)
-      }
+      guard let timeZone = placemarks.first?.timeZone else { return nil }
+      timeZoneCache[cacheKey] = timeZone
+      return timeZone
     } catch {
       SentrySDK.capture(error: error) { scope in
         scope.setLevel(.warning)
         scope.setTag(value: "geocoding", key: "component")
       }
-      completion(nil)
+      return nil
     }
   }
 }

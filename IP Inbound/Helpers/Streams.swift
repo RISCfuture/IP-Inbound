@@ -65,7 +65,7 @@ func bootstrap<T: Sendable, S: Sendable & AsyncSequence<T, any Error>>(
 ) -> AsyncThrowingStream<T, any Error> {
   AsyncThrowingStream { continuation in
     continuation.yield(initial)
-    let task = Task { @Sendable in
+    let task = Task {
       do {
         for try await element in stream {
           continuation.yield(element)
@@ -87,7 +87,7 @@ func extrapolate<T: Sendable, S: Sendable & AsyncSequence<T, any Error>>(
   extrapolate: @Sendable @escaping (T, TimeInterval) -> T
 ) -> AsyncThrowingStream<T, any Error> {
   AsyncThrowingStream { continuation in
-    let task = Task { @Sendable in
+    let task = Task {
       var extrapolationTask: Task<Void, Never>?
 
       do {

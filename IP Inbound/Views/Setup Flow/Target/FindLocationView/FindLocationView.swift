@@ -26,8 +26,8 @@ struct FindLocationView: View {
   }
 
   private func select(_ suggestion: MKLocalSearchCompletion) {
-    searchCompleter.lookupCoordinates(for: suggestion) { coordinate in
-      if let coordinate {
+    Task {
+      if let coordinate = await searchCompleter.lookupCoordinates(for: suggestion) {
         onLocationSelected(coordinate, suggestion.title)
       }
     }

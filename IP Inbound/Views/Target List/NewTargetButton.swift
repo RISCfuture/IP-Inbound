@@ -20,7 +20,7 @@ struct NewTargetButton: View {
     Button {
       guard !isCreating else { return }
       isCreating = true
-      Task { @MainActor in
+      Task {
         defer { isCreating = false }
         guard let coordinate = await resolvedCoordinate() else { return }
         let target = Target(name: String(localized: "New Target"), coordinate: .init(coordinate))

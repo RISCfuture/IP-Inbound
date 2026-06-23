@@ -150,13 +150,11 @@ final class TOTEntryManager {
 
     formatChangeObserver = Task { [weak self] in
       for await _ in Defaults.updates(.TOTDisplayMode) {
-        await MainActor.run { self?.currentIndex = 0 }
+        self?.currentIndex = 0
       }
     }
 
-    Task { @MainActor in
-      await self.fetchTargetTimezone()
-    }
+    Task { await self.fetchTargetTimezone() }
   }
 
   func isValidCharacter(_ character: Character) -> Bool {
@@ -307,9 +305,7 @@ final class TOTEntryManager {
   }
 
   private func fetchTargetTimezone() async {
-    await TimeZoneHelper.shared.fetchTimeZone(for: targetCoordinate) { [weak self] timezone in
-      self?.targetTimezone = timezone
-    }
+    targetTimezone = await TimeZoneHelper.shared.timeZone(for: targetCoordinate)
   }
 
   /// An editable digit within the `HH:MM:SS TZ` display, paired with its character index.

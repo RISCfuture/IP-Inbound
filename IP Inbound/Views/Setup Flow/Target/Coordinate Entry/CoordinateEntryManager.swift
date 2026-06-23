@@ -110,7 +110,7 @@ final class CoordinateEntryManager {
 
     formatChangeObserver = Task { [weak self] in
       for await _ in Defaults.updates(.coordinateFormat) {
-        await MainActor.run { self?.currentIndex = 0 }
+        self?.currentIndex = 0
       }
     }
   }
