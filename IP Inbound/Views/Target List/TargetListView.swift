@@ -1,4 +1,3 @@
-import CoreLocation
 import SwiftData
 import SwiftUI
 
@@ -20,31 +19,29 @@ struct TargetListView: View {
   }
 
   var body: some View {
-    RequiresLocation {
-      NavigationSplitView {
-        TargetListSidebar(
-          selectedTarget: sidebarSelection,
-          showingTutorial: $showingTutorial
+    NavigationSplitView {
+      TargetListSidebar(
+        selectedTarget: sidebarSelection,
+        showingTutorial: $showingTutorial
+      )
+    } detail: {
+      if let selectedTarget {
+        SetupFlowView(
+          target: selectedTarget,
+          startAtFly: selectedTarget.id == targetToFly,
+          onSelectTarget: { selected in
+            selected.isConfigured = true
+            targetToFly = selected.id
+            self.selectedTarget = selected
+          },
+          onChooseTarget: {
+            targetToFly = nil
+            self.selectedTarget = nil
+          }
         )
-      } detail: {
-        if let selectedTarget {
-          SetupFlowView(
-            target: selectedTarget,
-            startAtFly: selectedTarget.id == targetToFly,
-            onSelectTarget: { selected in
-              selected.isConfigured = true
-              targetToFly = selected.id
-              self.selectedTarget = selected
-            },
-            onChooseTarget: {
-              targetToFly = nil
-              self.selectedTarget = nil
-            }
-          )
-          .id(selectedTarget.id)
-        } else {
-          Text("No Target").foregroundStyle(.secondary)
-        }
+        .id(selectedTarget.id)
+      } else {
+        Text("No Target").foregroundStyle(.secondary)
       }
     }
     .sheet(isPresented: $showingTutorial) {

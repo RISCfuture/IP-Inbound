@@ -215,5 +215,6 @@ final class LocationStreamer: Sendable {
     realLocationStream = nil
     simLocationStream = nil
     stream = nil
+    latestEvent = nil
   }
 }

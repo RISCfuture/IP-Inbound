@@ -22,8 +22,10 @@ struct NewTargetButton: View {
       isCreating = true
       Task {
         defer { isCreating = false }
-        guard let coordinate = await resolvedCoordinate() else { return }
-        let target = Target(name: String(localized: "New Target"), coordinate: .init(coordinate))
+        let target = Target(
+          name: String(localized: "New Target"),
+          coordinate: await resolvedCoordinate()
+        )
         modelContext.insert(target)
         selectedTarget = target
       }
@@ -34,11 +36,17 @@ struct NewTargetButton: View {
     .accessibilityIdentifier("addTargetButton")
   }
 
-  private func resolvedCoordinate() async -> CLLocationCoordinate2D? {
-    if let previewCoord = previewLocation?.location?.coordinate {
-      return previewCoord
+  /// The seed coordinate for a new target: the current location when a fresh fix is available,
+  /// otherwise Null Island. Creating a target never requires a location — the user enters the real
+  /// coordinates next.
+  private func resolvedCoordinate() async -> Coordinate {
+    if let previewCoordinate = previewLocation?.location?.coordinate {
+      return .init(previewCoordinate)
     }
-    return await services.location.currentEvent()?.location?.coordinate
+    if let currentCoordinate = await services.location.currentEvent()?.location?.coordinate {
+      return .init(currentCoordinate)
+    }
+    return .init(latitude: 0, longitude: 0)
   }
 }
 
