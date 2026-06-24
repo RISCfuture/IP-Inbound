@@ -20,8 +20,9 @@ struct KeypadGrid: View {
   /// Half a key of breathing room added to each axis so keys don't crowd the keypad's edges.
   private static let edgeMargin: CGFloat = 0.5
   /// Matches the digit keys' glyph size so the check and cross read at the same scale as the
-  /// numbers.
-  private static let actionGlyphFontSize: CGFloat = 24
+  /// numbers, scaling together with Dynamic Type.
+  @ScaledMetric(relativeTo: .title2)
+  private var actionGlyphFontSize = 24.0
 
   let columns: Int
   let rows: [[KeypadCell]]
@@ -129,7 +130,8 @@ struct KeypadGrid: View {
   ) -> some View {
     Button(action: action) {
       Image(systemName: systemImage)
-        .font(.system(size: Self.actionGlyphFontSize, weight: .medium))
+        .font(.system(size: actionGlyphFontSize, weight: .medium))
+        .minimumScaleFactor(0.5)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .contentShape(.rect)
         .accessibilityLabel(accessibilityLabel)

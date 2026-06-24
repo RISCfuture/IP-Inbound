@@ -65,8 +65,10 @@ struct KeypadButton: View {
 /// The glyph or digit shown inside a ``KeypadButton``, expanded to fill the button's frame so the
 /// Liquid Glass background covers the whole touch target.
 private struct KeypadButtonLabel: View {
-  private static let labelFontSize: CGFloat = 24
-  private static let imageFontSize: CGFloat = 20
+  @ScaledMetric(relativeTo: .title2)
+  private var labelFontSize = 24.0
+  @ScaledMetric(relativeTo: .title3)
+  private var imageFontSize = 20.0
 
   let label: String?
   let systemImage: String?
@@ -76,13 +78,14 @@ private struct KeypadButtonLabel: View {
     Group {
       if let label {
         Text(label)
-          .font(.system(size: Self.labelFontSize, weight: .medium))
+          .font(.system(size: labelFontSize, weight: .medium))
       } else if let systemImage, let accessibilityLabel {
         Image(systemName: systemImage)
-          .font(.system(size: Self.imageFontSize))
+          .font(.system(size: imageFontSize))
           .accessibilityLabel(accessibilityLabel)
       }
     }
+    .minimumScaleFactor(0.5)
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .contentShape(.rect)
   }
