@@ -12,6 +12,9 @@
 		0159221F2FCA2B28007FB6BB /* XCUITestKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0159221E2FCA2B28007FB6BB /* XCUITestKit */; };
 		0166FA742DCA685800970EFD /* DefaultsMacros in Frameworks */ = {isa = PBXBuildFile; productRef = 0166FA732DCA685800970EFD /* DefaultsMacros */; };
 		016F3ED22DD4F1E1006EEC6D /* Numerics in Frameworks */ = {isa = PBXBuildFile; productRef = 016F3ED12DD4F1E1006EEC6D /* Numerics */; };
+		0172C0752FEC82A50034B332 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0172C0742FEC82A50034B332 /* WidgetKit.framework */; };
+		0172C0772FEC82A50034B332 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0172C0762FEC82A50034B332 /* SwiftUI.framework */; };
+		0172C0842FEC82A60034B332 /* Live ActivityExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 0172C0732FEC82A50034B332 /* Live ActivityExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		01C059A72DBF49C600D733C1 /* AsyncAlgorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 01C059A62DBF49C600D733C1 /* AsyncAlgorithms */; };
 		01EB04182FCA2D0B007C3D1E /* XCUITestKit in Frameworks */ = {isa = PBXBuildFile; productRef = 01EB04172FCA2D0B007C3D1E /* XCUITestKit */; };
 		01ECF4F32CF3E2F800BD0604 /* Defaults in Frameworks */ = {isa = PBXBuildFile; productRef = 01ECF4F22CF3E2F800BD0604 /* Defaults */; };
@@ -50,6 +53,13 @@
 			remoteGlobalIDString = 01ECF4B52CF3DF0D00BD0604;
 			remoteInfo = "IP Inbound";
 		};
+		0172C0822FEC82A60034B332 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 01ECF4AE2CF3DF0D00BD0604 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0172C0722FEC82A50034B332;
+			remoteInfo = "Live ActivityExtension";
+		};
 		01ECF4C72CF3DF0F00BD0604 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 01ECF4AE2CF3DF0D00BD0604 /* Project object */;
@@ -76,6 +86,15 @@
 			);
 			name = "Embed Watch Content";
 		};
+		0172C0852FEC82A60034B332 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			dstPath = "";
+			dstSubfolder = PlugIns;
+			files = (
+				0172C0842FEC82A60034B332 /* Live ActivityExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -84,6 +103,9 @@
 		010FB6442FEBA0630056ECE0 /* IP Inbound Watch Watch AppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "IP Inbound Watch Watch AppUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		01497EEC2DDC473400963D93 /* ci_post_clone.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = ci_post_clone.sh; sourceTree = "<group>"; };
 		016F3C1B2DC08E7A00F2A1AE /* Generate Screenshots.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Generate Screenshots.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		0172C0732FEC82A50034B332 /* Live ActivityExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Live ActivityExtension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		0172C0742FEC82A50034B332 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		0172C0762FEC82A50034B332 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		01ECF4B62CF3DF0D00BD0604 /* IP Inbound.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "IP Inbound.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		01ECF4C62CF3DF0F00BD0604 /* IP InboundTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "IP InboundTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		01ECF4D02CF3DF0F00BD0604 /* IP InboundUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "IP InboundUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -103,6 +125,20 @@
 				"UI Tests.xctestplan",
 			);
 			target = 01ECF4CF2CF3DF0F00BD0604 /* IP InboundUITests */;
+		};
+		0140E8822FEDC27B0030CF68 /* Exceptions for "IP Inbound" folder in "Live ActivityExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Helpers/TOTActivityAttributes.swift,
+			);
+			target = 0172C0722FEC82A50034B332 /* Live ActivityExtension */;
+		};
+		0172C0892FEC82A60034B332 /* Exceptions for "Live Activity" folder in "Live ActivityExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 0172C0722FEC82A50034B332 /* Live ActivityExtension */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -127,6 +163,14 @@
 			path = "Generate Screenshots";
 			sourceTree = "<group>";
 		};
+		0172C0782FEC82A50034B332 /* Live Activity */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				0172C0892FEC82A60034B332 /* Exceptions for "Live Activity" folder in "Live ActivityExtension" target */,
+			);
+			path = "Live Activity";
+			sourceTree = "<group>";
+		};
 		01DA7A5E2FEBA0610056ECE0 /* IP Inbound Shared */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = "IP Inbound Shared";
@@ -134,6 +178,9 @@
 		};
 		01ECF4B82CF3DF0D00BD0604 /* IP Inbound */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				0140E8822FEDC27B0030CF68 /* Exceptions for "IP Inbound" folder in "Live ActivityExtension" target */,
+			);
 			path = "IP Inbound";
 			sourceTree = "<group>";
 		};
@@ -175,6 +222,13 @@
 			isa = PBXFrameworksBuildPhase;
 			files = (
 				01EB04182FCA2D0B007C3D1E /* XCUITestKit in Frameworks */,
+			);
+		};
+		0172C0702FEC82A50034B332 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+				0172C0772FEC82A50034B332 /* SwiftUI.framework in Frameworks */,
+				0172C0752FEC82A50034B332 /* WidgetKit.framework in Frameworks */,
 			);
 		};
 		01ECF4B32CF3DF0D00BD0604 /* Frameworks */ = {
@@ -225,6 +279,7 @@
 				010FB62F2FEBA0610056ECE0 /* IP Inbound Watch */,
 				010FB63D2FEBA0630056ECE0 /* IP Inbound Watch Tests */,
 				010FB6472FEBA0630056ECE0 /* IP Inbound Watch Watch UITests */,
+				0172C0782FEC82A50034B332 /* Live Activity */,
 				01FC853F2CF4639A00C9F053 /* Frameworks */,
 				01ECF4B72CF3DF0D00BD0604 /* Products */,
 			);
@@ -240,6 +295,7 @@
 				010FB62E2FEBA0610056ECE0 /* IP Inbound Watch.app */,
 				010FB63A2FEBA0630056ECE0 /* IP Inbound Watch Watch AppTests.xctest */,
 				010FB6442FEBA0630056ECE0 /* IP Inbound Watch Watch AppUITests.xctest */,
+				0172C0732FEC82A50034B332 /* Live ActivityExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -247,6 +303,8 @@
 		01FC853F2CF4639A00C9F053 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0172C0742FEC82A50034B332 /* WidgetKit.framework */,
+				0172C0762FEC82A50034B332 /* SwiftUI.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -339,6 +397,24 @@
 			productReference = 016F3C1B2DC08E7A00F2A1AE /* Generate Screenshots.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		0172C0722FEC82A50034B332 /* Live ActivityExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0172C0882FEC82A60034B332 /* Build configuration list for PBXNativeTarget "Live ActivityExtension" */;
+			buildPhases = (
+				0172C06F2FEC82A50034B332 /* Sources */,
+				0172C0702FEC82A50034B332 /* Frameworks */,
+				0172C0712FEC82A50034B332 /* Resources */,
+			);
+			buildRules = (
+			);
+			fileSystemSynchronizedGroups = (
+				0172C0782FEC82A50034B332 /* Live Activity */,
+			);
+			name = "Live ActivityExtension";
+			productName = "Live ActivityExtension";
+			productReference = 0172C0732FEC82A50034B332 /* Live ActivityExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		01ECF4B52CF3DF0D00BD0604 /* IP Inbound */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 01ECF4DA2CF3DF0F00BD0604 /* Build configuration list for PBXNativeTarget "IP Inbound" */;
@@ -347,12 +423,14 @@
 				01ECF4B32CF3DF0D00BD0604 /* Frameworks */,
 				01ECF4B42CF3DF0D00BD0604 /* Resources */,
 				010FB6522FEBA0640056ECE0 /* Embed Watch Content */,
+				0172C0852FEC82A60034B332 /* Embed Foundation Extensions */,
 				C8D493EE46664369A7D42761 /* Upload Debug Symbols to Sentry */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				010FB64D2FEBA0640056ECE0 /* PBXTargetDependency */,
+				0172C0832FEC82A60034B332 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				01DA7A5E2FEBA0610056ECE0 /* IP Inbound Shared */,
@@ -446,6 +524,9 @@
 						CreatedOnToolsVersion = 16.3;
 						TestTargetID = 01ECF4B52CF3DF0D00BD0604;
 					};
+					0172C0722FEC82A50034B332 = {
+						CreatedOnToolsVersion = 26.5;
+					};
 					01ECF4B52CF3DF0D00BD0604 = {
 						CreatedOnToolsVersion = 16.1;
 					};
@@ -485,6 +566,7 @@
 			targets = (
 				01ECF4B52CF3DF0D00BD0604 /* IP Inbound */,
 				010FB62D2FEBA0610056ECE0 /* IP Inbound Watch */,
+				0172C0722FEC82A50034B332 /* Live ActivityExtension */,
 				01ECF4C52CF3DF0F00BD0604 /* IP InboundTests */,
 				01ECF4CF2CF3DF0F00BD0604 /* IP InboundUITests */,
 				016F3C1A2DC08E7A00F2A1AE /* Generate Screenshots */,
@@ -511,6 +593,11 @@
 			);
 		};
 		016F3C192DC08E7A00F2A1AE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+			);
+		};
+		0172C0712FEC82A50034B332 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			files = (
 			);
@@ -585,6 +672,11 @@
 			files = (
 			);
 		};
+		0172C06F2FEC82A50034B332 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
 		01ECF4B22CF3DF0D00BD0604 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			files = (
@@ -622,6 +714,11 @@
 			isa = PBXTargetDependency;
 			target = 01ECF4B52CF3DF0D00BD0604 /* IP Inbound */;
 			targetProxy = 016F3C212DC08E7A00F2A1AE /* PBXContainerItemProxy */;
+		};
+		0172C0832FEC82A60034B332 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 0172C0722FEC82A50034B332 /* Live ActivityExtension */;
+			targetProxy = 0172C0822FEC82A60034B332 /* PBXContainerItemProxy */;
 		};
 		01ECF4C82CF3DF0F00BD0604 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -811,6 +908,68 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = "IP Inbound";
+			};
+			name = Release;
+		};
+		0172C0862FEC82A60034B332 /* Debug configuration for PBXNativeTarget "Live ActivityExtension" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 11;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Live Activity/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Live Activity";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.5;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.4;
+				PRODUCT_BUNDLE_IDENTIFIER = "codes.tim.IP-Inbound.Live-Activity";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		0172C0872FEC82A60034B332 /* Release configuration for PBXNativeTarget "Live ActivityExtension" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 11;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Live Activity/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Live Activity";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.5;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.4;
+				PRODUCT_BUNDLE_IDENTIFIER = "codes.tim.IP-Inbound.Live-Activity";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -1107,6 +1266,14 @@
 			buildConfigurations = (
 				016F3C242DC08E7A00F2A1AE /* Debug configuration for PBXNativeTarget "Generate Screenshots" */,
 				016F3C252DC08E7A00F2A1AE /* Release configuration for PBXNativeTarget "Generate Screenshots" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		0172C0882FEC82A60034B332 /* Build configuration list for PBXNativeTarget "Live ActivityExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0172C0862FEC82A60034B332 /* Debug configuration for PBXNativeTarget "Live ActivityExtension" */,
+				0172C0872FEC82A60034B332 /* Release configuration for PBXNativeTarget "Live ActivityExtension" */,
 			);
 			defaultConfigurationName = Release;
 		};

@@ -53,7 +53,11 @@ struct WatchGuidanceTests {
   @Test("ground speed shows the countdown; airborne speed shows the CDI")
   func isMovingThreshold() {
     let snapshot = makeSnapshot()
-    #expect(!GuidanceHelper(location: location(speedKnots: 5), target: snapshot, now: .now).isMoving)
-    #expect(GuidanceHelper(location: location(speedKnots: 250), target: snapshot, now: .now).isMoving)
+    #expect(
+      !GuidanceHelper(location: location(speedKnots: 5), target: snapshot, now: .now).isMoving
+    )
+    #expect(
+      GuidanceHelper(location: location(speedKnots: 250), target: snapshot, now: .now).isMoving
+    )
   }
 }
