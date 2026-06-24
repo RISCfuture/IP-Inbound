@@ -91,7 +91,7 @@ final class CoordinateEntryManager {
         let globalIndex = offset + i
         var attrChar = AttributedString(String(char))
         if globalIndex == currentIndex {
-          attrChar.foregroundColor = UIColor.systemBackground
+          attrChar.foregroundColor = Color(.systemBackground)
           attrChar.backgroundColor = .accent
         }
         lineAttr.append(attrChar)
@@ -340,6 +340,8 @@ final class CoordinateEntryManager {
   private func indexInString(_ index: Int) -> String.Index {
     stringValue.index(stringValue.startIndex, offsetBy: index)
   }
+
+  isolated deinit { formatChangeObserver?.cancel() }
 
   enum DigitType {
     case numeric

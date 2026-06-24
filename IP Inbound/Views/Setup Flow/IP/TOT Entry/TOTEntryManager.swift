@@ -90,7 +90,7 @@ final class TOTEntryManager {
         let globalIndex = offset + i
         var attrChar = AttributedString(String(char))
         if globalIndex == currentIndex {
-          attrChar.foregroundColor = UIColor.systemBackground
+          attrChar.foregroundColor = Color(.systemBackground)
           attrChar.backgroundColor = .accent
         }
         lineAttr.append(attrChar)
@@ -307,6 +307,8 @@ final class TOTEntryManager {
   private func fetchTargetTimezone() async {
     targetTimezone = await TimeZoneHelper.shared.timeZone(for: targetCoordinate)
   }
+
+  isolated deinit { formatChangeObserver?.cancel() }
 
   /// An editable digit within the `HH:MM:SS TZ` display, paired with its character index.
   /// Indices skip the colons (2, 5), the space (8), and the trailing timezone (9+).

@@ -41,7 +41,7 @@ struct CDIBearingPointerLayer: View {
           .drawingGroup()
         BearingLine(deflection: deflection, maxDeflection: scaleWidth)
           .stroke(lineWidth: Self.bearingLineWidth)
-          .foregroundColor(bearingColor)
+          .foregroundStyle(bearingColor)
           .drawingGroup()
       }
       .rotationEffect(.degrees(angle))

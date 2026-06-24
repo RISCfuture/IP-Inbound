@@ -50,7 +50,7 @@ final class UTMEntryManager {
     for (i, char) in stringValue.enumerated() {
       var attrChar = AttributedString(String(char))
       if i == currentIndex {
-        attrChar.foregroundColor = UIColor.systemBackground
+        attrChar.foregroundColor = Color(.systemBackground)
         attrChar.backgroundColor = .accent
       } else if char == "_" {
         attrChar.foregroundColor = .gray

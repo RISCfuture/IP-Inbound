@@ -24,7 +24,6 @@ final class FindLocationTests: BaseTestCase {
 
   @MainActor
   func testFindLocation_SearchPopulatesSuggestions() throws {
-    try skipOniOS18()
     launchApp()
 
     let setup = TargetListPage(app: app).createTarget(named: "Find Suggestions")
@@ -44,7 +43,6 @@ final class FindLocationTests: BaseTestCase {
 
   @MainActor
   func testFindLocation_SelectingSuggestionUpdatesTarget() throws {
-    try skipOniOS18()
     launchApp()
 
     let setup = TargetListPage(app: app).createTarget(named: "Find Select")

@@ -8,7 +8,6 @@ final class TargetManagementTests: BaseTestCase {
 
   @MainActor
   func testCreateNewTarget() throws {
-    try skipOniOS18()
     launchApp()
     let list = TargetListPage(app: app)
     let setup = list.createTarget(named: "Alpha")
@@ -32,7 +31,6 @@ final class TargetManagementTests: BaseTestCase {
 
   @MainActor
   func testSelectExistingTarget() throws {
-    try skipOniOS18()
     launchApp()
     let list = TargetListPage(app: app)
     let setup = list.createTarget(named: "Bravo")
@@ -104,7 +102,6 @@ final class TargetManagementTests: BaseTestCase {
 
   @MainActor
   func testTargetListShowsCoordinates() throws {
-    try skipOniOS18()
     launchApp()
 
     let list = TargetListPage(app: app)
@@ -150,7 +147,6 @@ final class TargetManagementTests: BaseTestCase {
 
   @MainActor
   func testTargetListShowsTimeOnTarget() throws {
-    try skipOniOS18()
     launchApp()
 
     let list = TargetListPage(app: app)

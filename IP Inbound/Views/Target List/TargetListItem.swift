@@ -3,7 +3,6 @@ import SwiftUI
 
 struct TargetListItem: View {
   var target: Target
-  @Binding var selectedTarget: Target?
 
   @Default(.TOTDisplayMode)
   private var displayMode
@@ -38,50 +37,46 @@ struct TargetListItem: View {
       }
 
       Image(systemName: "chevron.forward")
-        .foregroundStyle(.secondary)
-        .accessibilityLabel(Text("Edit Target"))
-    }.onTapGesture { selectedTarget = target }
-      .accessibilityIdentifier("targetListItem")
-      .accessibilityAddTraits(.isLink)
+        .foregroundStyle(.tertiary)
+        .font(.caption.weight(.semibold))
+        .accessibilityHidden(true)
+    }
+    .accessibilityIdentifier("targetListItem")
   }
 }
 
 #Preview("With TOT") {
-  @Previewable @State var selectedTarget: Target?
   let helper = PreviewHelper()
 
   List {
-    TargetListItem(target: helper.target(), selectedTarget: $selectedTarget)
+    TargetListItem(target: helper.target())
   }
 }
 
 #Preview("No TOT") {
-  @Previewable @State var selectedTarget: Target?
   let helper = PreviewHelper()
   let target = helper.target()
 
   List {
-    TargetListItem(target: target, selectedTarget: $selectedTarget)
+    TargetListItem(target: target)
   }
   .onAppear { target.timeOnTarget = nil }
 }
 
 #Preview("Local Time") {
-  @Previewable @State var selectedTarget: Target?
   let helper = PreviewHelper()
 
   List {
-    TargetListItem(target: helper.target(), selectedTarget: $selectedTarget)
+    TargetListItem(target: helper.target())
   }
   .onAppear { Defaults[.TOTDisplayMode] = .local }
 }
 
 #Preview("Zulu Time") {
-  @Previewable @State var selectedTarget: Target?
   let helper = PreviewHelper()
 
   List {
-    TargetListItem(target: helper.target(), selectedTarget: $selectedTarget)
+    TargetListItem(target: helper.target())
   }
   .onAppear { Defaults[.TOTDisplayMode] = .zulu }
 }

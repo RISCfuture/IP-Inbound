@@ -87,7 +87,6 @@ final class NavigationFlowTests: BaseTestCase {
 
   @MainActor
   func testBackNavigationFlow() throws {
-    try skipOniOS18()
     launchApp()
     let list = TargetListPage(app: app)
     let setup = list.createTarget(named: "BackNav")
@@ -151,7 +150,6 @@ final class NavigationFlowTests: BaseTestCase {
   // the post-pass “Fly <target>” shortcut jumps straight to fly.
   @MainActor
   func testConfiguredTargetLandsOnSetup() throws {
-    try skipOniOS18()
     launchApp()
     let list = TargetListPage(app: app)
 

@@ -101,12 +101,6 @@ class BaseTestCase: XCTestCase {
   func waitForAppStability(timeout: TimeInterval = 5) {
     _ = app.wait(for: .runningForeground, timeout: timeout)
   }
-
-  func skipOniOS18() throws {
-    if #unavailable(iOS 26) {
-      throw XCTSkip("SwiftData view update bug on iOS 18.x - see Apple Forums thread 757866")
-    }
-  }
 }
 
 // swiftlint:enable final_test_case test_case_accessibility

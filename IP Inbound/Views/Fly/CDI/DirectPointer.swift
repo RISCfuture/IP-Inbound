@@ -48,11 +48,11 @@ struct DirectPointer: View {
 
       Text(label)
         .font(.system(size: Self.labelFontSize, weight: .black))
-        .foregroundColor(color)
+        .foregroundStyle(color)
         .padding(.horizontal, Self.labelHorizontalPadding)
         .background(
           RoundedRectangle(cornerRadius: Self.labelCornerRadius).fill(
-            Color(UIColor.systemBackground)
+            Color(.systemBackground)
           )
         )
         .offset(y: Self.labelVerticalOffset)

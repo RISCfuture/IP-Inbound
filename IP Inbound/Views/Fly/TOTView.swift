@@ -43,9 +43,9 @@ struct TOTView: View {
       return current
     }
     let required = cappedRequiredGroundSpeed.converted(to: distanceDefault.speedUnit)
-    return current
-      + Text(String(localized: " (\(required, format: speedFormatStyle) req.)"))
+    let callout = Text(String(localized: " (\(required, format: speedFormatStyle) req.)"))
       .foregroundStyle(requiredSpeedColor)
+    return Text("\(current)\(callout)")
   }
 
   // Each readout (speed, distance, TOT) stays intact; the row wraps a whole readout to the next

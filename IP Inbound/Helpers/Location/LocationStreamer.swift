@@ -77,8 +77,6 @@ final class LocationStreamer: Sendable {
 
   private let dateProvider: DateProvider
   private var listenerCount = 0
-  private let manager = CLLocationManager()
-  private let locationDelegate = EmptyDelegate()  // swiftlint:disable:this weak_delegate
   private var simReceiver = SimReceiver()
 
   private var realLocationStream: AsyncThrowingStream<LocationEvent?, any Error>?
@@ -95,9 +93,6 @@ final class LocationStreamer: Sendable {
 
   private init(dateProvider: DateProvider = .system) {
     self.dateProvider = dateProvider
-    manager.delegate = locationDelegate
-    manager.requestLocation()
-    manager.requestWhenInUseAuthorization()
   }
 
   func start() async {
@@ -220,18 +215,5 @@ final class LocationStreamer: Sendable {
     realLocationStream = nil
     simLocationStream = nil
     stream = nil
-  }
-}
-
-private final class EmptyDelegate: NSObject, CLLocationManagerDelegate {
-  func locationManager(
-    _: CLLocationManager,
-    didUpdateLocations _: [CLLocation]
-  ) {
-    // do nothing
-  }
-
-  func locationManager(_: CLLocationManager, didFailWithError _: any Error) {
-    // do nothing
   }
 }

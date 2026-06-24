@@ -8,7 +8,6 @@ final class CoordinateEntryTests: BaseTestCase {
 
   @MainActor
   func testCoordinateEntry_DecimalDegrees() throws {
-    try skipOniOS18()
     launchApp()
 
     let list = TargetListPage(app: app)
@@ -37,7 +36,6 @@ final class CoordinateEntryTests: BaseTestCase {
 
   @MainActor
   func testCoordinateEntry_DegreesMinutesSeconds() throws {
-    try skipOniOS18()
     launchApp()
 
     let list = TargetListPage(app: app)
@@ -69,7 +67,6 @@ final class CoordinateEntryTests: BaseTestCase {
 
   @MainActor
   func testCoordinateEntry_DegreesDecimalMinutes() throws {
-    try skipOniOS18()
     launchApp()
 
     let list = TargetListPage(app: app)
@@ -101,7 +98,6 @@ final class CoordinateEntryTests: BaseTestCase {
 
   @MainActor
   func testCoordinateEntry_UTM() throws {
-    try skipOniOS18()
     launchApp()
 
     let list = TargetListPage(app: app)
@@ -123,7 +119,6 @@ final class CoordinateEntryTests: BaseTestCase {
 
   @MainActor
   func testCoordinateEntry_MGRS() throws {
-    try skipOniOS18()
     launchApp()
 
     let list = TargetListPage(app: app)
@@ -149,7 +144,6 @@ final class CoordinateEntryTests: BaseTestCase {
 
   @MainActor
   func testCoordinateEntry_SouthEastHemisphere() throws {
-    try skipOniOS18()
     launchApp()
 
     let list = TargetListPage(app: app)
@@ -178,7 +172,6 @@ final class CoordinateEntryTests: BaseTestCase {
 
   @MainActor
   func testCoordinateDisplay_TapCyclesFormat() throws {
-    try skipOniOS18()
     launchApp()
 
     let list = TargetListPage(app: app)

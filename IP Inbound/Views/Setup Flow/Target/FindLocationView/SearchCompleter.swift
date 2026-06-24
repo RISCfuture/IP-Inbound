@@ -38,7 +38,7 @@ class SearchCompleter: NSObject, @preconcurrency MKLocalSearchCompleterDelegate 
     let search = MKLocalSearch(request: .init(completion: completion))
     do {
       let response = try await search.start()
-      guard let coordinate = response.mapItems.first?.placemark.coordinate else {
+      guard let coordinate = response.mapItems.first?.location.coordinate else {
         error = LocationSearchError.noResults
         return nil
       }

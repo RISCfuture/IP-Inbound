@@ -8,7 +8,6 @@ final class TOTEntryTests: BaseTestCase {
 
   @MainActor
   func testTimeEntry_Local() throws {
-    try skipOniOS18()
     launchApp()
 
     let list = TargetListPage(app: app)
@@ -40,7 +39,6 @@ final class TOTEntryTests: BaseTestCase {
 
   @MainActor
   func testTimeEntry_Zulu() throws {
-    try skipOniOS18()
     launchApp()
 
     let list = TargetListPage(app: app)
@@ -75,7 +73,6 @@ final class TOTEntryTests: BaseTestCase {
 
   @MainActor
   func testTimeEntry_ToggleBetweenLocalAndZulu() throws {
-    try skipOniOS18()
     launchApp()
 
     let list = TargetListPage(app: app)

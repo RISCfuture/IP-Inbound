@@ -59,9 +59,9 @@ final actor SimReceiver {
   init(port: Int = 49002) {
     self.port = port
 
-    var continuation: AsyncStream<SimData>.Continuation!
-    stream = AsyncStream { c in continuation = c }
+    let (stream, continuation) = AsyncStream.makeStream(of: SimData.self)
     self.continuation = continuation
+    self.stream = stream
   }
 
   func start() async {

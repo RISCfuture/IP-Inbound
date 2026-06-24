@@ -25,26 +25,30 @@ struct TargetListSidebar: View {
   }
 
   var body: some View {
-    VStack {
-      List(selection: $selectedTarget) {
-        ForEach(sortedTargets, id: \.self) { target in
-          TargetListItem(target: target, selectedTarget: $selectedTarget)
-        }.onDelete { offsets in
-          for offset in offsets {
-            modelContext.delete(sortedTargets[offset])
-          }
+    List(selection: $selectedTarget) {
+      ForEach(sortedTargets, id: \.self) { target in
+        TargetListItem(target: target)
+      }.onDelete { offsets in
+        for offset in offsets {
+          modelContext.delete(sortedTargets[offset])
         }
       }
-      HStack {
+    }
+    .navigationTitle("Targets")
+    .toolbar {
+      ToolbarItem(placement: .bottomBar) {
         NewTargetButton(selectedTarget: $selectedTarget)
-        Spacer()
+      }
+      ToolbarSpacer(.flexible, placement: .bottomBar)
+      ToolbarItem(placement: .bottomBar) {
         Button {
           showingTutorial = true
         } label: {
           Label("Tutorial", systemImage: "questionmark.circle")
-        }.accessibilityIdentifier("tutorialButton")
-      }.padding()
-    }.navigationTitle("Targets")
+        }
+        .accessibilityIdentifier("tutorialButton")
+      }
+    }
   }
 }
 

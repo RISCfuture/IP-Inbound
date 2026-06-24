@@ -1,12 +1,12 @@
 import CoreLocation
 import Foundation
+import MapKit
 import Sentry
 
 @MainActor
 class TimeZoneHelper: NSObject {
   static let shared = TimeZoneHelper()
 
-  private let geocoder = CLGeocoder()
   private var timeZoneCache: [String: TimeZone] = [:]
 
   override private init() {
@@ -22,9 +22,11 @@ class TimeZoneHelper: NSObject {
       longitude: coordinate.longitudeDeg
     )
 
+    guard let request = MKReverseGeocodingRequest(location: location) else { return nil }
+
     do {
-      let placemarks = try await geocoder.reverseGeocodeLocation(location)
-      guard let timeZone = placemarks.first?.timeZone else { return nil }
+      let mapItems = try await request.mapItems
+      guard let timeZone = mapItems.first?.timeZone else { return nil }
       timeZoneCache[cacheKey] = timeZone
       return timeZone
     } catch {

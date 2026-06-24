@@ -1,5 +1,4 @@
 import Foundation
-import NIOConcurrencyHelpers
 
 actor MulticastStream<T: Sendable, E: Error> {
   typealias Continuation = AsyncThrowingStream<T, any Error>.Continuation
