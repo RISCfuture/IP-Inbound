@@ -1,15 +1,19 @@
 import CoreLocation
 import Foundation
 
-struct IPTargetMath: Equatable {
-  private static let gravityMSS = 9.80665
-  private static let runInBankAngle = Measurement(value: 30, unit: UnitAngle.degrees)
-  private static let sequenceCutoffAngle = Measurement(value: 90, unit: UnitAngle.degrees)
+struct IPTargetMath<T: GuidanceTarget> {
+  private static var gravityMSS: Double { 9.80665 }
+  private static var runInBankAngle: Measurement<UnitAngle> {
+    .init(value: 30, unit: .degrees)
+  }
+  private static var sequenceCutoffAngle: Measurement<UnitAngle> {
+    .init(value: 90, unit: .degrees)
+  }
 
   var coordinate: Coordinate
   var speed: Measurement<UnitSpeed>
   var course: Bearing
-  let target: Target
+  let target: T
   let now: Date
 
   /// Timing toward the IP. Because the destination is the IP, the run-to time reference is the
@@ -62,7 +66,7 @@ struct IPTargetMath: Equatable {
   var pposToIPToTargetETAAtMaxSpeed: Date? {
     guard target.timeOnTarget != nil else { return nil }
 
-    let maxSpeed = target.targetGroundSpeedMeasurement * (1 + Target.allowableSpeedVariance)
+    let maxSpeed = target.targetGroundSpeedMeasurement * (1 + T.allowableSpeedVariance)
 
     // Time from PPOS to IP at max speed (including turn from current heading)
     let distanceToIP = coordinate.distance(to: target.IPCoordinate)
@@ -102,7 +106,7 @@ struct IPTargetMath: Equatable {
     coordinate: Coordinate,
     speed: Measurement<UnitSpeed>,
     course: Bearing,
-    target: Target,
+    target: T,
     now: Date
   ) {
     self.coordinate = coordinate
@@ -112,7 +116,7 @@ struct IPTargetMath: Equatable {
     self.now = now
   }
 
-  init(location: CLLocation, target: Target, now: Date) {
+  init(location: CLLocation, target: T, now: Date) {
     self.init(
       coordinate: .init(location.coordinate),
       speed: .init(value: location.speed, unit: .metersPerSecond),
@@ -122,6 +126,8 @@ struct IPTargetMath: Equatable {
     )
   }
 }
+
+extension IPTargetMath: Equatable where T: Equatable {}
 
 // MARK: - IP Sequencing Buffer
 

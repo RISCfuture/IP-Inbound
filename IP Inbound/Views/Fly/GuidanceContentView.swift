@@ -4,7 +4,7 @@ import SwiftUI
 /// countdown), an optional simulator banner, and the timing/TOT readout. Composed of per-phase
 /// subviews driven by the current ``Guidance``.
 struct GuidanceContentView: View {
-  var math: IPTargetMath
+  var math: IPTargetMath<Target>
   var target: Target
   var guidance: Guidance
   var event: LocationEvent
@@ -44,7 +44,7 @@ private struct GuidanceHeader: View {
 }
 
 private struct GuidanceNavigationDisplay: View {
-  var math: IPTargetMath
+  var math: IPTargetMath<Target>
   var target: Target
   var guidance: Guidance
 
@@ -86,9 +86,7 @@ private struct GuidanceNavigationDisplay: View {
 }
 
 private struct GuidanceTimingDisplay: View {
-  private static let runInOnTimeDeltaTOT: TimeInterval = 30
-
-  var math: IPTargetMath
+  var math: IPTargetMath<Target>
   var target: Target
   var guidance: Guidance
 
@@ -99,7 +97,7 @@ private struct GuidanceTimingDisplay: View {
           TimingView(
             timeOnTarget: desiredTimeOverIP,
             fromTo: fromTo,
-            onTimeDeltaTOT: Self.runInOnTimeDeltaTOT
+            onTimeDeltaTOT: TimingTier.runInOnTimeDeltaTOT
           )
         }
       case .toIPWithCountdown:
@@ -113,7 +111,7 @@ private struct GuidanceTimingDisplay: View {
           TimingView(
             timeOnTarget: timeOnTarget,
             fromTo: fromTo,
-            onTimeDeltaTOT: Self.runInOnTimeDeltaTOT
+            onTimeDeltaTOT: TimingTier.runInOnTimeDeltaTOT
           )
         }
       case .toTargetBypassingIP:
@@ -121,7 +119,7 @@ private struct GuidanceTimingDisplay: View {
           TimingView(
             timeOnTarget: timeOnTarget,
             fromTo: fromTo,
-            onTimeDeltaTOT: Self.runInOnTimeDeltaTOT,
+            onTimeDeltaTOT: TimingTier.runInOnTimeDeltaTOT,
             showRequiredSpeed: false
           )
         }

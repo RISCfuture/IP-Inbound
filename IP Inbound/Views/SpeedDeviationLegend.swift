@@ -1,7 +1,5 @@
 import SwiftUI
 
-// swiftlint:disable accessibility_label_for_image
-
 /// Legend used in the tutorial to explain the color/symbol scale of the in-flight speed deviation
 /// indicator, from “too slow” through “on time” to “too fast”. The bright asset colors are
 /// intentional: the legend exists to explain that color scale.
@@ -11,23 +9,16 @@ struct SpeedDeviationLegend: View {
   private static let rowCornerRadius: CGFloat = 8
   private static let legendCornerRadius: CGFloat = 12
 
-  private static let rows: [Row] = [
-    .init(systemImage: "chevron.up.2", colorName: "TooSlowWarning", label: "Too slow"),
-    .init(systemImage: "chevron.up", colorName: "TooSlowCaution", label: "Slightly slow"),
-    .init(systemImage: "checkmark.circle.fill", colorName: "OnTime", label: "On time"),
-    .init(systemImage: "chevron.down", colorName: "TooFastCaution", label: "Slightly fast"),
-    .init(systemImage: "chevron.down.2", colorName: "TooFastWarning", label: "Too fast")
-  ]
-
   var body: some View {
     VStack {
-      ForEach(Self.rows) { row in
+      ForEach(TimingTier.allCases, id: \.self) { tier in
         Label {
-          Text(row.label)
+          Text(label(for: tier))
             .frame(maxWidth: .infinity, alignment: .leading)
         } icon: {
-          Image(systemName: row.systemImage)
-            .foregroundStyle(Color(row.colorName))
+          Image(systemName: tier.systemImage)
+            .foregroundStyle(tier.color)
+            .accessibilityHidden(true)
             .padding(.horizontal, Self.symbolHorizontalPadding)
         }
         .padding(.vertical, Self.rowVerticalPadding)
@@ -40,16 +31,16 @@ struct SpeedDeviationLegend: View {
     .clipShape(.rect(cornerRadius: Self.legendCornerRadius))
   }
 
-  private struct Row: Identifiable {
-    let systemImage: String
-    let colorName: String
-    let label: LocalizedStringKey
-
-    var id: String { colorName }
+  private func label(for tier: TimingTier) -> LocalizedStringKey {
+    switch tier {
+      case .tooSlowWarning: "Too slow"
+      case .tooSlowCaution: "Slightly slow"
+      case .onTime: "On time"
+      case .tooFastCaution: "Slightly fast"
+      case .tooFastWarning: "Too fast"
+    }
   }
 }
-
-// swiftlint:enable accessibility_label_for_image
 
 #Preview("Light") {
   SpeedDeviationLegend()

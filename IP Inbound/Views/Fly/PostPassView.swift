@@ -15,7 +15,6 @@ struct PostPassView: View {
     sectionSpacing = 24.0,
     titleSpacing = 8.0,
     buttonStackSpacing = 12.0
-  private static let missFontSize = 36.0
 
   let capture: PostPassResult.Capture
   let currentTarget: Target
@@ -27,6 +26,9 @@ struct PostPassView: View {
 
   @Query(sort: \Target.timeOnTarget)
   private var targets: [Target]
+
+  @ScaledMetric(relativeTo: .largeTitle)
+  private var missFontSize = 36.0
 
   private var nextTarget: Target? {
     NextTarget.next(after: currentTarget, in: targets, now: services.clock.now)
@@ -42,25 +44,8 @@ struct PostPassView: View {
   private var isOnTime: Bool { absoluteMissSeconds <= Self.onTimeToleranceSeconds }
   private var isWithinCaution: Bool { absoluteMissSeconds <= Self.cautionToleranceSeconds }
 
-  /// Mirrors TimingView's color tiers: green when within tolerance, the
-  /// "too fast" palette when early, the "too slow" palette when late, in
-  /// caution / warning shades by magnitude.
-  private var missColor: Color {
-    if isOnTime { return Color("OnTime") }
-    if isEarly {
-      return isWithinCaution ? Color("TooFastCaution") : Color("TooFastWarning")
-    }
-    return isWithinCaution ? Color("TooSlowCaution") : Color("TooSlowWarning")
-  }
-
-  /// Mirrors TimingView's chevron direction: down for early, up for late,
-  /// doubled at the warning threshold, checkmark on-time.
-  private var missIcon: String {
-    if isOnTime { return "checkmark.circle.fill" }
-    if isEarly {
-      return isWithinCaution ? "chevron.down" : "chevron.down.2"
-    }
-    return isWithinCaution ? "chevron.up" : "chevron.up.2"
+  private var tier: TimingTier {
+    .init(isLate: !isEarly, isOnTime: isOnTime, isWithinCaution: isWithinCaution)
   }
 
   private var missText: String {
@@ -89,11 +74,11 @@ struct PostPassView: View {
         Text(missText)
           .contentTransition(.numericText())
       } icon: {
-        Image(systemName: missIcon)
+        Image(systemName: tier.systemImage)
           .accessibilityHidden(true)
       }
-      .font(.system(size: Self.missFontSize, weight: .black))
-      .foregroundStyle(missColor)
+      .font(.system(size: missFontSize, weight: .black))
+      .foregroundStyle(tier.color)
       .accessibilityIdentifier("postPassMiss")
 
       Spacer()

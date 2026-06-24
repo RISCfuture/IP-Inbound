@@ -25,6 +25,19 @@ struct BearingTests {
     #expect(bearing2.reciprocal.reference == bearing2.reference)
   }
 
+  @Test("shortestTurn, picks the shorter direction across the 0/360 wrap")
+  func bearingShortestTurn() {
+    let north = Bearing(angle: 350, reference: .magnetic)
+    let east = Bearing(angle: 10, reference: .magnetic)
+
+    let rightTurn = north.shortestTurn(to: east)
+    #expect(rightTurn.degrees == 20)
+    #expect(rightTurn.reference == .relative)
+
+    let leftTurn = east.shortestTurn(to: north)
+    #expect(leftTurn.degrees == -20)
+  }
+
   @Test("toMagnetic and toTrue, calculates correctly")
   func bearingConversion() {
     let trueBearing = Bearing(angle: 10, reference: .true)

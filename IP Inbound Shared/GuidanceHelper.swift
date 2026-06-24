@@ -10,14 +10,15 @@ enum Guidance {
   case postPass
 }
 
-struct GuidanceHelper {
+struct GuidanceHelper<T: GuidanceTarget> {
   // Minimum speed threshold for movement detection (vs on ground)
-  private static let movementThreshold = Measurement(value: 30, unit: UnitSpeed.knots)
-    .converted(to: .metersPerSecond).value
+  private static var movementThreshold: Double {
+    Measurement(value: 30, unit: UnitSpeed.knots).converted(to: .metersPerSecond).value
+  }
 
-  private let math: IPTargetMath
+  private let math: IPTargetMath<T>
   private let location: CLLocation
-  private let target: Target
+  private let target: T
 
   // Computed predicates for clear logic
   var isMoving: Bool { location.speed > Self.movementThreshold }
@@ -71,13 +72,13 @@ struct GuidanceHelper {
     return .toIPWithSpeedGuidance
   }
 
-  init(location: CLLocation, target: Target, now: Date) {
+  init(location: CLLocation, target: T, now: Date) {
     self.location = location
     self.target = target
     self.math = IPTargetMath(location: location, target: target, now: now)
   }
 
-  init(math: IPTargetMath, location: CLLocation, target: Target) {
+  init(math: IPTargetMath<T>, location: CLLocation, target: T) {
     self.math = math
     self.location = location
     self.target = target

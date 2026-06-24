@@ -213,7 +213,7 @@ struct PostPassTests {
     return target
   }
 
-  private func makePastTargetMath(for target: Target, at now: Date) -> IPTargetMath {
+  private func makePastTargetMath(for target: Target, at now: Date) -> IPTargetMath<Target> {
     IPTargetMath(
       coordinate: beyondTarget,
       speed: Measurement(value: 500, unit: .knots),

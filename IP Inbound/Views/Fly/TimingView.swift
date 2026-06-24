@@ -1,8 +1,6 @@
 import SwiftUI
 
 struct TimingView: View {
-  private static let secondsPerMinute = 60.0
-
   var timeOnTarget: Date
   var fromTo: FromToMath
 
@@ -12,41 +10,10 @@ struct TimingView: View {
   /// time-on-target is still achievable.
   var showRequiredSpeed = true
 
-  private var onTimeRange: ClosedRange<Date> {
-    timeOnTarget.addingTimeInterval(
-      -onTimeDeltaTOT
-    )...timeOnTarget.addingTimeInterval(onTimeDeltaTOT)
+  private var tier: TimingTier {
+    .init(fromTo: fromTo, timeOnTarget: timeOnTarget, onTimeDeltaTOT: onTimeDeltaTOT)
   }
-  private var cautionRange: ClosedRange<Date> {
-    let baseTime = fromTo.distance / fromTo.targetSpeed
-    let timeDeviation = baseTime * speedDeviation * Self.secondsPerMinute
-    let minTime = timeDeviation.before(date: timeOnTarget)
-    let maxTime = timeDeviation.after(date: timeOnTarget)
-    return minTime...maxTime
-  }
-
-  private var isOnTime: Bool { onTimeRange.contains(fromTo.timeOfArrival) }
-  private var isWithinCaution: Bool { cautionRange.contains(fromTo.timeOfArrival) }
-
-  /// Color tier for the arrival readout: green on-time, then the too-slow or too-fast palette in
-  /// caution or warning shades by how far the arrival falls outside the on-time window.
-  private var textColor: Color {
-    if isOnTime { return .init("OnTime") }
-    if fromTo.isLate {
-      return .init(isWithinCaution ? "TooSlowCaution" : "TooSlowWarning")
-    }
-    return .init(isWithinCaution ? "TooFastCaution" : "TooFastWarning")
-  }
-
-  /// Chevron direction matching the arrival tier: up when late, down when early, doubled at the
-  /// warning threshold, checkmark on-time.
-  private var icon: String {
-    if isOnTime { return "checkmark.circle.fill" }
-    if fromTo.isLate {
-      return isWithinCaution ? "chevron.up" : "chevron.up.2"
-    }
-    return isWithinCaution ? "chevron.down" : "chevron.down.2"
-  }
+  private var isOnTime: Bool { tier == .onTime }
 
   private var arrivalText: String {
     let lateOrEarly = fromTo.isLate ? String(localized: "late") : String(localized: "early")
@@ -62,18 +29,18 @@ struct TimingView: View {
         Text(arrivalText)
           .contentTransition(.numericText())
       } icon: {
-        Image(systemName: icon)
+        Image(systemName: tier.systemImage)
           .accessibilityHidden(true)
       }
       .font(.title)
       .fontWeight(.black)
-      .foregroundStyle(textColor)
+      .foregroundStyle(tier.color)
 
       TOTView(
         fromTo: fromTo,
         timeOnTarget: timeOnTarget,
         showSpeed: true,
-        requiredSpeedColor: (showRequiredSpeed && !isOnTime) ? textColor : nil
+        requiredSpeedColor: (showRequiredSpeed && !isOnTime) ? tier.color : nil
       )
     }
     .accessibilityIdentifier("timingIndicator")

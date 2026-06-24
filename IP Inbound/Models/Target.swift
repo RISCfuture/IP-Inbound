@@ -5,8 +5,6 @@ import SwiftData
 
 @Model
 final class Target: CustomDebugStringConvertible, Identifiable, Equatable, Hashable {
-  static let allowableSpeedVariance = 0.1  // % speed change allowable from IP to target speed
-
   var id = UUID().uuidString
   var name = "New Target"
   var latitude = 0.0
@@ -69,37 +67,9 @@ final class Target: CustomDebugStringConvertible, Identifiable, Equatable, Hasha
     set { targetGroundSpeed = newValue.converted(to: .knots).value }
   }
 
-  var IPCoordinate: Coordinate {
-    coordinate
-      .offsetBy(
-        bearing:
-          offsetBearingMeasurement
-          .toTrue(declination: declinationMeasurement).angle,
-        distance: offsetDistanceMeasurement
-      )
-  }
-
   var debugDescription: String {
     return
       "<Target “\(name)”: \(coordinate); \(offsetBearing)/\(offsetDistance)NM (\(offsetTime)min)>"
-  }
-
-  var desiredTrack: Bearing { offsetBearingMeasurement.reciprocal }
-  var desiredTrackMagnetic: Bearing { desiredTrack.toMagnetic(declination: declinationMeasurement) }
-  var desiredTrackTrue: Bearing { desiredTrack.toTrue(declination: declinationMeasurement) }
-
-  var desiredTimeOverIP: Date? {
-    let runInTime = IPToTarget.length / targetGroundSpeedMeasurement
-    return timeOnTarget?.addingTimeInterval(-runInTime.converted(to: .seconds).value)
-  }
-  var maxAllowableTimeOverIP: Date? {
-    let groundSpeed = targetGroundSpeedMeasurement * (1 + Self.allowableSpeedVariance)
-    let runInTime = IPToTarget.length / groundSpeed
-    return timeOnTarget?.addingTimeInterval(-runInTime.converted(to: .seconds).value)
-  }
-
-  var IPToTarget: Line {
-    .init(from: IPCoordinate, to: coordinate)
   }
 
   init(

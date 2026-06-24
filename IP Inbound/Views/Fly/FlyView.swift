@@ -50,9 +50,11 @@ struct FlyView: View {
     .onAppear {
       target.isConfigured = true
       UIApplication.shared.isIdleTimerDisabled = true
+      WatchSessionController.shared.update(flying: target)
     }
     .onDisappear {
       UIApplication.shared.isIdleTimerDisabled = false
+      WatchSessionController.shared.update(flying: nil)
     }
   }
 

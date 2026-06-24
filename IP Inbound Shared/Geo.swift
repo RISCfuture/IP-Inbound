@@ -229,11 +229,11 @@ struct Bearing: Codable, Equatable, Sendable, CustomDebugStringConvertible {
     )
   }
 
+  /// The signed difference between two bearings as a relative bearing in the range (−180°, 180°]: a
+  /// positive angle lies clockwise of `rhs`, a negative angle counterclockwise.
   static func - (lhs: Self, rhs: Self) -> Self {
-    let angle = lhs.angle - rhs.angle
-    let normalized =
-      (angle + Measurement(value: 180, unit: .degrees)).converted(to: .degrees).value
-      .truncatingRemainder(dividingBy: 360) - 180
+    let delta = (lhs.degrees - rhs.degrees).truncatingRemainder(dividingBy: 360)
+    let normalized = delta > 180 ? delta - 360 : (delta <= -180 ? delta + 360 : delta)
     return .init(angle: normalized, reference: .relative)
   }
 
@@ -262,4 +262,10 @@ struct Bearing: Codable, Equatable, Sendable, CustomDebugStringConvertible {
   enum Reference: Codable {
     case magnetic, `true`, relative
   }
+}
+
+extension Bearing {
+  /// The signed shortest turn needed to roll out on `other`, expressed as a relative bearing in the
+  /// range (−180°, 180°]. A positive angle turns right (clockwise); a negative angle turns left.
+  func shortestTurn(to other: Bearing) -> Self { other - self }
 }

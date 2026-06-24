@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		010FB64E2FEBA0640056ECE0 /* IP Inbound Watch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 010FB62E2FEBA0610056ECE0 /* IP Inbound Watch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		011479ED2F779D5F003AEBCC /* SwiftGeographic in Frameworks */ = {isa = PBXBuildFile; productRef = 011479EC2F779D5F003AEBCC /* SwiftGeographic */; };
 		0159221F2FCA2B28007FB6BB /* XCUITestKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0159221E2FCA2B28007FB6BB /* XCUITestKit */; };
 		0166FA742DCA685800970EFD /* DefaultsMacros in Frameworks */ = {isa = PBXBuildFile; productRef = 0166FA732DCA685800970EFD /* DefaultsMacros */; };
@@ -21,6 +22,27 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		010FB63B2FEBA0630056ECE0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 01ECF4AE2CF3DF0D00BD0604 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 010FB62D2FEBA0610056ECE0;
+			remoteInfo = "IP Inbound Watch Watch App";
+		};
+		010FB6452FEBA0630056ECE0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 01ECF4AE2CF3DF0D00BD0604 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 010FB62D2FEBA0610056ECE0;
+			remoteInfo = "IP Inbound Watch Watch App";
+		};
+		010FB64C2FEBA0640056ECE0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 01ECF4AE2CF3DF0D00BD0604 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 010FB62D2FEBA0610056ECE0;
+			remoteInfo = "IP Inbound Watch Watch App";
+		};
 		016F3C212DC08E7A00F2A1AE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 01ECF4AE2CF3DF0D00BD0604 /* Project object */;
@@ -44,7 +66,22 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		010FB6522FEBA0640056ECE0 /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolder = Product;
+			files = (
+				010FB64E2FEBA0640056ECE0 /* IP Inbound Watch.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		010FB62E2FEBA0610056ECE0 /* IP Inbound Watch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "IP Inbound Watch.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		010FB63A2FEBA0630056ECE0 /* IP Inbound Watch Watch AppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "IP Inbound Watch Watch AppTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		010FB6442FEBA0630056ECE0 /* IP Inbound Watch Watch AppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "IP Inbound Watch Watch AppUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		01497EEC2DDC473400963D93 /* ci_post_clone.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = ci_post_clone.sh; sourceTree = "<group>"; };
 		016F3C1B2DC08E7A00F2A1AE /* Generate Screenshots.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Generate Screenshots.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		01ECF4B62CF3DF0D00BD0604 /* IP Inbound.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "IP Inbound.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -70,9 +107,29 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		010FB62F2FEBA0610056ECE0 /* IP Inbound Watch */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "IP Inbound Watch";
+			sourceTree = "<group>";
+		};
+		010FB63D2FEBA0630056ECE0 /* IP Inbound Watch Tests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "IP Inbound Watch Tests";
+			sourceTree = "<group>";
+		};
+		010FB6472FEBA0630056ECE0 /* IP Inbound Watch Watch UITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "IP Inbound Watch Watch UITests";
+			sourceTree = "<group>";
+		};
 		016F3C1C2DC08E7A00F2A1AE /* Generate Screenshots */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = "Generate Screenshots";
+			sourceTree = "<group>";
+		};
+		01DA7A5E2FEBA0610056ECE0 /* IP Inbound Shared */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "IP Inbound Shared";
 			sourceTree = "<group>";
 		};
 		01ECF4B82CF3DF0D00BD0604 /* IP Inbound */ = {
@@ -99,6 +156,21 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		010FB62B2FEBA0610056ECE0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+			);
+		};
+		010FB6372FEBA0630056ECE0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+			);
+		};
+		010FB6412FEBA0630056ECE0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+			);
+		};
 		016F3C182DC08E7A00F2A1AE /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
@@ -145,10 +217,14 @@
 			isa = PBXGroup;
 			children = (
 				01497EED2DDC473400963D93 /* ci_scripts */,
+				01DA7A5E2FEBA0610056ECE0 /* IP Inbound Shared */,
 				01ECF4B82CF3DF0D00BD0604 /* IP Inbound */,
 				01ECF4C92CF3DF0F00BD0604 /* IP InboundTests */,
 				01ECF4D32CF3DF0F00BD0604 /* IP InboundUITests */,
 				016F3C1C2DC08E7A00F2A1AE /* Generate Screenshots */,
+				010FB62F2FEBA0610056ECE0 /* IP Inbound Watch */,
+				010FB63D2FEBA0630056ECE0 /* IP Inbound Watch Tests */,
+				010FB6472FEBA0630056ECE0 /* IP Inbound Watch Watch UITests */,
 				01FC853F2CF4639A00C9F053 /* Frameworks */,
 				01ECF4B72CF3DF0D00BD0604 /* Products */,
 			);
@@ -161,6 +237,9 @@
 				01ECF4C62CF3DF0F00BD0604 /* IP InboundTests.xctest */,
 				01ECF4D02CF3DF0F00BD0604 /* IP InboundUITests.xctest */,
 				016F3C1B2DC08E7A00F2A1AE /* Generate Screenshots.xctest */,
+				010FB62E2FEBA0610056ECE0 /* IP Inbound Watch.app */,
+				010FB63A2FEBA0630056ECE0 /* IP Inbound Watch Watch AppTests.xctest */,
+				010FB6442FEBA0630056ECE0 /* IP Inbound Watch Watch AppUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -175,6 +254,67 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		010FB62D2FEBA0610056ECE0 /* IP Inbound Watch */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 010FB64F2FEBA0640056ECE0 /* Build configuration list for PBXNativeTarget "IP Inbound Watch" */;
+			buildPhases = (
+				010FB62A2FEBA0610056ECE0 /* Sources */,
+				010FB62B2FEBA0610056ECE0 /* Frameworks */,
+				010FB62C2FEBA0610056ECE0 /* Resources */,
+			);
+			buildRules = (
+			);
+			fileSystemSynchronizedGroups = (
+				010FB62F2FEBA0610056ECE0 /* IP Inbound Watch */,
+				01DA7A5E2FEBA0610056ECE0 /* IP Inbound Shared */,
+			);
+			name = "IP Inbound Watch";
+			productName = "IP Inbound Watch Watch App";
+			productReference = 010FB62E2FEBA0610056ECE0 /* IP Inbound Watch.app */;
+			productType = "com.apple.product-type.application";
+		};
+		010FB6392FEBA0630056ECE0 /* IP Inbound Watch Watch AppTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 010FB6532FEBA0640056ECE0 /* Build configuration list for PBXNativeTarget "IP Inbound Watch Watch AppTests" */;
+			buildPhases = (
+				010FB6362FEBA0630056ECE0 /* Sources */,
+				010FB6372FEBA0630056ECE0 /* Frameworks */,
+				010FB6382FEBA0630056ECE0 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				010FB63C2FEBA0630056ECE0 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				010FB63D2FEBA0630056ECE0 /* IP Inbound Watch Tests */,
+			);
+			name = "IP Inbound Watch Watch AppTests";
+			productName = "IP Inbound Watch Watch AppTests";
+			productReference = 010FB63A2FEBA0630056ECE0 /* IP Inbound Watch Watch AppTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		010FB6432FEBA0630056ECE0 /* IP Inbound Watch Watch AppUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 010FB6562FEBA0640056ECE0 /* Build configuration list for PBXNativeTarget "IP Inbound Watch Watch AppUITests" */;
+			buildPhases = (
+				010FB6402FEBA0630056ECE0 /* Sources */,
+				010FB6412FEBA0630056ECE0 /* Frameworks */,
+				010FB6422FEBA0630056ECE0 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				010FB6462FEBA0630056ECE0 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				010FB6472FEBA0630056ECE0 /* IP Inbound Watch Watch UITests */,
+			);
+			name = "IP Inbound Watch Watch AppUITests";
+			productName = "IP Inbound Watch Watch AppUITests";
+			productReference = 010FB6442FEBA0630056ECE0 /* IP Inbound Watch Watch AppUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 		016F3C1A2DC08E7A00F2A1AE /* Generate Screenshots */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 016F3C232DC08E7A00F2A1AE /* Build configuration list for PBXNativeTarget "Generate Screenshots" */;
@@ -206,11 +346,16 @@
 				01ECF4B22CF3DF0D00BD0604 /* Sources */,
 				01ECF4B32CF3DF0D00BD0604 /* Frameworks */,
 				01ECF4B42CF3DF0D00BD0604 /* Resources */,
+				010FB6522FEBA0640056ECE0 /* Embed Watch Content */,
 				C8D493EE46664369A7D42761 /* Upload Debug Symbols to Sentry */,
 			);
 			buildRules = (
 			);
+			dependencies = (
+				010FB64D2FEBA0640056ECE0 /* PBXTargetDependency */,
+			);
 			fileSystemSynchronizedGroups = (
+				01DA7A5E2FEBA0610056ECE0 /* IP Inbound Shared */,
 				01ECF4B82CF3DF0D00BD0604 /* IP Inbound */,
 			);
 			name = "IP Inbound";
@@ -283,9 +428,20 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 2640;
+				LastSwiftUpdateCheck = 2650;
 				LastUpgradeCheck = 2640;
 				TargetAttributes = {
+					010FB62D2FEBA0610056ECE0 = {
+						CreatedOnToolsVersion = 26.5;
+					};
+					010FB6392FEBA0630056ECE0 = {
+						CreatedOnToolsVersion = 26.5;
+						TestTargetID = 010FB62D2FEBA0610056ECE0;
+					};
+					010FB6432FEBA0630056ECE0 = {
+						CreatedOnToolsVersion = 26.5;
+						TestTargetID = 010FB62D2FEBA0610056ECE0;
+					};
 					016F3C1A2DC08E7A00F2A1AE = {
 						CreatedOnToolsVersion = 16.3;
 						TestTargetID = 01ECF4B52CF3DF0D00BD0604;
@@ -328,14 +484,32 @@
 			projectRoot = "";
 			targets = (
 				01ECF4B52CF3DF0D00BD0604 /* IP Inbound */,
+				010FB62D2FEBA0610056ECE0 /* IP Inbound Watch */,
 				01ECF4C52CF3DF0F00BD0604 /* IP InboundTests */,
 				01ECF4CF2CF3DF0F00BD0604 /* IP InboundUITests */,
 				016F3C1A2DC08E7A00F2A1AE /* Generate Screenshots */,
+				010FB6392FEBA0630056ECE0 /* IP Inbound Watch Watch AppTests */,
+				010FB6432FEBA0630056ECE0 /* IP Inbound Watch Watch AppUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		010FB62C2FEBA0610056ECE0 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+			);
+		};
+		010FB6382FEBA0630056ECE0 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+			);
+		};
+		010FB6422FEBA0630056ECE0 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+			);
+		};
 		016F3C192DC08E7A00F2A1AE /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			files = (
@@ -391,6 +565,21 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		010FB62A2FEBA0610056ECE0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
+		010FB6362FEBA0630056ECE0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
+		010FB6402FEBA0630056ECE0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
 		016F3C172DC08E7A00F2A1AE /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			files = (
@@ -414,6 +603,21 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		010FB63C2FEBA0630056ECE0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 010FB62D2FEBA0610056ECE0 /* IP Inbound Watch */;
+			targetProxy = 010FB63B2FEBA0630056ECE0 /* PBXContainerItemProxy */;
+		};
+		010FB6462FEBA0630056ECE0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 010FB62D2FEBA0610056ECE0 /* IP Inbound Watch */;
+			targetProxy = 010FB6452FEBA0630056ECE0 /* PBXContainerItemProxy */;
+		};
+		010FB64D2FEBA0640056ECE0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 010FB62D2FEBA0610056ECE0 /* IP Inbound Watch */;
+			targetProxy = 010FB64C2FEBA0640056ECE0 /* PBXContainerItemProxy */;
+		};
 		016F3C222DC08E7A00F2A1AE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 01ECF4B52CF3DF0D00BD0604 /* IP Inbound */;
@@ -432,6 +636,150 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		010FB6502FEBA0640056ECE0 /* Debug configuration for PBXNativeTarget "IP Inbound Watch" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 11;
+				DEVELOPMENT_TEAM = 2NFSK2WB24;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "IP Inbound Watch";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "IP Inbound needs to know your location in order to help you navigate to your target.";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "codes.tim.IP-Inbound";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.4;
+				PRODUCT_BUNDLE_IDENTIFIER = "codes.tim.IP-Inbound.watchkitapp";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = 4;
+			};
+			name = Debug;
+		};
+		010FB6512FEBA0640056ECE0 /* Release configuration for PBXNativeTarget "IP Inbound Watch" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 11;
+				DEVELOPMENT_TEAM = 2NFSK2WB24;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "IP Inbound Watch";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "IP Inbound needs to know your location in order to help you navigate to your target.";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "codes.tim.IP-Inbound";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.4;
+				PRODUCT_BUNDLE_IDENTIFIER = "codes.tim.IP-Inbound.watchkitapp";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = 4;
+			};
+			name = Release;
+		};
+		010FB6542FEBA0640056ECE0 /* Debug configuration for PBXNativeTarget "IP Inbound Watch Watch AppTests" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 2NFSK2WB24;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "codes.tim.IP-Inbound.IP-Inbound-Watch-Watch-AppTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TARGETED_DEVICE_FAMILY = 4;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/IP Inbound Watch.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/IP Inbound Watch";
+			};
+			name = Debug;
+		};
+		010FB6552FEBA0640056ECE0 /* Release configuration for PBXNativeTarget "IP Inbound Watch Watch AppTests" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 2NFSK2WB24;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "codes.tim.IP-Inbound.IP-Inbound-Watch-Watch-AppTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TARGETED_DEVICE_FAMILY = 4;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/IP Inbound Watch.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/IP Inbound Watch";
+			};
+			name = Release;
+		};
+		010FB6572FEBA0640056ECE0 /* Debug configuration for PBXNativeTarget "IP Inbound Watch Watch AppUITests" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 2NFSK2WB24;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "codes.tim.IP-Inbound.IP-Inbound-Watch-Watch-AppUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TARGETED_DEVICE_FAMILY = 4;
+				TEST_TARGET_NAME = "IP Inbound Watch";
+			};
+			name = Debug;
+		};
+		010FB6582FEBA0640056ECE0 /* Release configuration for PBXNativeTarget "IP Inbound Watch Watch AppUITests" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 2NFSK2WB24;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "codes.tim.IP-Inbound.IP-Inbound-Watch-Watch-AppUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TARGETED_DEVICE_FAMILY = 4;
+				TEST_TARGET_NAME = "IP Inbound Watch";
+			};
+			name = Release;
+		};
 		016F3C242DC08E7A00F2A1AE /* Debug configuration for PBXNativeTarget "Generate Screenshots" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -440,7 +788,6 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 2NFSK2WB24;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "codes.tim.IP-Inbound.Generate-Screenshots";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -458,7 +805,6 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 2NFSK2WB24;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "codes.tim.IP-Inbound.Generate-Screenshots";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -533,6 +879,7 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_VERSION = 6.3;
+				WATCHOS_DEPLOYMENT_TARGET = 26.0;
 			};
 			name = Debug;
 		};
@@ -594,6 +941,7 @@
 				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_VERSION = 6.3;
 				VALIDATE_PRODUCT = YES;
+				WATCHOS_DEPLOYMENT_TARGET = 26.0;
 			};
 			name = Release;
 		};
@@ -619,7 +967,6 @@
 				INFOPLIST_KEY_UIRequiredDeviceCapabilities = "gps location-services";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -654,7 +1001,6 @@
 				INFOPLIST_KEY_UIRequiredDeviceCapabilities = "gps location-services";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -674,7 +1020,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "codes.tim.IP-InboundTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -691,7 +1036,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "codes.tim.IP-InboundTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -707,7 +1051,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "codes.tim.IP-InboundUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -723,7 +1066,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "codes.tim.IP-InboundUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -736,6 +1078,30 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		010FB64F2FEBA0640056ECE0 /* Build configuration list for PBXNativeTarget "IP Inbound Watch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				010FB6502FEBA0640056ECE0 /* Debug configuration for PBXNativeTarget "IP Inbound Watch" */,
+				010FB6512FEBA0640056ECE0 /* Release configuration for PBXNativeTarget "IP Inbound Watch" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		010FB6532FEBA0640056ECE0 /* Build configuration list for PBXNativeTarget "IP Inbound Watch Watch AppTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				010FB6542FEBA0640056ECE0 /* Debug configuration for PBXNativeTarget "IP Inbound Watch Watch AppTests" */,
+				010FB6552FEBA0640056ECE0 /* Release configuration for PBXNativeTarget "IP Inbound Watch Watch AppTests" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		010FB6562FEBA0640056ECE0 /* Build configuration list for PBXNativeTarget "IP Inbound Watch Watch AppUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				010FB6572FEBA0640056ECE0 /* Debug configuration for PBXNativeTarget "IP Inbound Watch Watch AppUITests" */,
+				010FB6582FEBA0640056ECE0 /* Release configuration for PBXNativeTarget "IP Inbound Watch Watch AppUITests" */,
+			);
+			defaultConfigurationName = Release;
+		};
 		016F3C232DC08E7A00F2A1AE /* Build configuration list for PBXNativeTarget "Generate Screenshots" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
