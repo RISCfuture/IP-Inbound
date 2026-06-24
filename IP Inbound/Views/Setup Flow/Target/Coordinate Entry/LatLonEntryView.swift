@@ -3,7 +3,7 @@ import SwiftUI
 
 struct LatLonEntryView: View {
   private static let baselineDivisor: CGFloat = 8
-  private static let keypadHeightScale: CGFloat = 5
+  private static let keypadHeightScale: CGFloat = 6
 
   let onAccept: (Coordinate) -> Void
   let onCancel: () -> Void
@@ -44,12 +44,6 @@ struct LatLonEntryView: View {
           Spacer(minLength: 0)
 
           keypad(baseline: baseline)
-
-          AcceptCancelBar(
-            baseline: baseline,
-            onAccept: { onAccept(entryManager.coordinate) },
-            onCancel: onCancel
-          )
         }
       }
     } else {
@@ -76,14 +70,18 @@ struct LatLonEntryView: View {
         NumericKeypadView(
           activeDigits: activeDigits,
           onKeyPress: { entryManager.add($0) },
-          onBackspace: { entryManager.backspace() }
+          onBackspace: { entryManager.backspace() },
+          onAccept: { onAccept(entryManager.coordinate) },
+          onCancel: onCancel
         )
         .frame(height: keypadHeight)
       case .hemisphere:
         DirectionKeypadView(
           activeDirections: activeDirections,
           onKeyPress: { entryManager.add($0) },
-          onBackspace: { entryManager.backspace() }
+          onBackspace: { entryManager.backspace() },
+          onAccept: { onAccept(entryManager.coordinate) },
+          onCancel: onCancel
         )
         .frame(height: keypadHeight)
       case .open:

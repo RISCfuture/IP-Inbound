@@ -3,7 +3,7 @@ import SwiftUI
 struct MGRSEntryView: View {
   private static let baselineDivisor: CGFloat = 8
   private static let displaySpacingScale: CGFloat = 0.5
-  private static let keypadHeightScale: CGFloat = 5
+  private static let keypadHeightScale: CGFloat = 6
 
   let onAccept: (Coordinate) -> Void
   let onCancel: () -> Void
@@ -26,17 +26,6 @@ struct MGRSEntryView: View {
         Spacer(minLength: 0)
 
         keypad(baseline: baseline)
-
-        AcceptCancelBar(
-          baseline: baseline,
-          isAcceptEnabled: entryManager.isValid,
-          onAccept: {
-            if let coordinate = entryManager.coordinate() {
-              onAccept(coordinate)
-            }
-          },
-          onCancel: onCancel
-        )
       }
     }
   }
@@ -51,6 +40,12 @@ struct MGRSEntryView: View {
     _entryManager = State(wrappedValue: MGRSEntryManager(coordinate: coordinate))
   }
 
+  private func acceptCoordinate() {
+    if let coordinate = entryManager.coordinate() {
+      onAccept(coordinate)
+    }
+  }
+
   @ViewBuilder
   private func keypad(baseline: CGFloat) -> some View {
     let keypadHeight = baseline * Self.keypadHeightScale
@@ -58,29 +53,41 @@ struct MGRSEntryView: View {
     switch entryManager.inputMode {
       case .zone, .numeric:
         NumericKeypadView(
+          isAcceptEnabled: entryManager.isValid,
           onKeyPress: { entryManager.add(Character("\($0)")) },
-          onBackspace: { entryManager.backspace() }
+          onBackspace: { entryManager.backspace() },
+          onAccept: acceptCoordinate,
+          onCancel: onCancel
         )
         .frame(height: keypadHeight)
       case .band:
         MGRSLetterKeypadView(
           activeLetters: entryManager.validBands,
+          isAcceptEnabled: entryManager.isValid,
           onKeyPress: { entryManager.add($0) },
-          onBackspace: { entryManager.backspace() }
+          onBackspace: { entryManager.backspace() },
+          onAccept: acceptCoordinate,
+          onCancel: onCancel
         )
         .frame(height: keypadHeight)
       case .column:
         MGRSLetterKeypadView(
           activeLetters: entryManager.validColumns,
+          isAcceptEnabled: entryManager.isValid,
           onKeyPress: { entryManager.add($0) },
-          onBackspace: { entryManager.backspace() }
+          onBackspace: { entryManager.backspace() },
+          onAccept: acceptCoordinate,
+          onCancel: onCancel
         )
         .frame(height: keypadHeight)
       case .row:
         MGRSLetterKeypadView(
           activeLetters: entryManager.validRows,
+          isAcceptEnabled: entryManager.isValid,
           onKeyPress: { entryManager.add($0) },
-          onBackspace: { entryManager.backspace() }
+          onBackspace: { entryManager.backspace() },
+          onAccept: acceptCoordinate,
+          onCancel: onCancel
         )
         .frame(height: keypadHeight)
     }

@@ -1,93 +1,42 @@
 import SwiftUI
 
 struct DirectionKeypadView: View {
-  private static let columnsPerRow: CGFloat = 3.5
-  private static let rowsHigh: CGFloat = 3.5
-  private static let spacingFraction: CGFloat = 0.15
-
   let activeDirections: [Character]
+  var isAcceptEnabled = true
   let onKeyPress: (Character) -> Void
   let onBackspace: () -> Void
+  let onAccept: () -> Void
+  let onCancel: () -> Void
 
-  var body: some View {
-    GeometryReader { geometry in
-      let buttonSize = max(
-        KeypadButton.minTouchTarget,
-        min(
-          geometry.size.width / Self.columnsPerRow,
-          geometry.size.height / Self.rowsHigh
-        )
-      )
-      let spacing = buttonSize * Self.spacingFraction
-
-      VStack(spacing: spacing) {
-        HStack(spacing: spacing) {
-          Color.clear
-            .frame(width: buttonSize, height: buttonSize)
-
-          directionButton(
-            "N",
-            accessibilityLabel: String(localized: "North"),
-            buttonSize: buttonSize
-          )
-
-          Color.clear
-            .frame(width: buttonSize, height: buttonSize)
-        }
-
-        HStack(spacing: spacing) {
-          directionButton(
-            "W",
-            accessibilityLabel: String(localized: "West"),
-            buttonSize: buttonSize
-          )
-
-          Color.clear
-            .frame(width: buttonSize, height: buttonSize)
-
-          directionButton(
-            "E",
-            accessibilityLabel: String(localized: "East"),
-            buttonSize: buttonSize
-          )
-        }
-
-        HStack(spacing: spacing) {
-          Color.clear
-            .frame(width: buttonSize, height: buttonSize)
-
-          directionButton(
-            "S",
-            accessibilityLabel: String(localized: "South"),
-            buttonSize: buttonSize
-          )
-
-          KeypadButton(
-            systemImage: "delete.left",
-            accessibilityLabel: String(localized: "Delete"),
-            isBackspace: true,
-            action: onBackspace
-          )
-          .frame(width: buttonSize, height: buttonSize)
-        }
-      }
-      .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
+  private var rows: [[KeypadCell]] {
+    [
+      [.empty, directionCell("N", String(localized: "North")), .empty],
+      [
+        directionCell("W", String(localized: "West")),
+        .empty,
+        directionCell("E", String(localized: "East"))
+      ],
+      [.empty, directionCell("S", String(localized: "South")), .backspace(action: onBackspace)]
+    ]
   }
 
-  @ViewBuilder
-  private func directionButton(
-    _ direction: Character,
-    accessibilityLabel: String,
-    buttonSize: CGFloat
-  ) -> some View {
-    KeypadButton(
+  var body: some View {
+    KeypadGrid(
+      columns: 3,
+      rows: rows,
+      isAcceptEnabled: isAcceptEnabled,
+      onAccept: onAccept,
+      onCancel: onCancel
+    )
+  }
+
+  private func directionCell(_ direction: Character, _ accessibilityLabel: String) -> KeypadCell {
+    .key(
       label: String(direction),
+      accessibilityLabel: accessibilityLabel,
       isActive: activeDirections.contains(direction),
       action: { onKeyPress(direction) }
     )
-    .frame(width: buttonSize, height: buttonSize)
-    .accessibilityLabel(accessibilityLabel)
   }
 }
 
@@ -95,12 +44,20 @@ struct DirectionKeypadView: View {
   DirectionKeypadView(
     activeDirections: ["N", "S", "E", "W"],
     onKeyPress: { _ in },
-    onBackspace: {}
+    onBackspace: {},
+    onAccept: {},
+    onCancel: {}
   )
   .padding()
 }
 
 #Preview("Restricted directions") {
-  DirectionKeypadView(activeDirections: ["N", "S"], onKeyPress: { _ in }, onBackspace: {})
-    .padding()
+  DirectionKeypadView(
+    activeDirections: ["N", "S"],
+    onKeyPress: { _ in },
+    onBackspace: {},
+    onAccept: {},
+    onCancel: {}
+  )
+  .padding()
 }
