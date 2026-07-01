@@ -1317,7 +1317,7 @@
 			repositoryURL = "https://github.com/RISCfuture/SwiftGeographic";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
+				minimumVersion = 1.0.1;
 			};
 		};
 		0159221D2FCA2B28007FB6BB /* XCRemoteSwiftPackageReference "XCUITestKit" */ = {
@@ -1333,7 +1333,7 @@
 			repositoryURL = "https://github.com/apple/swift-numerics.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.3;
+				minimumVersion = 1.1.1;
 			};
 		};
 		01C059A52DBF49C600D733C1 /* XCRemoteSwiftPackageReference "swift-async-algorithms" */ = {
@@ -1341,7 +1341,7 @@
 			repositoryURL = "https://github.com/apple/swift-async-algorithms.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.4;
+				minimumVersion = 1.1.5;
 			};
 		};
 		01ECF4F12CF3E2F800BD0604 /* XCRemoteSwiftPackageReference "Defaults" */ = {
@@ -1349,7 +1349,7 @@
 			repositoryURL = "https://github.com/sindresorhus/Defaults";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 9.0.0;
+				minimumVersion = 9.0.9;
 			};
 		};
 		01F13CF32DBEE074000E58A2 /* XCRemoteSwiftPackageReference "swift-nio" */ = {
@@ -1357,7 +1357,7 @@
 			repositoryURL = "https://github.com/apple/swift-nio.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 2.82.0;
+				minimumVersion = 2.101.2;
 			};
 		};
 		01F13CFC2DBEE65B000E58A2 /* XCRemoteSwiftPackageReference "swift-log" */ = {
@@ -1365,7 +1365,7 @@
 			repositoryURL = "https://github.com/apple/swift-log.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.6.3;
+				minimumVersion = 1.14.0;
 			};
 		};
 		F48BBB649D7A4A6387FBF73C /* XCRemoteSwiftPackageReference "sentry-cocoa" */ = {
@@ -1373,7 +1373,7 @@
 			repositoryURL = "https://github.com/getsentry/sentry-cocoa/";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 9.0.0;
+				minimumVersion = 9.19.1;
 			};
 			traits = (
 			);
