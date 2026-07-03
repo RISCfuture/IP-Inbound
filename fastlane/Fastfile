@@ -139,6 +139,7 @@ platform :ios do
         skip_binary_upload:         true,
         skip_metadata:              true,
         screenshots_path:           temp_dir,
+        overwrite_screenshots:      true, # Clear each locale's slots first so re-runs stay idempotent
         force:                      true, # Skip HTML preview
         run_precheck_before_submit: false # Skip precheck since we're only uploading screenshots
       )
