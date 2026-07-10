@@ -77,9 +77,11 @@ struct IP_InboundApp: App {
         // Enable structured logging
         options.enableLogs = true
 
-        // Discard all events when running on simulator
+        // Discard events from simulator and debug builds: the former is noise, the
+        // latter reports debugger-induced app hangs (a paused main thread trips the
+        // watchdog) that don't reflect production behavior.
         options.beforeSend = { event in
-          #if targetEnvironment(simulator)
+          #if DEBUG || targetEnvironment(simulator)
             return nil
           #else
             return event
