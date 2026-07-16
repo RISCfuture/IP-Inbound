@@ -66,16 +66,16 @@ open class Snapshot: NSObject {
 
   open class func setupSnapshot(_ app: XCUIApplication, waitForAnimations: Bool = true) {
 
-    Self.app = app
-    Self.waitForAnimations = waitForAnimations
+    Snapshot.app = app
+    Snapshot.waitForAnimations = waitForAnimations
 
     do {
       let cacheDir = try getCacheDirectory()
-      Self.cacheDirectory = cacheDir
+      Snapshot.cacheDirectory = cacheDir
       setLanguage(app)
       setLocale(app)
       setLaunchArguments(app)
-    } catch {
+    } catch let error {
       NSLog(error.localizedDescription)
     }
   }
@@ -158,7 +158,7 @@ open class Snapshot: NSObject {
 
     NSLog("snapshot: \(name)")  // more information about this, check out https://docs.fastlane.tools/actions/snapshot/#how-does-it-work
 
-    if Self.waitForAnimations {
+    if Snapshot.waitForAnimations {
       sleep(1)  // Waiting for the animation to be finished (kind of)
     }
 
@@ -201,7 +201,7 @@ open class Snapshot: NSObject {
         #else
           try image.pngData()?.write(to: path, options: .atomic)
         #endif
-      } catch {
+      } catch let error {
         NSLog("Problem writing screenshot: \(name) to \(screenshotsDir)/\(simulator)-\(name).png")
         NSLog(error.localizedDescription)
       }
@@ -216,7 +216,7 @@ open class Snapshot: NSObject {
         let format = UIGraphicsImageRendererFormat()
         format.scale = image.scale
         let renderer = UIGraphicsImageRenderer(size: image.size, format: format)
-        return renderer.image { _ in
+        return renderer.image { context in
           image.draw(in: CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height))
         }
       } else {
@@ -263,8 +263,8 @@ open class Snapshot: NSObject {
   }
 }
 
-extension XCUIElementAttributes {
-  fileprivate var isNetworkLoadingIndicator: Bool {
+private extension XCUIElementAttributes {
+  var isNetworkLoadingIndicator: Bool {
     if hasAllowListedIdentifier { return false }
 
     let hasOldLoadingIndicatorSize = frame.size == CGSize(width: 10, height: 20)
@@ -274,13 +274,13 @@ extension XCUIElementAttributes {
     return hasOldLoadingIndicatorSize || hasNewLoadingIndicatorSize
   }
 
-  fileprivate var hasAllowListedIdentifier: Bool {
+  var hasAllowListedIdentifier: Bool {
     let allowListedIdentifiers = ["GeofenceLocationTrackingOn", "StandardLocationTrackingOn"]
 
     return allowListedIdentifiers.contains(identifier)
   }
 
-  fileprivate func isStatusBar(_ deviceWidth: CGFloat) -> Bool {
+  func isStatusBar(_ deviceWidth: CGFloat) -> Bool {
     if elementType == .statusBar { return true }
     guard frame.origin == .zero else { return false }
 
@@ -291,9 +291,9 @@ extension XCUIElementAttributes {
   }
 }
 
-extension XCUIElementQuery {
-  fileprivate var networkLoadingIndicators: XCUIElementQuery {
-    let isNetworkLoadingIndicator = NSPredicate { evaluatedObject, _ in
+private extension XCUIElementQuery {
+  var networkLoadingIndicators: XCUIElementQuery {
+    let isNetworkLoadingIndicator = NSPredicate { (evaluatedObject, _) in
       guard let element = evaluatedObject as? XCUIElementAttributes else { return false }
 
       return element.isNetworkLoadingIndicator
@@ -303,14 +303,14 @@ extension XCUIElementQuery {
   }
 
   @MainActor
-  fileprivate var deviceStatusBars: XCUIElementQuery {
+  var deviceStatusBars: XCUIElementQuery {
     guard let app = Snapshot.app else {
       fatalError("XCUIApplication is not set. Please call setupSnapshot(app) before snapshot().")
     }
 
     let deviceWidth = app.windows.firstMatch.frame.width
 
-    let isStatusBar = NSPredicate { evaluatedObject, _ in
+    let isStatusBar = NSPredicate { (evaluatedObject, _) in
       guard let element = evaluatedObject as? XCUIElementAttributes else { return false }
 
       return element.isStatusBar(deviceWidth)
@@ -320,8 +320,8 @@ extension XCUIElementQuery {
   }
 }
 
-extension CGFloat {
-  fileprivate func isBetween(_ numberA: CGFloat, and numberB: CGFloat) -> Bool {
+private extension CGFloat {
+  func isBetween(_ numberA: CGFloat, and numberB: CGFloat) -> Bool {
     return numberA...numberB ~= self
   }
 }
