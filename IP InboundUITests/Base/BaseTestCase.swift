@@ -9,7 +9,7 @@ class BaseTestCase: XCTestCase {
   // MARK: - Type Properties
 
   // ISO-8601 with fractional seconds — matches `UITestClock` parsing.
-  @MainActor static let uiTestNowFormatter: ISO8601DateFormatter = {
+  static let uiTestNowFormatter: ISO8601DateFormatter = {
     let formatter = ISO8601DateFormatter()
     formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
     return formatter
@@ -22,13 +22,12 @@ class BaseTestCase: XCTestCase {
 
   var app: XCUIApplication!
 
-  @MainActor var isIPad: Bool {
+  var isIPad: Bool {
     UIDevice.current.userInterfaceIdiom == .pad
   }
 
   // MARK: - XCTestCase
 
-  @MainActor
   override func setUp() async throws {
     continueAfterFailure = false
 
@@ -43,7 +42,6 @@ class BaseTestCase: XCTestCase {
 
   // MARK: - Methods
 
-  @MainActor
   func launchApp(
     now: Date? = nil,
     location: String? = defaultFix,
@@ -76,19 +74,16 @@ class BaseTestCase: XCTestCase {
     handleLocationPermissionIfNeeded()
   }
 
-  @MainActor
   func setSimulatedLocation(latitude: Double, longitude: Double) {
     XCUIDevice.shared.location = XCUILocation(
       location: CLLocation(latitude: latitude, longitude: longitude)
     )
   }
 
-  @MainActor
   func setSimulatedLocation(_ location: CLLocation) {
     XCUIDevice.shared.location = XCUILocation(location: location)
   }
 
-  @MainActor
   func handleLocationPermissionIfNeeded() {
     // Tap the location prompt's "Allow While Using App" on SpringBoard directly,
     // at this known point in the flow, without depending on a follow-up
@@ -97,7 +92,6 @@ class BaseTestCase: XCTestCase {
     SystemAlert.dismiss(labels: ["Allow While Using App"])
   }
 
-  @MainActor
   func waitForAppStability(timeout: TimeInterval = 5) {
     _ = app.wait(for: .runningForeground, timeout: timeout)
   }

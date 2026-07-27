@@ -6,20 +6,19 @@ import XCUITestKit
 struct TargetListPage: Page {
   let app: XCUIApplication
 
-  @MainActor var isDisplayed: Bool {
+  var isDisplayed: Bool {
     app.buttons["addTargetButton"].waitForExistence(timeout: 15)
   }
 
-  @MainActor var addTargetButton: XCUIElement { app.buttons["addTargetButton"] }
-  @MainActor var tutorialButton: XCUIElement { app.buttons["tutorialButton"] }
+  var addTargetButton: XCUIElement { app.buttons["addTargetButton"] }
+  var tutorialButton: XCUIElement { app.buttons["tutorialButton"] }
 
-  @MainActor var targetCount: Int {
+  var targetCount: Int {
     app.cells.count
   }
 
   // MARK: - Methods
 
-  @MainActor
   @discardableResult
   func tapAddTarget() -> TargetSetupPage {
     XCTAssertTrue(addTargetButton.waitForExistence(timeout: 15), "addTargetButton should appear")
@@ -27,7 +26,6 @@ struct TargetListPage: Page {
     return TargetSetupPage(app: app)
   }
 
-  @MainActor
   @discardableResult
   func createTarget(named name: String) -> TargetSetupPage {
     let setupPage = tapAddTarget()
@@ -36,7 +34,6 @@ struct TargetListPage: Page {
     return setupPage
   }
 
-  @MainActor
   @discardableResult
   func tapTutorial() -> TutorialPage {
     XCTAssertTrue(tutorialButton.waitForExistence(timeout: 5), "tutorialButton should appear")
@@ -60,7 +57,6 @@ struct TargetListPage: Page {
     return TutorialPage(app: app)
   }
 
-  @MainActor
   @discardableResult
   func selectTarget(named name: String) -> TargetSetupPage {
     let cell = targetCell(named: name)
@@ -74,7 +70,6 @@ struct TargetListPage: Page {
   /// in the always-visible sidebar, so there is nothing to pop and this returns
   /// immediately. Each iteration waits for the next state rather than sleeping a
   /// fixed interval: `addTargetButton.waitForExistence` is the loop's settle.
-  @MainActor
   @discardableResult
   func navigateBackToList() -> Self {
     guard UIDevice.current.userInterfaceIdiom != .pad else { return self }
@@ -91,7 +86,6 @@ struct TargetListPage: Page {
     return self
   }
 
-  @MainActor
   func deleteTarget(named name: String) {
     // Match the swipe-action Delete button only — exclude the numeric/coordinate
     // keypad's backspace (accessibilityIdentifier `keypad-Delete`, label "Delete"),
@@ -121,12 +115,10 @@ struct TargetListPage: Page {
     }
   }
 
-  @MainActor
   func targetCell(named name: String) -> XCUIElement? {
     findCell(named: name)
   }
 
-  @MainActor
   func cellContainsTimeText(named name: String) -> Bool {
     guard let cell = targetCell(named: name) else { return false }
     // swiftlint:disable:next force_try
@@ -142,7 +134,6 @@ struct TargetListPage: Page {
 
   // MARK: - Private
 
-  @MainActor
   private func findCell(named name: String) -> XCUIElement? {
     let nameText = app.staticTexts[name].firstMatch
     guard nameText.waitForExistence(timeout: 5) else { return nil }

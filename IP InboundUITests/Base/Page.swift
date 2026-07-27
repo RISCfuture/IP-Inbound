@@ -5,11 +5,10 @@ import XCUITestKit
 
 protocol Page {
   var app: XCUIApplication { get }
-  @MainActor var isDisplayed: Bool { get }
+  var isDisplayed: Bool { get }
 }
 
 extension Page {
-  @MainActor
   @discardableResult
   func scrollToVisible(_ element: XCUIElement) -> XCUIElement? {
     // If element already exists and is hittable, no scrolling needed
@@ -44,7 +43,6 @@ extension Page {
   /// This is XCUITestKit's `Retry.untilVerified` (the action-and-confirm
   /// pattern) with the IP-Inbound-specific live-match re-resolution and
   /// scroll-into-view kept inside the action closure.
-  @MainActor
   @discardableResult
   func tapButton(
     _ identifier: String,
@@ -70,7 +68,6 @@ extension Page {
     )
   }
 
-  @MainActor
   func ensureHittable(_ element: XCUIElement) {
     guard element.exists, !element.isHittable else { return }
     for i in 0..<app.collectionViews.count {
@@ -94,7 +91,6 @@ extension Page {
     }
   }
 
-  @MainActor
   func enterOnKeypad(_ input: String) {
     for char in input {
       guard char.isNumber || char.isLetter else { continue }
@@ -112,7 +108,6 @@ extension Page {
     }
   }
 
-  @MainActor
   func tapDirection(_ direction: String) {
     let button = app.buttons["keypad-\(direction)"]
     XCTAssertTrue(button.waitForExistence(timeout: 3), "\(direction) button should exist")
@@ -132,13 +127,11 @@ extension Page {
     numericButton.waitUntilHittable()
   }
 
-  @MainActor
   func tapBackButton() {
     let backButton = app.navigationBars.buttons.element(boundBy: 0)
     backButton.forceTap()
   }
 
-  @MainActor
   func captureScreenshot(name: String, test: XCTestCase) {
     let screenshot = XCTAttachment(screenshot: app.screenshot())
     screenshot.name = name

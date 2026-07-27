@@ -6,7 +6,7 @@ import XCUITestKit
 struct FlyPage: Page {
   let app: XCUIApplication
 
-  @MainActor var isDisplayed: Bool {
+  var isDisplayed: Bool {
     // Displayed if the flyView, CDI, or countdown element exists. On iPad the
     // `flyView` identifier propagates onto a descendant button ("Recenter map"),
     // so match across any element type.
@@ -17,41 +17,40 @@ struct FlyPage: Page {
 
   // The guidance content sets `.accessibilityIdentifier("cdi")`, but the ancestor `flyView` identifier
   // propagates onto its descendants and overrides it, so the element is found by its label.
-  @MainActor var cdi: XCUIElement { anyElement(label: "Course deviation indicator") }
-  @MainActor var countdown: XCUIElement { anyElement(identifier: "countdown") }
-  @MainActor var simulatorBanner: XCUIElement { app.staticTexts["simulatorBanner"] }
-  @MainActor var flySpeedDisplay: XCUIElement { app.staticTexts["flySpeedDisplay"] }
+  var cdi: XCUIElement { anyElement(label: "Course deviation indicator") }
+  var countdown: XCUIElement { anyElement(identifier: "countdown") }
+  var simulatorBanner: XCUIElement { app.staticTexts["simulatorBanner"] }
+  var flySpeedDisplay: XCUIElement { app.staticTexts["flySpeedDisplay"] }
   // The required ground speed is appended to the tappable speed display as a "(… req.)" callout,
   // so it shares the `flySpeedDisplay` element — which carries the `.isButton` trait for
   // unit-cycling and is therefore exposed as a button, not a static text. Find it by its visible
   // "req." copy.
-  @MainActor var requiredSpeedDisplay: XCUIElement {
+  var requiredSpeedDisplay: XCUIElement {
     let predicate = NSPredicate(format: "label CONTAINS[c] %@", "req.")
     return app.buttons.matching(predicate).firstMatch
   }
   // The distance readout carries the `.isButton` trait (for unit cycling) and the ancestor
   // `flyView` identifier propagates over its own, so it is found as a button by its distance label
   // (e.g. "9.8 nmi"), which cycles through nmi / mi / km on tap.
-  @MainActor var flyDistanceDisplay: XCUIElement {
+  var flyDistanceDisplay: XCUIElement {
     let predicate = NSPredicate(format: "label MATCHES %@", ".*[0-9].*(nmi|mi|km)")
     return app.buttons.matching(predicate).firstMatch
   }
-  @MainActor var flyTOTDisplay: XCUIElement { app.staticTexts["flyTOTDisplay"] }
+  var flyTOTDisplay: XCUIElement { app.staticTexts["flyTOTDisplay"] }
 
-  @MainActor var guidanceMode: String? {
+  var guidanceMode: String? {
     if anyElement(label: "P.POS → IP").exists { return "P.POS → IP" }
     if anyElement(label: "IP → Target").exists { return "IP → Target" }
     if anyElement(label: "P.POS → Target").exists { return "P.POS → Target" }
     return nil
   }
 
-  @MainActor var hasCDI: Bool { cdi.exists }
-  @MainActor var hasCountdown: Bool { countdown.exists }
-  @MainActor var hasSimulatorBanner: Bool { simulatorBanner.exists }
+  var hasCDI: Bool { cdi.exists }
+  var hasCountdown: Bool { countdown.exists }
+  var hasSimulatorBanner: Bool { simulatorBanner.exists }
 
   // MARK: - Methods
 
-  @MainActor
   func tapSpeedToCycleUnits() {
     let speed = flySpeedDisplay
     if speed.waitForExistence(timeout: 3) {
@@ -64,7 +63,6 @@ struct FlyPage: Page {
     }
   }
 
-  @MainActor
   func tapTOTToToggleTimeMode() {
     XCTAssertTrue(flyTOTDisplay.waitForExistence(timeout: 3), "TOT display should exist")
     flyTOTDisplay.forceTap()
@@ -74,29 +72,24 @@ struct FlyPage: Page {
   // descendants, so the Fly screen's content surfaces with identifier "flyView"
   // and the real text in the label. Match by identifier or label across any
   // element type so the same queries resolve on both iPhone and iPad.
-  @MainActor
   private func anyElement(identifier: String) -> XCUIElement {
     app.descendants(matching: .any).matching(identifier: identifier).firstMatch
   }
 
-  @MainActor
   private func anyElement(label: String) -> XCUIElement {
     app.descendants(matching: .any)
       .matching(NSPredicate(format: "label == %@", label))
       .firstMatch
   }
 
-  @MainActor
   func hasTargetName(_ name: String) -> Bool {
     anyElement(label: name).waitForExistence(timeout: 5)
   }
 
-  @MainActor
   func hasText(_ text: String) -> Bool {
     anyElement(label: text).waitForExistence(timeout: 5)
   }
 
-  @MainActor
   func hasTextContaining(_ text: String) -> Bool {
     let predicate = NSPredicate(format: "label CONTAINS[c] %@", text)
     return app.staticTexts.element(matching: predicate).waitForExistence(timeout: 5)

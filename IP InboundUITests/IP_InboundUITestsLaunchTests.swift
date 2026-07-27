@@ -14,7 +14,6 @@ final class IP_InboundUITestsLaunchTests: BaseTestCase {
   // Launches the app, captures a launch screenshot, and verifies the app reached its real initial
   // screen — the target list — by asserting its `addTargetButton`. A blank or crashed launch would
   // fail this assertion.
-  @MainActor
   func testLaunch_ReachesTargetList() throws {
     launchApp()
 
@@ -28,7 +27,6 @@ final class IP_InboundUITestsLaunchTests: BaseTestCase {
   }
 
   // Measures cold-launch performance so launch-time regressions surface in CI.
-  @MainActor
   func testLaunchPerformance() throws {
     measure(metrics: [XCTApplicationLaunchMetric()]) {
       let app = XCUIApplication()
@@ -39,7 +37,6 @@ final class IP_InboundUITestsLaunchTests: BaseTestCase {
 
   // MARK: - Methods
 
-  @MainActor
   private func captureLaunchScreenshot() {
     let screenshot = XCTAttachment(screenshot: app.screenshot())
     screenshot.name = "Launch Screen"

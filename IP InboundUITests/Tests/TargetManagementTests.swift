@@ -6,7 +6,6 @@ final class TargetManagementTests: BaseTestCase {
 
   // MARK: - Test 1
 
-  @MainActor
   func testCreateNewTarget() throws {
     launchApp()
     let list = TargetListPage(app: app)
@@ -29,7 +28,6 @@ final class TargetManagementTests: BaseTestCase {
 
   // MARK: - Test 2
 
-  @MainActor
   func testSelectExistingTarget() throws {
     launchApp()
     let list = TargetListPage(app: app)
@@ -56,7 +54,6 @@ final class TargetManagementTests: BaseTestCase {
 
   // MARK: - Test 3
 
-  @MainActor
   func testDeleteTargetRemovesFromList() throws {
     launchApp()
     let list = TargetListPage(app: app)
@@ -100,7 +97,6 @@ final class TargetManagementTests: BaseTestCase {
 
   // MARK: - Test 4
 
-  @MainActor
   func testTargetListShowsCoordinates() throws {
     launchApp()
 
@@ -145,7 +141,6 @@ final class TargetManagementTests: BaseTestCase {
 
   // MARK: - Test 5
 
-  @MainActor
   func testTargetListShowsTimeOnTarget() throws {
     launchApp()
 
@@ -181,7 +176,6 @@ final class TargetManagementTests: BaseTestCase {
 
   // MARK: - Test 6
 
-  @MainActor
   func testEmptyStateShowsNoTarget() throws {
     launchApp()
     guard isIPad else {

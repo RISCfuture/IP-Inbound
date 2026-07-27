@@ -6,35 +6,32 @@ import XCUITestKit
 struct TargetSetupPage: Page {
   let app: XCUIApplication
 
-  @MainActor var isDisplayed: Bool {
+  var isDisplayed: Bool {
     app.buttons["defineIPButton"].waitForExistence(timeout: 5)
   }
 
   // MARK: - Elements
 
-  @MainActor var targetNameField: XCUIElement { app.textFields["targetNameField"] }
-  @MainActor var targetCoordinates: XCUIElement { app.buttons["targetCoordinates"] }
-  @MainActor var setCoordinatesButton: XCUIElement { app.buttons["setCoordinatesButton"] }
-  @MainActor var findLocationButton: XCUIElement { app.buttons["findLocationButton"] }
-  @MainActor var defineIPButton: XCUIElement { app.buttons["defineIPButton"] }
+  var targetNameField: XCUIElement { app.textFields["targetNameField"] }
+  var targetCoordinates: XCUIElement { app.buttons["targetCoordinates"] }
+  var setCoordinatesButton: XCUIElement { app.buttons["setCoordinatesButton"] }
+  var findLocationButton: XCUIElement { app.buttons["findLocationButton"] }
+  var defineIPButton: XCUIElement { app.buttons["defineIPButton"] }
 
   // MARK: - Actions
 
-  @MainActor
   func enterTargetName(_ name: String) {
     let field = scrollToVisible(targetNameField) ?? targetNameField
     XCTAssertTrue(field.waitForExistence(timeout: 5), "Target name field should appear")
     field.clearAndType(name, app: app)
   }
 
-  @MainActor
   func tapCoordinatesToCycleFormat() {
     let coords = scrollToVisible(targetCoordinates) ?? targetCoordinates
     XCTAssertTrue(coords.waitForExistence(timeout: 3), "Coordinates should be displayed")
     coords.forceTap()
   }
 
-  @MainActor
   @discardableResult
   func tapSetCoordinates() -> CoordinateEntryPage {
     let button = scrollToVisible(setCoordinatesButton) ?? setCoordinatesButton
@@ -43,7 +40,6 @@ struct TargetSetupPage: Page {
     return CoordinateEntryPage(app: app)
   }
 
-  @MainActor
   @discardableResult
   func tapFindLocation() -> FindLocationPage {
     let button = scrollToVisible(findLocationButton) ?? findLocationButton
@@ -51,7 +47,6 @@ struct TargetSetupPage: Page {
     return FindLocationPage(app: app)
   }
 
-  @MainActor
   @discardableResult
   func tapDefineIP() -> IPSetupPage {
     XCTAssertTrue(defineIPButton.waitForExistence(timeout: 5), "Define IP button should appear")
@@ -59,7 +54,6 @@ struct TargetSetupPage: Page {
     return IPSetupPage(app: app)
   }
 
-  @MainActor
   @discardableResult
   func navigateBackToList() -> TargetListPage {
     tapBackButton()
@@ -71,7 +65,6 @@ struct TargetSetupPage: Page {
   /// but SwiftUI sometimes restores the Define Target / IP / TOT pages across
   /// selection even with `isConfigured == true`; this walks whichever forward
   /// links are present (each guarded by an existence wait, never a fixed sleep).
-  @MainActor
   @discardableResult
   func advanceThroughSetupToFly() -> FlyPage {
     if defineIPButton.waitForExistence(timeout: 2) {
@@ -88,7 +81,6 @@ struct TargetSetupPage: Page {
 
   // MARK: - Queries
 
-  @MainActor
   func coordinatesLabel() -> String {
     let coords = scrollToVisible(targetCoordinates) ?? targetCoordinates
     XCTAssertTrue(coords.waitForExistence(timeout: 5), "Coordinates should be displayed")

@@ -6,7 +6,6 @@ final class IPSetupTests: BaseTestCase {
 
   // MARK: - Test 18
 
-  @MainActor
   func testBearingEntry_UpdatesInboundTrack() throws {
     launchApp()
     let list = TargetListPage(app: app)
@@ -46,7 +45,6 @@ final class IPSetupTests: BaseTestCase {
 
   // MARK: - Test 19
 
-  @MainActor
   func testBearingReference_ChangesInboundValue() throws {
     launchApp()
     let list = TargetListPage(app: app)
@@ -95,7 +93,6 @@ final class IPSetupTests: BaseTestCase {
 
   // MARK: - Test 20
 
-  @MainActor
   func testOffsetType_DistanceToTime() throws {
     launchApp()
     let list = TargetListPage(app: app)
@@ -137,7 +134,6 @@ final class IPSetupTests: BaseTestCase {
 
   // MARK: - Test 21
 
-  @MainActor
   func testOffsetType_ValueConversion() throws {
     launchApp()
     let list = TargetListPage(app: app)
@@ -198,7 +194,6 @@ final class IPSetupTests: BaseTestCase {
 
   // MARK: - Test 22
 
-  @MainActor
   func testGroundSpeedEntry_AffectsOffsetTime() throws {
     launchApp()
     let list = TargetListPage(app: app)
@@ -252,7 +247,6 @@ final class IPSetupTests: BaseTestCase {
 
   // MARK: - Test 23
 
-  @MainActor
   func testFullIPConfiguration() throws {
     launchApp()
     let list = TargetListPage(app: app)
@@ -279,12 +273,10 @@ final class IPSetupTests: BaseTestCase {
 
   // MARK: - Helper
 
-  @MainActor
   private func navigateFromIPToListAndDelete(_ name: String) {
     navigateToListAndDelete(name)
   }
 
-  @MainActor
   private func navigateToListAndDelete(_ name: String) {
     let list = TargetListPage(app: app)
     list.navigateBackToList()

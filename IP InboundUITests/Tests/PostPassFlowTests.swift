@@ -28,7 +28,6 @@ final class PostPassFlowTests: BaseTestCase {
 
   // MARK: - Methods
 
-  @MainActor
   func testPostPass_ShowsPastTargetAndFliesNextTarget() throws {
     let now = try XCTUnwrap(Self.uiTestNowFormatter.date(from: Self.nowISO))
 
@@ -95,7 +94,6 @@ final class PostPassFlowTests: BaseTestCase {
 
   // MARK: - Helpers
 
-  @MainActor
   private func launchWithSeededTargets(now: Date, location: String) {
     let knownApps = ["codes.tim.FART"]
     for bundleID in knownApps {
@@ -128,7 +126,6 @@ final class PostPassFlowTests: BaseTestCase {
   // wrapper because the visible screen after "Fly next target" depends on
   // SwiftUI's navigation reset behavior — the assertion above already verified
   // the target is active; this just attaches the rendered state.
-  @MainActor
   private func captureNextTargetScreenshot() {
     let screenshot = XCUIScreen.main.screenshot()
     let attachment = XCTAttachment(screenshot: screenshot)
