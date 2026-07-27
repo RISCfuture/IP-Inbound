@@ -6,25 +6,23 @@ import XCUITestKit
 struct CoordinateEntryPage: Page {
   let app: XCUIApplication
 
-  @MainActor var isDisplayed: Bool {
+  var isDisplayed: Bool {
     app.segmentedControls["coordinateFormatPicker"].waitForExistence(timeout: 3)
   }
 
   // MARK: - Elements
 
-  @MainActor var formatPicker: XCUIElement { app.segmentedControls["coordinateFormatPicker"] }
-  @MainActor var acceptButton: XCUIElement { app.buttons["Accept"] }
-  @MainActor var cancelButton: XCUIElement { app.buttons["Cancel"] }
+  var formatPicker: XCUIElement { app.segmentedControls["coordinateFormatPicker"] }
+  var acceptButton: XCUIElement { app.buttons["Accept"] }
+  var cancelButton: XCUIElement { app.buttons["Cancel"] }
 
   // MARK: - Actions
 
-  @MainActor
   func selectFormat(_ format: String) {
     XCTAssertTrue(formatPicker.waitForExistence(timeout: 3), "Format picker should appear")
     formatPicker.buttons[format].forceTap()
   }
 
-  @MainActor
   func enterLatLon(
     lat: (direction: String, digits: String),
     lon: (direction: String, digits: String)
@@ -35,7 +33,6 @@ struct CoordinateEntryPage: Page {
     enterOnKeypad(lon.digits)
   }
 
-  @MainActor
   func enterGridCoordinate(_ grid: String) {
     // Wait for keypad to be ready (longer timeout for CI where format switch is slow)
     let firstButton = app.buttons["keypad-1"]
@@ -44,7 +41,6 @@ struct CoordinateEntryPage: Page {
     enterOnKeypad(grid)
   }
 
-  @MainActor
   @discardableResult
   func tapAccept() -> TargetSetupPage {
     XCTAssertTrue(acceptButton.waitForExistence(timeout: 3), "Accept button should exist")
@@ -58,7 +54,6 @@ struct CoordinateEntryPage: Page {
     return TargetSetupPage(app: app)
   }
 
-  @MainActor
   @discardableResult
   func tapCancel() -> TargetSetupPage {
     cancelButton.forceTap()

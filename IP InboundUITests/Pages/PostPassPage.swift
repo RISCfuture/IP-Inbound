@@ -9,21 +9,21 @@ import XCUITestKit
 struct PostPassPage: Page {
   let app: XCUIApplication
 
-  @MainActor var isDisplayed: Bool {
+  var isDisplayed: Bool {
     waitUntilDisplayed(timeout: 10)
   }
 
-  @MainActor var titleText: XCUIElement { app.staticTexts["Past Target"] }
+  var titleText: XCUIElement { app.staticTexts["Past Target"] }
 
   // The post-pass “Fly <target>” button is labeled with the next target's name, and SwiftUI
   // overrides descendant identifiers with the enclosing `flyView` id, so match it by its label
   // prefix rather than by identifier.
-  @MainActor var flyNextTargetButton: XCUIElement {
+  var flyNextTargetButton: XCUIElement {
     app.buttons.matching(NSPredicate(format: "label BEGINSWITH[c] %@", "Fly ")).firstMatch
   }
-  @MainActor var chooseTargetButton: XCUIElement { app.buttons["Choose next target"] }
+  var chooseTargetButton: XCUIElement { app.buttons["Choose next target"] }
 
-  @MainActor var missText: XCUIElement {
+  var missText: XCUIElement {
     let predicate = NSPredicate(
       format: "label CONTAINS[c] %@ OR label CONTAINS[c] %@",
       "early",
@@ -32,16 +32,14 @@ struct PostPassPage: Page {
     return app.staticTexts.element(matching: predicate)
   }
 
-  @MainActor var missLabel: String { missText.label }
+  var missLabel: String { missText.label }
 
   // MARK: - Methods
 
-  @MainActor
   func waitUntilDisplayed(timeout: TimeInterval) -> Bool {
     titleText.waitForExistence(timeout: timeout)
   }
 
-  @MainActor
   @discardableResult
   func tapFlyNextTarget() -> FlyPage {
     XCTAssertTrue(
@@ -52,7 +50,6 @@ struct PostPassPage: Page {
     return FlyPage(app: app)
   }
 
-  @MainActor
   @discardableResult
   func tapChooseTarget() -> TargetListPage {
     XCTAssertTrue(

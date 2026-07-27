@@ -3,7 +3,6 @@ import XCTest
 /// Drives the watch app for UI tests, seeding the flown target and GPS fix through the launch
 /// environment so the guidance views render deterministically — without WatchConnectivity or live
 /// location (and so without a permission prompt).
-@MainActor
 struct WatchAppScreen {
   let app = XCUIApplication()
 
@@ -80,21 +79,18 @@ final class WatchGuidanceUITests: XCTestCase {
     continueAfterFailure = false
   }
 
-  @MainActor
   func testPlaceholderShownWhenNoTargetIsFlown() {
     WatchAppScreen()
       .launchWithoutTarget()
       .assertPlaceholderVisible()
   }
 
-  @MainActor
   func testCountdownShownWhileOnGround() {
     WatchAppScreen()
       .launchOnGround()
       .assertCountdownVisible()
   }
 
-  @MainActor
   func testCDIShownWhenAirborne() {
     WatchAppScreen()
       .launchAirborne()

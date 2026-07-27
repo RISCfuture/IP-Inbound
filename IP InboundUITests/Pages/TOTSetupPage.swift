@@ -6,16 +6,16 @@ import XCUITestKit
 struct TOTSetupPage: Page {
   let app: XCUIApplication
 
-  @MainActor var isDisplayed: Bool {
+  var isDisplayed: Bool {
     app.segmentedControls["timeDisplayModePicker"].waitForExistence(timeout: 3)
   }
 
   // MARK: - Elements
 
-  @MainActor var timeDisplayModePicker: XCUIElement {
+  var timeDisplayModePicker: XCUIElement {
     app.segmentedControls["timeDisplayModePicker"]
   }
-  @MainActor var timeEntryField: XCUIElement {
+  var timeEntryField: XCUIElement {
     // The time entry field is a Text with .isButton trait, so it appears as a button in XCUITest
     let button = app.buttons["timeEntryField"]
     if button.exists { return button }
@@ -24,31 +24,27 @@ struct TOTSetupPage: Page {
     // Fallback to other elements
     return app.otherElements["timeEntryField"]
   }
-  @MainActor var defineIPButton: XCUIElement { app.buttons["defineIPButton"] }
-  @MainActor var flyButton: XCUIElement { app.buttons["flyButton"] }
+  var defineIPButton: XCUIElement { app.buttons["defineIPButton"] }
+  var flyButton: XCUIElement { app.buttons["flyButton"] }
 
   // MARK: - Actions
 
-  @MainActor
   func selectLocalTime() {
     let picker = scrollToVisible(timeDisplayModePicker) ?? timeDisplayModePicker
     XCTAssertTrue(picker.waitForExistence(timeout: 3))
     picker.buttons["Target Local"].forceTap()
   }
 
-  @MainActor
   func selectZuluTime() {
     let picker = scrollToVisible(timeDisplayModePicker) ?? timeDisplayModePicker
     XCTAssertTrue(picker.waitForExistence(timeout: 3))
     picker.buttons["Zulu"].forceTap()
   }
 
-  @MainActor
   func enterTime(_ time: String) {
     enterOnKeypad(time)
   }
 
-  @MainActor
   @discardableResult
   func tapFly() -> FlyPage {
     // The `flyView` identifier resolves to an otherElement on iPhone but
@@ -61,7 +57,6 @@ struct TOTSetupPage: Page {
     return FlyPage(app: app)
   }
 
-  @MainActor
   @discardableResult
   func tapBackToIPSetup() -> IPSetupPage {
     tapButton("defineIPButton", toReveal: app.buttons["timeOnTargetButton"])
@@ -70,7 +65,6 @@ struct TOTSetupPage: Page {
 
   // MARK: - Queries
 
-  @MainActor
   func secondaryTimeString() -> String {
     let secondary = app.staticTexts.element(
       matching: NSPredicate(format: "identifier == %@ OR label CONTAINS[c] ':'", "secondaryTime")
@@ -91,7 +85,6 @@ struct TOTSetupPage: Page {
     return secondary.label
   }
 
-  @MainActor
   func timeEntryFieldLabel() -> String {
     XCTAssertTrue(timeEntryField.waitForExistence(timeout: 3))
     return timeEntryField.label

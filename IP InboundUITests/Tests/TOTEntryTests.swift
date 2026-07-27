@@ -6,7 +6,6 @@ final class TOTEntryTests: BaseTestCase {
 
   // MARK: - Test 14
 
-  @MainActor
   func testTimeEntry_Local() throws {
     launchApp()
 
@@ -37,7 +36,6 @@ final class TOTEntryTests: BaseTestCase {
 
   // MARK: - Test 15
 
-  @MainActor
   func testTimeEntry_Zulu() throws {
     launchApp()
 
@@ -71,7 +69,6 @@ final class TOTEntryTests: BaseTestCase {
 
   // MARK: - Test 16
 
-  @MainActor
   func testTimeEntry_ToggleBetweenLocalAndZulu() throws {
     launchApp()
 
@@ -113,7 +110,6 @@ final class TOTEntryTests: BaseTestCase {
 
   // MARK: - Test 17
 
-  @MainActor
   func testTimeEntry_DefaultTimeIsSet() throws {
     launchApp()
     let list = TargetListPage(app: app)
@@ -144,7 +140,6 @@ final class TOTEntryTests: BaseTestCase {
 
   // MARK: - Helper
 
-  @MainActor
   private func navigateFromTOTToList() {
     TargetListPage(app: app).navigateBackToList()
   }

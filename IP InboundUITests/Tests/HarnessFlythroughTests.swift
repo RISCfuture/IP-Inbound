@@ -6,7 +6,6 @@ import XCUITestKit
 
 final class HarnessFlythroughTests: BaseTestCase {
 
-  @MainActor
   func testScriptedFlythroughShowsMovingGuidance() throws {
     // TOT = 18:00:00Z; pin "now" to TOT − 30 s so the scripted path's elapsed
     // window covers the inbound portion through-and-past the target.
