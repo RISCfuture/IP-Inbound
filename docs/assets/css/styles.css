@@ -1,0 +1,918 @@
+/* ==========================================================================
+   IP Inbound — marketing site
+
+   Direction: a chronometer certificate, not a cockpit. The screenshots carry
+   the instrument language; the page is the calibrated bench they sit on.
+   Monochrome throughout, with a single red reserved for index marks and the
+   primary action — the way a precision dial spends its one accent.
+
+   Rule of the house: a hairline may divide, but a *graduated* rule must
+   measure something real. No decorative tick marks.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Faces — self-hosted, no external requests. Both SIL OFL.
+   Archivo carries a width axis (62–125%); display type runs expanded, like a
+   panel nameplate. IBM Plex Mono carries every label, stamp and numeral.
+   -------------------------------------------------------------------------- */
+
+@font-face {
+  font-family: "Archivo";
+  src: url("../fonts/archivo-var.woff2") format("woff2");
+  font-weight: 400 700;
+  font-stretch: 62% 125%;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Plex Mono";
+  src: url("../fonts/plexmono-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Plex Mono";
+  src: url("../fonts/plexmono-500.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --------------------------------------------------------------------------
+   Tokens
+   -------------------------------------------------------------------------- */
+
+:root {
+  color-scheme: light dark;
+
+  /* Red is an index mark, never a mood. It is split in two because a mark and
+     a button fill have opposite contrast needs: the mark must carry against
+     the page, the fill must carry white text. */
+  --paper: light-dark(#eff0f2, #0d0f12);
+  --panel: light-dark(#e6e8eb, #14171b);
+  --ink: light-dark(#16191e, #e9ebee);
+  --steel: light-dark(#5f6670, #878e98);
+  --hairline: light-dark(#a8afba, #3a4049);
+  --index: light-dark(#c1121f, #e84a58);
+  --index-solid: light-dark(#c1121f, #c8202f);
+
+  --font-display: "Archivo", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Archivo", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  --step--1: 0.78rem;
+  --step-0: clamp(0.98rem, 0.94rem + 0.18vw, 1.06rem);
+  --step-1: clamp(1.12rem, 1.05rem + 0.32vw, 1.3rem);
+  --step-2: clamp(1.5rem, 1.3rem + 0.9vw, 2.1rem);
+  --step-3: clamp(2.1rem, 1.7rem + 1.9vw, 3.2rem);
+  --step-4: clamp(2.9rem, 2.05rem + 4vw, 5.6rem);
+
+  --space-2xs: 0.25rem;
+  --space-xs: 0.5rem;
+  --space-s: 0.75rem;
+  --space-m: 1.25rem;
+  --space-l: 2rem;
+  --space-xl: 3.25rem;
+  --space-2xl: 5.5rem;
+  --space-3xl: 8rem;
+
+  --wrap: 1180px;
+  --measure: 58ch;
+  --rail: 7.5rem;
+  --header-h: 3.75rem;
+}
+
+/* --------------------------------------------------------------------------
+   Reset & base
+   -------------------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--header-h) + var(--space-l));
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--step-0);
+  font-stretch: 100%;
+  line-height: 1.62;
+  -webkit-font-smoothing: antialiased;
+  font-variant-numeric: tabular-nums;
+}
+
+img,
+picture,
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: inherit;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+:where(a, button, [tabindex]):focus-visible {
+  outline: 2px solid var(--index);
+  outline-offset: 3px;
+}
+
+/* --------------------------------------------------------------------------
+   Type roles
+   -------------------------------------------------------------------------- */
+
+.display {
+  font-family: var(--font-display);
+  font-stretch: 118%;
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.022em;
+  text-wrap: balance;
+}
+
+h1.display {
+  font-size: var(--step-4);
+}
+
+h2.display {
+  font-size: var(--step-3);
+}
+
+h3 {
+  font-family: var(--font-display);
+  font-stretch: 108%;
+  font-weight: 600;
+  font-size: var(--step-1);
+  line-height: 1.2;
+  letter-spacing: -0.008em;
+}
+
+/* Mono label — the page's connective tissue. Every stamp, caption and
+   nameplate uses this one treatment. */
+.label {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--steel);
+}
+
+.lede {
+  font-size: var(--step-1);
+  line-height: 1.5;
+  color: var(--steel);
+  max-width: var(--measure);
+}
+
+/* --------------------------------------------------------------------------
+   Utilities
+   -------------------------------------------------------------------------- */
+
+.wrap {
+  width: min(100% - 2.5rem, var(--wrap));
+  margin-inline: auto;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: absolute;
+  inset-inline-start: var(--space-m);
+  inset-block-start: -4rem;
+  z-index: 100;
+  padding: var(--space-xs) var(--space-m);
+  background: var(--paper);
+  border: 1px solid var(--index);
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  text-decoration: none;
+  transition: inset-block-start 150ms ease;
+
+  &:focus {
+    inset-block-start: var(--space-xs);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Buttons — 2px radius reads machined; 0 reads broadsheet.
+   -------------------------------------------------------------------------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: 0.7rem 1.35rem;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
+}
+
+.btn-index {
+  background: var(--index-solid);
+  border-color: var(--index-solid);
+  color: #fff;
+
+  &:hover {
+    background: color-mix(in srgb, var(--index-solid) 84%, #000);
+    border-color: color-mix(in srgb, var(--index-solid) 84%, #000);
+  }
+}
+
+.btn-outline {
+  border-color: var(--hairline);
+  color: var(--ink);
+
+  &:hover {
+    border-color: var(--ink);
+  }
+}
+
+.btn-sm {
+  padding: 0.5rem 0.9rem;
+}
+
+/* --------------------------------------------------------------------------
+   Header
+   -------------------------------------------------------------------------- */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: color-mix(in srgb, var(--paper) 90%, transparent);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--hairline);
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-m);
+  min-height: var(--header-h);
+}
+
+.nameplate {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-inline-end: auto;
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--ink);
+
+  & img {
+    border-radius: 5px;
+  }
+}
+
+.site-nav ul {
+  display: flex;
+  gap: var(--space-l);
+  list-style: none;
+  padding: 0;
+}
+
+.site-nav a {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--steel);
+  padding-block: 0.25rem;
+  border-bottom: 1px solid transparent;
+  transition:
+    color 160ms ease,
+    border-color 160ms ease;
+
+  &:hover {
+    color: var(--ink);
+  }
+
+  &[aria-current="true"] {
+    color: var(--ink);
+    border-bottom-color: var(--index);
+  }
+}
+
+.nav-toggle {
+  display: none;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  background: none;
+  border: 1px solid var(--hairline);
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.nav-toggle-bars,
+.nav-toggle-bars::before,
+.nav-toggle-bars::after {
+  display: block;
+  width: 16px;
+  height: 1px;
+  margin-inline: auto;
+  background: var(--ink);
+}
+
+.nav-toggle-bars::before,
+.nav-toggle-bars::after {
+  content: "";
+  position: relative;
+}
+
+.nav-toggle-bars::before {
+  top: -5px;
+}
+
+.nav-toggle-bars::after {
+  top: 4px;
+}
+
+@media (width < 54rem) {
+  .header-cta {
+    display: none;
+  }
+
+  .nav-toggle {
+    display: block;
+    order: 2;
+  }
+
+  .site-nav {
+    order: 3;
+    flex-basis: 100%;
+    display: none;
+
+    &[data-open] {
+      display: block;
+    }
+
+    & ul {
+      flex-direction: column;
+      gap: var(--space-s);
+      padding-block: var(--space-m);
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Hero
+   -------------------------------------------------------------------------- */
+
+.hero {
+  padding-block: var(--space-2xl) 0;
+}
+
+.hero-grid {
+  display: grid;
+  gap: var(--space-xl);
+  align-items: end;
+  grid-template-columns: 1fr;
+}
+
+@media (width >= 60rem) {
+  .hero-grid {
+    grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+  }
+}
+
+.hero-copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-m);
+}
+
+.hero-copy .label {
+  margin-bottom: var(--space-xs);
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-s);
+  margin-top: var(--space-xs);
+}
+
+/* Spec line under the CTAs — reads as a nameplate stamp, not marketing filler */
+.hero-spec {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.9rem;
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  color: var(--steel);
+  letter-spacing: 0.04em;
+}
+
+.hero-spec span::after {
+  content: " ·";
+  color: var(--hairline);
+}
+
+.hero-spec span:last-child::after {
+  content: "";
+}
+
+.hero-shot {
+  justify-self: center;
+}
+
+.hero-shot img {
+  width: min(100%, 306px);
+}
+
+/* --------------------------------------------------------------------------
+   SIGNATURE — the deviation scale.
+
+   A chronometer certificate reports rate deviation in seconds; so does this
+   app's post-pass screen. The scale spans −20 s to +20 s across its full
+   width: minor ticks each second, major ticks each five, and the red index
+   at zero. On load the needle settles to zero like a damped instrument.
+   -------------------------------------------------------------------------- */
+
+.scale {
+  margin-top: var(--space-2xl);
+  padding-block: var(--space-m);
+  border-top: 1px solid var(--hairline);
+  border-bottom: 1px solid var(--hairline);
+}
+
+.scale-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-m);
+  margin-bottom: var(--space-s);
+}
+
+.scale-readout {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: var(--step-1);
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.scale-readout .unit {
+  color: var(--steel);
+  margin-left: 0.15em;
+}
+
+.scale-track {
+  position: relative;
+  height: 2.6rem;
+}
+
+/* Minor graduations — one per second across the 40-second span */
+.scale-track::before {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 42%;
+  background-image: repeating-linear-gradient(
+    to right,
+    var(--hairline) 0 1px,
+    transparent 1px calc(100% / 40)
+  );
+}
+
+/* Major graduations — one per five seconds */
+.scale-track::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 74%;
+  background-image: repeating-linear-gradient(
+    to right,
+    var(--steel) 0 1px,
+    transparent 1px calc(100% / 8)
+  );
+}
+
+/* The index: zero. The only red on the page besides the primary action.
+   Carries a marker above the graduated band so it stays legible when the
+   needle comes to rest on top of it. */
+.scale-index {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 1px;
+  height: 100%;
+  background: var(--index);
+  transform: translateX(-0.5px);
+}
+
+.scale-index::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 7px solid var(--index);
+}
+
+/* Defaults to the index so the no-JS state matches the static readout; the
+   settle animation sets --pos from its start position onward. */
+.scale-needle {
+  position: absolute;
+  bottom: 0;
+  left: var(--pos, 50%);
+  width: 2px;
+  height: 76%;
+  background: var(--ink);
+  transform: translateX(-1px);
+  z-index: 2;
+}
+
+.scale-needle::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 50%;
+  width: 7px;
+  height: 7px;
+  background: var(--ink);
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.scale-legend {
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--space-xs);
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  color: var(--steel);
+}
+
+.scale-legend span:nth-child(3) {
+  color: var(--index);
+}
+
+/* --------------------------------------------------------------------------
+   Sections
+   -------------------------------------------------------------------------- */
+
+.section {
+  padding-block: var(--space-3xl);
+}
+
+.section-panel {
+  background: var(--panel);
+}
+
+/* Section heads share the rail with the step stamps and the spec terms, so a
+   single annotation column runs the length of the page. */
+.section-head {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-s);
+  margin-bottom: var(--space-xl);
+}
+
+@media (width >= 60rem) {
+  .section-head {
+    grid-template-columns: var(--rail) minmax(0, 1fr);
+    column-gap: var(--space-l);
+  }
+
+  .section-head .label {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    padding-top: 0.6rem;
+  }
+
+  .section-head .display,
+  .section-head .lede {
+    grid-column: 2;
+  }
+}
+
+.prose-block {
+  max-width: var(--measure);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-m);
+}
+
+@media (width >= 60rem) {
+  .rail-offset {
+    margin-left: calc(var(--rail) + var(--space-l));
+  }
+}
+
+/* --------------------------------------------------------------------------
+   How it works — a countdown, not a numbered list.
+
+   Each stamp is the real clock offset from the fixtures that produced the
+   screenshot beside it, so the column reads as a genuine timeline running
+   from thirty minutes out to eight seconds past the target.
+   -------------------------------------------------------------------------- */
+
+/* Plate figures: uniform cells, each stamped with its station on the clock.
+   Set side-by-side, a 2:1 portrait screenshot beside three lines of copy
+   leaves an unfillable void; as plates the rows stay dense and regular. */
+.steps {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  column-gap: var(--space-l);
+  row-gap: var(--space-xl);
+}
+
+@media (width >= 46rem) {
+  .steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (width >= 68rem) {
+  .steps {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-s);
+  padding-top: var(--space-m);
+  border-top: 1px solid var(--hairline);
+}
+
+.step-stamp {
+  order: 1;
+}
+
+.step-shot {
+  order: 2;
+}
+
+.step-copy {
+  order: 3;
+}
+
+/* Station stamp: the real clock offset that produced the plate beside it. */
+.step-stamp {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-s);
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+}
+
+.step-stamp .qualifier {
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--steel);
+}
+
+/* Contingency branch — the one step that leaves the nominal timeline */
+.step-contingency .step-stamp {
+  color: var(--index);
+}
+
+.step-contingency .step-stamp .qualifier {
+  color: var(--index);
+}
+
+.step-copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-s);
+  max-width: 52ch;
+}
+
+.step-copy h3 {
+  margin-bottom: var(--space-2xs);
+}
+
+.step-copy p {
+  color: var(--steel);
+}
+
+.step-shot {
+  padding-block: var(--space-2xs) var(--space-xs);
+}
+
+.step-shot img {
+  width: min(100%, 12.5rem);
+}
+
+/* --------------------------------------------------------------------------
+   Specification — the features, set as a spec sheet rather than cards.
+   -------------------------------------------------------------------------- */
+
+.spec {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+.spec-row {
+  display: grid;
+  gap: var(--space-2xs) var(--space-l);
+  grid-template-columns: 1fr;
+  padding-block: var(--space-m);
+  border-top: 1px solid var(--hairline);
+  transition: border-color 160ms ease;
+}
+
+.spec-row:last-child {
+  border-bottom: 1px solid var(--hairline);
+}
+
+.spec-row:hover {
+  border-top-color: var(--ink);
+}
+
+@media (width >= 48rem) {
+  .spec-row {
+    grid-template-columns: var(--rail) minmax(0, 1fr);
+  }
+}
+
+.spec-row dt {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--steel);
+  padding-top: 0.15rem;
+}
+
+.spec-row dd {
+  margin: 0;
+  max-width: var(--measure);
+}
+
+/* --------------------------------------------------------------------------
+   Download
+   -------------------------------------------------------------------------- */
+
+.download-inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-m);
+  align-items: flex-start;
+  max-width: var(--measure);
+}
+
+.disclaimer {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  line-height: 1.7;
+  color: var(--steel);
+  padding-top: var(--space-m);
+  border-top: 1px solid var(--hairline);
+  max-width: 62ch;
+}
+
+/* --------------------------------------------------------------------------
+   Prose (privacy)
+   -------------------------------------------------------------------------- */
+
+.page-head {
+  padding-block: var(--space-2xl) var(--space-l);
+  border-bottom: 1px solid var(--hairline);
+}
+
+.prose {
+  max-width: var(--measure);
+  padding-block: var(--space-xl) var(--space-3xl);
+}
+
+.prose > * + * {
+  margin-top: var(--space-m);
+}
+
+.prose h2 {
+  font-family: var(--font-display);
+  font-stretch: 112%;
+  font-weight: 700;
+  font-size: var(--step-2);
+  line-height: 1.15;
+  letter-spacing: -0.012em;
+  margin-top: var(--space-2xl);
+  padding-top: var(--space-m);
+  border-top: 1px solid var(--hairline);
+}
+
+.prose h3 {
+  margin-top: var(--space-l);
+}
+
+.prose p {
+  color: var(--steel);
+}
+
+.prose a {
+  color: var(--ink);
+  text-decoration-color: var(--index);
+  text-underline-offset: 0.2em;
+}
+
+/* --------------------------------------------------------------------------
+   Footer
+   -------------------------------------------------------------------------- */
+
+.site-footer {
+  padding-block: var(--space-xl);
+  border-top: 1px solid var(--hairline);
+}
+
+.footer-inner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-m) var(--space-l);
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  color: var(--steel);
+}
+
+.site-footer nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-l);
+  list-style: none;
+  padding: 0;
+}
+
+.site-footer a {
+  text-decoration: none;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+
+  &:hover {
+    color: var(--ink);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Motion — one orchestrated moment (the needle), nothing else.
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

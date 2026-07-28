@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>OG card source</title>
+    <!--
+      Source for assets/img/og.png. Kept so the social card can be regenerated
+      from the live design tokens rather than hand-edited. To rebuild:
+        (cd docs && python3 -m http.server 8000 &)
+        chrome --headless=new --window-size=1200,630 \
+          --screenshot=docs/assets/img/og.png http://localhost:8000/_og.html
+    -->
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
+      .card {
+        width: 1200px;
+        height: 630px;
+        background: #0d0f12;
+        color: #e9ebee;
+        padding: 64px 72px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        box-sizing: border-box;
+      }
+
+      .card-top {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        font-family: "Plex Mono", monospace;
+        font-size: 20px;
+        font-weight: 500;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+      }
+
+      .card-top img {
+        width: 44px;
+        height: 44px;
+        border-radius: 9px;
+      }
+
+      .card-title {
+        font-family: "Archivo", sans-serif;
+        font-stretch: 118%;
+        font-weight: 700;
+        font-size: 92px;
+        line-height: 0.98;
+        letter-spacing: -0.025em;
+        margin: 0;
+      }
+
+      .card-sub {
+        font-family: "Archivo", sans-serif;
+        font-size: 28px;
+        line-height: 1.4;
+        color: #878e98;
+        margin: 24px 0 0;
+        max-width: 30ch;
+      }
+
+      .card-scale-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        font-family: "Plex Mono", monospace;
+        font-size: 18px;
+        font-weight: 500;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: #878e98;
+        margin-bottom: 14px;
+      }
+
+      .card-scale-head .value {
+        color: #e9ebee;
+        font-size: 26px;
+        letter-spacing: 0.02em;
+      }
+
+      .card-track {
+        position: relative;
+        height: 44px;
+        border-top: 1px solid #3a4049;
+        padding-top: 10px;
+      }
+
+      .card-track .minor,
+      .card-track .major {
+        position: absolute;
+        inset: auto 0 0 0;
+      }
+
+      .card-track .minor {
+        height: 42%;
+        background-image: repeating-linear-gradient(
+          to right,
+          #3a4049 0 1px,
+          transparent 1px calc(100% / 40)
+        );
+      }
+
+      .card-track .major {
+        height: 74%;
+        background-image: repeating-linear-gradient(
+          to right,
+          #878e98 0 1px,
+          transparent 1px calc(100% / 8)
+        );
+      }
+
+      .card-track .index {
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        width: 2px;
+        height: 100%;
+        background: #e84a58;
+        transform: translateX(-1px);
+      }
+
+      .card-track .index::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        border-left: 7px solid transparent;
+        border-right: 7px solid transparent;
+        border-top: 10px solid #e84a58;
+      }
+
+      .card-track .needle {
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        width: 3px;
+        height: 74%;
+        background: #e9ebee;
+        transform: translateX(-1.5px);
+      }
+
+      .card-track .needle::before {
+        content: "";
+        position: absolute;
+        top: -2px;
+        left: 50%;
+        width: 11px;
+        height: 11px;
+        background: #e9ebee;
+        transform: translateX(-50%) rotate(45deg);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="card-top">
+        <img src="assets/img/icon.svg" alt="" />
+        <span>IP Inbound</span>
+      </div>
+
+      <div>
+        <h1 class="card-title">On target.<br />On the second.</h1>
+        <p class="card-sub">
+          Live course and speed guidance for an IP-to-target run, to an exact time on target.
+        </p>
+      </div>
+
+      <div>
+        <div class="card-scale-head">
+          <span>Deviation from TOT</span>
+          <span class="value">00.0 s</span>
+        </div>
+        <div class="card-track">
+          <span class="minor"></span>
+          <span class="major"></span>
+          <span class="index"></span>
+          <span class="needle"></span>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

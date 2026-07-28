@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="IP Inbound app icon">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#d92323"/>
+      <stop offset="1" stop-color="#870707"/>
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="1024" rx="228" fill="url(#bg)"/>
+  <g fill="none" stroke="#fff" stroke-width="24" transform="translate(80 80)">
+    <circle cx="437" cy="432" r="24" fill="#fff" stroke="none"/>
+    <circle cx="432" cy="432" r="372"/>
+    <g stroke-linecap="square">
+      <line x1="436.5" x2="436.5" y1="48" y2="0"/>
+      <line x1="816" x2="864" y1="432" y2="432"/>
+      <line x1="0" x2="48" y1="432" y2="432"/>
+      <line x1="436.5" x2="436.5" y1="864" y2="816"/>
+      <line x1="703" x2="751" y1="431.5" y2="431.5"/>
+      <path d="M437,108.383748 C528.046791,105.344335 605.369428,140.112176 668.967912,212.68727 C732.566395,285.262365 761.827531,358.366641 756.75132,432.0001"/>
+    </g>
+    <path d="M607.5,200.832816 L663.583592,313 L551.416408,313 L607.5,200.832816 Z" transform="rotate(45 607.5 249.5)"/>
+  </g>
+</svg>

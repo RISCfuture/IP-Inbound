@@ -1,0 +1,540 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>IP Inbound — Time-on-target guidance for pilots</title>
+    <meta
+      name="description"
+      content="Free iOS app for flying an IP-to-target run to an exact time on target. Live course deviation and speed guidance on iPhone, iPad and Apple Watch."
+    />
+    <link rel="canonical" href="https://riscfuture.github.io/IP-Inbound/" />
+    <meta name="author" content="Tim Morgan" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
+    <meta name="color-scheme" content="light dark" />
+
+    <!-- Safari on iOS offers the App Store listing directly from the page -->
+    <meta name="apple-itunes-app" content="app-id=6745743691" />
+
+    <link rel="icon" href="assets/img/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png" />
+
+    <link
+      rel="preload"
+      href="assets/fonts/archivo-var.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="assets/fonts/plexmono-500.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+
+    <meta name="theme-color" content="#eff0f2" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0d0f12" media="(prefers-color-scheme: dark)" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="IP Inbound" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:title" content="IP Inbound — Time-on-target guidance for pilots" />
+    <meta
+      property="og:description"
+      content="Live course and speed guidance for an IP-to-target run, so you cross the target at the second you promised. Free and open source, for iPhone, iPad and Apple Watch."
+    />
+    <meta property="og:url" content="https://riscfuture.github.io/IP-Inbound/" />
+    <meta property="og:image" content="https://riscfuture.github.io/IP-Inbound/assets/img/og.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="IP Inbound — on target, on the second — with a deviation scale reading zero seconds"
+    />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="IP Inbound — Time-on-target guidance for pilots" />
+    <meta
+      name="twitter:description"
+      content="Live course and speed guidance for an IP-to-target run, so you cross the target at the second you promised."
+    />
+    <meta
+      name="twitter:image"
+      content="https://riscfuture.github.io/IP-Inbound/assets/img/og.png"
+    />
+    <meta
+      name="twitter:image:alt"
+      content="IP Inbound — on target, on the second — with a deviation scale reading zero seconds"
+    />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://riscfuture.github.io/IP-Inbound/#website",
+            "url": "https://riscfuture.github.io/IP-Inbound/",
+            "name": "IP Inbound",
+            "description": "Free iOS app for flying an IP-to-target run to an exact time on target. Live course deviation and speed guidance on iPhone, iPad and Apple Watch.",
+            "inLanguage": "en",
+            "publisher": { "@id": "https://riscfuture.github.io/IP-Inbound/#author" }
+          },
+          {
+            "@type": "Person",
+            "@id": "https://riscfuture.github.io/IP-Inbound/#author",
+            "name": "Tim Morgan",
+            "url": "https://github.com/RISCfuture"
+          },
+          {
+            "@type": "MobileApplication",
+            "@id": "https://riscfuture.github.io/IP-Inbound/#app",
+            "name": "IP Inbound",
+            "description": "Gives pilots live course and speed guidance for an IP-to-target run, so they cross the target at an exact time on target.",
+            "url": "https://riscfuture.github.io/IP-Inbound/",
+            "applicationCategory": "TravelApplication",
+            "applicationSubCategory": "Aviation navigation",
+            "operatingSystem": "iOS 18, watchOS",
+            "downloadUrl": "https://apps.apple.com/us/app/ip-inbound/id6745743691",
+            "installUrl": "https://apps.apple.com/us/app/ip-inbound/id6745743691",
+            "softwareHelp": "https://riscfuture.github.io/IP-Inbound/#how",
+            "isAccessibleForFree": true,
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "USD"
+            },
+            "author": { "@id": "https://riscfuture.github.io/IP-Inbound/#author" },
+            "license": "https://opensource.org/licenses/MIT",
+            "image": "https://riscfuture.github.io/IP-Inbound/assets/img/og.png",
+            "screenshot": [
+              "https://riscfuture.github.io/IP-Inbound/assets/img/shots/6-ip-to-target.webp",
+              "https://riscfuture.github.io/IP-Inbound/assets/img/shots/5-pre-ip.webp",
+              "https://riscfuture.github.io/IP-Inbound/assets/img/shots/8-post-pass.webp"
+            ]
+          }
+        ]
+      }
+    </script>
+
+    <script src="assets/js/main.js" defer></script>
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header">
+      <div class="wrap header-inner">
+        <a class="nameplate" href="./">
+          <img src="assets/img/icon.svg" alt="" width="26" height="26" />
+          <span>IP Inbound</span>
+        </a>
+
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+          <span class="nav-toggle-bars" aria-hidden="true"></span>
+          <span class="visually-hidden">Menu</span>
+        </button>
+
+        <nav id="site-nav" class="site-nav" aria-label="Main">
+          <ul>
+            <li><a href="#problem">Problem</a></li>
+            <li><a href="#how">Sequence</a></li>
+            <li><a href="#spec">Spec</a></li>
+          </ul>
+        </nav>
+
+        <a
+          class="btn btn-index btn-sm header-cta"
+          href="https://apps.apple.com/us/app/ip-inbound/id6745743691"
+          >App Store</a
+        >
+      </div>
+    </header>
+
+    <main id="main">
+      <!-- ===================== Hero ===================== -->
+      <section class="hero">
+        <div class="wrap">
+          <div class="hero-grid">
+            <div class="hero-copy">
+              <p class="label">Time-on-target computer</p>
+              <h1 class="display">On target. On the second.</h1>
+              <p class="lede">
+                IP Inbound turns a target, an initial point and a time on target into live course
+                and speed guidance — so you roll out on the run-in heading and cross the target at
+                the second you promised.
+              </p>
+              <p class="hero-actions">
+                <a
+                  class="btn btn-index"
+                  href="https://apps.apple.com/us/app/ip-inbound/id6745743691"
+                  >Download</a
+                >
+                <a class="btn btn-outline" href="#how">Read the sequence</a>
+              </p>
+              <p class="hero-spec">
+                <span>iOS 18</span>
+                <span>iPhone · iPad · Apple Watch</span>
+                <span>Free</span>
+                <span>Open source</span>
+              </p>
+            </div>
+
+            <div class="hero-shot">
+              <picture>
+                <source
+                  media="(prefers-color-scheme: dark)"
+                  srcset="assets/img/shots/6-ip-to-target-dark.webp"
+                />
+                <img
+                  src="assets/img/shots/6-ip-to-target.webp"
+                  alt="IP Inbound showing course deviation and speed guidance on the run in to the target"
+                  width="800"
+                  height="1633"
+                  fetchpriority="high"
+                />
+              </picture>
+            </div>
+          </div>
+
+          <!-- Signature: deviation from TOT, settling on the index at zero -->
+          <figure
+            class="scale"
+            aria-label="Deviation from time on target: zero seconds, settled on the index"
+          >
+            <div class="scale-head">
+              <span class="label">Deviation from TOT</span>
+              <span class="scale-readout"
+                ><output data-readout>00.0</output><span class="unit">s</span></span
+              >
+            </div>
+            <div class="scale-track">
+              <span class="scale-index" aria-hidden="true"></span>
+              <span class="scale-needle" data-needle aria-hidden="true"></span>
+            </div>
+            <div class="scale-legend" aria-hidden="true">
+              <span>−20</span>
+              <span>−10</span>
+              <span>0</span>
+              <span>+10</span>
+              <span>+20</span>
+            </div>
+          </figure>
+        </div>
+      </section>
+
+      <!-- ===================== Problem ===================== -->
+      <section id="problem" class="section">
+        <div class="wrap">
+          <div class="section-head">
+            <p class="label">The problem</p>
+            <h2 class="display">Seconds matter</h2>
+          </div>
+          <div class="prose-block rail-offset">
+            <p>
+              You are lead of a formation over a ceremony, or you are being scored on putting a
+              flour bomb on a mock target. Either way you are handed three things: a target, a time
+              on target, and an initial point or run-in direction.
+            </p>
+            <p>
+              The rest is on you — pick a run-in speed, plan the arrival over the IP, and keep
+              adjusting as the winds and the timeline move. When a band or a pyro cue is keyed to
+              your pass, ten seconds off is wrong.
+            </p>
+            <p>IP Inbound does that arithmetic continuously, in flight, so you can fly.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== Sequence ===================== -->
+      <section id="how" class="section section-panel">
+        <div class="wrap">
+          <div class="section-head">
+            <p class="label">Sequence</p>
+            <h2 class="display">From thirty minutes out to eight seconds past</h2>
+            <p class="lede">
+              Set it up on the ground, then fly a single screen that changes as the clock runs down.
+            </p>
+          </div>
+
+          <ol class="steps">
+            <li class="step">
+              <p class="step-stamp">Plan<span class="qualifier">Target · IP · TOT</span></p>
+              <div class="step-copy">
+                <h3>Set the target and the run-in</h3>
+                <p>
+                  Place the target by map or by name, or type coordinates as latitude/longitude, UTM
+                  or MGRS — tap them to cycle through DMS, DMM, DD, UTM and MGRS. Then set the
+                  bearing, distance and ground speed for the run-in.
+                </p>
+                <p>
+                  IP Inbound works the TOT backwards to find your time over the IP. No final TOT
+                  yet? Set it later — it can change in the air.
+                </p>
+              </div>
+              <figure class="step-shot">
+                <picture>
+                  <source
+                    media="(prefers-color-scheme: dark)"
+                    srcset="assets/img/shots/1-define-ip-dark.webp"
+                  />
+                  <img
+                    src="assets/img/shots/1-define-ip.webp"
+                    alt="Setting the initial point bearing, distance and ground speed over a map of the target"
+                    width="800"
+                    height="1633"
+                    loading="lazy"
+                  />
+                </picture>
+              </figure>
+            </li>
+
+            <li class="step">
+              <p class="step-stamp">T−30:00<span class="qualifier">Ground</span></p>
+              <div class="step-copy">
+                <h3>Hold the timeline before you start</h3>
+                <p>
+                  On the ground the app is a countdown to TOT — enough to keep engine start, taxi
+                  and departure honest against the clock.
+                </p>
+              </div>
+              <figure class="step-shot">
+                <picture>
+                  <source
+                    media="(prefers-color-scheme: dark)"
+                    srcset="assets/img/shots/3-ground-dark.webp"
+                  />
+                  <img
+                    src="assets/img/shots/3-ground.webp"
+                    alt="Countdown to time on target while still on the ground"
+                    width="800"
+                    height="1633"
+                    loading="lazy"
+                  />
+                </picture>
+              </figure>
+            </li>
+
+            <li class="step">
+              <p class="step-stamp">T−07:00<span class="qualifier">Pre-IP</span></p>
+              <div class="step-copy">
+                <h3>Direct to the initial point</h3>
+                <p>
+                  Airborne, the course deviation indicator gives direct-to guidance to the IP from
+                  your ground track and magnetic heading. Yellow points at the IP; a red chevron
+                  keeps the target in view.
+                </p>
+                <p>
+                  Below it, speed deviation tells you to speed up or slow down to make your time
+                  over the IP — or, if you are very early, becomes a countdown to your push time.
+                </p>
+              </div>
+              <figure class="step-shot">
+                <picture>
+                  <source
+                    media="(prefers-color-scheme: dark)"
+                    srcset="assets/img/shots/5-pre-ip-dark.webp"
+                  />
+                  <img
+                    src="assets/img/shots/5-pre-ip.webp"
+                    alt="Course deviation indicator giving direct-to guidance to the initial point"
+                    width="800"
+                    height="1633"
+                    loading="lazy"
+                  />
+                </picture>
+              </figure>
+            </li>
+
+            <li class="step step-contingency">
+              <p class="step-stamp">T−03:00<span class="qualifier">Contingency</span></p>
+              <div class="step-copy">
+                <h3>When there is no longer time for the IP</h3>
+                <p>
+                  If the arithmetic says you cannot fly the IP and still make the target, the app
+                  says so: the title turns red, reads P.POS → Target, and guidance goes direct,
+                  bypassing the IP.
+                </p>
+              </div>
+              <figure class="step-shot">
+                <picture>
+                  <source
+                    media="(prefers-color-scheme: dark)"
+                    srcset="assets/img/shots/7-pre-ip-late-dark.webp"
+                  />
+                  <img
+                    src="assets/img/shots/7-pre-ip-late.webp"
+                    alt="Guidance switching direct to the target, bypassing the initial point"
+                    width="800"
+                    height="1633"
+                    loading="lazy"
+                  />
+                </picture>
+              </figure>
+            </li>
+
+            <li class="step">
+              <p class="step-stamp">T−02:00<span class="qualifier">Run-in</span></p>
+              <div class="step-copy">
+                <h3>On track, on speed</h3>
+                <p>
+                  Past the IP inbound, the indicator switches to desired-track guidance along the
+                  IP-to-target bearing, and speed deviation drives you to cross at exactly TOT.
+                </p>
+              </div>
+              <figure class="step-shot">
+                <picture>
+                  <source
+                    media="(prefers-color-scheme: dark)"
+                    srcset="assets/img/shots/6-ip-to-target-dark.webp"
+                  />
+                  <img
+                    src="assets/img/shots/6-ip-to-target.webp"
+                    alt="Desired track guidance along the IP-to-target bearing"
+                    width="800"
+                    height="1633"
+                    loading="lazy"
+                  />
+                </picture>
+              </figure>
+            </li>
+
+            <li class="step">
+              <p class="step-stamp">T+00:08<span class="qualifier">Past target</span></p>
+              <div class="step-copy">
+                <h3>Read the result, then take the next one</h3>
+                <p>
+                  Once you are past the target the app reports the pass: seconds early or late,
+                  graded on the same scale you were flying to.
+                </p>
+                <p>
+                  Set several targets with sequential TOTs before you fly, then chain them
+                  back-to-back with one tap after each pass.
+                </p>
+              </div>
+              <figure class="step-shot">
+                <picture>
+                  <source
+                    media="(prefers-color-scheme: dark)"
+                    srcset="assets/img/shots/8-post-pass-dark.webp"
+                  />
+                  <img
+                    src="assets/img/shots/8-post-pass.webp"
+                    alt="Post-pass summary reporting seconds early or late against the planned TOT"
+                    width="800"
+                    height="1633"
+                    loading="lazy"
+                  />
+                </picture>
+              </figure>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- ===================== Specification ===================== -->
+      <section id="spec" class="section">
+        <div class="wrap">
+          <div class="section-head">
+            <p class="label">Spec</p>
+            <h2 class="display">What it accounts for</h2>
+          </div>
+
+          <dl class="spec">
+            <div class="spec-row">
+              <dt>Guidance</dt>
+              <dd>
+                Course deviation direct to the IP before the run, desired-track along the
+                IP-to-target bearing after it.
+              </dd>
+            </div>
+            <div class="spec-row">
+              <dt>Turns</dt>
+              <dd>
+                Timing includes the turn from your present heading to the IP and the IP-to-target
+                turn, taken as level 30°-banked turns the short way round. Throw in a 360 and the
+                estimate still holds.
+              </dd>
+            </div>
+            <div class="spec-row">
+              <dt>Watch</dt>
+              <dd>
+                The indicator, the countdown and speed guidance repeat on Apple Watch, for when the
+                phone is kneeboarded and your eyes are outside.
+              </dd>
+            </div>
+            <div class="spec-row">
+              <dt>Lock screen</dt>
+              <dd>A Live Activity keeps the countdown to TOT visible without unlocking.</dd>
+            </div>
+            <div class="spec-row">
+              <dt>Sync</dt>
+              <dd>
+                Targets sync across your devices over iCloud — build the list on the iPad, fly it
+                from the iPhone.
+              </dd>
+            </div>
+            <div class="spec-row">
+              <dt>Position</dt>
+              <dd>GPS is processed entirely on device and is never transmitted anywhere.</dd>
+            </div>
+            <div class="spec-row">
+              <dt>Units</dt>
+              <dd>
+                Distance and speed in knots, MPH or KPH; times local or Zulu. Tap the value to
+                cycle.
+              </dd>
+            </div>
+            <div class="spec-row">
+              <dt>License</dt>
+              <dd>MIT, open source. No price, no subscription, no ads, no tracking.</dd>
+            </div>
+          </dl>
+        </div>
+      </section>
+
+      <!-- ===================== Download ===================== -->
+      <section id="download" class="section section-panel">
+        <div class="wrap">
+          <div class="download-inner rail-offset">
+            <p class="label">Download</p>
+            <h2 class="display">Free on the App Store</h2>
+            <p class="lede">Requires iOS 18 or later.</p>
+            <p class="hero-actions">
+              <a class="btn btn-index" href="https://apps.apple.com/us/app/ip-inbound/id6745743691"
+                >App Store</a
+              >
+              <a class="btn btn-outline" href="https://github.com/RISCfuture/IP-Inbound"
+                >Source</a
+              >
+            </p>
+            <p class="disclaimer">
+              IP Inbound is a planning and situational-awareness aid. It is not certified for
+              navigation. The pilot in command remains responsible for the safe conduct of the
+              flight.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap footer-inner">
+        <span>IP Inbound</span>
+        <nav aria-label="Footer">
+          <ul>
+            <li><a href="privacy.html">Privacy</a></li>
+            <li><a href="https://github.com/RISCfuture/IP-Inbound">Source</a></li>
+            <li><a href="https://github.com/RISCfuture/IP-Inbound/issues">Support</a></li>
+            <li><a href="mailto:apple@timothymorgan.info">Contact</a></li>
+          </ul>
+        </nav>
+        <span>© <span data-current-year>2026</span> Timothy Morgan · MIT</span>
+      </div>
+    </footer>
+  </body>
+</html>
