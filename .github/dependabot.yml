@@ -1,0 +1,8 @@
+# The Gemfile and Gemfile.lock live at the repository root. Naming the ecosystem and directory
+# explicitly keeps Dependabot's security updates from inferring a path its fetcher cannot resolve.
+version: 2
+updates:
+  - package-ecosystem: bundler
+    directory: "/"
+    schedule:
+      interval: weekly
