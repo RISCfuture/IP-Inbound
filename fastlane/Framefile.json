@@ -1,0 +1,14 @@
+{
+  "device_frame_version": "latest",
+  "default": {},
+  "data": [
+    {
+      "filter": "iPad Pro 13-inch",
+      "force_device_type": "iPad Pro (12.9-inch) (4th generation)"
+    },
+    {
+      "filter": "iPad Pro 11-inch",
+      "force_device_type": "iPad Pro (11-inch)"
+    }
+  ]
+}

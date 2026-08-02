@@ -39,6 +39,14 @@ Generate watchOS screenshots
 
 Generate framed screenshots
 
+### ios import_screenshots
+
+```sh
+[bundle exec] fastlane ios import_screenshots
+```
+
+Import the generated screenshots into the asset catalog and the marketing site
+
 ### ios upload_screenshots
 
 ```sh

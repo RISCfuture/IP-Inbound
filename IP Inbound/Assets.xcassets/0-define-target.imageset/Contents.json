@@ -1,7 +1,7 @@
 {
   "images": [
     {
-      "filename": "iPhone 17 Pro Max-0-define-target_framed.png",
+      "filename": "0-define-target-light.png",
       "idiom": "universal"
     },
     {
@@ -11,8 +11,22 @@
           "value": "dark"
         }
       ],
-      "filename": "iPhone 17 Pro Max-0-define-target_framed 1.png",
+      "filename": "0-define-target-dark.png",
       "idiom": "universal"
+    },
+    {
+      "filename": "0-define-target-ipad-light.png",
+      "idiom": "ipad"
+    },
+    {
+      "appearances": [
+        {
+          "appearance": "luminosity",
+          "value": "dark"
+        }
+      ],
+      "filename": "0-define-target-ipad-dark.png",
+      "idiom": "ipad"
     }
   ],
   "info": {

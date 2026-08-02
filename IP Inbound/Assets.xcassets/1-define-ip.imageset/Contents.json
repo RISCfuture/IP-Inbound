@@ -1,7 +1,7 @@
 {
   "images": [
     {
-      "filename": "iPhone 17 Pro Max-1-define-ip_framed.png",
+      "filename": "1-define-ip-light.png",
       "idiom": "universal"
     },
     {
@@ -11,8 +11,22 @@
           "value": "dark"
         }
       ],
-      "filename": "iPhone 17 Pro Max-1-define-ip_framed 1.png",
+      "filename": "1-define-ip-dark.png",
       "idiom": "universal"
+    },
+    {
+      "filename": "1-define-ip-ipad-light.png",
+      "idiom": "ipad"
+    },
+    {
+      "appearances": [
+        {
+          "appearance": "luminosity",
+          "value": "dark"
+        }
+      ],
+      "filename": "1-define-ip-ipad-dark.png",
+      "idiom": "ipad"
     }
   ],
   "info": {

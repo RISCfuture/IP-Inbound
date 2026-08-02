@@ -1,7 +1,7 @@
 {
   "images": [
     {
-      "filename": "iPhone 17 Pro Max-3-fly-ground_framed.png",
+      "filename": "3-ground-light.png",
       "idiom": "universal"
     },
     {
@@ -11,8 +11,22 @@
           "value": "dark"
         }
       ],
-      "filename": "iPhone 17 Pro Max-3-fly-ground_framed 1.png",
+      "filename": "3-ground-dark.png",
       "idiom": "universal"
+    },
+    {
+      "filename": "3-ground-ipad-light.png",
+      "idiom": "ipad"
+    },
+    {
+      "appearances": [
+        {
+          "appearance": "luminosity",
+          "value": "dark"
+        }
+      ],
+      "filename": "3-ground-ipad-dark.png",
+      "idiom": "ipad"
     }
   ],
   "info": {

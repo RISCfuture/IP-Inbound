@@ -1,7 +1,7 @@
 {
   "images": [
     {
-      "filename": "iPhone 17 Pro Max-8-post-pass_framed.png",
+      "filename": "8-post-pass-light.png",
       "idiom": "universal"
     },
     {
@@ -11,8 +11,22 @@
           "value": "dark"
         }
       ],
-      "filename": "iPhone 17 Pro Max-8-post-pass_framed 1.png",
+      "filename": "8-post-pass-dark.png",
       "idiom": "universal"
+    },
+    {
+      "filename": "8-post-pass-ipad-light.png",
+      "idiom": "ipad"
+    },
+    {
+      "appearances": [
+        {
+          "appearance": "luminosity",
+          "value": "dark"
+        }
+      ],
+      "filename": "8-post-pass-ipad-dark.png",
+      "idiom": "ipad"
     }
   ],
   "info": {

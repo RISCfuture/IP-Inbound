@@ -1,7 +1,7 @@
 {
   "images": [
     {
-      "filename": "iPhone 17 Pro Max-2-define-tot_framed.png",
+      "filename": "2-tot-light.png",
       "idiom": "universal"
     },
     {
@@ -11,8 +11,22 @@
           "value": "dark"
         }
       ],
-      "filename": "iPhone 17 Pro Max-2-define-tot_framed 1.png",
+      "filename": "2-tot-dark.png",
       "idiom": "universal"
+    },
+    {
+      "filename": "2-tot-ipad-light.png",
+      "idiom": "ipad"
+    },
+    {
+      "appearances": [
+        {
+          "appearance": "luminosity",
+          "value": "dark"
+        }
+      ],
+      "filename": "2-tot-ipad-dark.png",
+      "idiom": "ipad"
     }
   ],
   "info": {
