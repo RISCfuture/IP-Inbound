@@ -62,7 +62,7 @@ final class Generate_Screenshots: XCTestCase {
     let app = launchHarness(now: nil, locationFix: Self.targetFix, seedTarget: false)
     makeTarget(app: app, screenshot: true)
     setTimeEntry(app: app, minutesFromNow: 30)
-    snapshot("2-define-tot")
+    snapshot("2-tot")
     app.terminate()
   }
 
@@ -72,7 +72,7 @@ final class Generate_Screenshots: XCTestCase {
       locationFix: Self.groundFix
     )
     Thread.sleep(forTimeInterval: 3.0)
-    snapshot("3-fly-ground")
+    snapshot("3-ground")
     app.terminate()
   }
 
@@ -82,7 +82,7 @@ final class Generate_Screenshots: XCTestCase {
       locationFix: Self.preIPFix
     )
     Thread.sleep(forTimeInterval: 3.0)
-    snapshot("4-fly-pre-ip-early")
+    snapshot("4-pre-ip-early")
     app.terminate()
   }
 
@@ -92,7 +92,7 @@ final class Generate_Screenshots: XCTestCase {
       locationFix: Self.preIPFix
     )
     Thread.sleep(forTimeInterval: 3.0)
-    snapshot("5-fly-pre-ip")
+    snapshot("5-pre-ip")
     app.terminate()
   }
 
@@ -102,7 +102,7 @@ final class Generate_Screenshots: XCTestCase {
       locationFix: Self.preIPFix
     )
     Thread.sleep(forTimeInterval: 3.0)
-    snapshot("6-fly-pre-ip-late")
+    snapshot("7-pre-ip-late")
     app.terminate()
   }
 
@@ -112,7 +112,7 @@ final class Generate_Screenshots: XCTestCase {
       locationFix: Self.postIPFix
     )
     Thread.sleep(forTimeInterval: 3.0)
-    snapshot("7-fly-post-ip")
+    snapshot("6-ip-to-target")
     app.terminate()
   }
 

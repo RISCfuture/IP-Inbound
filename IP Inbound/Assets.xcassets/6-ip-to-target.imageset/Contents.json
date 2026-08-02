@@ -1,7 +1,7 @@
 {
   "images": [
     {
-      "filename": "iPhone 17 Pro Max-7-fly-post-ip_framed.png",
+      "filename": "6-ip-to-target-light.png",
       "idiom": "universal"
     },
     {
@@ -11,8 +11,22 @@
           "value": "dark"
         }
       ],
-      "filename": "iPhone 17 Pro Max-7-fly-post-ip_framed 1.png",
+      "filename": "6-ip-to-target-dark.png",
       "idiom": "universal"
+    },
+    {
+      "filename": "6-ip-to-target-ipad-light.png",
+      "idiom": "ipad"
+    },
+    {
+      "appearances": [
+        {
+          "appearance": "luminosity",
+          "value": "dark"
+        }
+      ],
+      "filename": "6-ip-to-target-ipad-dark.png",
+      "idiom": "ipad"
     }
   ],
   "info": {

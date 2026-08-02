@@ -43,6 +43,44 @@ PLATFORMS = {
   "iOS" => { destination: "generic/platform=iOS", deliver: "ios" }
 }.freeze
 
+# The tutorial inside the app illustrates every step with the App Store screenshots. Each name here is
+# both the label `Generate Screenshots.swift` passes to `snapshot` and the imageset `TutorialView`
+# loads, so importing one into the other needs no translation table.
+TUTORIAL_IMAGES = %w[
+  0-define-target
+  1-define-ip
+  2-tot
+  3-ground
+  4-pre-ip-early
+  5-pre-ip
+  6-ip-to-target
+  7-pre-ip-late
+  8-post-pass
+].freeze
+
+# An asset catalog tells only phone from pad, so the tutorial draws on one capture device per idiom
+# and the Snapfile's other two devices serve App Store delivery alone. The phone capture is filed as
+# "universal" so destinations beyond iPhone and iPad still resolve an image.
+TUTORIAL_IDIOM_DEVICES = {
+  "universal" => "iPhone 17 Pro Max",
+  "ipad" => "iPad Pro 13-inch (M5)"
+}.freeze
+
+# Both appearances every tutorial imageset carries, named for the directories the screenshots lane
+# writes them to.
+APPEARANCES = %w[light dark].freeze
+
+# TutorialView presents as a sheet, so ParagraphWithImage stacks and an illustration spans the full
+# readable width — 600 pt at the widest. This renders it 1:1 there on a 2× iPad, and on a 3× iPhone,
+# whose content width lands just under 400 pt.
+TUTORIAL_IMAGE_WIDTH = 1200
+
+# The marketing site shows a shot at 306 CSS px, so it wants far less than the app does.
+DOCS_IMAGE_WIDTH = 800
+
+ASSET_CATALOG = "IP Inbound/Assets.xcassets"
+DOCS_SHOTS_DIRECTORY = "docs/assets/img/shots"
+
 # The Sentry project the release lanes upload dSYMs and sources to. `sentry-cli` reads
 # SENTRY_AUTH_TOKEN from the environment itself; `.sentryclirc` is committed and so holds only the
 # project's identity.
@@ -55,6 +93,97 @@ SENTRY_PROJECT = "ip-inbound"
 # working tree. CI checks the repository out and sets CERTIFICATES_REPO; a local run falls back to a
 # clone alongside the other repositories.
 DEFAULT_CERTIFICATES_REPO = File.expand_path("~/Repositories/certificates")
+
+# fastlane's working directory is not the same for a lane as it is for a one-off `fastlane run`, so
+# every path below is anchored to the repository root, resolved once while this file loads.
+REPOSITORY_ROOT = File.expand_path("..", File.expand_path(FastlaneCore::FastlaneFolder.path))
+
+def repository_path(*components)
+  File.join(REPOSITORY_ROOT, *components)
+end
+
+def screenshots_directory(appearance)
+  repository_path("fastlane", "screenshots", appearance)
+end
+
+def framed_screenshot(image, device:, appearance:)
+  File.join(screenshots_directory(appearance), "en-US", "#{device}-#{image}_framed.png")
+end
+
+def imageset_directory(image)
+  repository_path(ASSET_CATALOG, "#{image}.imageset")
+end
+
+def imageset_filename(image, idiom:, appearance:)
+  idiom == "universal" ? "#{image}-#{appearance}.png" : "#{image}-#{idiom}-#{appearance}.png"
+end
+
+# frameit skips a screenshot it has no template for rather than failing, which would quietly leave the
+# tutorial an idiom short. Demanding every file the import is about to read turns that into an error.
+def verify_framed_screenshots
+  wanted = TUTORIAL_IMAGES.product(TUTORIAL_IDIOM_DEVICES.values, APPEARANCES)
+  missing = wanted.filter_map do |image, device, appearance|
+    path = framed_screenshot(image, device:, appearance:)
+    path unless File.exist?(path)
+  end
+  return if missing.empty?
+
+  UI.user_error!("frameit produced no framed screenshot for:\n  #{missing.join("\n  ")}\n" \
+                 "Point the device at a frame frameit carries in fastlane/Framefile.json.")
+end
+
+# One PNG per idiom and appearance, each resampled down from its framed capture — the tutorial never
+# shows one wider than a column of body text.
+def write_imageset(image)
+  directory = imageset_directory(image)
+  FileUtils.rm_rf(directory)
+  FileUtils.mkdir_p(directory)
+
+  images = TUTORIAL_IDIOM_DEVICES.flat_map do |idiom, device|
+    APPEARANCES.map do |appearance|
+      filename = imageset_filename(image, idiom:, appearance:)
+      resample(framed_screenshot(image, device:, appearance:), File.join(directory, filename))
+      imageset_entry(filename, idiom:, appearance:)
+    end
+  end
+
+  contents = { images:, info: { author: "xcode", version: 1 } }
+  File.write(File.join(directory, "Contents.json"), "#{JSON.pretty_generate(contents)}\n")
+end
+
+# Keys in the order Xcode itself writes them, so hand edits in Xcode produce no diff noise.
+def imageset_entry(filename, idiom:, appearance:)
+  entry = {}
+  entry[:appearances] = [{ appearance: "luminosity", value: "dark" }] if appearance == "dark"
+  entry[:filename] = filename
+  entry[:idiom] = idiom
+  entry
+end
+
+# ImageMagick comes along with frameit. `-strip` drops the capture's metadata so the catalog carries
+# pixels and nothing else.
+def resample(source, destination)
+  run_quietly("magick #{source.shellescape} -resize #{TUTORIAL_IMAGE_WIDTH}x " \
+              "-strip #{destination.shellescape}")
+end
+
+# The import runs one of these per file. `sh` would enter every one in fastlane's summary table and
+# bury the run's actual steps, so they go straight to the executor, which still raises on a failure.
+def run_quietly(command)
+  FastlaneCore::CommandExecutor.execute(command:, print_all: false, print_command: false)
+end
+
+# The marketing site illustrates the same steps with the same phone captures, as webp. It resamples
+# from the capture rather than from the imageset so the two carry their own widths.
+def write_docs_shot(image)
+  APPEARANCES.each do |appearance|
+    source = framed_screenshot(image, device: TUTORIAL_IDIOM_DEVICES["universal"], appearance:)
+    suffix = appearance == "dark" ? "-dark" : ""
+    destination = repository_path(DOCS_SHOTS_DIRECTORY, "#{image}#{suffix}.webp")
+    run_quietly("cwebp -quiet -q 82 -alpha_q 100 -resize #{DOCS_IMAGE_WIDTH} 0 " \
+                "#{source.shellescape} -o #{destination.shellescape}")
+  end
+end
 
 def certificates_repo
   path = ENV.fetch("CERTIFICATES_REPO", DEFAULT_CERTIFICATES_REPO)
@@ -110,6 +239,11 @@ platform :ios do
              output_directory:           "./fastlane/screenshots/dark",
              clear_previous_screenshots: true
 
+    # The tutorial's illustrations are these same captures, and need nothing from the watch, so they
+    # are imported while the two sets above are all that matters
+    puts "Importing screenshots into the asset catalog…"
+    import_screenshots
+
     # Then the watchOS companion screens (dark-only)
     puts "Generating watch screenshots…"
     watch_screenshots
@@ -164,8 +298,32 @@ platform :ios do
 
   desc "Generate framed screenshots"
   lane :frames do
-    frame_screenshots path: "./fastlane/screenshots/light"
-    frame_screenshots path: "./fastlane/screenshots/dark"
+    APPEARANCES.each do |appearance|
+      directory = screenshots_directory(appearance)
+      unless Dir.exist?(directory)
+        UI.user_error!("No #{appearance} screenshots at #{directory} — run the screenshots lane first.")
+      end
+
+      # frameit recognizes a device by the pixel size of its capture and has no entry for either M5
+      # iPad, so Framefile.json points those two at the nearest frame it does carry. It reads that
+      # file from beside the language folder, and snapshot empties that folder on every run, so the
+      # tracked copy is staged here each time.
+      FileUtils.cp(repository_path("fastlane", "Framefile.json"), directory)
+      frame_screenshots path: directory
+    end
+  end
+
+  desc "Import the generated screenshots into the asset catalog and the marketing site"
+  lane :import_screenshots do
+    frames
+    verify_framed_screenshots
+
+    TUTORIAL_IMAGES.each do |image|
+      write_imageset(image)
+      write_docs_shot(image)
+    end
+
+    UI.success("Imported #{TUTORIAL_IMAGES.count} tutorial illustrations → #{ASSET_CATALOG}")
   end
 
   desc "Upload screenshots to App Store Connect"

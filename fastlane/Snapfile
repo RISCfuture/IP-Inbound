@@ -20,9 +20,6 @@ languages %w[
 # The name of the scheme which contains the UI Tests
 scheme "Generate Screenshots"
 
-# Where should the resulting screenshots be stored?
-output_directory "./fastlane/screenshots"
-
 # Clear all previously generated screenshots before creating new ones
 clear_previous_screenshots true
 
@@ -44,14 +41,8 @@ number_of_retries 1
 # Test without building (requires a derived data path)
 test_without_building false
 
-# Configuration for dark mode - this will run tests twice, once for light and once for dark
-# Dark mode configuration
-dark_mode true
-
-# Launch arguments to pass to the app on launch
-launch_arguments [
-    "-UITestsEnabled YES"
-]
+# The screenshots lane runs snapshot once per appearance, setting dark_mode and output_directory
+# itself; the harness in Generate Screenshots.swift supplies its own launch arguments.
 
 # The bundle identifier of your app
 app_identifier "codes.tim.IP-Inbound"

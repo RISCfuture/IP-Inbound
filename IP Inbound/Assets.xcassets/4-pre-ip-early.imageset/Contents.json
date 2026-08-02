@@ -1,7 +1,7 @@
 {
   "images": [
     {
-      "filename": "iPhone 17 Pro Max-4-fly-pre-ip-early_framed.png",
+      "filename": "4-pre-ip-early-light.png",
       "idiom": "universal"
     },
     {
@@ -11,8 +11,22 @@
           "value": "dark"
         }
       ],
-      "filename": "iPhone 17 Pro Max-4-fly-pre-ip-early_framed 1.png",
+      "filename": "4-pre-ip-early-dark.png",
       "idiom": "universal"
+    },
+    {
+      "filename": "4-pre-ip-early-ipad-light.png",
+      "idiom": "ipad"
+    },
+    {
+      "appearances": [
+        {
+          "appearance": "luminosity",
+          "value": "dark"
+        }
+      ],
+      "filename": "4-pre-ip-early-ipad-dark.png",
+      "idiom": "ipad"
     }
   ],
   "info": {
