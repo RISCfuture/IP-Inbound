@@ -70,6 +70,9 @@ TUTORIAL_IDIOM_DEVICES = {
 # writes them to.
 APPEARANCES = %w[light dark].freeze
 
+# The suite xcodebuild files a failure under when the fault lies with the harness rather than a test.
+SYSTEM_FAILURES_SUITE = "System Failures"
+
 # TutorialView presents as a sheet, so ParagraphWithImage stacks and an illustration spans the full
 # readable width — 600 pt at the widest. This renders it 1:1 there on a 2× iPad, and on a 3× iPhone,
 # whose content width lands just under 400 pt.
@@ -116,6 +119,72 @@ end
 
 def imageset_filename(image, idiom:, appearance:)
   idiom == "universal" ? "#{image}-#{appearance}.png" : "#{image}-#{idiom}-#{appearance}.png"
+end
+
+# Every test case in a result bundle that did not pass, by name.
+#
+# A watchOS runner that cannot launch is reported as a failed test case of its own, filed under a
+# "System Failures" suite alongside the real ones. That subtree is skipped so the result reflects the
+# tests that actually ran, leaving a genuine test failure to be reported.
+def failed_test_cases(result_bundle)
+  report = JSON.parse(sh("xcrun xcresulttool get test-results tests " \
+                         "--path #{result_bundle.shellescape} --format json", log: false))
+  Array(report["testNodes"]).flat_map { |node| failed_cases_within(node) }
+end
+
+def failed_cases_within(node)
+  return [] if system_failures_suite?(node)
+
+  nested = Array(node["children"]).flat_map { |child| failed_cases_within(child) }
+  failed_case?(node) ? nested + [node["name"]] : nested
+end
+
+def failed_case?(node)
+  node["nodeType"] == "Test Case" && node["result"] != "Passed"
+end
+
+def system_failures_suite?(node)
+  node["nodeType"] == "Test Suite" && node["name"] == SYSTEM_FAILURES_SUITE
+end
+
+# Every screenshot set on the version currently open for editing.
+def editable_screenshot_sets(platform)
+  app = Spaceship::ConnectAPI::App.find(APP_IDENTIFIER)
+  version = app.get_edit_app_store_version(platform: platform)
+  UI.user_error!("No editable #{platform} version of #{APP_IDENTIFIER} to hold screenshots.") unless version
+
+  version.get_app_store_version_localizations.flat_map(&:get_app_screenshot_sets)
+end
+
+# Empties those sets before an upload refills them.
+#
+# A set holds at most ten images, and deliver's sync uploads before it deletes, so a set already at
+# that ceiling has no room to work in and the sync fails outright. Clearing it first also spares the
+# sync from reconciling screenshots that are about to be replaced anyway.
+#
+# The count is re-read from App Store Connect rather than inferred from the deletions: deliver's own
+# overwrite path checks the objects it already holds, which is why it reports having removed
+# screenshots that are still there.
+def purge_remote_screenshots(platform)
+  editable_screenshot_sets(platform).each do |set|
+    set.app_screenshots.each(&:delete!)
+  end
+
+  remaining = editable_screenshot_sets(platform).sum { |set| set.app_screenshots.count }
+  return if remaining.zero?
+
+  UI.user_error!("#{remaining} screenshot(s) are still on App Store Connect after being deleted. " \
+                 "Uploading now would leave the set a mix of old and new.")
+end
+
+# Stops an upload that has nothing to publish, naming the folder that came up empty. The path is
+# anchored to this file so it means the same thing however the lane was invoked.
+def verify_screenshots_present(subdirectory)
+  directory = File.expand_path(File.join("screenshots", subdirectory), __dir__)
+  return if Dir.glob(File.join(directory, "*.png")).any?
+
+  UI.user_error!("No screenshots in #{directory} — generate them first. Uploading an empty set " \
+                 "would clear the screenshots already on the App Store.")
 end
 
 # frameit skips a screenshot it has no template for rather than failing, which would quietly leave the
@@ -260,40 +329,68 @@ platform :ios do
     export_dir = File.join(derived, "attachments")
 
     FileUtils.rm_rf(derived)
-    FileUtils.rm_rf(File.dirname(output))
-    FileUtils.mkdir_p(output)
 
     # watchOS UI runs dark-only, so a single set suffices — no light/dark split. The screens are
     # captured as XCTAttachments because fastlane's snapshot action doesn't support watchOS.
-    run_tests(
-      project:          XCODEPROJ,
-      scheme:           "IP Inbound Watch",
-      devices:          ["Apple Watch Series 11 (46mm)"],
-      only_testing:     ["IP Inbound Watch Watch AppUITests/WatchScreenshotTests"],
-      result_bundle:    true,
-      output_directory: derived
-    )
+    #
+    # The runner routinely fails to relaunch once the tests have finished, which fails the action
+    # even though every screenshot was captured. That verdict is held rather than raised, because the
+    # test cases below decide whether the run was really good — and a failure among them re-raises it.
+    runner_failure = nil
+    begin
+      run_tests(
+        project:          XCODEPROJ,
+        scheme:           "IP Inbound Watch",
+        devices:          ["Apple Watch Series 11 (46mm)"],
+        only_testing:     ["IP Inbound Watch Watch AppUITests/WatchScreenshotTests"],
+        result_bundle:    true,
+        output_directory: derived
+      )
+    rescue StandardError => e
+      runner_failure = e
+    end
 
     result_bundle = Dir.glob(File.join(derived, "**/*.xcresult")).first
     UI.user_error!("No xcresult produced for watch screenshots") if result_bundle.nil?
+
+    failures = failed_test_cases(result_bundle)
+    raise runner_failure if runner_failure && !failures.empty?
+
+    if runner_failure
+      UI.important("The watchOS test runner reported a launch failure, but every test case passed " \
+                   "and the screenshots below were captured, so the run stands.")
+    end
 
     sh "xcrun xcresulttool export attachments " \
        "--path #{result_bundle.shellescape} --output-path #{export_dir.shellescape}"
 
     manifest = JSON.parse(File.read(File.join(export_dir, "manifest.json")))
-    captured = manifest.flat_map { |test| test["attachments"] }.filter_map do |attachment|
-      raw = attachment["suggestedHumanReadableName"].to_s
-      next if raw.empty?
 
-      # XCTest appends "_<repetition>_<UUID>.png" to the attachment name; strip back to the base.
-      base = raw.sub(/_\d+_[0-9A-Fa-f-]{36}\.png\z/, "").sub(/\.png\z/i, "")
-      filename = "#{base}.png"
-      FileUtils.cp(File.join(export_dir, attachment["exportedFileName"]), File.join(output, filename))
-      filename
+    # Captures are staged outside the published folder, which is replaced only once the run has
+    # produced a full set. A run that fails, or captures nothing, therefore leaves the previous
+    # screenshots where they are — and `upload_screenshots` clears every App Store slot it uploads
+    # into, so publishing an empty folder would drop the watch screenshots from the product page.
+    Dir.mktmpdir("watch-screenshots") do |staging|
+      captured = manifest.flat_map { |test| test["attachments"] }.filter_map do |attachment|
+        # A run carries diagnostics besides the captures — a failed runner attaches its issue
+        # description — and only the images belong in a folder bound for App Store Connect.
+        raw = attachment["suggestedHumanReadableName"].to_s
+        next unless raw.match?(/\.png\z/i)
+
+        # XCTest appends "_<repetition>_<UUID>.png" to the attachment name; strip back to the base.
+        base = raw.sub(/_\d+_[0-9A-Fa-f-]{36}\.png\z/, "").sub(/\.png\z/i, "")
+        filename = "#{base}.png"
+        FileUtils.cp(File.join(export_dir, attachment["exportedFileName"]), File.join(staging, filename))
+        filename
+      end
+
+      UI.user_error!("No watch screenshots were captured") if captured.empty?
+
+      FileUtils.rm_rf(output)
+      FileUtils.mkdir_p(File.dirname(output))
+      FileUtils.cp_r(staging, output)
+      UI.success("Captured #{captured.count} watch screenshot(s) → #{output}")
     end
-
-    UI.user_error!("No watch screenshots were captured") if captured.empty?
-    UI.success("Captured #{captured.count} watch screenshot(s) → #{output}")
   end
 
   desc "Generate framed screenshots"
@@ -328,7 +425,12 @@ platform :ios do
 
   desc "Upload screenshots to App Store Connect"
   lane :upload_screenshots do
+    # deliver clears every slot it uploads into, across all three display families at once, so a
+    # missing set would strip those screenshots from the product page rather than leave them be.
+    verify_screenshots_present("light/en-US")
+    verify_screenshots_present("watch/en-US")
     ensure_api_key
+    purge_remote_screenshots(Spaceship::ConnectAPI::Platform::IOS)
 
     # Create a temporary directory with only non-framed screenshots
     Dir.mktmpdir do |temp_dir|
@@ -360,7 +462,11 @@ platform :ios do
         skip_binary_upload:         true,
         skip_metadata:              true,
         screenshots_path:           temp_dir,
-        overwrite_screenshots:      true, # Clear each locale's slots first so re-runs stay idempotent
+        # `overwrite_screenshots` verifies its deletions against the objects it already held rather
+        # than App Store Connect, so it reports success while the old screenshots survive and the new
+        # upload lands beside them, up to the ten-image ceiling on a set. Syncing reconciles against
+        # what is actually there, confirms the counts agree, and leaves each set in order.
+        sync_screenshots:           true,
         force:                      true, # Skip HTML preview
         run_precheck_before_submit: false # Skip precheck since we're only uploading screenshots
       )
