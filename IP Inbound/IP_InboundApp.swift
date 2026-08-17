@@ -54,41 +54,7 @@ struct IP_InboundApp: App {
   // MARK: - Initializers
 
   init() {
-    // Skip Sentry under UI tests: its debug logging, profiling, and structured
-    // logging do main-thread work that keeps the run loop from going idle,
-    // which stalls XCUITest's wait-for-idle and times tests out (matches FART).
-    if !ProcessInfo.processInfo.isRunningUITests {
-      SentrySDK.start { options in
-        options.dsn =
-          "https://6d826473ed575a590d160fa29163b480@o4510156629475328.ingest.us.sentry.io/4510161641996288"
-        options.debug = true
-
-        options.tracesSampleRate = 0.2
-
-        options.configureProfiling = {
-          $0.sessionSampleRate = 0.2
-          $0.lifecycle = .trace
-        }
-
-        // Uncomment the following lines to add more data to your events
-        // options.attachScreenshot = true // This adds a screenshot to the error events
-        // options.attachViewHierarchy = true // This adds the view hierarchy to the error events
-
-        // Enable structured logging
-        options.enableLogs = true
-
-        // Discard events from simulator and debug builds: the former is noise, the
-        // latter reports debugger-induced app hangs (a paused main thread trips the
-        // watchdog) that don't reflect production behavior.
-        options.beforeSend = { event in
-          #if DEBUG || targetEnvironment(simulator)
-            return nil
-          #else
-            return event
-          #endif
-        }
-      }
-    }
+    Self.startSentryUnlessRunningUITests()
 
     // Ensure Metal is available
     _ = MTLCreateSystemDefaultDevice()
@@ -103,6 +69,54 @@ struct IP_InboundApp: App {
   }
 
   // MARK: - Type Methods
+
+  /// Sentry stays off under UI tests: its logging, profiling, and structured logging do
+  /// main-thread work that keeps the run loop from going idle, which stalls XCUITest's
+  /// wait-for-idle and times tests out (matches FART).
+  private static func startSentryUnlessRunningUITests() {
+    guard !ProcessInfo.processInfo.isRunningUITests else { return }
+
+    SentrySDK.start { options in
+      options.dsn =
+        "https://6d826473ed575a590d160fa29163b480@o4510156629475328.ingest.us.sentry.io/4510161641996288"
+
+      // The SDK's own logging is for whoever is working on the app, not for a device in the field.
+      #if DEBUG
+        options.debug = true
+      #endif
+
+      // There are no accounts here, and the privacy manifest declares diagnostics as not linked to
+      // identity — so never attach the user's IP address or other identifying context to an event.
+      options.sendDefaultPii = false
+
+      // A fifth of the traffic is enough to spot a performance regression in an app this size, and
+      // it leaves the quota and the device's battery for the crashes that actually matter.
+      options.tracesSampleRate = 0.2
+
+      options.configureProfiling = {
+        $0.sessionSampleRate = 0.2
+        $0.lifecycle = .trace
+      }
+
+      options.enableLogs = true
+
+      // Hangs are inferred from stalled frame rendering, and this app sits on a static screen for
+      // long stretches in flight — where nothing rendering means nothing is moving, not that the
+      // main thread is stuck. The two-second default reports those as hangs.
+      options.appHangTimeoutInterval = 5
+
+      // Discard events from simulator and debug builds: the former is noise, the latter reports
+      // debugger-induced app hangs (a paused main thread trips the watchdog) that don't reflect
+      // production behavior.
+      options.beforeSend = { event in
+        #if DEBUG || targetEnvironment(simulator)
+          return nil
+        #else
+          return event
+        #endif
+      }
+    }
+  }
 
   private static func seedUITestTargetIfNeeded(into modelContainer: ModelContainer) {
     let info = ProcessInfo.processInfo
