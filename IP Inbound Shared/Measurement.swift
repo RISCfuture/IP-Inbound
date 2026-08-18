@@ -36,6 +36,16 @@ func * (lhs: Measurement<UnitDuration>, rhs: Measurement<UnitSpeed>) -> Measurem
   rhs * lhs
 }
 
+/// The speed gained by accelerating at `lhs` for `rhs`.
+func * (
+  lhs: Measurement<UnitAcceleration>,
+  rhs: Measurement<UnitDuration>
+) -> Measurement<UnitSpeed> {
+  let value =
+    lhs.converted(to: .metersPerSecondSquared).value * rhs.converted(to: .seconds).value
+  return .init(value: value, unit: .metersPerSecond)
+}
+
 /// The elapsed time from `rhs` to `lhs`, negative when `lhs` precedes `rhs`.
 func - (lhs: Date, rhs: Date) -> Measurement<UnitDuration> {
   .init(value: lhs.timeIntervalSince(rhs), unit: .seconds)

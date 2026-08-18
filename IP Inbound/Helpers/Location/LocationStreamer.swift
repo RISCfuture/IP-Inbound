@@ -13,15 +13,18 @@ struct LocationEvent: Sendable {
     guard let coordinate = location?.coordinate else { return nil }
     return .init(coordinate)
   }
+  /// `nil` when the fix carries no usable course. `CLLocation` signals that with a negative value,
+  /// which taken at face value would point the run-in a degree west of north.
   var courseTrue: Bearing? {
-    location.map { location in
-      .init(angle: location.course, reference: .true)
-    }
+    guard let location, location.course >= 0 else { return nil }
+    return .init(angle: location.course, reference: .true)
   }
+
+  /// `nil` when the fix carries no usable speed. `CLLocation` signals that with a negative value,
+  /// which taken at face value would dead-reckon the aircraft backwards along its track.
   var speed: Measurement<UnitSpeed>? {
-    return location.map { location in
-      Measurement(value: location.speed, unit: UnitSpeed.metersPerSecond)
-    }
+    guard let location, location.speed >= 0 else { return nil }
+    return .init(value: location.speed, unit: .metersPerSecond)
   }
 
   init(location: CLLocation? = nil, simName: String? = nil, error: Error? = nil) {
@@ -39,29 +42,129 @@ struct LocationEvent: Sendable {
       let speed
     else { return self }
 
-    let dt = Measurement(
-      value: time.timeIntervalSince(location.timestamp),
-      unit: UnitDuration.seconds
-    )
-    let distance = speed * dt
+    let elapsed = time - location.timestamp
+    let distance = speed * elapsed
     let newCoordinate = coordinate.offsetBy(bearing: courseTrue.angle, distance: distance)
-    let accuracyChange = dt.converted(to: .seconds).value
+    let accuracy = DeadReckonedAccuracy(
+      fix: location,
+      groundSpeed: speed,
+      traveled: distance,
+      elapsed: elapsed
+    )
 
     return .init(
       location: .init(
         coordinate: newCoordinate.toCoreLocation,
         altitude: location.altitude,
-        horizontalAccuracy: location.horizontalAccuracy + accuracyChange,
-        verticalAccuracy: location.verticalAccuracy + accuracyChange,
+        horizontalAccuracy: accuracy.horizontal,
+        verticalAccuracy: accuracy.vertical,
         course: location.course,
-        courseAccuracy: location.courseAccuracy + accuracyChange,
+        courseAccuracy: accuracy.course,
         speed: location.speed,
-        speedAccuracy: location.speedAccuracy + accuracyChange,
-        timestamp: Date()
+        speedAccuracy: accuracy.speed,
+        // The propagated fix is an estimate of where the aircraft is at `time`, so that is when it
+        // is valid — stamping it with the wall clock instead would misdate it against a simulated
+        // one, and staleness is judged against the same clock `time` comes from.
+        timestamp: time
       ),
       simName: simName,
       error: error
     )
+  }
+}
+
+/// How a fix's reported accuracies decay while ``LocationEvent/extrapolate(to:)`` dead-reckons it
+/// forward — the process noise of a constant-velocity propagation.
+///
+/// Position is genuinely propagated, so its error grows the way dead-reckoning error always does: the
+/// speed error integrates along track (`σᵥ·Δt`), and the course error swings the distance traveled
+/// across it (`d·σ_c`).
+///
+/// Altitude, course and ground speed are *not* propagated — they are carried forward unchanged — so
+/// their error grows with whatever the aircraft may have done since the fix. That is bounded by
+/// ``maneuverAcceleration``: a climb or descent displaces by `½aΔt²`, a turn swings the ground track
+/// at `a/v`, and a longitudinal acceleration moves the speed by `a·Δt`. The turn term is the model's
+/// actual turn rate; the vertical and speed terms treat the same figure as a conservative envelope,
+/// since nothing in a `CLLocation` observes vertical rate or longitudinal acceleration.
+///
+/// Independent terms combine in quadrature. A `CLLocation` accuracy is negative when the device could
+/// not determine it; those sentinels pass through untouched, and contribute nothing where they feed
+/// another term.
+private struct DeadReckonedAccuracy {
+  /// Bound on the acceleration the aircraft may apply between fixes. The guidance already models it
+  /// as able to hold a level turn at ``FromToMath/bankAngle``; the lateral acceleration that implies
+  /// is the strongest maneuver it expects, so it doubles as the envelope for climb, descent and
+  /// speed change.
+  private static var maneuverAcceleration: Measurement<UnitAcceleration> {
+    FromToMath.turnAcceleration
+  }
+
+  /// The course uncertainty at which the direction of travel carries no information at all.
+  private static let unknownCourse = Measurement(value: 180, unit: UnitAngle.degrees)
+
+  let fix: CLLocation
+  let groundSpeed: Measurement<UnitSpeed>
+  let traveled: Measurement<UnitLength>
+  let elapsed: Measurement<UnitDuration>
+
+  var horizontal: CLLocationAccuracy {
+    grown(
+      fix.horizontalAccuracy,
+      by: [alongTrackError, crossTrackError].map { $0.converted(to: .meters).value }
+    )
+  }
+
+  var vertical: CLLocationAccuracy {
+    grown(fix.verticalAccuracy, by: [verticalError.converted(to: .meters).value])
+  }
+
+  /// Capped at a half-turn: past that the course is simply unknown, and a larger figure would claim
+  /// a precision the model cannot have.
+  var course: CLLocationDirectionAccuracy {
+    let grownCourse = grown(fix.courseAccuracy, by: [turnError.converted(to: .degrees).value])
+    return min(grownCourse, Self.unknownCourse.converted(to: .degrees).value)
+  }
+
+  var speed: CLLocationSpeedAccuracy {
+    grown(fix.speedAccuracy, by: [speedError.converted(to: .metersPerSecond).value])
+  }
+
+  /// The speed error integrated over the elapsed time, displacing the fix along its track.
+  private var alongTrackError: Measurement<UnitLength> {
+    guard fix.speedAccuracy >= 0 else { return .zero }
+    return Measurement(value: fix.speedAccuracy, unit: UnitSpeed.metersPerSecond) * elapsed
+  }
+
+  /// The course error swung across the distance traveled. Uses the arc rather than the chord, which
+  /// errs high — the safe direction for an uncertainty.
+  private var crossTrackError: Measurement<UnitLength> {
+    guard fix.courseAccuracy >= 0 else { return .zero }
+    return traveled * Measurement(value: fix.courseAccuracy, unit: UnitAngle.degrees).radians
+  }
+
+  /// The displacement an unobserved climb or descent at the maneuver bound reaches: `½aΔt²`.
+  private var verticalError: Measurement<UnitLength> {
+    Self.maneuverAcceleration * elapsed * elapsed * 0.5
+  }
+
+  /// The ground track a turn at the maneuver bound sweeps. Turn rate is `a/v`, so the time to turn
+  /// one radian is `v/a` and the angle swept is `Δt` measured in those. A stationary aircraft has no
+  /// ground track to swing.
+  private var turnError: Measurement<UnitAngle> {
+    guard groundSpeed > .zero else { return .zero }
+    return .init(value: elapsed / (groundSpeed / Self.maneuverAcceleration), unit: .radians)
+  }
+
+  /// The speed change an unobserved longitudinal acceleration at the maneuver bound reaches.
+  private var speedError: Measurement<UnitSpeed> {
+    Self.maneuverAcceleration * elapsed
+  }
+
+  /// Combines independent uncertainties in quadrature, passing a negative — meaning unavailable —
+  /// accuracy through untouched.
+  private func grown(_ accuracy: Double, by terms: [Double]) -> Double {
+    guard accuracy >= 0 else { return accuracy }
+    return terms.reduce(accuracy * accuracy) { $0 + $1 * $1 }.squareRoot()
   }
 }
 

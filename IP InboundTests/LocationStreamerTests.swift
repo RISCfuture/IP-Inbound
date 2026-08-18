@@ -99,6 +99,20 @@ struct LocationStreamerTests {
       extrapolated2.location === event2.location && extrapolated2.simName == event2.simName
         && extrapolated2.error?.localizedDescription == event2.error?.localizedDescription
     )
+
+    // Case 3: CoreLocation signals an unusable course and speed with negative values. Dead-reckoning
+    // on those would fly the fix backwards along a course a degree west of north.
+    let stationary = makeLocation(
+      latitude: 37.7749,
+      longitude: -122.4194,
+      course: -1,
+      speed: -1,
+      timestamp: now
+    )
+    let event3 = LocationEvent(location: stationary)
+    #expect(event3.courseTrue == nil)
+    #expect(event3.speed == nil)
+    #expect(event3.extrapolate(to: now.addingTimeInterval(10)).location === stationary)
   }
 
   @Test("LocationEvent - extrapolate calculates new position correctly")
@@ -127,11 +141,55 @@ struct LocationStreamerTests {
     // Only check longitude since we're moving east
     #expect(coordinate.longitudeDeg.isApproximatelyEqual(to: 0.0009, relativeTolerance: 0.01))
 
-    // Accuracies should increase by the time delta
     let extrapolatedLocation = try #require(extrapolated.location)
-    #expect(extrapolatedLocation.horizontalAccuracy > location.horizontalAccuracy)
+
+    // The propagated fix is an estimate of the aircraft's position at the time asked for, so that is
+    // when it is valid.
+    #expect(extrapolatedLocation.timestamp == futureTime)
+
+    // Dead-reckoning error propagation: the 1 m/s speed error integrates to 10 m along track, and
+    // the 1° course error swings the 100 m traveled ~1.75 m across it, both in quadrature with the
+    // fix's own 10 m.
+    let alongTrack = 1.0 * 10.0
+    let crossTrack = 100.0 * (1.0 * .pi / 180.0)
+    let expectedHorizontal = (100.0 + alongTrack * alongTrack + crossTrack * crossTrack)
+      .squareRoot()
+    #expect(
+      extrapolatedLocation.horizontalAccuracy.isApproximatelyEqual(to: expectedHorizontal)
+    )
+
+    // A turn at the maneuver bound sweeps well past a half-turn in 10 s at this speed, so the course
+    // reads as wholly unknown rather than claiming a precision the model cannot have.
+    #expect(extrapolatedLocation.courseAccuracy == 180)
+
+    // Altitude and speed are carried forward unchanged, so their error grows with the maneuver bound.
     #expect(extrapolatedLocation.verticalAccuracy > location.verticalAccuracy)
-    #expect(extrapolatedLocation.courseAccuracy > location.courseAccuracy)
     #expect(extrapolatedLocation.speedAccuracy > location.speedAccuracy)
+  }
+
+  @Test("LocationEvent - extrapolate leaves unavailable accuracies unavailable")
+  func locationEventExtrapolatePreservesUnavailableAccuracies() throws {
+    let now = Date()
+    let location = makeLocation(
+      latitude: 0,
+      longitude: 0,
+      horizontalAccuracy: -1,
+      verticalAccuracy: -1,
+      course: 90,
+      courseAccuracy: -1,
+      speed: 10,
+      speedAccuracy: -1,
+      timestamp: now
+    )
+
+    let extrapolated = LocationEvent(location: location).extrapolate(to: now.addingTimeInterval(5))
+    let extrapolatedLocation = try #require(extrapolated.location)
+
+    // CoreLocation reports a negative accuracy when it could not determine one; growing that
+    // sentinel would turn "unknown" into a plausible-looking number.
+    #expect(extrapolatedLocation.horizontalAccuracy < 0)
+    #expect(extrapolatedLocation.verticalAccuracy < 0)
+    #expect(extrapolatedLocation.courseAccuracy < 0)
+    #expect(extrapolatedLocation.speedAccuracy < 0)
   }
 }

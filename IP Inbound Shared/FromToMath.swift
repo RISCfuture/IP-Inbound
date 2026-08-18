@@ -10,9 +10,11 @@ struct FromToMath: Equatable {
   private static let smallTurn = Measurement(value: 10, unit: UnitAngle.degrees)
   private static let minimumTimeToTOT = Measurement(value: 1, unit: UnitDuration.seconds)
 
-  /// The rate of speed change a level turn trades for turn rate: `g·tan(bank)`. Turn rate is this
-  /// divided by ground speed, so `speed / turnAcceleration` is the time to turn one radian.
-  private static var turnAcceleration: Measurement<UnitAcceleration> {
+  /// The lateral acceleration a level turn at ``bankAngle`` pulls: `g·tan(bank)`. Turn rate is this
+  /// divided by ground speed, so `speed / turnAcceleration` is the time to turn one radian. Doubles
+  /// as the maneuver envelope elsewhere, since it is the strongest acceleration the guidance models
+  /// the aircraft applying.
+  static var turnAcceleration: Measurement<UnitAcceleration> {
     Measurement.gravity * tan(bankAngle.radians)
   }
 
