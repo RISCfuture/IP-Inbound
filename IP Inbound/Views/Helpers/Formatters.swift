@@ -1,15 +1,6 @@
 import Defaults
 import Foundation
 
-struct ZuluTimeFormatStyle: FormatStyle {
-  func format(_ value: Date) -> String {
-    let formatter = DateFormatter()
-    formatter.dateFormat = "HHmm'Z'"
-    formatter.timeZone = .gmt
-    return formatter.string(from: value)
-  }
-}
-
 func localizedName(of unit: Unit, style: Formatter.UnitStyle = .long) -> String {
   let formatter = MeasurementFormatter()
   formatter.unitStyle = style
@@ -28,4 +19,12 @@ let localTOTFormatStyle = Date.FormatStyle(
   timeZone: .autoupdatingCurrent,
   capitalizationContext: .standalone
 )
-let zuluTOTFormatStyle = ZuluTimeFormatStyle()
+/// Zulu time is an aviation convention with a fixed presentation — four 24-hour digits followed by a
+/// `Z` — so it renders verbatim against a Gregorian calendar rather than through the reader's
+/// calendar and time-of-day conventions.
+let zuluTOTFormatStyle = Date.VerbatimFormatStyle(
+  format:
+    "\(hour: .twoDigits(clock: .twentyFourHour, hourCycle: .zeroBased))\(minute: .twoDigits)Z",
+  timeZone: .gmt,
+  calendar: .init(identifier: .gregorian)
+)

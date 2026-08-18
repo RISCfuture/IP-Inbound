@@ -6,7 +6,7 @@ import SwiftUI
 @MainActor
 @Observable
 final class TOTEntryManager {
-  private static let defaultLeadTimeSec = 30.0 * 60.0
+  private static let defaultLeadTime = Measurement(value: 30, unit: UnitDuration.minutes)
   private static let expectedDigitCount = 6
 
   private static let zuluModeIndicator = String(
@@ -29,17 +29,12 @@ final class TOTEntryManager {
     return formatter
   }()
 
-  private static let compactTimeFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.dateFormat = "HHmmss"
-    return formatter
-  }()
+  private static let gregorianCalendar = Calendar(identifier: .gregorian)
 
-  private static let colonSeparatedTimeFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.dateFormat = "HH:mm:ss"
-    return formatter
-  }()
+  /// The secondary readout mirrors the primary display's fixed `HH:MM:SS` aviation layout, so it
+  /// renders verbatim rather than through the reader's time-of-day conventions.
+  private static let secondaryTimeFormat: Date.FormatString =
+    "\(hour: .twoDigits(clock: .twentyFourHour, hourCycle: .zeroBased)):\(minute: .twoDigits):\(second: .twoDigits)"
 
   var timeOnTarget: Date
   let targetCoordinate: Coordinate
@@ -53,31 +48,12 @@ final class TOTEntryManager {
   private var formatChangeObserver: Task<Void, Never>?
   private var targetTimezone: TimeZone?
 
+  /// The `HH:MM:SS TZ` edit buffer. The keypad rewrites it a character at a time and ``time(from:)``
+  /// reads it back, so `String(format:)` builds it from raw components: every field is zero-padded to
+  /// a fixed width and the digits stay ASCII no matter how the reader's locale renders numbers.
   var stringValue: String {
-    let formatter = Self.compactTimeFormatter
-
-    switch displayMode {
-      case .local:
-        formatter.timeZone = targetTimezone ?? TimeZone.current
-      case .zulu:
-        formatter.timeZone = TimeZone(identifier: "UTC")
-    }
-
-    let timeString = formatter.string(from: timeOnTarget)
-
-    let hours = String(timeString.prefix(2))
-    let minutes = String(timeString.dropFirst(2).prefix(2))
-    let seconds = String(timeString.dropFirst(4).prefix(2))
-
-    let modeIndicator: String
-    switch displayMode {
-      case .zulu:
-        modeIndicator = Self.zuluModeIndicator
-      case .local:
-        let timezone = targetTimezone ?? TimeZone.current
-        modeIndicator = timezone.abbreviation(for: timeOnTarget) ?? Self.localFallbackIndicator
-    }
-    return "\(hours):\(minutes):\(seconds) \(modeIndicator)"
+    let (hour, minute, second) = Self.hourMinuteSecond(of: timeOnTarget, in: displayTimezone)
+    return String(format: "%02d:%02d:%02d %@", hour, minute, second, displayModeIndicator)
   }
 
   var attributedStrings: [AttributedString] {
@@ -103,19 +79,12 @@ final class TOTEntryManager {
   }
 
   var secondaryTimeString: String {
-    let formatter = Self.colonSeparatedTimeFormatter
-
-    switch displayMode {
-      case .local:
-        formatter.timeZone = TimeZone(identifier: "UTC")
-        return "\(formatter.string(from: timeOnTarget)) \(Self.zuluModeIndicator)"
-      case .zulu:
-        let timezone = targetTimezone ?? TimeZone.current
-        formatter.timeZone = timezone
-        let abbreviation =
-          timezone.abbreviation(for: timeOnTarget) ?? Self.localTimezoneFallbackName
-        return "\(formatter.string(from: timeOnTarget)) \(abbreviation)"
-    }
+    let style = Date.VerbatimFormatStyle(
+      format: Self.secondaryTimeFormat,
+      timeZone: secondaryTimezone,
+      calendar: Self.gregorianCalendar
+    )
+    return "\(timeOnTarget.formatted(style)) \(secondaryModeIndicator)"
   }
 
   var relativeTimeString: String {
@@ -138,6 +107,40 @@ final class TOTEntryManager {
     stringValue.index(stringValue.startIndex, offsetBy: currentIndex)
   }
 
+  private var targetOrDeviceTimezone: TimeZone { targetTimezone ?? .current }
+
+  /// The reference frame the editable readout is expressed in.
+  private var displayTimezone: TimeZone {
+    switch displayMode {
+      case .local: targetOrDeviceTimezone
+      case .zulu: .gmt
+    }
+  }
+
+  /// The other reference frame, shown beneath the editable readout.
+  private var secondaryTimezone: TimeZone {
+    switch displayMode {
+      case .local: .gmt
+      case .zulu: targetOrDeviceTimezone
+    }
+  }
+
+  private var displayModeIndicator: String {
+    switch displayMode {
+      case .local:
+        displayTimezone.abbreviation(for: timeOnTarget) ?? Self.localFallbackIndicator
+      case .zulu: Self.zuluModeIndicator
+    }
+  }
+
+  private var secondaryModeIndicator: String {
+    switch displayMode {
+      case .local: Self.zuluModeIndicator
+      case .zulu:
+        secondaryTimezone.abbreviation(for: timeOnTarget) ?? Self.localTimezoneFallbackName
+    }
+  }
+
   init(timeOnTarget: Date?, targetCoordinate: Coordinate, dateProvider: DateProvider = .system) {
     self.targetCoordinate = targetCoordinate
     self.dateProvider = dateProvider
@@ -145,7 +148,7 @@ final class TOTEntryManager {
     if let timeOnTarget {
       self.timeOnTarget = timeOnTarget
     } else {
-      self.timeOnTarget = dateProvider.now().addingTimeInterval(Self.defaultLeadTimeSec)
+      self.timeOnTarget = Self.defaultLeadTime.after(date: dateProvider.now())
     }
 
     formatChangeObserver = Task { [weak self] in
@@ -155,6 +158,16 @@ final class TOTEntryManager {
     }
 
     Task { await self.fetchTargetTimezone() }
+  }
+
+  private static func hourMinuteSecond(
+    of date: Date,
+    in timezone: TimeZone
+  ) -> (hour: Int, minute: Int, second: Int) {
+    var calendar = gregorianCalendar
+    calendar.timeZone = timezone
+    let components = calendar.dateComponents([.hour, .minute, .second], from: date)
+    return (components.hour ?? 0, components.minute ?? 0, components.second ?? 0)
   }
 
   func isValidCharacter(_ character: Character) -> Bool {
@@ -239,41 +252,24 @@ final class TOTEntryManager {
   }
 
   private func time(from string: String) -> Date? {
-    // Remove colons and any timezone abbreviation (everything after the space)
-    var cleanString = string.replacingOccurrences(of: ":", with: "")
-    if let spaceIndex = cleanString.firstIndex(of: " ") {
-      cleanString = String(cleanString[..<spaceIndex])
-    }
+    // Drop the colons and the trailing timezone abbreviation (everything after the space).
+    let digits = string.prefix { $0 != " " }.filter { $0 != ":" }
+    guard digits.count == Self.expectedDigitCount,
+      let hour = Int(digits.prefix(2)), (0...23).contains(hour),
+      let minute = Int(digits.dropFirst(2).prefix(2)), (0...59).contains(minute),
+      let second = Int(digits.dropFirst(4).prefix(2)), (0...59).contains(second)
+    else { return nil }
 
-    guard cleanString.count == Self.expectedDigitCount else { return nil }
-
-    let formatter = Self.compactTimeFormatter
-
-    switch displayMode {
-      case .local:
-        formatter.timeZone = targetTimezone ?? TimeZone.current
-      case .zulu:
-        formatter.timeZone = TimeZone(identifier: "UTC")
-    }
-
-    // Use a calendar with the appropriate timezone
-    var calendar = Calendar.current
-    calendar.timeZone = formatter.timeZone ?? TimeZone.current
+    var calendar = Self.gregorianCalendar
+    calendar.timeZone = displayTimezone
 
     let nowInstant = dateProvider.now()
     var components = calendar.dateComponents([.year, .month, .day], from: nowInstant)
-
-    guard let timeFromString = formatter.date(from: cleanString) else { return nil }
-    let timeComponents = calendar.dateComponents([.hour, .minute, .second], from: timeFromString)
-
-    components.hour = timeComponents.hour
-    components.minute = timeComponents.minute
-    components.second = timeComponents.second
+    (components.hour, components.minute, components.second) = (hour, minute, second)
 
     guard var newDate = calendar.date(from: components) else { return nil }
 
-    // Check if the time is in the past
-    if newDate.timeIntervalSince(dateProvider.now()) < 0 {
+    if newDate < nowInstant {
       newDate = calendar.date(byAdding: .day, value: 1, to: newDate) ?? newDate
     }
 

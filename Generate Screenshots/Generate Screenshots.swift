@@ -263,22 +263,13 @@ final class Generate_Screenshots: XCTestCase {
 
     app.segmentedControls["timeDisplayModePicker"].buttons["Target Local"].tap()
 
-    let now = Date()
-    let targetTime = now.addingTimeInterval(minutesFromNow * 60)
-    let calendar = Calendar.current
-    var components = calendar.dateComponents(
-      [.year, .month, .day, .hour, .minute, .second],
-      from: targetTime
-    )
-    components.second = 0
-    let roundedTargetTime = calendar.date(from: components) ?? targetTime
+    let targetTime = Date().addingTimeInterval(minutesFromNow * 60)
+    let components = Calendar.current.dateComponents([.hour, .minute], from: targetTime)
 
-    let formatter = DateFormatter()
-    formatter.dateFormat = "HH:mm:ss"
-    formatter.timeZone = TimeZone.current
-    let timeString = formatter.string(from: roundedTargetTime)
-
-    enterDigits(app: app, digits: timeString)
+    // The keypad consumes bare digits, so build HHMMSS from the components rather than through a
+    // locale-dependent formatter. Seconds are always zeroed.
+    let digits = String(format: "%02d%02d00", components.hour ?? 0, components.minute ?? 0)
+    enterDigits(app: app, digits: digits)
 
     Thread.sleep(forTimeInterval: 1)
   }
