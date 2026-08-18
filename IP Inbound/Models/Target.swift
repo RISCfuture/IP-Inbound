@@ -62,6 +62,11 @@ final class Target: CustomDebugStringConvertible, Identifiable, Equatable, Hasha
     set { offsetDistance = newValue.converted(to: .nauticalMiles).value }
   }
 
+  @Transient var offsetTimeMeasurement: Measurement<UnitDuration> {
+    get { .init(value: offsetTime, unit: .minutes) }
+    set { offsetTime = newValue.converted(to: .minutes).value }
+  }
+
   @Transient var targetGroundSpeedMeasurement: Measurement<UnitSpeed> {
     get { .init(value: targetGroundSpeed, unit: .knots) }
     set { targetGroundSpeed = newValue.converted(to: .knots).value }
@@ -80,14 +85,15 @@ final class Target: CustomDebugStringConvertible, Identifiable, Equatable, Hasha
     self.coordinate = coordinate
     targetGroundSpeed = Defaults[.defaultGroundSpeed]
 
-    let targetGroundSpeedMinutes = Defaults[.defaultGroundSpeed] / 60.0
+    // The offset's two representations are derived from each other so they stay consistent; unlike
+    // `setOffset(…)`, neither is rounded here — the configured default is stored as given.
     switch Defaults[.defaultOffsetType] {
       case .distance:
-        offsetDistance = Defaults[.defaultOffset]
-        offsetTime = Defaults[.defaultOffset] / targetGroundSpeedMinutes
+        offsetDistanceMeasurement = .init(value: Defaults[.defaultOffset], unit: .nauticalMiles)
+        offsetTimeMeasurement = offsetDistanceMeasurement / targetGroundSpeedMeasurement
       case .time:
-        offsetTime = Defaults[.defaultOffset]
-        offsetDistance = targetGroundSpeedMinutes * Defaults[.defaultOffset]
+        offsetTimeMeasurement = .init(value: Defaults[.defaultOffset], unit: .minutes)
+        offsetDistanceMeasurement = targetGroundSpeedMeasurement * offsetTimeMeasurement
     }
 
     calculateDeclination()
@@ -105,11 +111,8 @@ final class Target: CustomDebugStringConvertible, Identifiable, Equatable, Hasha
       value: time.converted(to: .minutes).value.rounded(),
       unit: UnitDuration.minutes
     )
-    offsetTime = wholeTime.value
-    offsetDistance =
-      (targetGroundSpeedMeasurement * wholeTime)
-      .converted(to: .nauticalMiles)
-      .value
+    offsetTimeMeasurement = wholeTime
+    offsetDistanceMeasurement = targetGroundSpeedMeasurement * wholeTime
   }
 
   /// Sets the offset from a distance, rounded to a whole unit of the supplied
@@ -118,11 +121,8 @@ final class Target: CustomDebugStringConvertible, Identifiable, Equatable, Hasha
   /// exactly.
   func setOffset(distance: Measurement<UnitLength>) {
     let wholeDistance = Measurement(value: distance.value.rounded(), unit: distance.unit)
-    offsetDistance = wholeDistance.converted(to: .nauticalMiles).value
-    offsetTime =
-      (wholeDistance / targetGroundSpeedMeasurement)
-      .converted(to: .minutes)
-      .value
+    offsetDistanceMeasurement = wholeDistance
+    offsetTimeMeasurement = wholeDistance / targetGroundSpeedMeasurement
   }
 
   func hash(into hasher: inout Hasher) {

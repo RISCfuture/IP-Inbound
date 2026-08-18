@@ -72,11 +72,16 @@ private struct TOTCountdown: View {
 /// countdown clips. Full extent is the IP-to-target leg: full while still inbound to the IP, emptying
 /// over the final `legDuration` to TOT. The labels are suppressed so only the ring shows.
 private struct TOTProgressRing: View {
+  private static let minimumLegDuration = Measurement(value: 1, unit: UnitDuration.seconds)
+
   var timeOnTarget: Date
-  var legDuration: TimeInterval
+  var legDuration: Measurement<UnitDuration>
 
   private var ringRange: ClosedRange<Date> {
-    timeOnTarget.addingTimeInterval(-max(legDuration, 1))...timeOnTarget
+    // The widget extension doesn't link `IP Inbound Shared`, so the duration resolves to seconds
+    // here, at the point of use, rather than through the shared `Measurement` helpers.
+    let extent = max(legDuration, Self.minimumLegDuration).converted(to: .seconds).value
+    return timeOnTarget.addingTimeInterval(-extent)...timeOnTarget
   }
 
   var body: some View {
@@ -93,7 +98,10 @@ private struct TOTProgressRing: View {
 
 extension TOTActivityAttributes {
   fileprivate static var preview: TOTActivityAttributes {
-    TOTActivityAttributes(targetName: "Bullseye", ipToTargetDuration: 120)
+    TOTActivityAttributes(
+      targetName: "Bullseye",
+      ipToTargetDuration: .init(value: 120, unit: .seconds)
+    )
   }
 }
 

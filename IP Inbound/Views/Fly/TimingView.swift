@@ -4,7 +4,8 @@ struct TimingView: View {
   var timeOnTarget: Date
   var fromTo: FromToMath
 
-  var onTimeDeltaTOT: TimeInterval = 2.0  // seconds ±TOT to be considered "on time"
+  /// Window either side of the TOT within which an arrival reads as “on time”.
+  var onTimeDeltaTOT = Measurement(value: 2, unit: UnitDuration.seconds)
   /// When `false`, hides the required-ground-speed callout. Used when the aircraft cannot make TOT
   /// even at max speed (bypassing the IP), where a finite “req.” speed would wrongly imply the
   /// time-on-target is still achievable.

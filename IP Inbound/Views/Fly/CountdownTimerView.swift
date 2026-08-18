@@ -11,7 +11,7 @@ struct CountdownTimerView: View {
   private var services
 
   private var countdownRange: Range<Date> {
-    .now..<targetDate.addingTimeInterval(-Double(services.clock.offsetFromRealTimeSeconds))
+    .now..<services.clock.offsetFromRealTime.before(date: targetDate)
   }
 
   var body: some View {

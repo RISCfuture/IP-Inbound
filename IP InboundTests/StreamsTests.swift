@@ -93,7 +93,7 @@ struct StreamsTests {
     // of emitted events is deterministic — it does not depend on wall-clock pacing of the
     // production `Task.sleep`.
     let clock = SteppingClock(start: Date(timeIntervalSinceReferenceDate: 0), step: interval)
-    let dateProvider = DateProvider(now: { clock.advance() }, offsetFromRealTimeSeconds: 0)
+    let dateProvider = DateProvider(now: { clock.advance() }, offsetFromRealTime: .zero)
 
     let (stream, continuation) = AsyncThrowingStream<TestEvent, Error>.makeStream()
     let extrapolatedStream = extrapolate(

@@ -10,15 +10,14 @@ enum TimingTier: CaseIterable, Hashable {
   case tooFastCaution
   case tooFastWarning
 
-  /// On-time window the run-in guidance flies to: arrivals within this many seconds of the
-  /// time-on-target read as on-time.
-  static let runInOnTimeDeltaTOT: TimeInterval = 30
+  /// On-time window the run-in guidance flies to: arrivals within this much of the time-on-target
+  /// read as on-time.
+  static let runInOnTimeDeltaTOT = Measurement(value: 30, unit: UnitDuration.seconds)
 
   /// Allowable deviation from target speed, as a fraction of target speed, before the arrival leaves
   /// the caution band for a warning — equivalently, the fraction of the nominal flight time that
   /// bounds the caution band.
   private static let speedDeviation = 0.1
-  private static let secondsPerMinute = 60.0
 
   /// The bright asset color for this tier: green on-time, then the too-slow / too-fast palette in
   /// caution or warning shades.
@@ -61,19 +60,17 @@ enum TimingTier: CaseIterable, Hashable {
   }
 
   /// Classifies `fromTo`’s projected arrival relative to `timeOnTarget`: on-time within
-  /// `onTimeDeltaTOT` seconds, and in caution within a band proportional to the nominal flight time at
-  /// target speed.
+  /// `onTimeDeltaTOT`, and in caution within a band proportional to the nominal flight time at target
+  /// speed.
   init(
     fromTo: FromToMath,
     timeOnTarget: Date,
-    onTimeDeltaTOT: TimeInterval = Self.runInOnTimeDeltaTOT
+    onTimeDeltaTOT: Measurement<UnitDuration> = Self.runInOnTimeDeltaTOT
   ) {
     let arrival = fromTo.timeOfArrival
     let onTimeRange =
-      timeOnTarget.addingTimeInterval(
-        -onTimeDeltaTOT
-      )...timeOnTarget.addingTimeInterval(onTimeDeltaTOT)
-    let caution = fromTo.distance / fromTo.targetSpeed * Self.speedDeviation * Self.secondsPerMinute
+      onTimeDeltaTOT.before(date: timeOnTarget)...onTimeDeltaTOT.after(date: timeOnTarget)
+    let caution = fromTo.distance / fromTo.targetSpeed * Self.speedDeviation
     let cautionRange = caution.before(date: timeOnTarget)...caution.after(date: timeOnTarget)
     self.init(
       isLate: fromTo.isLate,

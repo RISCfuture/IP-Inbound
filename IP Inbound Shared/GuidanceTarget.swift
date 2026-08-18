@@ -43,14 +43,19 @@ extension GuidanceTarget {
   /// When the aircraft should cross the IP to make its time-on-target at the planned ground speed.
   var desiredTimeOverIP: Date? {
     let runInTime = IPToTarget.length / targetGroundSpeedMeasurement
-    return timeOnTarget?.addingTimeInterval(-runInTime.converted(to: .seconds).value)
+    return timeOnTarget.map(runInTime.before(date:))
   }
 
   /// The latest the aircraft may cross the IP and still make its time-on-target, flying the run-in at
   /// the maximum allowable ground speed.
   var maxAllowableTimeOverIP: Date? {
-    let groundSpeed = targetGroundSpeedMeasurement * (1 + Self.allowableSpeedVariance)
-    let runInTime = IPToTarget.length / groundSpeed
-    return timeOnTarget?.addingTimeInterval(-runInTime.converted(to: .seconds).value)
+    let runInTime = IPToTarget.length / maxAllowableGroundSpeed
+    return timeOnTarget.map(runInTime.before(date:))
+  }
+
+  /// The fastest run-in ground speed the guidance will plan to, above which the aircraft is
+  /// considered unable to make its time-on-target.
+  var maxAllowableGroundSpeed: Measurement<UnitSpeed> {
+    targetGroundSpeedMeasurement * (1 + Self.allowableSpeedVariance)
   }
 }

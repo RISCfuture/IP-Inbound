@@ -120,7 +120,12 @@ struct FromToMathTests {
     )
 
     // Test deltaTOT calculation - should be negative (early)
-    #expect(fromTo.deltaTOT.isApproximatelyEqual(to: -30 * 60, relativeTolerance: 0.01))
+    #expect(
+      fromTo.deltaTOT.converted(to: .minutes).value.isApproximatelyEqual(
+        to: -30,
+        relativeTolerance: 0.01
+      )
+    )
     #expect(fromTo.isEarly)
     #expect(!fromTo.isLate)
   }

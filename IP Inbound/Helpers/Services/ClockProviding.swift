@@ -6,7 +6,7 @@ import Observation
 @MainActor
 protocol ClockProviding: AnyObject, Observable {
   var now: Date { get }
-  var offsetFromRealTimeSeconds: Int { get }
+  var offsetFromRealTime: Measurement<UnitDuration> { get }
   nonisolated var dateProvider: DateProvider { get }
 }
 
@@ -17,7 +17,7 @@ final class SystemClock: ClockProviding {
   nonisolated let dateProvider = DateProvider.system
 
   var now: Date { Date() }
-  var offsetFromRealTimeSeconds: Int { 0 }
+  var offsetFromRealTime: Measurement<UnitDuration> { .zero }
 }
 
 /// UI-test clock: follows real time at a fixed offset so the pinned instant is
@@ -29,7 +29,7 @@ final class UITestClock: ClockProviding {
 
   nonisolated let dateProvider: DateProvider
   var now: Date { dateProvider.now() }
-  var offsetFromRealTimeSeconds: Int { dateProvider.offsetFromRealTimeSeconds }
+  var offsetFromRealTime: Measurement<UnitDuration> { dateProvider.offsetFromRealTime }
 
   init?(processInfo: ProcessInfo = .processInfo) {
     guard let raw = processInfo.environment[Self.envKey],

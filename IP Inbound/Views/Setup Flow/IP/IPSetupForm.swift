@@ -32,8 +32,19 @@ struct IPSetupForm: View {
 
   private var offsetTime: Binding<Double> {
     .init(
-      get: { target.offsetTime },
+      get: { target.offsetTimeMeasurement.converted(to: .minutes).value },
       set: { target.setOffset(time: .init(value: $0, unit: .minutes)) }
+    )
+  }
+
+  // The speed is stored in knots but entered in whichever unit the picker beside the field shows, so
+  // the binding converts both ways rather than exposing the stored value directly.
+  private var targetGroundSpeed: Binding<Double> {
+    .init(
+      get: { target.targetGroundSpeedMeasurement.converted(to: distanceDefault.speedUnit).value },
+      set: {
+        target.targetGroundSpeedMeasurement = .init(value: $0, unit: distanceDefault.speedUnit)
+      }
     )
   }
 
@@ -108,7 +119,7 @@ struct IPSetupForm: View {
 
         LabeledContent {
           HStack {
-            TextField("", value: $target.targetGroundSpeed, format: .number)
+            TextField("", value: targetGroundSpeed, format: .number)
               .multilineTextAlignment(.trailing)
               .keyboardType(.numberPad)
               .accessibilityIdentifier("groundSpeedField")

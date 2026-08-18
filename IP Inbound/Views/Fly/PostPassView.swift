@@ -2,14 +2,13 @@ import SwiftData
 import SwiftUI
 
 struct PostPassView: View {
-  /// On-time and caution tolerances for the post-pass verdict. The 30-second on-time window matches
-  /// the run-in window ``GuidanceContentView`` feeds to ``TimingView`` (`runInOnTimeDeltaTOT`); the
-  /// caution tolerance applies ``TimingView``’s `cautionMultiplier` (5×) to that window. Keeping them
-  /// aligned makes the post-pass verdict consistent with the timing the pilot was just flying to,
-  /// rather than flipping a green pass to red after crossing.
-  private static let
-    onTimeToleranceSeconds = 30.0,
-    cautionToleranceSeconds = 150.0
+  /// On-time and caution tolerances for the post-pass verdict. The on-time window is the same one
+  /// ``GuidanceContentView`` feeds to ``TimingView``; the caution tolerance widens it by
+  /// ``cautionMultiplier``. Keeping them aligned makes the post-pass verdict consistent with the
+  /// timing the pilot was just flying to, rather than flipping a green pass to red after crossing.
+  private static let cautionMultiplier = 5.0
+  private static let onTimeTolerance = TimingTier.runInOnTimeDeltaTOT
+  private static let cautionTolerance = onTimeTolerance * cautionMultiplier
 
   private static let
     sectionSpacing = 24.0,
@@ -34,22 +33,18 @@ struct PostPassView: View {
     NextTarget.next(after: currentTarget, in: targets, now: services.clock.now)
   }
 
-  private var missDuration: Duration {
-    .seconds(abs(capture.missSeconds))
-  }
+  private var isEarly: Bool { capture.miss < .zero }
 
-  private var isEarly: Bool { capture.missSeconds < 0 }
-
-  private var absoluteMissSeconds: Double { abs(capture.missSeconds) }
-  private var isOnTime: Bool { absoluteMissSeconds <= Self.onTimeToleranceSeconds }
-  private var isWithinCaution: Bool { absoluteMissSeconds <= Self.cautionToleranceSeconds }
+  private var absoluteMiss: Measurement<UnitDuration> { capture.miss.magnitude }
+  private var isOnTime: Bool { absoluteMiss <= Self.onTimeTolerance }
+  private var isWithinCaution: Bool { absoluteMiss <= Self.cautionTolerance }
 
   private var tier: TimingTier {
     .init(isLate: !isEarly, isOnTime: isOnTime, isWithinCaution: isWithinCaution)
   }
 
   private var missText: String {
-    let amount = missDuration.formatted(
+    let amount = absoluteMiss.duration.formatted(
       .units(allowed: [.minutes, .seconds], width: .wide)
     )
     return isEarly
@@ -116,7 +111,7 @@ struct PostPassView: View {
   let helper = PreviewHelper()
   let target = helper.target()
   PostPassView(
-    capture: .init(targetName: target.name, missSeconds: 1),
+    capture: .init(targetName: target.name, miss: .init(value: 1, unit: .seconds)),
     currentTarget: target,
     onSelectTarget: { _ in },
     onChooseTarget: {}
@@ -128,7 +123,7 @@ struct PostPassView: View {
   let helper = PreviewHelper()
   let target = helper.target()
   PostPassView(
-    capture: .init(targetName: target.name, missSeconds: 60),
+    capture: .init(targetName: target.name, miss: .init(value: 60, unit: .seconds)),
     currentTarget: target,
     onSelectTarget: { _ in },
     onChooseTarget: {}
@@ -140,7 +135,7 @@ struct PostPassView: View {
   let helper = PreviewHelper()
   let target = helper.target()
   PostPassView(
-    capture: .init(targetName: target.name, missSeconds: 200),
+    capture: .init(targetName: target.name, miss: .init(value: 200, unit: .seconds)),
     currentTarget: target,
     onSelectTarget: { _ in },
     onChooseTarget: {}
@@ -152,7 +147,7 @@ struct PostPassView: View {
   let helper = PreviewHelper()
   let target = helper.target()
   PostPassView(
-    capture: .init(targetName: target.name, missSeconds: -60),
+    capture: .init(targetName: target.name, miss: .init(value: -60, unit: .seconds)),
     currentTarget: target,
     onSelectTarget: { _ in },
     onChooseTarget: {}
@@ -164,7 +159,7 @@ struct PostPassView: View {
   let helper = PreviewHelper()
   let target = helper.target()
   PostPassView(
-    capture: .init(targetName: target.name, missSeconds: -200),
+    capture: .init(targetName: target.name, miss: .init(value: -200, unit: .seconds)),
     currentTarget: target,
     onSelectTarget: { _ in },
     onChooseTarget: {}

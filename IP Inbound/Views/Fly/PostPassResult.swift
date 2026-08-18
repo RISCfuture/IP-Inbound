@@ -16,7 +16,7 @@ final class PostPassResult {
   func capture(targetName: String, timeOnTarget: Date, now: Date) {
     guard capture == nil else { return }
     let crossing = crossingTime ?? now
-    capture = .init(targetName: targetName, missSeconds: crossing.timeIntervalSince(timeOnTarget))
+    capture = .init(targetName: targetName, miss: crossing - timeOnTarget)
   }
 
   func reset() {
@@ -26,7 +26,9 @@ final class PostPassResult {
 
   struct Capture: Equatable {
     let targetName: String
-    let missSeconds: TimeInterval
+
+    /// How far the crossing fell from the planned time-on-target: positive late, negative early.
+    let miss: Measurement<UnitDuration>
   }
 }
 

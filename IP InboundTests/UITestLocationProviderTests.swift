@@ -32,7 +32,7 @@ struct UITestLocationProviderTests {
 
     let launch = Date(timeIntervalSince1970: 1_700_000_000)
     let tick = Tick(value: launch)
-    let dateProvider = DateProvider(now: { tick.value }, offsetFromRealTimeSeconds: 0)
+    let dateProvider = DateProvider(now: { tick.value }, offsetFromRealTime: .zero)
 
     let json = """
       [{"t":0,"lat":0,"lon":0,"crs":90,"spd":100},

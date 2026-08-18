@@ -121,13 +121,12 @@ extension CDIView {
   private var deviationDescription: String? {
     guard let crossTrackDistance else { return nil }
 
-    let magnitude = abs(crossTrackDistance.value)
-    guard magnitude > 0 else { return String(localized: "On course.") }
+    let distance = crossTrackDistance.magnitude
+    guard distance > .zero else { return String(localized: "On course.") }
 
-    let distance = Measurement(value: magnitude, unit: crossTrackDistance.unit)
     let formattedDistance = distance.formatted(distanceFormatStyle)
 
-    if crossTrackDistance.value > 0 {
+    if crossTrackDistance > .zero {
       return String(localized: "\(formattedDistance) right of course.")
     }
     return String(localized: "\(formattedDistance) left of course.")

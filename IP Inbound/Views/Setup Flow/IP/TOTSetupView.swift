@@ -1,10 +1,9 @@
 import SwiftUI
 
 struct TOTSetupView: View {
-  private static let timeAdvanceNewMin = 30.0
-  private static let timeAdvancePastMin = 5.0
+  private static let timeAdvanceNew = Measurement(value: 30, unit: UnitDuration.minutes)
+  private static let timeAdvancePast = Measurement(value: 5, unit: UnitDuration.minutes)
   private static let contentSpacing = 20.0
-  private static let secondsPerMinute = 60.0
 
   @Bindable var target: Target
 
@@ -55,15 +54,14 @@ struct TOTSetupView: View {
     guard !shouldBypassTimeOnTargetReset else { return }
 
     if target.timeOnTarget == nil {
-      target.timeOnTarget = defaultTimeOnTarget(advanceMin: Self.timeAdvanceNewMin)
+      target.timeOnTarget = defaultTimeOnTarget(advance: Self.timeAdvanceNew)
     } else if let currentTime = target.timeOnTarget, currentTime < services.clock.now {
-      target.timeOnTarget = defaultTimeOnTarget(advanceMin: Self.timeAdvancePastMin)
+      target.timeOnTarget = defaultTimeOnTarget(advance: Self.timeAdvancePast)
     }
   }
 
-  private func defaultTimeOnTarget(advanceMin: Double) -> Date {
-    let advanced = services.clock.now.addingTimeInterval(Self.secondsPerMinute * advanceMin)
-    return normalizedToMinute(advanced)
+  private func defaultTimeOnTarget(advance: Measurement<UnitDuration>) -> Date {
+    normalizedToMinute(advance.after(date: services.clock.now))
   }
 
   private func normalizedToMinute(_ date: Date) -> Date {

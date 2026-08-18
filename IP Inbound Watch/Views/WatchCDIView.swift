@@ -68,12 +68,10 @@ private struct DeviationScale: View {
   }
 
   private var deviationDescription: String {
-    let magnitude = abs(crossTrackDistance.value)
-    guard magnitude > 0 else { return String(localized: "On course.") }
-    let distance = Measurement(value: magnitude, unit: crossTrackDistance.unit)
-      .converted(to: .nauticalMiles)
+    guard crossTrackDistance.magnitude > .zero else { return String(localized: "On course.") }
+    let distance = crossTrackDistance.magnitude.converted(to: .nauticalMiles)
     let formatted = distance.formatted(distanceFormatStyle)
-    return crossTrackDistance.value > 0
+    return crossTrackDistance > .zero
       ? String(localized: "\(formatted) right of course.")
       : String(localized: "\(formatted) left of course.")
   }

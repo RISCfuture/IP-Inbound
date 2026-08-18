@@ -2,10 +2,6 @@ import CoreLocation
 import Foundation
 
 struct IPTargetMath<T: GuidanceTarget> {
-  private static var gravityMSS: Double { 9.80665 }
-  private static var runInBankAngle: Measurement<UnitAngle> {
-    .init(value: 30, unit: .degrees)
-  }
   private static var sequenceCutoffAngle: Measurement<UnitAngle> {
     .init(value: 90, unit: .degrees)
   }
@@ -48,15 +44,15 @@ struct IPTargetMath<T: GuidanceTarget> {
   }
 
   var isPastIP: Bool {
-    guard let signedAlongM = signedAlongTrackDistanceM, let bufferM else { return false }
-    return signedAlongM >= bufferM
+    guard let signedAlongTrackDistance, let sequencingBuffer else { return false }
+    return signedAlongTrackDistance >= sequencingBuffer
   }
 
   var IP_ETA: Date? { pposToIP?.timeOfArrival }
 
-  var IPDeltaTime: TimeInterval? {
+  var IPDeltaTime: Measurement<UnitDuration>? {
     guard let IP_ETA, let desiredTimeOverIP = target.desiredTimeOverIP else { return nil }
-    return IP_ETA.timeIntervalSince(desiredTimeOverIP)
+    return IP_ETA - desiredTimeOverIP
   }
 
   var crossTrackDistance: Measurement<UnitLength> {
@@ -66,7 +62,7 @@ struct IPTargetMath<T: GuidanceTarget> {
   var pposToIPToTargetETAAtMaxSpeed: Date? {
     guard target.timeOnTarget != nil else { return nil }
 
-    let maxSpeed = target.targetGroundSpeedMeasurement * (1 + T.allowableSpeedVariance)
+    let maxSpeed = target.maxAllowableGroundSpeed
 
     // Time from PPOS to IP at max speed (including turn from current heading)
     let distanceToIP = coordinate.distance(to: target.IPCoordinate)
@@ -97,7 +93,7 @@ struct IPTargetMath<T: GuidanceTarget> {
     // Total time = PPOS to IP + IP to Target - turn anticipation
     let totalTime = totalTimeToIP + straightTimeIPToTarget - turnAnticipation
 
-    return now.addingTimeInterval(totalTime.converted(to: .seconds).value)
+    return totalTime.after(date: now)
   }
 
   private var declination: Measurement<UnitAngle> { target.declinationMeasurement }
@@ -132,12 +128,12 @@ extension IPTargetMath: Equatable where T: Equatable {}
 // MARK: - IP Sequencing Buffer
 
 extension IPTargetMath {
-  /// Distance, in meters, that the position lies past the perpendicular through the IP, measured
-  /// along the IP→target run-in course. Negative when the position is short of the IP. `nil` when
-  /// the position coincides with the IP (no meaningful along-track projection).
-  private var signedAlongTrackDistanceM: Double? {
-    let distanceFromIPM = target.IPCoordinate.distance(to: coordinate).converted(to: .meters).value
-    guard distanceFromIPM > 0 else { return nil }
+  /// Distance that the position lies past the perpendicular through the IP, measured along the
+  /// IP→target run-in course. Negative when the position is short of the IP. `nil` when the position
+  /// coincides with the IP (no meaningful along-track projection).
+  private var signedAlongTrackDistance: Measurement<UnitLength>? {
+    let distanceFromIP = target.IPCoordinate.distance(to: coordinate)
+    guard distanceFromIP > .zero else { return nil }
 
     // Project the IP→position distance onto the IP→target run-in course using the true bearings, so
     // the along-track distance stays correct off-axis and at higher latitudes (a flat-plane vector
@@ -146,38 +142,32 @@ extension IPTargetMath {
     let bearingToPosition = target.IPCoordinate.bearing(to: coordinate)
     let offCourseAngle = (bearingToPosition - runInCourse).radians
 
-    return distanceFromIPM * cos(offCourseAngle)
+    return distanceFromIP * cos(offCourseAngle)
   }
 
   /// Absolute angle between the current ground track and the IP→target run-in course, both in true
   /// reference, clamped to `[0°, 180°]`.
   private var trackToRunInAngle: Measurement<UnitAngle> {
     let runInCourse = target.IPCoordinate.bearing(to: target.coordinate)
-    let differenceDeg = (course.toTrue(declination: declination) - runInCourse)
+    let difference = (course.toTrue(declination: declination) - runInCourse)
       .absoluteValue
       .normalized
-      .degrees
-    let clampedDeg = min(max(differenceDeg, 0), 180)
-    return .init(value: clampedDeg, unit: .degrees)
+      .angle
+    return min(max(difference, .zero), Measurement(value: 180, unit: .degrees))
   }
 
-  /// The level-turn radius, in meters, at the planned target ground speed and the run-in bank
-  /// angle.
-  private var turnRadiusM: Double {
-    let groundSpeedMS = target.targetGroundSpeedMeasurement
-      .converted(to: .metersPerSecond)
-      .value
-    let bankTangent = tan(Self.runInBankAngle.converted(to: .radians).value)
-    return (groundSpeedMS * groundSpeedMS) / (Self.gravityMSS * bankTangent)
+  /// The level-turn radius at the planned target ground speed and the run-in bank angle.
+  private var turnRadius: Measurement<UnitLength> {
+    let groundSpeed = target.targetGroundSpeedMeasurement
+    let turnAcceleration = Measurement.gravity * tan(FromToMath.bankAngle.radians)
+    return groundSpeed / turnAcceleration * groundSpeed
   }
 
-  /// Required along-track distance, in meters, past the perpendicular before the run-in may
-  /// sequence. Grows linearly with the track/run-in angle up to the turn radius; `nil` once the
-  /// angle reaches the cutoff (the aircraft is orbiting or reversing course, never sequence).
-  private var bufferM: Double? {
-    let thetaDeg = trackToRunInAngle.converted(to: .degrees).value
-    let cutoffDeg = Self.sequenceCutoffAngle.converted(to: .degrees).value
-    guard thetaDeg < cutoffDeg else { return nil }
-    return turnRadiusM * (thetaDeg / cutoffDeg)
+  /// Required along-track distance past the perpendicular before the run-in may sequence. Grows
+  /// linearly with the track/run-in angle up to the turn radius; `nil` once the angle reaches the
+  /// cutoff (the aircraft is orbiting or reversing course, never sequence).
+  private var sequencingBuffer: Measurement<UnitLength>? {
+    guard trackToRunInAngle < Self.sequenceCutoffAngle else { return nil }
+    return turnRadius * (trackToRunInAngle / Self.sequenceCutoffAngle)
   }
 }

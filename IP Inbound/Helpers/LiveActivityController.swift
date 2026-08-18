@@ -37,12 +37,10 @@ final class LiveActivityController {
     )
 
     if Activity<TOTActivityAttributes>.activities.isEmpty {
-      let ipToTargetDuration = Measurement(value: target.offsetTime, unit: UnitDuration.minutes)
-        .converted(to: .seconds).value
       _ = try? Activity.request(
         attributes: TOTActivityAttributes(
           targetName: target.name,
-          ipToTargetDuration: ipToTargetDuration
+          ipToTargetDuration: target.offsetTimeMeasurement
         ),
         content: content,
         pushType: nil

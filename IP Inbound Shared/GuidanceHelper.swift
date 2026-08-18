@@ -12,8 +12,14 @@ enum Guidance {
 
 struct GuidanceHelper<T: GuidanceTarget> {
   // Minimum speed threshold for movement detection (vs on ground)
-  private static var movementThreshold: Double {
-    Measurement(value: 30, unit: UnitSpeed.knots).converted(to: .metersPerSecond).value
+  private static var movementThreshold: Measurement<UnitSpeed> {
+    .init(value: 30, unit: .knots)
+  }
+
+  /// How far ahead of the desired IP-crossing time counts as arriving early enough to hold off with a
+  /// countdown rather than fly speed guidance.
+  private static var earlyArrivalThreshold: Measurement<UnitDuration> {
+    .init(value: 60, unit: .seconds)
   }
 
   private let math: IPTargetMath<T>
@@ -21,7 +27,7 @@ struct GuidanceHelper<T: GuidanceTarget> {
   private let target: T
 
   // Computed predicates for clear logic
-  var isMoving: Bool { location.speed > Self.movementThreshold }
+  var isMoving: Bool { groundSpeed > Self.movementThreshold }
 
   var isPastIP: Bool { math.isPastIP }
 
@@ -30,10 +36,15 @@ struct GuidanceHelper<T: GuidanceTarget> {
   var isAfterTOT: Bool { math.isAfterTOT }
 
   // Timing calculations
-  var ipDeltaTime: TimeInterval { math.IPDeltaTime ?? 0 }
+  var ipDeltaTime: Measurement<UnitDuration> { math.IPDeltaTime ?? .zero }
 
-  // More than 60 seconds early at current speed
-  var wouldArriveEarlyAtIP: Bool { ipDeltaTime < -60 }
+  // More than the early-arrival threshold ahead of the IP at current speed
+  var wouldArriveEarlyAtIP: Bool { ipDeltaTime < -Self.earlyArrivalThreshold }
+
+  /// The aircraft's ground speed, as the guidance math sees it.
+  private var groundSpeed: Measurement<UnitSpeed> {
+    .init(value: location.speed, unit: .metersPerSecond)
+  }
 
   var wouldArriveLateEvenAtMaxSpeed: Bool {
     if let fastestETA = math.pposToIPToTargetETAAtMaxSpeed,

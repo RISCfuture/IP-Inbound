@@ -94,7 +94,9 @@ struct IPTargetMathTests {
 
     // 30NM to IP at 120 kts = 15 min; we are 30 min early to IP (45 to target)
     let deltaTime = try #require(ipTargetMath.IPDeltaTime)
-    #expect(deltaTime.isApproximatelyEqual(to: -30 * 60, relativeTolerance: 0.01))
+    #expect(
+      deltaTime.converted(to: .minutes).value.isApproximatelyEqual(to: -30, relativeTolerance: 0.01)
+    )
   }
 
   @Test("pposToIP timing references the desired IP-crossing time, not the target TOT")
@@ -123,7 +125,12 @@ struct IPTargetMathTests {
     // Early/late reads against the desired IP-crossing time: 30 min early to the IP, not the
     // 45 min early it would read against the target TOT.
     #expect(fromTo.timeOnTarget == desiredTimeOverIP)
-    #expect(fromTo.deltaTOT.isApproximatelyEqual(to: -30 * 60, relativeTolerance: 0.01))
+    #expect(
+      fromTo.deltaTOT.converted(to: .minutes).value.isApproximatelyEqual(
+        to: -30,
+        relativeTolerance: 0.01
+      )
+    )
 
     // Required ground speed makes the IP time (30NM in 45 min = 40 kts), not the TOT (30 kts).
     let requiredGroundSpeed = try #require(fromTo.requiredGroundSpeed)

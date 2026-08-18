@@ -14,11 +14,12 @@ struct ClockProvidingTests {
     let clock = try #require(UITestClock(processInfo: info))
 
     // Time-independent invariant: now() − wallNow == offset, at any later instant.
-    #expect(abs(clock.now.timeIntervalSinceNow - Double(clock.offsetFromRealTimeSeconds)) < 2)
+    let offsetSeconds = clock.offsetFromRealTime.converted(to: .seconds).value
+    #expect(abs(clock.now.timeIntervalSinceNow - offsetSeconds) < 2)
     // Target is far in the past → large negative offset.
-    #expect(clock.offsetFromRealTimeSeconds < 0)
+    #expect(clock.offsetFromRealTime < .zero)
     // The Sendable snapshot agrees with the clock.
-    #expect(clock.dateProvider.offsetFromRealTimeSeconds == clock.offsetFromRealTimeSeconds)
+    #expect(clock.dateProvider.offsetFromRealTime == clock.offsetFromRealTime)
     #expect(abs(clock.dateProvider.now().timeIntervalSince(clock.now)) < 1)
   }
 

@@ -167,7 +167,7 @@ struct PostPassTests {
 
     let firstCapture = try #require(result.capture)
     #expect(firstCapture.targetName == "First")
-    #expect(firstCapture.missSeconds == 5)
+    #expect(firstCapture.miss == Measurement(value: 5, unit: .seconds))
 
     result.reset()
     #expect(result.capture == nil)
@@ -175,7 +175,7 @@ struct PostPassTests {
     result.capture(targetName: "Third", timeOnTarget: tot, now: tot.addingTimeInterval(-3))
     let thirdCapture = try #require(result.capture)
     #expect(thirdCapture.targetName == "Third")
-    #expect(thirdCapture.missSeconds == -3)
+    #expect(thirdCapture.miss == Measurement(value: -3, unit: .seconds))
   }
 
   @Test("PostPassResult.capture times an early crossing from the crossing, not from TOT")
@@ -188,7 +188,7 @@ struct PostPassTests {
     result.recordCrossing(at: tot.addingTimeInterval(-20))
     result.capture(targetName: "T", timeOnTarget: tot, now: tot)
 
-    #expect(result.capture?.missSeconds == -20)
+    #expect(result.capture?.miss == Measurement(value: -20, unit: .seconds))
   }
 
   @Test("PostPassResult.capture falls back to now when no crossing was recorded")
@@ -198,7 +198,7 @@ struct PostPassTests {
 
     result.capture(targetName: "T", timeOnTarget: tot, now: tot.addingTimeInterval(8))
 
-    #expect(result.capture?.missSeconds == 8)
+    #expect(result.capture?.miss == Measurement(value: 8, unit: .seconds))
   }
 
   // MARK: - Helpers

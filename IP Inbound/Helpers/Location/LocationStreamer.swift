@@ -36,7 +36,7 @@ struct LocationEvent: Sendable {
       location.timestamp < time,
       let coordinate,
       let courseTrue,
-      let speed = speed?.converted(to: .metersPerSecond)  // m/s
+      let speed
     else { return self }
 
     let dt = Measurement(
