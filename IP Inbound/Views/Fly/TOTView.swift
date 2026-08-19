@@ -113,7 +113,10 @@ struct TOTView: View {
             .accessibilityAddTraits(.isButton)
             .accessibilityIdentifier("flyTOTDisplay")
         case .zulu:
-          Text(timeOnTarget, format: zuluTOTFormatStyle)
+          // Written out before it reaches the view rather than handed over as a style: `Text`
+          // resolves a format style against the environment, whose time zone displaces the `.gmt`
+          // this one pins — which renders local time under a `Z`.
+          Text(verbatim: timeOnTarget.formatted(zuluTOTFormatStyle))
             .onTapGesture { displayMode = .local }
             .accessibilityHint("Toggle local or zulu time")
             .accessibilityAddTraits(.isButton)

@@ -99,8 +99,7 @@ final class FlyViewTests: BaseTestCase {
   // The LocationStreamer in UI test mode delivers a static location, so the
   // fly view should render in countdownOnly mode after a brief delay.
   private func waitForFlyContent(timeout: TimeInterval = 15) -> Bool {
-    // SwiftUI propagates the "flyView" identifier to all child texts, so check
-    // for known text content rather than element identifiers.
+    // Nothing identifies the phase copy, so the rendered state is recognized by its text.
     let guidanceMsg = app.staticTexts["Guidance begins once aircraft is moving."]
     if guidanceMsg.waitForExistence(timeout: timeout) { return true }
 
@@ -291,9 +290,13 @@ final class FlyViewTests: BaseTestCase {
       flyPage.flyDistanceDisplay.waitForExistence(timeout: 12),
       "Distance readout should survive a fix with no usable course"
     )
-    XCTAssertTrue(
-      flyPage.flyTOTDisplay.exists,
-      "Push-time readout should survive a fix with no usable course"
+    // The seeded clock fixes the target time at 18:00:00Z and the run-in at 144 s, so the push
+    // time has one right answer whatever zone the host keeps. Reading it as anything else means
+    // the readout has been rendered in local time under a `Z`, which it once was.
+    XCTAssertEqual(
+      flyPage.flyTOTDisplay.label,
+      "1757Z",
+      "Push-time readout should survive a fix with no usable course, and state zulu time"
     )
 
     // At 62 m/s the movement threshold is long passed, so a solved `IPTargetMath` would have put a
