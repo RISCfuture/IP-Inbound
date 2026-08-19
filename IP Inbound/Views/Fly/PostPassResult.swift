@@ -1,4 +1,5 @@
 import Foundation
+import MeasurementKit
 import Observation
 
 @Observable
@@ -16,7 +17,7 @@ final class PostPassResult {
   func capture(targetName: String, timeOnTarget: Date, now: Date) {
     guard capture == nil else { return }
     let crossing = crossingTime ?? now
-    capture = .init(targetName: targetName, miss: crossing - timeOnTarget)
+    capture = .init(targetName: targetName, miss: crossing.elapsed(since: timeOnTarget))
   }
 
   func reset() {

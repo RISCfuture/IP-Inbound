@@ -36,7 +36,13 @@ struct FlyPage: Page {
     let predicate = NSPredicate(format: "label MATCHES %@", ".*[0-9].*(nmi|mi|km)")
     return app.buttons.matching(predicate).firstMatch
   }
-  var flyTOTDisplay: XCUIElement { app.staticTexts["flyTOTDisplay"] }
+  // The TOT readout carries the `.isButton` trait (for the local/zulu toggle) and the ancestor
+  // `flyView` identifier propagates over its own, so it is found as a button by its time label —
+  // either the zulu form ("1757Z") or the local one ("10:57 AM").
+  var flyTOTDisplay: XCUIElement {
+    let predicate = NSPredicate(format: "label MATCHES %@", "[0-9]{4}Z|[0-9]{1,2}:[0-9]{2}.*")
+    return app.buttons.matching(predicate).firstMatch
+  }
 
   var guidanceMode: String? {
     if anyElement(label: "P.POS → IP").exists { return "P.POS → IP" }

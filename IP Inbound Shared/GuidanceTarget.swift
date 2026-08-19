@@ -1,4 +1,6 @@
 import Foundation
+import MeasurementKit
+import MeasurementKitLocation
 
 /// The geometry of a run-in target as the guidance math consumes it: where the target is, how the
 /// initial point (IP) is offset from it, the planned run-in ground speed and time-on-target, and the
@@ -8,7 +10,7 @@ import Foundation
 /// conform, so ``IPTargetMath`` and ``GuidanceHelper`` drive identical guidance on either platform.
 protocol GuidanceTarget {
   var coordinate: Coordinate { get }
-  var offsetBearingMeasurement: Bearing { get }
+  var offsetBearingMeasurement: OffsetBearing { get }
   var offsetDistanceMeasurement: Measurement<UnitLength> { get }
   var targetGroundSpeedMeasurement: Measurement<UnitSpeed> { get }
   var declinationMeasurement: Measurement<UnitAngle> { get }
@@ -24,33 +26,35 @@ extension GuidanceTarget {
 
   /// The initial point: the target offset by the run-in bearing and distance.
   var IPCoordinate: Coordinate {
-    coordinate.offsetBy(
-      bearing: offsetBearingMeasurement.toTrue(declination: declinationMeasurement).angle,
+    coordinate.offset(
+      bearing: offsetBearingMeasurement.toTrue(variation: declinationMeasurement),
       distance: offsetDistanceMeasurement
     )
   }
 
   /// The run-in leg, from the initial point to the target.
-  var IPToTarget: Line {
+  var IPToTarget: GreatCircleSegment {
     .init(from: IPCoordinate, to: coordinate)
   }
 
   /// The run-in track: the reciprocal of the offset bearing (IP toward target).
-  var desiredTrack: Bearing { offsetBearingMeasurement.reciprocal }
-  var desiredTrackMagnetic: Bearing { desiredTrack.toMagnetic(declination: declinationMeasurement) }
-  var desiredTrackTrue: Bearing { desiredTrack.toTrue(declination: declinationMeasurement) }
+  var desiredTrack: OffsetBearing { offsetBearingMeasurement.reciprocal }
+  var desiredTrackMagnetic: MagneticBearing {
+    desiredTrack.toMagnetic(variation: declinationMeasurement)
+  }
+  var desiredTrackTrue: TrueBearing { desiredTrack.toTrue(variation: declinationMeasurement) }
 
   /// When the aircraft should cross the IP to make its time-on-target at the planned ground speed.
   var desiredTimeOverIP: Date? {
     let runInTime = IPToTarget.length / targetGroundSpeedMeasurement
-    return timeOnTarget.map(runInTime.before(date:))
+    return timeOnTarget.map { $0 - runInTime }
   }
 
   /// The latest the aircraft may cross the IP and still make its time-on-target, flying the run-in at
   /// the maximum allowable ground speed.
   var maxAllowableTimeOverIP: Date? {
     let runInTime = IPToTarget.length / maxAllowableGroundSpeed
-    return timeOnTarget.map(runInTime.before(date:))
+    return timeOnTarget.map { $0 - runInTime }
   }
 
   /// The fastest run-in ground speed the guidance will plan to, above which the aircraft is

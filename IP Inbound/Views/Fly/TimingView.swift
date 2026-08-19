@@ -40,7 +40,6 @@ struct TimingView: View {
       TOTView(
         fromTo: fromTo,
         timeOnTarget: timeOnTarget,
-        showSpeed: true,
         requiredSpeedColor: (showRequiredSpeed && !isOnTime) ? tier.color : nil
       )
     }
@@ -54,7 +53,7 @@ struct TimingView: View {
     location: helper.postIPLocation,
     target: helper.target(minutesFromNow: 1),
     now: .now
-  )
+  )!
   TimingView(timeOnTarget: math.pposToTarget!.timeOfArrival, fromTo: math.pposToTarget!)
 }
 
@@ -64,7 +63,7 @@ struct TimingView: View {
     location: helper.postIPLocation,
     target: helper.target(minutesFromNow: 1),
     now: .now
-  )
+  )!
   let fromTo = math.pposToTarget!
   TimingView(timeOnTarget: fromTo.timeOfArrival.addingTimeInterval(20), fromTo: fromTo)
 }
@@ -75,7 +74,7 @@ struct TimingView: View {
     location: helper.postIPLocation,
     target: helper.target(minutesFromNow: 1),
     now: .now
-  )
+  )!
   let fromTo = math.pposToTarget!
   TimingView(timeOnTarget: fromTo.timeOfArrival.addingTimeInterval(600), fromTo: fromTo)
 }
@@ -86,7 +85,7 @@ struct TimingView: View {
     location: helper.postIPLocation,
     target: helper.target(minutesFromNow: 1),
     now: .now
-  )
+  )!
   let fromTo = math.pposToTarget!
   TimingView(timeOnTarget: fromTo.timeOfArrival.addingTimeInterval(-20), fromTo: fromTo)
 }
@@ -97,7 +96,7 @@ struct TimingView: View {
     location: helper.postIPLocation,
     target: helper.target(minutesFromNow: 1),
     now: .now
-  )
+  )!
   let fromTo = math.pposToTarget!
   TimingView(timeOnTarget: fromTo.timeOfArrival.addingTimeInterval(-600), fromTo: fromTo)
 }

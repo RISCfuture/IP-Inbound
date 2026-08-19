@@ -1,4 +1,6 @@
 import CoreLocation
+import MeasurementKit
+import MeasurementKitLocation
 import SwiftUI
 
 /// Airborne display: a simplified course-deviation indicator driven by the watch's GPS. A deviation
@@ -12,22 +14,27 @@ struct WatchCDIView: View {
   private var nameFontSize = 16.0
 
   var body: some View {
-    let math = IPTargetMath(location: location, target: target, now: Date())
-    VStack {
-      Text(target.name)
-        .font(.system(size: nameFontSize, weight: .semibold))
-        .lineLimit(1)
-        .minimumScaleFactor(0.7)
+    // A fix with no usable ground speed or course has no run-in geometry to draw; the countdown is
+    // what the watch shows until one arrives.
+    if let math = IPTargetMath(location: location, target: target, now: Date()) {
+      VStack {
+        Text(target.name)
+          .font(.system(size: nameFontSize, weight: .semibold))
+          .lineLimit(1)
+          .minimumScaleFactor(0.7)
 
-      DeviationScale(crossTrackDistance: math.crossTrackDistance)
+        DeviationScale(crossTrackDistance: math.crossTrackDistance)
 
-      if let fromTo = math.pposToTarget {
-        CDIReadouts(currentTrack: fromTo.trackMagnetic, fromTo: fromTo, target: target)
+        if let fromTo = math.pposToTarget {
+          CDIReadouts(currentTrack: fromTo.trackMagnetic, fromTo: fromTo, target: target)
+        }
       }
+      .padding(.horizontal)
+      .accessibilityElement(children: .contain)
+      .accessibilityIdentifier("watchCDI")
+    } else {
+      WatchCountdownView(target: target)
     }
-    .padding(.horizontal)
-    .accessibilityElement(children: .contain)
-    .accessibilityIdentifier("watchCDI")
   }
 }
 
@@ -80,7 +87,7 @@ private struct DeviationScale: View {
 // MARK: - Readouts
 
 private struct CDIReadouts: View {
-  var currentTrack: Bearing
+  var currentTrack: MagneticBearing
   var fromTo: FromToMath
   var target: TargetSnapshot
 
@@ -133,8 +140,8 @@ private struct TimingReadout: View {
 private struct TurnArrow: View {
   private static let alignedThresholdDegrees = 1.0
 
-  var currentTrack: Bearing
-  var desiredTrack: Bearing
+  var currentTrack: MagneticBearing
+  var desiredTrack: MagneticBearing
 
   private var turnDegrees: Double { currentTrack.shortestTurn(to: desiredTrack).degrees }
 

@@ -1,3 +1,4 @@
+import MeasurementKit
 import SwiftUI
 
 struct TOTSetupView: View {
@@ -61,7 +62,7 @@ struct TOTSetupView: View {
   }
 
   private func defaultTimeOnTarget(advance: Measurement<UnitDuration>) -> Date {
-    normalizedToMinute(advance.after(date: services.clock.now))
+    normalizedToMinute(services.clock.now + advance)
   }
 
   private func normalizedToMinute(_ date: Date) -> Date {

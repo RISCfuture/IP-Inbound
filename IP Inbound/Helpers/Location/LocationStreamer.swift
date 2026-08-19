@@ -1,5 +1,7 @@
 import AsyncAlgorithms
 import CoreLocation
+import MeasurementKit
+import MeasurementKitLocation
 import Observation
 
 struct LocationEvent: Sendable {
@@ -9,23 +11,15 @@ struct LocationEvent: Sendable {
 
   var isSimulating: Bool { simName != nil }
 
-  var coordinate: Coordinate? {
-    guard let coordinate = location?.coordinate else { return nil }
-    return .init(coordinate)
-  }
+  var coordinate: Coordinate? { location?.geoCoordinate }
+
   /// `nil` when the fix carries no usable course. `CLLocation` signals that with a negative value,
   /// which taken at face value would point the run-in a degree west of north.
-  var courseTrue: Bearing? {
-    guard let location, location.course >= 0 else { return nil }
-    return .init(angle: location.course, reference: .true)
-  }
+  var courseTrue: TrueBearing? { location?.courseTrue }
 
   /// `nil` when the fix carries no usable speed. `CLLocation` signals that with a negative value,
   /// which taken at face value would dead-reckon the aircraft backwards along its track.
-  var speed: Measurement<UnitSpeed>? {
-    guard let location, location.speed >= 0 else { return nil }
-    return .init(value: location.speed, unit: .metersPerSecond)
-  }
+  var speed: Measurement<UnitSpeed>? { location?.groundSpeed }
 
   init(location: CLLocation? = nil, simName: String? = nil, error: Error? = nil) {
     self.location = location
@@ -42,9 +36,9 @@ struct LocationEvent: Sendable {
       let speed
     else { return self }
 
-    let elapsed = time - location.timestamp
+    let elapsed = time.elapsed(since: location.timestamp)
     let distance = speed * elapsed
-    let newCoordinate = coordinate.offsetBy(bearing: courseTrue.angle, distance: distance)
+    let newCoordinate = coordinate.offset(bearing: courseTrue, distance: distance)
     let accuracy = DeadReckonedAccuracy(
       fix: location,
       groundSpeed: speed,
@@ -54,7 +48,7 @@ struct LocationEvent: Sendable {
 
     return .init(
       location: .init(
-        coordinate: newCoordinate.toCoreLocation,
+        coordinate: newCoordinate.clCoordinate,
         altitude: location.altitude,
         horizontalAccuracy: accuracy.horizontal,
         verticalAccuracy: accuracy.vertical,
@@ -131,15 +125,15 @@ private struct DeadReckonedAccuracy {
 
   /// The speed error integrated over the elapsed time, displacing the fix along its track.
   private var alongTrackError: Measurement<UnitLength> {
-    guard fix.speedAccuracy >= 0 else { return .zero }
-    return Measurement(value: fix.speedAccuracy, unit: UnitSpeed.metersPerSecond) * elapsed
+    guard let speedAccuracy = fix.speedAccuracyMeasurement else { return .zero }
+    return speedAccuracy * elapsed
   }
 
   /// The course error swung across the distance traveled. Uses the arc rather than the chord, which
   /// errs high — the safe direction for an uncertainty.
   private var crossTrackError: Measurement<UnitLength> {
-    guard fix.courseAccuracy >= 0 else { return .zero }
-    return traveled * Measurement(value: fix.courseAccuracy, unit: UnitAngle.degrees).radians
+    guard let courseAccuracy = fix.courseAccuracyAngle else { return .zero }
+    return traveled * courseAccuracy.radians
   }
 
   /// The displacement an unobserved climb or descent at the maneuver bound reaches: `½aΔt²`.

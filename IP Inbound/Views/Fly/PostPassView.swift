@@ -1,3 +1,4 @@
+import MeasurementKit
 import SwiftData
 import SwiftUI
 

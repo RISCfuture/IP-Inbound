@@ -1,4 +1,5 @@
 import CoreLocation
+import MeasurementKitLocation
 import SwiftData
 import SwiftUI
 

@@ -1,6 +1,8 @@
 import Defaults
 import DefaultsMacros
 import Foundation
+import MeasurementKit
+import MeasurementKitLocation
 import SwiftUI
 
 @MainActor
@@ -148,7 +150,7 @@ final class TOTEntryManager {
     if let timeOnTarget {
       self.timeOnTarget = timeOnTarget
     } else {
-      self.timeOnTarget = Self.defaultLeadTime.after(date: dateProvider.now())
+      self.timeOnTarget = dateProvider.now() + Self.defaultLeadTime
     }
 
     formatChangeObserver = Task { [weak self] in

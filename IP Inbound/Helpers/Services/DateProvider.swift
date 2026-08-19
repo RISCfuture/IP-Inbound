@@ -1,4 +1,5 @@
 import Foundation
+import MeasurementKit
 
 /// A `Sendable` snapshot of the app clock for use in actors, value types, and other
 /// non-`@MainActor` contexts. Production uses ``DateProvider/system``; UI tests use a
@@ -14,7 +15,7 @@ struct DateProvider: Sendable {
   static func offset(reference: Date, anchor: Date) -> Self {
     Self(
       now: { reference.addingTimeInterval(Date().timeIntervalSince(anchor)) },
-      offsetFromRealTime: reference - anchor
+      offsetFromRealTime: reference.elapsed(since: anchor)
     )
   }
 }

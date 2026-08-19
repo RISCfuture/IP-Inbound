@@ -1,5 +1,6 @@
 import CloudKit
 import CoreData
+import MeasurementKitLocation
 import MetalKit
 import Sentry
 import SwiftData

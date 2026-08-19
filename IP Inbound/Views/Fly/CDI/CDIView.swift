@@ -1,3 +1,5 @@
+import MeasurementKit
+import MeasurementKitLocation
 import SwiftUI
 
 struct CDIView: View {
@@ -9,11 +11,11 @@ struct CDIView: View {
     ipColor = Color.yellow,
     targetColor = Color.red
 
-  var heading: Bearing
-  var bearing: Bearing?
+  var heading: MagneticBearing
+  var bearing: MagneticBearing?
   var bearingColor = Color.accentColor
-  var IPDirectBearing: Bearing?
-  var targetDirectBearing: Bearing?
+  var IPDirectBearing: MagneticBearing?
+  var targetDirectBearing: MagneticBearing?
   var crossTrackDistance: Measurement<UnitLength>?
   var distanceScale = Measurement(value: 4, unit: UnitLength.nauticalMiles)
 
@@ -89,11 +91,8 @@ struct CDIView: View {
     .accessibilityValue(Text(accessibilityValue))
   }
 
-  private func relative(bearing: Bearing?) -> Double? {
-    bearing.map { bearing in
-      precondition(bearing.reference == heading.reference, "bearing and heading reference mismatch")
-      return (bearing - heading).degrees
-    }
+  private func relative(bearing: MagneticBearing?) -> Double? {
+    bearing.map { ($0 - heading).degrees }
   }
 }
 
@@ -135,10 +134,10 @@ extension CDIView {
 
 #Preview("Full deflection") {
   CDIView(
-    heading: .init(angle: 277, reference: .magnetic),
-    bearing: .init(angle: 218, reference: .magnetic),
-    IPDirectBearing: .init(angle: 121, reference: .magnetic),
-    targetDirectBearing: .init(angle: 213, reference: .magnetic),
+    heading: MagneticBearing(degrees: 277),
+    bearing: MagneticBearing(degrees: 218),
+    IPDirectBearing: MagneticBearing(degrees: 121),
+    targetDirectBearing: MagneticBearing(degrees: 213),
     crossTrackDistance: .init(value: 1, unit: .nauticalMiles)
   )
   .padding()
@@ -146,10 +145,10 @@ extension CDIView {
 
 #Preview("Maximum deflection") {
   CDIView(
-    heading: .init(angle: 360, reference: .magnetic),
-    bearing: .init(angle: 30, reference: .magnetic),
-    IPDirectBearing: .init(angle: 121, reference: .magnetic),
-    targetDirectBearing: .init(angle: 213, reference: .magnetic),
+    heading: MagneticBearing(degrees: 360),
+    bearing: MagneticBearing(degrees: 30),
+    IPDirectBearing: MagneticBearing(degrees: 121),
+    targetDirectBearing: MagneticBearing(degrees: 213),
     crossTrackDistance: .init(value: 8, unit: .nauticalMiles)
   )
   .padding()
@@ -157,7 +156,7 @@ extension CDIView {
 
 #Preview("No bearing") {
   CDIView(
-    heading: .init(angle: 90, reference: .magnetic),
+    heading: MagneticBearing(degrees: 90),
     bearing: nil,
     IPDirectBearing: nil,
     targetDirectBearing: nil,

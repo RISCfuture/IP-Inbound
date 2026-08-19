@@ -1,5 +1,7 @@
 import CoreLocation
 import Foundation
+import MeasurementKit
+import MeasurementKitLocation
 
 struct IPTargetMath<T: GuidanceTarget> {
   private static var sequenceCutoffAngle: Measurement<UnitAngle> {
@@ -8,7 +10,7 @@ struct IPTargetMath<T: GuidanceTarget> {
 
   var coordinate: Coordinate
   var speed: Measurement<UnitSpeed>
-  var course: Bearing
+  var course: TrueBearing
   let target: T
   let now: Date
 
@@ -52,11 +54,14 @@ struct IPTargetMath<T: GuidanceTarget> {
 
   var IPDeltaTime: Measurement<UnitDuration>? {
     guard let IP_ETA, let desiredTimeOverIP = target.desiredTimeOverIP else { return nil }
-    return IP_ETA - desiredTimeOverIP
+    return IP_ETA.elapsed(since: desiredTimeOverIP)
   }
 
+  /// How far the position lies off the run-in course line. Positive is **left** of course: the
+  /// sign the app's displays are drawn against, and the opposite of the course-deviation convention
+  /// `GreatCircleSegment` answers in.
   var crossTrackDistance: Measurement<UnitLength> {
-    Coordinate.crosstrackDistance(from: coordinate, to: target.IPToTarget)
+    -target.IPToTarget.crossTrackDistance(to: coordinate)
   }
 
   var pposToIPToTargetETAAtMaxSpeed: Date? {
@@ -67,8 +72,9 @@ struct IPTargetMath<T: GuidanceTarget> {
     // Time from PPOS to IP at max speed (including turn from current heading)
     let distanceToIP = coordinate.distance(to: target.IPCoordinate)
     let turnToIPTime = FromToMath.turnTime(
-      fromHeading: course.toMagnetic(declination: declination),
-      toHeading: coordinate.bearing(to: target.IPCoordinate).toMagnetic(declination: declination),
+      fromHeading: course.toMagnetic(variation: declination),
+      toHeading: coordinate.initialBearing(to: target.IPCoordinate)
+        .toMagnetic(variation: declination),
       speed: maxSpeed
     )
     let straightTimeToIP = distanceToIP / maxSpeed
@@ -80,9 +86,9 @@ struct IPTargetMath<T: GuidanceTarget> {
 
     // Calculate turn anticipation at IP
     // The bearing we'll be on when arriving at IP is from PPOS to IP
-    let ipBearing = coordinate.bearing(to: target.IPCoordinate)
+    let ipBearing = coordinate.initialBearing(to: target.IPCoordinate)
     let turnAtIPTime = FromToMath.turnTime(
-      fromHeading: ipBearing.toMagnetic(declination: declination),
+      fromHeading: ipBearing.toMagnetic(variation: declination),
       toHeading: target.desiredTrackMagnetic,
       speed: maxSpeed
     )
@@ -93,7 +99,7 @@ struct IPTargetMath<T: GuidanceTarget> {
     // Total time = PPOS to IP + IP to Target - turn anticipation
     let totalTime = totalTimeToIP + straightTimeIPToTarget - turnAnticipation
 
-    return totalTime.after(date: now)
+    return now + totalTime
   }
 
   private var declination: Measurement<UnitAngle> { target.declinationMeasurement }
@@ -101,7 +107,7 @@ struct IPTargetMath<T: GuidanceTarget> {
   init(
     coordinate: Coordinate,
     speed: Measurement<UnitSpeed>,
-    course: Bearing,
+    course: TrueBearing,
     target: T,
     now: Date
   ) {
@@ -112,11 +118,20 @@ struct IPTargetMath<T: GuidanceTarget> {
     self.now = now
   }
 
-  init(location: CLLocation, target: T, now: Date) {
+  /// The guidance geometry for `location`, or `nil` when the fix carries no usable ground speed or
+  /// course. Core Location signals either with a negative sentinel, which taken at face value
+  /// dead-reckons the run-in backwards or a degree west of north.
+  ///
+  /// - Parameters:
+  ///   - location: the fix to solve from.
+  ///   - target: the target being run in on.
+  ///   - now: the current time.
+  init?(location: CLLocation, target: T, now: Date) {
+    guard let speed = location.groundSpeed, let course = location.courseTrue else { return nil }
     self.init(
-      coordinate: .init(location.coordinate),
-      speed: .init(value: location.speed, unit: .metersPerSecond),
-      course: .init(angle: location.course, reference: .true),
+      coordinate: location.geoCoordinate,
+      speed: speed,
+      course: course,
       target: target,
       now: now
     )
@@ -138,28 +153,24 @@ extension IPTargetMath {
     // Project the IP→position distance onto the IP→target run-in course using the true bearings, so
     // the along-track distance stays correct off-axis and at higher latitudes (a flat-plane vector
     // projection distorts the angle and biases the result).
-    let runInCourse = target.IPCoordinate.bearing(to: target.coordinate)
-    let bearingToPosition = target.IPCoordinate.bearing(to: coordinate)
+    let runInCourse = target.IPCoordinate.initialBearing(to: target.coordinate)
+    let bearingToPosition = target.IPCoordinate.initialBearing(to: coordinate)
     let offCourseAngle = (bearingToPosition - runInCourse).radians
 
     return distanceFromIP * cos(offCourseAngle)
   }
 
-  /// Absolute angle between the current ground track and the IP→target run-in course, both in true
-  /// reference, clamped to `[0°, 180°]`.
+  /// Absolute angle between the current ground track and the IP→target run-in course, both true.
+  /// A `RelativeBearing` already normalizes into (−180°, 180°], so its magnitude is in [0°, 180°].
   private var trackToRunInAngle: Measurement<UnitAngle> {
-    let runInCourse = target.IPCoordinate.bearing(to: target.coordinate)
-    let difference = (course.toTrue(declination: declination) - runInCourse)
-      .absoluteValue
-      .normalized
-      .angle
-    return min(max(difference, .zero), Measurement(value: 180, unit: .degrees))
+    let runInCourse = target.IPCoordinate.initialBearing(to: target.coordinate)
+    return (course - runInCourse).magnitude
   }
 
   /// The level-turn radius at the planned target ground speed and the run-in bank angle.
   private var turnRadius: Measurement<UnitLength> {
     let groundSpeed = target.targetGroundSpeedMeasurement
-    let turnAcceleration = Measurement.gravity * tan(FromToMath.bankAngle.radians)
+    let turnAcceleration = Measurement.standardGravity * tan(FromToMath.bankAngle)
     return groundSpeed / turnAcceleration * groundSpeed
   }
 

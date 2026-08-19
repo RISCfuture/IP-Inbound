@@ -1,10 +1,16 @@
+import MeasurementKitLocation
 import SwiftUI
 
 /// The active run-in guidance for a target: a phase header, the navigation display (CDI or
 /// countdown), an optional simulator banner, and the timing/TOT readout. Composed of per-phase
 /// subviews driven by the current ``Guidance``.
 struct GuidanceContentView: View {
-  var math: IPTargetMath<Target>
+  /// The run-in geometry, or `nil` when the fix reports no usable ground speed or course. Only the
+  /// phases that steer against a ground track read it; ``Guidance/countdownOnly`` is solved from
+  /// `coordinate` and the target alone.
+  var math: IPTargetMath<Target>?
+  /// Where the aircraft is. Every fix carries a position, whether or not it carries motion.
+  var coordinate: Coordinate
   var target: Target
   var guidance: Guidance
   var event: LocationEvent
@@ -14,7 +20,12 @@ struct GuidanceContentView: View {
       GuidanceHeader(target: target, guidance: guidance)
       GuidanceNavigationDisplay(math: math, target: target, guidance: guidance)
       if event.isSimulating { SimulatorBanner(simName: event.simName) }
-      GuidanceTimingDisplay(math: math, target: target, guidance: guidance)
+      GuidanceTimingDisplay(
+        math: math,
+        coordinate: coordinate,
+        target: target,
+        guidance: guidance
+      )
     }
     .padding()
   }
@@ -44,32 +55,32 @@ private struct GuidanceHeader: View {
 }
 
 private struct GuidanceNavigationDisplay: View {
-  var math: IPTargetMath<Target>
+  var math: IPTargetMath<Target>?
   var target: Target
   var guidance: Guidance
 
   var body: some View {
     switch guidance {
       case .toIPWithSpeedGuidance, .toIPWithCountdown:
-        if let fromTo = math.pposToIP {
+        if let fromTo = math?.pposToIP {
           CDIView(
             heading: fromTo.trackMagnetic,
             bearing: fromTo.bearingMagnetic,
             bearingColor: .yellow,
             IPDirectBearing: nil,
-            targetDirectBearing: math.pposToTarget?.bearingMagnetic,
+            targetDirectBearing: math?.pposToTarget?.bearingMagnetic,
             crossTrackDistance: nil
           )
           .accessibilityIdentifier("cdi")
         }
       case .toTarget, .toTargetBypassingIP:
-        if let fromTo = math.pposToTarget {
+        if let math, let fromTo = math.pposToTarget {
           CDIView(
             heading: fromTo.trackMagnetic,
             bearing: target.desiredTrackMagnetic,
             bearingColor: .red,
             IPDirectBearing: math.pposToIP?.bearingMagnetic,
-            targetDirectBearing: math.pposToTarget?.bearingMagnetic,
+            targetDirectBearing: fromTo.bearingMagnetic,
             crossTrackDistance: math.crossTrackDistance
           )
           .accessibilityIdentifier("cdi")
@@ -86,14 +97,15 @@ private struct GuidanceNavigationDisplay: View {
 }
 
 private struct GuidanceTimingDisplay: View {
-  var math: IPTargetMath<Target>
+  var math: IPTargetMath<Target>?
+  var coordinate: Coordinate
   var target: Target
   var guidance: Guidance
 
   var body: some View {
     switch guidance {
       case .toIPWithSpeedGuidance:
-        if let fromTo = math.pposToIP, let desiredTimeOverIP = target.desiredTimeOverIP {
+        if let fromTo = math?.pposToIP, let desiredTimeOverIP = target.desiredTimeOverIP {
           TimingView(
             timeOnTarget: desiredTimeOverIP,
             fromTo: fromTo,
@@ -101,13 +113,13 @@ private struct GuidanceTimingDisplay: View {
           )
         }
       case .toIPWithCountdown:
-        if let fromTo = math.pposToIP, let desiredTimeOverIP = target.desiredTimeOverIP {
+        if let fromTo = math?.pposToIP, let desiredTimeOverIP = target.desiredTimeOverIP {
           CountdownTimerView(targetDate: desiredTimeOverIP, caption: "to Push")
             .padding(.bottom)
           TOTView(fromTo: fromTo, timeOnTarget: desiredTimeOverIP, isPush: true)
         }
       case .toTarget:
-        if let fromTo = math.pposToTarget, let timeOnTarget = target.timeOnTarget {
+        if let fromTo = math?.pposToTarget, let timeOnTarget = target.timeOnTarget {
           TimingView(
             timeOnTarget: timeOnTarget,
             fromTo: fromTo,
@@ -115,7 +127,7 @@ private struct GuidanceTimingDisplay: View {
           )
         }
       case .toTargetBypassingIP:
-        if let fromTo = math.pposToTarget, let timeOnTarget = target.timeOnTarget {
+        if let fromTo = math?.pposToTarget, let timeOnTarget = target.timeOnTarget {
           TimingView(
             timeOnTarget: timeOnTarget,
             fromTo: fromTo,
@@ -124,14 +136,13 @@ private struct GuidanceTimingDisplay: View {
           )
         }
       case .countdownOnly:
-        if let fromTo = math.pposToTarget {
-          TOTView(
-            fromTo: fromTo,
-            timeOnTarget: target.desiredTimeOverIP,
-            showSpeed: false,
-            isPush: true
-          )
-        }
+        // How far there is to fly and when to push are geometry between the aircraft's position and
+        // the target: neither needs a ground speed or a course, so both stand while stopped.
+        TOTView(
+          distance: coordinate.distance(to: target.coordinate),
+          timeOnTarget: target.desiredTimeOverIP,
+          isPush: true
+        )
       case .postPass:
         EmptyView()
     }
@@ -141,9 +152,10 @@ private struct GuidanceTimingDisplay: View {
 #Preview("Pre-IP, On Time") {
   let helper = PreviewHelper()
   let target = helper.target(minutesFromNow: 4)
-  let math = IPTargetMath(location: helper.preIPLocation, target: target, now: .now)
+  let location = helper.preIPLocation
   GuidanceContentView(
-    math: math,
+    math: IPTargetMath(location: location, target: target, now: .now),
+    coordinate: location.geoCoordinate,
     target: target,
     guidance: .toIPWithSpeedGuidance,
     event: helper.preIPEvent
@@ -153,11 +165,24 @@ private struct GuidanceTimingDisplay: View {
 #Preview("IP → Target") {
   let helper = PreviewHelper()
   let target = helper.target(minutesFromNow: 1)
-  let math = IPTargetMath(location: helper.postIPLocation, target: target, now: .now)
+  let location = helper.postIPLocation
   GuidanceContentView(
-    math: math,
+    math: IPTargetMath(location: location, target: target, now: .now),
+    coordinate: location.geoCoordinate,
     target: target,
     guidance: .toTarget,
     event: helper.postIPEvent
+  )
+}
+
+#Preview("No Ground Speed") {
+  let helper = PreviewHelper()
+  let target = helper.target(minutesFromNow: 10)
+  GuidanceContentView(
+    math: nil,
+    coordinate: helper.preIPLocation.geoCoordinate,
+    target: target,
+    guidance: .countdownOnly,
+    event: helper.preIPEvent
   )
 }

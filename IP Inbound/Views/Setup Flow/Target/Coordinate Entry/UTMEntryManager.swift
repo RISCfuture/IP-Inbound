@@ -1,4 +1,5 @@
 import Foundation
+import MeasurementKitLocation
 import SwiftGeographic
 import SwiftUI
 

@@ -1,3 +1,4 @@
+import MeasurementKit
 import SwiftUI
 
 /// A live countdown to `targetDate` with an uppercase caption beneath it. The timer is anchored to
@@ -11,7 +12,7 @@ struct CountdownTimerView: View {
   private var services
 
   private var countdownRange: Range<Date> {
-    .now..<services.clock.offsetFromRealTime.before(date: targetDate)
+    .now..<(targetDate - services.clock.offsetFromRealTime)
   }
 
   var body: some View {

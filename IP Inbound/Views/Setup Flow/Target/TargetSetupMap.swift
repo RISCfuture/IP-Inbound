@@ -1,4 +1,5 @@
 import MapKit
+import MeasurementKitLocation
 import SwiftUI
 
 struct TargetSetupMap: View {
@@ -23,7 +24,7 @@ struct TargetSetupMap: View {
 
   private var mapBody: some View {
     Map(position: $cameraPosition, interactionModes: [.pan, .zoom]) {
-      Annotation(target.name, coordinate: target.coordinate.toCoreLocation) {
+      Annotation(target.name, coordinate: target.coordinate.clCoordinate) {
         Image(systemName: "triangle.fill").foregroundStyle(.red)
           .frame(width: Self.targetMarkerSize, height: Self.targetMarkerSize)
           .accessibilityHidden(true)
@@ -38,7 +39,7 @@ struct TargetSetupMap: View {
     .onAppear {
       cameraPosition = .camera(
         .init(
-          centerCoordinate: target.coordinate.toCoreLocation,
+          centerCoordinate: target.coordinate.clCoordinate,
           distance: Self.defaultCameraDistanceMeters
         )
       )
@@ -58,7 +59,7 @@ struct TargetSetupMap: View {
       }
       // Center map on new coordinate while preserving zoom level
       cameraPosition = .camera(
-        .init(centerCoordinate: newValue.toCoreLocation, distance: currentDistance)
+        .init(centerCoordinate: newValue.clCoordinate, distance: currentDistance)
       )
     }
   }

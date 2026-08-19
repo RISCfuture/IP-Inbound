@@ -33,8 +33,7 @@ itself. Afterwards it reports how many seconds early or late the pass was.
 - ``GuidanceHelper``
 - ``IPTargetMath``
 - ``FromToMath``
-- ``Coordinate``
-- ``Bearing``
+- ``OffsetBearing``
 
 ### Location and companions
 

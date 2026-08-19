@@ -1,6 +1,7 @@
 import CoreLocation
 import Defaults
 import Foundation
+import MeasurementKitLocation
 import SwiftGeographic
 
 // MARK: - Coordinate Format

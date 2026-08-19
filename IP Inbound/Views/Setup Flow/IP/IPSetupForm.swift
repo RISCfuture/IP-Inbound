@@ -1,5 +1,7 @@
 import Defaults
 import Foundation
+import MeasurementKitLocation
+import MeasurementKitUI
 import SwiftUI
 
 struct IPSetupForm: View {
@@ -40,12 +42,7 @@ struct IPSetupForm: View {
   // The speed is stored in knots but entered in whichever unit the picker beside the field shows, so
   // the binding converts both ways rather than exposing the stored value directly.
   private var targetGroundSpeed: Binding<Double> {
-    .init(
-      get: { target.targetGroundSpeedMeasurement.converted(to: distanceDefault.speedUnit).value },
-      set: {
-        target.targetGroundSpeedMeasurement = .init(value: $0, unit: distanceDefault.speedUnit)
-      }
-    )
+    $target.targetGroundSpeedMeasurement.scalar(in: distanceDefault.speedUnit)
   }
 
   var body: some View {

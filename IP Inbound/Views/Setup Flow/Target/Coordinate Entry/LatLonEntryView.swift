@@ -1,4 +1,5 @@
 import Defaults
+import MeasurementKitLocation
 import SwiftUI
 
 struct LatLonEntryView: View {

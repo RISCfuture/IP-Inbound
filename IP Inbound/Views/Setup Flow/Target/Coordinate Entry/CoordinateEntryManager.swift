@@ -1,6 +1,7 @@
 import Defaults
 import DefaultsMacros
 import Foundation
+import MeasurementKitLocation
 import SwiftUI
 
 extension Double {

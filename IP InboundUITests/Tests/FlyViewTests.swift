@@ -18,6 +18,12 @@ final class FlyViewTests: BaseTestCase {
   // readout renders.
   private static let countdownFix = "36.935565,-115.457402,1502,179,0"
 
+  // The same pre-IP position moving at 62 m/s (~120 kn), but with Core Location's `-1` "course
+  // unavailable" sentinel in place of a track. `IPTargetMath` refuses to solve a run-in without a
+  // usable course, so `FlyView` has no guidance geometry and falls back to `.countdownOnly` — the
+  // only route to that state at a speed well above the 30 kn movement threshold.
+  private static let noCourseFix = "36.935565,-115.457402,1502,-1,62"
+
   // MARK: - Helpers
 
   @discardableResult
@@ -81,6 +87,12 @@ final class FlyViewTests: BaseTestCase {
   // Stationary fix → `.countdownOnly` guidance, whose `TOTView` renders the distance readout.
   private func launchIntoCountdownWithDistance() throws -> FlyPage {
     try launchSeededFlythrough(fix: Self.countdownFix, secondsBeforeTOT: 600)
+  }
+
+  // Moving fix with no usable course → `IPTargetMath` is nil, so guidance falls back to
+  // `.countdownOnly` with no geometry behind it.
+  private func launchIntoCountdownWithoutMath() throws -> FlyPage {
+    try launchSeededFlythrough(fix: Self.noCourseFix, secondsBeforeTOT: 600)
   }
 
   // Wait for any fly view content to appear after navigating to FlyView.
@@ -264,6 +276,31 @@ final class FlyViewTests: BaseTestCase {
     XCTAssertFalse(
       flyPage.requiredSpeedDisplay.exists,
       "Required-speed callout must be hidden when bypassing the IP"
+    )
+  }
+
+  // MARK: - Test 36
+
+  func testFlyView_NoUsableCourse_KeepsCountdownReadouts() throws {
+    // With no course to solve from, `FlyView` gets no `IPTargetMath` at all and falls back to the
+    // countdown. Distance-to-target and push time are geometry between the position and the target,
+    // needing neither speed nor course, so both must survive that fallback.
+    let flyPage = try launchIntoCountdownWithoutMath()
+
+    XCTAssertTrue(
+      flyPage.flyDistanceDisplay.waitForExistence(timeout: 12),
+      "Distance readout should survive a fix with no usable course"
+    )
+    XCTAssertTrue(
+      flyPage.flyTOTDisplay.exists,
+      "Push-time readout should survive a fix with no usable course"
+    )
+
+    // At 62 m/s the movement threshold is long passed, so a solved `IPTargetMath` would have put a
+    // run-in phase on screen. Its absence is what pins the fallback to the missing course.
+    XCTAssertNil(
+      flyPage.guidanceMode,
+      "A fix with no usable course has no run-in geometry to show a phase for"
     )
   }
 }

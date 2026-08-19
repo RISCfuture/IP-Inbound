@@ -1,4 +1,6 @@
 import Foundation
+import MeasurementKit
+import MeasurementKitLocation
 
 /// A `Codable`, value-type copy of a target's guidance geometry, suitable for transmitting to the
 /// Apple Watch over WatchConnectivity. Conforms to ``GuidanceTarget`` so the watch drives the same
@@ -18,8 +20,8 @@ struct TargetSnapshot: GuidanceTarget, Codable, Sendable, Equatable, Identifiabl
   var coordinate: Coordinate {
     .init(latitude: latitude, longitude: longitude)
   }
-  var offsetBearingMeasurement: Bearing {
-    .init(angle: offsetBearing, reference: offsetBearingIsTrue ? .true : .magnetic)
+  var offsetBearingMeasurement: OffsetBearing {
+    .init(degrees: offsetBearing, isTrue: offsetBearingIsTrue)
   }
   var offsetDistanceMeasurement: Measurement<UnitLength> {
     .init(value: offsetDistance, unit: .nauticalMiles)

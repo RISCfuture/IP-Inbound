@@ -14,8 +14,9 @@ struct WatchGuidanceView: View {
       if locationModel.authorizationDenied {
         WatchLocationUnavailableView()
       } else if let location = locationModel.location {
-        let helper = GuidanceHelper(location: location, target: target, now: Date())
-        if helper.isMoving {
+        if let helper = GuidanceHelper(location: location, target: target, now: Date()),
+          helper.isMoving
+        {
           WatchCDIView(location: location, target: target)
         } else {
           WatchCountdownView(target: target)

@@ -1,4 +1,7 @@
+import CoreLocation
 import Foundation
+import MeasurementKit
+import MeasurementKitLocation
 import Testing
 
 @testable import IP_Inbound
@@ -19,7 +22,7 @@ struct IPTargetMathTests {
     let ipTargetMath = IPTargetMath(
       coordinate: postIP,
       speed: Measurement(value: 500, unit: .knots),
-      course: Bearing(angle: 180, reference: .true),
+      course: TrueBearing(degrees: 180),
       target: target,
       now: now
     )
@@ -36,7 +39,7 @@ struct IPTargetMathTests {
     let ipTargetMath = IPTargetMath(
       coordinate: preIP,
       speed: Measurement(value: 500, unit: .knots),
-      course: Bearing(angle: 180, reference: .true),
+      course: TrueBearing(degrees: 180),
       target: target,
       now: now
     )
@@ -61,7 +64,7 @@ struct IPTargetMathTests {
     let ipTargetMath = IPTargetMath(
       coordinate: position,
       speed: .init(value: 120, unit: .knots),
-      course: .init(angle: 0, reference: .true),
+      course: TrueBearing(degrees: 0),
       target: target,
       now: now
     )
@@ -87,7 +90,7 @@ struct IPTargetMathTests {
     let ipTargetMath = IPTargetMath(
       coordinate: position,
       speed: .init(value: 120, unit: .knots),
-      course: .init(angle: 0, reference: .true),
+      course: TrueBearing(degrees: 0),
       target: target,
       now: now
     )
@@ -114,7 +117,7 @@ struct IPTargetMathTests {
     let ipTargetMath = IPTargetMath(
       coordinate: position,
       speed: .init(value: 120, unit: .knots),
-      course: .init(angle: 0, reference: .true),
+      course: TrueBearing(degrees: 0),
       target: target,
       now: now
     )
@@ -140,6 +143,39 @@ struct IPTargetMathTests {
     )
   }
 
+  // MARK: - Fixes Without Usable Motion
+
+  // A fix at `preIP` reporting the given course and speed, built the way Core Location builds one.
+  // A negative value is Core Location's "unavailable" sentinel for that reading.
+  private func fix(course: CLLocationDirection, speed: CLLocationSpeed) -> CLLocation {
+    CLLocation(
+      coordinate: preIP.clCoordinate,
+      altitude: 1502,
+      horizontalAccuracy: 5,
+      verticalAccuracy: 5,
+      course: course,
+      courseAccuracy: 1,
+      speed: speed,
+      speedAccuracy: 1,
+      timestamp: now
+    )
+  }
+
+  @Test("init(location:), unavailable course or speed, returns nil")
+  func noMathFromFixWithoutUsableMotion() {
+    let target = Target(name: "Test Target", coordinate: target)
+    target.offsetBearing = 359
+    target.offsetDistance = 4.8
+
+    // A sentinel course would point the run-in a degree west of north, and a sentinel speed would
+    // dead-reckon it backwards, so neither yields geometry.
+    #expect(IPTargetMath(location: fix(course: -1, speed: 62), target: target, now: now) == nil)
+    #expect(IPTargetMath(location: fix(course: 179, speed: -1), target: target, now: now) == nil)
+
+    // Zero is a real reading: an aircraft holding short pointed at true north still solves.
+    #expect(IPTargetMath(location: fix(course: 0, speed: 0), target: target, now: now) != nil)
+  }
+
   // MARK: - IP Sequencing Buffer
 
   // Builds a target whose run-in course (IP→target) points due north (true) with the IP roughly
@@ -162,28 +198,28 @@ struct IPTargetMathTests {
     let IP = target.IPCoordinate
 
     // Just short of the IP must not sequence.
-    let shortOfIP = IP.offsetBy(
-      bearing: .init(value: 180, unit: .degrees),
+    let shortOfIP = IP.offset(
+      bearing: TrueBearing(degrees: 180),
       distance: .init(value: 100, unit: .meters)
     )
     let beforeIP = IPTargetMath(
       coordinate: shortOfIP,
       speed: .init(value: 500, unit: .knots),
-      course: .init(angle: 0, reference: .true),
+      course: TrueBearing(degrees: 0),
       target: target,
       now: now
     )
     #expect(!beforeIP.isPastIP)
 
     // Fifty meters past the perpendicular, on course, must sequence (buffer is zero at θ≈0).
-    let justPastIP = IP.offsetBy(
-      bearing: .init(value: 0, unit: .degrees),
+    let justPastIP = IP.offset(
+      bearing: TrueBearing(degrees: 0),
       distance: .init(value: 50, unit: .meters)
     )
     let afterIP = IPTargetMath(
       coordinate: justPastIP,
       speed: .init(value: 500, unit: .knots),
-      course: .init(angle: 0, reference: .true),
+      course: TrueBearing(degrees: 0),
       target: target,
       now: now
     )
@@ -197,14 +233,14 @@ struct IPTargetMathTests {
 
     // Five kilometers past the IP — well past the perpendicular — but the ground track is
     // perpendicular to the run-in course, so the run-in must not sequence.
-    let wellPastIP = IP.offsetBy(
-      bearing: .init(value: 0, unit: .degrees),
+    let wellPastIP = IP.offset(
+      bearing: TrueBearing(degrees: 0),
       distance: .init(value: 5000, unit: .meters)
     )
     let crossing = IPTargetMath(
       coordinate: wellPastIP,
       speed: .init(value: 500, unit: .knots),
-      course: .init(angle: 90, reference: .true),
+      course: TrueBearing(degrees: 90),
       target: target,
       now: now
     )
@@ -225,28 +261,28 @@ struct IPTargetMathTests {
     let halfRadiusM = turnRadiusM / 2
 
     // Just past the perpendicular but short of the r/2 buffer: must not sequence.
-    let shortOfBuffer = IP.offsetBy(
-      bearing: .init(value: 0, unit: .degrees),
+    let shortOfBuffer = IP.offset(
+      bearing: TrueBearing(degrees: 0),
       distance: .init(value: halfRadiusM - 400, unit: .meters)
     )
     let beforeBuffer = IPTargetMath(
       coordinate: shortOfBuffer,
       speed: .init(value: 500, unit: .knots),
-      course: .init(angle: 45, reference: .true),
+      course: TrueBearing(degrees: 45),
       target: target,
       now: now
     )
     #expect(!beforeBuffer.isPastIP)
 
     // Past the r/2 buffer: must sequence.
-    let pastBuffer = IP.offsetBy(
-      bearing: .init(value: 0, unit: .degrees),
+    let pastBuffer = IP.offset(
+      bearing: TrueBearing(degrees: 0),
       distance: .init(value: halfRadiusM + 400, unit: .meters)
     )
     let afterBuffer = IPTargetMath(
       coordinate: pastBuffer,
       speed: .init(value: 500, unit: .knots),
-      course: .init(angle: 45, reference: .true),
+      course: TrueBearing(degrees: 45),
       target: target,
       now: now
     )
@@ -260,14 +296,14 @@ struct IPTargetMathTests {
 
     // The aircraft has just re-crossed the perpendicular while orbiting; its ground track is 135°
     // off the run-in course. This must not flip the guidance state.
-    let justPastIP = IP.offsetBy(
-      bearing: .init(value: 0, unit: .degrees),
+    let justPastIP = IP.offset(
+      bearing: TrueBearing(degrees: 0),
       distance: .init(value: 200, unit: .meters)
     )
     let orbiting = IPTargetMath(
       coordinate: justPastIP,
       speed: .init(value: 500, unit: .knots),
-      course: .init(angle: 135, reference: .true),
+      course: TrueBearing(degrees: 135),
       target: target,
       now: now
     )
@@ -284,18 +320,18 @@ struct IPTargetMathTests {
     // though a latitude-dropping vector projection wrongly reads this position as past the IP.
     let shortButFarEast =
       IP
-      .offsetBy(
-        bearing: .init(value: 180, unit: .degrees),
+      .offset(
+        bearing: TrueBearing(degrees: 180),
         distance: .init(value: 60, unit: .meters)
       )
-      .offsetBy(
-        bearing: .init(value: 90, unit: .degrees),
+      .offset(
+        bearing: TrueBearing(degrees: 90),
         distance: .init(value: 39_000, unit: .meters)
       )
     let math = IPTargetMath(
       coordinate: shortButFarEast,
       speed: .init(value: 500, unit: .knots),
-      course: .init(angle: 0, reference: .true),
+      course: TrueBearing(degrees: 0),
       target: target,
       now: now
     )
@@ -317,7 +353,7 @@ struct IPTargetMathTests {
     let southOfTarget = IPTargetMath(
       coordinate: .init(latitude: 37.0, longitude: -123.0),
       speed: .init(value: 120, unit: .knots),
-      course: .init(angle: 270, reference: .true),
+      course: TrueBearing(degrees: 270),
       target: target,
       now: now
     )
@@ -335,7 +371,7 @@ struct IPTargetMathTests {
     let northOfTarget = IPTargetMath(
       coordinate: .init(latitude: 39.0, longitude: -123.0),
       speed: .init(value: 120, unit: .knots),
-      course: .init(angle: 270, reference: .true),
+      course: TrueBearing(degrees: 270),
       target: target,
       now: now
     )

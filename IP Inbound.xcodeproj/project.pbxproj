@@ -21,7 +21,17 @@
 		01F13CF52DBEE074000E58A2 /* NIO in Frameworks */ = {isa = PBXBuildFile; productRef = 01F13CF42DBEE074000E58A2 /* NIO */; };
 		01F13CF72DBEE074000E58A2 /* NIOPosix in Frameworks */ = {isa = PBXBuildFile; productRef = 01F13CF62DBEE074000E58A2 /* NIOPosix */; };
 		01F13CFE2DBEE65B000E58A2 /* Logging in Frameworks */ = {isa = PBXBuildFile; productRef = 01F13CFD2DBEE65B000E58A2 /* Logging */; };
+		11FF78DBCBBC60FA9B3AE087 /* MeasurementKitLocation in Frameworks */ = {isa = PBXBuildFile; productRef = 767F98DBE5020FE2C1A1D4F6 /* MeasurementKitLocation */; };
+		1850B2B634F254E6D441D0C7 /* MeasurementKit in Frameworks */ = {isa = PBXBuildFile; productRef = C39CDA7F653FF59E91757A29 /* MeasurementKit */; };
+		0A3F5C1E7B24D9E60F81AC35 /* MeasurementKitUI in Frameworks */ = {isa = PBXBuildFile; productRef = 0A3F5C1E7B24D9E60F81AC36 /* MeasurementKitUI */; };
+		33F711A51A154974B88B5DA7 /* MeasurementKitLocation in Frameworks */ = {isa = PBXBuildFile; productRef = 82B3BDDD1791A1F0A898CD40 /* MeasurementKitLocation */; };
+		4D2A3EAF7F6461F1F5D12E4D /* MeasurementKit in Frameworks */ = {isa = PBXBuildFile; productRef = 4538DB955AE06783DA1D19CB /* MeasurementKit */; };
 		6B2BC84D01DF41E8847B6899 /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = 4E66068E9AFD4993959FE327 /* Sentry */; };
+		8416DECA39F31478DDFB0BE0 /* MeasurementKit in Frameworks */ = {isa = PBXBuildFile; productRef = 52D2C667A9D8E475E50E4108 /* MeasurementKit */; };
+		A467258E809782A9762210EC /* MeasurementKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0FB064D238D0BF11C58B07F0 /* MeasurementKit */; };
+		E6A4F09A58AE2518B10F5CE0 /* MeasurementKit in Frameworks */ = {isa = PBXBuildFile; productRef = B83449F701954CD31C4C6218 /* MeasurementKit */; };
+		F5C0FFB0CACD3560610BA5C3 /* MeasurementKitLocation in Frameworks */ = {isa = PBXBuildFile; productRef = 47E80E982AE1E94EDDDA1BC7 /* MeasurementKitLocation */; };
+		FDF872692C630A40B99B510D /* MeasurementKitLocation in Frameworks */ = {isa = PBXBuildFile; productRef = 8EC548C52BD942411AA402B6 /* MeasurementKitLocation */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -206,11 +216,15 @@
 		010FB62B2FEBA0610056ECE0 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
+				E6A4F09A58AE2518B10F5CE0 /* MeasurementKit in Frameworks */,
+				FDF872692C630A40B99B510D /* MeasurementKitLocation in Frameworks */,
 			);
 		};
 		010FB6372FEBA0630056ECE0 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
+				8416DECA39F31478DDFB0BE0 /* MeasurementKit in Frameworks */,
+				11FF78DBCBBC60FA9B3AE087 /* MeasurementKitLocation in Frameworks */,
 			);
 		};
 		010FB6412FEBA0630056ECE0 /* Frameworks */ = {
@@ -229,6 +243,7 @@
 			files = (
 				0172C0772FEC82A50034B332 /* SwiftUI.framework in Frameworks */,
 				0172C0752FEC82A50034B332 /* WidgetKit.framework in Frameworks */,
+				4D2A3EAF7F6461F1F5D12E4D /* MeasurementKit in Frameworks */,
 			);
 		};
 		01ECF4B32CF3DF0D00BD0604 /* Frameworks */ = {
@@ -242,12 +257,17 @@
 				011479ED2F779D5F003AEBCC /* SwiftGeographic in Frameworks */,
 				01C059A72DBF49C600D733C1 /* AsyncAlgorithms in Frameworks */,
 				6B2BC84D01DF41E8847B6899 /* Sentry in Frameworks */,
+				A467258E809782A9762210EC /* MeasurementKit in Frameworks */,
+				33F711A51A154974B88B5DA7 /* MeasurementKitLocation in Frameworks */,
+				0A3F5C1E7B24D9E60F81AC35 /* MeasurementKitUI in Frameworks */,
 			);
 		};
 		01ECF4C32CF3DF0F00BD0604 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
 				016F3ED22DD4F1E1006EEC6D /* Numerics in Frameworks */,
+				1850B2B634F254E6D441D0C7 /* MeasurementKit in Frameworks */,
+				F5C0FFB0CACD3560610BA5C3 /* MeasurementKitLocation in Frameworks */,
 			);
 		};
 		01ECF4CD2CF3DF0F00BD0604 /* Frameworks */ = {
@@ -327,6 +347,10 @@
 				01DA7A5E2FEBA0610056ECE0 /* IP Inbound Shared */,
 			);
 			name = "IP Inbound Watch";
+			packageProductDependencies = (
+				B83449F701954CD31C4C6218 /* MeasurementKit */,
+				8EC548C52BD942411AA402B6 /* MeasurementKitLocation */,
+			);
 			productName = "IP Inbound Watch Watch App";
 			productReference = 010FB62E2FEBA0610056ECE0 /* IP Inbound Watch.app */;
 			productType = "com.apple.product-type.application";
@@ -348,6 +372,10 @@
 				010FB63D2FEBA0630056ECE0 /* IP Inbound Watch Tests */,
 			);
 			name = "IP Inbound Watch Watch AppTests";
+			packageProductDependencies = (
+				52D2C667A9D8E475E50E4108 /* MeasurementKit */,
+				767F98DBE5020FE2C1A1D4F6 /* MeasurementKitLocation */,
+			);
 			productName = "IP Inbound Watch Watch AppTests";
 			productReference = 010FB63A2FEBA0630056ECE0 /* IP Inbound Watch Watch AppTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -411,6 +439,9 @@
 				0172C0782FEC82A50034B332 /* Live Activity */,
 			);
 			name = "Live ActivityExtension";
+			packageProductDependencies = (
+				4538DB955AE06783DA1D19CB /* MeasurementKit */,
+			);
 			productName = "Live ActivityExtension";
 			productReference = 0172C0732FEC82A50034B332 /* Live ActivityExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
@@ -446,6 +477,9 @@
 				0166FA732DCA685800970EFD /* DefaultsMacros */,
 				4E66068E9AFD4993959FE327 /* Sentry */,
 				011479EC2F779D5F003AEBCC /* SwiftGeographic */,
+				0FB064D238D0BF11C58B07F0 /* MeasurementKit */,
+				82B3BDDD1791A1F0A898CD40 /* MeasurementKitLocation */,
+				0A3F5C1E7B24D9E60F81AC36 /* MeasurementKitUI */,
 			);
 			productName = "IP Inbound";
 			productReference = 01ECF4B62CF3DF0D00BD0604 /* IP Inbound.app */;
@@ -470,6 +504,8 @@
 			name = "IP InboundTests";
 			packageProductDependencies = (
 				016F3ED12DD4F1E1006EEC6D /* Numerics */,
+				C39CDA7F653FF59E91757A29 /* MeasurementKit */,
+				47E80E982AE1E94EDDDA1BC7 /* MeasurementKitLocation */,
 			);
 			productName = "IP InboundTests";
 			productReference = 01ECF4C62CF3DF0F00BD0604 /* IP InboundTests.xctest */;
@@ -558,6 +594,7 @@
 				F48BBB649D7A4A6387FBF73C /* XCRemoteSwiftPackageReference "sentry-cocoa" */,
 				011479EB2F779D5F003AEBCC /* XCRemoteSwiftPackageReference "SwiftGeographic" */,
 				0159221D2FCA2B28007FB6BB /* XCRemoteSwiftPackageReference "XCUITestKit" */,
+				455EB96FD3C3DE444A131339 /* XCRemoteSwiftPackageReference "MeasurementKit" */,
 			);
 			preferredProjectObjectVersion = 100;
 			productRefGroup = 01ECF4B72CF3DF0D00BD0604 /* Products */;
@@ -1382,6 +1419,14 @@
 				minimumVersion = 1.14.0;
 			};
 		};
+		455EB96FD3C3DE444A131339 /* XCRemoteSwiftPackageReference "MeasurementKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/RISCfuture/MeasurementKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 		F48BBB649D7A4A6387FBF73C /* XCRemoteSwiftPackageReference "sentry-cocoa" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/getsentry/sentry-cocoa/";
@@ -1445,10 +1490,60 @@
 			package = 01F13CFC2DBEE65B000E58A2 /* XCRemoteSwiftPackageReference "swift-log" */;
 			productName = Logging;
 		};
+		0FB064D238D0BF11C58B07F0 /* MeasurementKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 455EB96FD3C3DE444A131339 /* XCRemoteSwiftPackageReference "MeasurementKit" */;
+			productName = MeasurementKit;
+		};
+		0A3F5C1E7B24D9E60F81AC36 /* MeasurementKitUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 455EB96FD3C3DE444A131339 /* XCRemoteSwiftPackageReference "MeasurementKit" */;
+			productName = MeasurementKitUI;
+		};
+		4538DB955AE06783DA1D19CB /* MeasurementKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 455EB96FD3C3DE444A131339 /* XCRemoteSwiftPackageReference "MeasurementKit" */;
+			productName = MeasurementKit;
+		};
+		47E80E982AE1E94EDDDA1BC7 /* MeasurementKitLocation */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 455EB96FD3C3DE444A131339 /* XCRemoteSwiftPackageReference "MeasurementKit" */;
+			productName = MeasurementKitLocation;
+		};
 		4E66068E9AFD4993959FE327 /* Sentry */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F48BBB649D7A4A6387FBF73C /* XCRemoteSwiftPackageReference "sentry-cocoa" */;
 			productName = Sentry;
+		};
+		52D2C667A9D8E475E50E4108 /* MeasurementKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 455EB96FD3C3DE444A131339 /* XCRemoteSwiftPackageReference "MeasurementKit" */;
+			productName = MeasurementKit;
+		};
+		767F98DBE5020FE2C1A1D4F6 /* MeasurementKitLocation */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 455EB96FD3C3DE444A131339 /* XCRemoteSwiftPackageReference "MeasurementKit" */;
+			productName = MeasurementKitLocation;
+		};
+		82B3BDDD1791A1F0A898CD40 /* MeasurementKitLocation */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 455EB96FD3C3DE444A131339 /* XCRemoteSwiftPackageReference "MeasurementKit" */;
+			productName = MeasurementKitLocation;
+		};
+		8EC548C52BD942411AA402B6 /* MeasurementKitLocation */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 455EB96FD3C3DE444A131339 /* XCRemoteSwiftPackageReference "MeasurementKit" */;
+			productName = MeasurementKitLocation;
+		};
+		B83449F701954CD31C4C6218 /* MeasurementKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 455EB96FD3C3DE444A131339 /* XCRemoteSwiftPackageReference "MeasurementKit" */;
+			productName = MeasurementKit;
+		};
+		C39CDA7F653FF59E91757A29 /* MeasurementKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 455EB96FD3C3DE444A131339 /* XCRemoteSwiftPackageReference "MeasurementKit" */;
+			productName = MeasurementKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

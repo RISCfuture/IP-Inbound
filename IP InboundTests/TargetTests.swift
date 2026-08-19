@@ -1,4 +1,6 @@
 import CoreLocation
+import MeasurementKit
+import MeasurementKitLocation
 import Testing
 
 @testable import IP_Inbound
@@ -23,7 +25,7 @@ struct TargetTests {
     target.offsetBearingIsTrue = true
 
     let ipCoord = target.IPCoordinate
-    #expect(ipCoord.latitudeDeg == 37.933378255433546)
+    #expect(ipCoord.latitudeDeg == 37.93337834745529)
     #expect(ipCoord.longitudeDeg == -122)
   }
 
@@ -60,24 +62,21 @@ struct TargetTests {
     target.declination = 15  // 15 degrees east
 
     // Desired track should be reciprocal of offset bearing (225 magnetic)
-    #expect(target.desiredTrack.degrees == 225)
-    #expect(target.desiredTrack.reference == .magnetic)
+    #expect(target.desiredTrack == .magnetic(.init(degrees: 225)))
 
     // Magnetic to true conversion: 225 magnetic = 240 true with 15° east declination
     #expect(target.desiredTrackTrue.degrees == 240)
-    #expect(target.desiredTrackTrue.reference == .true)
 
     // Change to true bearing
     target.offsetBearingIsTrue = true
     target.offsetBearing = 45
 
     // Desired track should be reciprocal of offset bearing (225 true)
+    #expect(target.desiredTrack.isTrue)
     #expect(abs(target.desiredTrack.degrees - 225) < 0.1)
-    #expect(target.desiredTrack.reference == .true)
 
     // True to magnetic conversion: 225 true = 210 magnetic with 15° east declination
     #expect(abs(target.desiredTrackMagnetic.degrees - 210) < 0.1)
-    #expect(target.desiredTrackMagnetic.reference == .magnetic)
   }
 
   @Test("desiredTimeOverIP, calculates correctly")

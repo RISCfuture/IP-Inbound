@@ -1,5 +1,7 @@
 import CoreLocation
 import Foundation
+import MeasurementKit
+import MeasurementKitLocation
 
 enum Guidance {
   case toIPWithSpeedGuidance
@@ -23,8 +25,11 @@ struct GuidanceHelper<T: GuidanceTarget> {
   }
 
   private let math: IPTargetMath<T>
-  private let location: CLLocation
   private let target: T
+
+  /// The aircraft's ground speed, as the guidance math sees it. A fix that reports no speed is
+  /// treated as stopped, which is what the on-ground countdown wants.
+  private let groundSpeed: Measurement<UnitSpeed>
 
   // Computed predicates for clear logic
   var isMoving: Bool { groundSpeed > Self.movementThreshold }
@@ -40,11 +45,6 @@ struct GuidanceHelper<T: GuidanceTarget> {
 
   // More than the early-arrival threshold ahead of the IP at current speed
   var wouldArriveEarlyAtIP: Bool { ipDeltaTime < -Self.earlyArrivalThreshold }
-
-  /// The aircraft's ground speed, as the guidance math sees it.
-  private var groundSpeed: Measurement<UnitSpeed> {
-    .init(value: location.speed, unit: .metersPerSecond)
-  }
 
   var wouldArriveLateEvenAtMaxSpeed: Bool {
     if let fastestETA = math.pposToIPToTargetETAAtMaxSpeed,
@@ -83,15 +83,20 @@ struct GuidanceHelper<T: GuidanceTarget> {
     return .toIPWithSpeedGuidance
   }
 
-  init(location: CLLocation, target: T, now: Date) {
-    self.location = location
-    self.target = target
-    self.math = IPTargetMath(location: location, target: target, now: now)
+  /// The guidance for `location`, or `nil` when the fix carries no usable ground speed or course.
+  ///
+  /// - Parameters:
+  ///   - location: the fix to solve from.
+  ///   - target: the target being run in on.
+  ///   - now: the current time.
+  init?(location: CLLocation, target: T, now: Date) {
+    guard let math = IPTargetMath(location: location, target: target, now: now) else { return nil }
+    self.init(math: math, location: location, target: target)
   }
 
   init(math: IPTargetMath<T>, location: CLLocation, target: T) {
     self.math = math
-    self.location = location
     self.target = target
+    self.groundSpeed = location.groundSpeed ?? .zero
   }
 }

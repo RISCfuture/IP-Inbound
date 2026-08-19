@@ -1,4 +1,5 @@
 import CoreLocation
+import MeasurementKitLocation
 import SwiftUI
 
 struct FlyView: View {
@@ -16,10 +17,13 @@ struct FlyView: View {
 
   var body: some View {
     NeedsLocationView { location, event in
+      // A fix carrying no usable ground speed or course has no run-in geometry to solve, so the
+      // guidance falls back to the countdown until one arrives. Its readouts are drawn from the
+      // position and the target, which every fix supplies.
       let math = IPTargetMath(location: location, target: target, now: services.clock.now)
-      let guidanceHelper = GuidanceHelper(math: math, location: location, target: target)
-      let guidance = guidanceHelper.guidance
-      let isPastTarget = guidanceHelper.isPastTarget
+      let guidanceHelper = math.map { GuidanceHelper(math: $0, location: location, target: target) }
+      let guidance = guidanceHelper?.guidance ?? .countdownOnly
+      let isPastTarget = guidanceHelper?.isPastTarget ?? false
 
       Group {
         if guidance == .postPass, let capture = postPassResult.capture {
@@ -36,7 +40,13 @@ struct FlyView: View {
             }
           )
         } else {
-          GuidanceContentView(math: math, target: target, guidance: guidance, event: event)
+          GuidanceContentView(
+            math: math,
+            coordinate: location.geoCoordinate,
+            target: target,
+            guidance: guidance,
+            event: event
+          )
         }
       }
       .onChange(of: isPastTarget, initial: true) {
@@ -46,6 +56,7 @@ struct FlyView: View {
         capturePostPassIfNeeded(guidance: guidance)
       }
     }
+    .accessibilityElement(children: .contain)
     .accessibilityIdentifier("flyView")
     .onAppear {
       target.isConfigured = true

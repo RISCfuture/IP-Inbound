@@ -1,5 +1,6 @@
 import Defaults
 import Foundation
+import MeasurementKitLocation
 
 func localizedName(of unit: Unit, style: Formatter.UnitStyle = .long) -> String {
   let formatter = MeasurementFormatter()

@@ -1,4 +1,6 @@
 import Foundation
+import MeasurementKit
+import MeasurementKitLocation
 
 struct FromToMath: Equatable {
   /// The bank angle the turn model flies. Shared with ``IPTargetMath``'s run-in sequencing, which
@@ -15,7 +17,7 @@ struct FromToMath: Equatable {
   /// as the maneuver envelope elsewhere, since it is the strongest acceleration the guidance models
   /// the aircraft applying.
   static var turnAcceleration: Measurement<UnitAcceleration> {
-    Measurement.gravity * tan(bankAngle.radians)
+    Measurement.standardGravity * tan(bankAngle)
   }
 
   var from: Coordinate
@@ -23,18 +25,18 @@ struct FromToMath: Equatable {
 
   var speed: Measurement<UnitSpeed>
 
-  var track: Bearing
-  var trackMagnetic: Bearing {
-    track.toMagnetic(declination: declination)
+  var track: TrueBearing
+  var trackMagnetic: MagneticBearing {
+    track.toMagnetic(variation: declination)
   }
 
   let targetSpeed: Measurement<UnitSpeed>
   let timeOnTarget: Date
   let now: Date
 
-  var bearing: Bearing { from.bearing(to: to) }  // deg
-  var bearingMagnetic: Bearing {
-    bearing.toMagnetic(declination: declination)
+  var bearing: TrueBearing { from.initialBearing(to: to) }
+  var bearingMagnetic: MagneticBearing {
+    bearing.toMagnetic(variation: declination)
   }
 
   var distance: Measurement<UnitLength> { from.distance(to: to) }
@@ -53,15 +55,15 @@ struct FromToMath: Equatable {
     // Total time = time spent turning + time for the distance the turn doesn't already cover
     return turnTime + ((distance - Self.turnChord(angle: turnAngle, speed: speed)) / speed)
   }
-  var timeOfArrival: Date { timeToGo.after(date: now) }
-  var deltaTOT: Measurement<UnitDuration> { timeOfArrival - timeOnTarget }
+  var timeOfArrival: Date { now + timeToGo }
+  var deltaTOT: Measurement<UnitDuration> { timeOfArrival.elapsed(since: timeOnTarget) }
 
   var isLate: Bool { deltaTOT > .zero }
   var isEarly: Bool { deltaTOT < .zero }
 
   /// The turn required to roll out on the bearing to the destination, as a positive angle.
   private var turnAngle: Measurement<UnitAngle> {
-    (bearingMagnetic - trackMagnetic).normalized.absoluteValue.angle
+    (bearingMagnetic - trackMagnetic).magnitude
   }
 
   /// Ground speed needed to reach the destination (`to`) exactly at its run-to time
@@ -70,7 +72,7 @@ struct FromToMath: Equatable {
   /// remaining time is at or below a small epsilon (run-to time already passed or imminent), or when
   /// no finite speed can make the time because the required turn alone overruns it.
   var requiredGroundSpeed: Measurement<UnitSpeed>? {
-    let timeToTOT = timeOnTarget - now
+    let timeToTOT = now.remaining(until: timeOnTarget)
     guard timeToTOT > Self.minimumTimeToTOT else { return nil }
 
     // A turn under the threshold adds no meaningful penalty, so the straight-line speed makes it.
@@ -85,7 +87,7 @@ struct FromToMath: Equatable {
     from: Coordinate,
     to: Coordinate,
     speed: Measurement<UnitSpeed>,
-    track: Bearing,
+    track: TrueBearing,
     targetSpeed: Measurement<UnitSpeed>,
     timeOnTarget: Date,
     declination: Measurement<UnitAngle>,
@@ -101,22 +103,12 @@ struct FromToMath: Equatable {
     self.now = now
   }
 
-  static func turnAnticipationDistance(
-    fromHeading: Bearing,
-    toHeading: Bearing,
-    speed: Measurement<UnitSpeed>
-  ) -> Measurement<UnitLength> {
-    let turnTimeRequired = turnTime(fromHeading: fromHeading, toHeading: toHeading, speed: speed)
-    let turnDistance = speed * turnTimeRequired * 0.5
-    return turnDistance.converted(to: .nauticalMiles)
-  }
-
-  static func turnTime(
-    fromHeading: Bearing,
-    toHeading: Bearing,
+  static func turnTime<Datum: BearingDatum>(
+    fromHeading: Bearing<Datum>,
+    toHeading: Bearing<Datum>,
     speed: Measurement<UnitSpeed>
   ) -> Measurement<UnitDuration> {
-    let angle = (toHeading - fromHeading).normalized.absoluteValue.angle
+    let angle = (toHeading - fromHeading).magnitude
 
     guard angle > smallTurn else { return .zero }
 

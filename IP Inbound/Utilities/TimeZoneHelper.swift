@@ -1,6 +1,7 @@
 import CoreLocation
 import Foundation
 import MapKit
+import MeasurementKitLocation
 import Sentry
 
 @MainActor

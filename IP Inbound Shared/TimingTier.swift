@@ -1,3 +1,4 @@
+import MeasurementKit
 import SwiftUI
 
 /// How early or late an arrival is tracking against its time-on-target, paired with the readout color
@@ -68,10 +69,9 @@ enum TimingTier: CaseIterable, Hashable {
     onTimeDeltaTOT: Measurement<UnitDuration> = Self.runInOnTimeDeltaTOT
   ) {
     let arrival = fromTo.timeOfArrival
-    let onTimeRange =
-      onTimeDeltaTOT.before(date: timeOnTarget)...onTimeDeltaTOT.after(date: timeOnTarget)
+    let onTimeRange = (timeOnTarget - onTimeDeltaTOT)...(timeOnTarget + onTimeDeltaTOT)
     let caution = fromTo.distance / fromTo.targetSpeed * Self.speedDeviation
-    let cautionRange = caution.before(date: timeOnTarget)...caution.after(date: timeOnTarget)
+    let cautionRange = (timeOnTarget - caution)...(timeOnTarget + caution)
     self.init(
       isLate: fromTo.isLate,
       isOnTime: onTimeRange.contains(arrival),

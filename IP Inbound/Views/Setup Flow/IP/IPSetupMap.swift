@@ -1,4 +1,5 @@
 import MapKit
+import MeasurementKitLocation
 import SwiftUI
 
 struct IPSetupMap: View {
@@ -20,17 +21,17 @@ struct IPSetupMap: View {
 
   private var mapBody: some View {
     Map(initialPosition: .automatic, interactionModes: [.pan, .zoom]) {
-      Annotation(target.name, coordinate: target.coordinate.toCoreLocation) {
+      Annotation(target.name, coordinate: target.coordinate.clCoordinate) {
         Image(systemName: "triangle.fill").foregroundStyle(.red)
           .frame(width: Self.annotationSize, height: Self.annotationSize)
           .accessibilityHidden(true)
       }
-      Annotation("IP", coordinate: target.IPCoordinate.toCoreLocation) {
+      Annotation("IP", coordinate: target.IPCoordinate.clCoordinate) {
         Image(systemName: "square.fill").foregroundStyle(.yellow)
           .frame(width: Self.annotationSize, height: Self.annotationSize)
           .accessibilityHidden(true)
       }
-      MapPolyline(coordinates: [target.coordinate, target.IPCoordinate].map(\.toCoreLocation))
+      MapPolyline(coordinates: [target.coordinate, target.IPCoordinate].map(\.clCoordinate))
         .stroke(.gray.opacity(Self.routeLineOpacity), lineWidth: Self.routeLineWidth)
     }
     .padding()

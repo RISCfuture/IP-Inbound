@@ -1,4 +1,5 @@
 import ActivityKit
+import MeasurementKit
 import SwiftUI
 import WidgetKit
 
@@ -78,10 +79,8 @@ private struct TOTProgressRing: View {
   var legDuration: Measurement<UnitDuration>
 
   private var ringRange: ClosedRange<Date> {
-    // The widget extension doesn't link `IP Inbound Shared`, so the duration resolves to seconds
-    // here, at the point of use, rather than through the shared `Measurement` helpers.
-    let extent = max(legDuration, Self.minimumLegDuration).converted(to: .seconds).value
-    return timeOnTarget.addingTimeInterval(-extent)...timeOnTarget
+    let extent = max(legDuration, Self.minimumLegDuration)
+    return (timeOnTarget - extent)...timeOnTarget
   }
 
   var body: some View {

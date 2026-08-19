@@ -1,5 +1,7 @@
 import CoreLocation
 import Foundation
+import MeasurementKit
+import MeasurementKitLocation
 import Testing
 
 @testable import IP_Inbound
@@ -20,7 +22,7 @@ struct PostPassTests {
     let math = IPTargetMath(
       coordinate: beyondTarget,
       speed: Measurement(value: 500, unit: .knots),
-      course: Bearing(angle: 180, reference: .true),
+      course: TrueBearing(degrees: 180),
       target: target,
       now: now
     )
@@ -37,7 +39,7 @@ struct PostPassTests {
     let math = IPTargetMath(
       coordinate: postIP,
       speed: Measurement(value: 500, unit: .knots),
-      course: Bearing(angle: 180, reference: .true),
+      course: TrueBearing(degrees: 180),
       target: target,
       now: now
     )
@@ -78,26 +80,32 @@ struct PostPassTests {
   // MARK: - .postPass gating (composition)
 
   @Test("guidance is .postPass only when past target AND past TOT")
-  func gatingRequiresBothConditions() {
+  func gatingRequiresBothConditions() throws {
     // Aircraft is moving fast enough to satisfy the movement threshold, on
     // the run-in course, at a position beyond the target along that axis.
     let location = makePastTargetLocation()
     let beforeTOT = makeTarget(timeOnTarget: now.addingTimeInterval(60))
     let afterTOT = makeTarget(timeOnTarget: now.addingTimeInterval(-1))
 
-    let stillInbound = GuidanceHelper(location: location, target: beforeTOT, now: now).guidance
-    let postPass = GuidanceHelper(location: location, target: afterTOT, now: now).guidance
+    let stillInbound = try #require(
+      GuidanceHelper(location: location, target: beforeTOT, now: now)
+    ).guidance
+    let postPass = try #require(
+      GuidanceHelper(location: location, target: afterTOT, now: now)
+    ).guidance
 
     #expect(stillInbound != .postPass)
     #expect(postPass == .postPass)
   }
 
   @Test("guidance is not .postPass when past TOT but before target")
-  func gatingRejectsPastTOTBeforeTarget() {
+  func gatingRejectsPastTOTBeforeTarget() throws {
     let location = makeLocation(at: postIP)  // between IP and target
     let target = makeTarget(timeOnTarget: now.addingTimeInterval(-30))
 
-    let guidance = GuidanceHelper(location: location, target: target, now: now).guidance
+    let guidance = try #require(
+      GuidanceHelper(location: location, target: target, now: now)
+    ).guidance
 
     #expect(guidance != .postPass)
   }
@@ -217,7 +225,7 @@ struct PostPassTests {
     IPTargetMath(
       coordinate: beyondTarget,
       speed: Measurement(value: 500, unit: .knots),
-      course: Bearing(angle: 180, reference: .true),
+      course: TrueBearing(degrees: 180),
       target: target,
       now: now
     )
@@ -231,7 +239,7 @@ struct PostPassTests {
     let speedMS = Measurement(value: 500, unit: UnitSpeed.knots)
       .converted(to: .metersPerSecond).value
     return CLLocation(
-      coordinate: coordinate.toCoreLocation,
+      coordinate: coordinate.clCoordinate,
       altitude: 0,
       horizontalAccuracy: 1,
       verticalAccuracy: 1,

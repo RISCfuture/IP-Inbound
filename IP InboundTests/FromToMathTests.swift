@@ -1,4 +1,6 @@
 import Foundation
+import MeasurementKit
+import MeasurementKitLocation
 import Testing
 
 @testable import IP_Inbound
@@ -15,7 +17,7 @@ struct FromToMathTests {
       from: SF,
       to: LA,
       speed: .init(value: 120, unit: .knots),
-      track: .init(angle: 150, reference: .true),
+      track: TrueBearing(degrees: 150),
       targetSpeed: .init(value: 120, unit: .knots),
       timeOnTarget: now.addingTimeInterval(60 * 60),
       declination: .init(value: 13, unit: .degrees),
@@ -32,7 +34,7 @@ struct FromToMathTests {
       from: SF,
       to: LA,
       speed: .init(value: 120, unit: .knots),
-      track: .init(angle: 0, reference: .true),
+      track: TrueBearing(degrees: 0),
       targetSpeed: .init(value: 120, unit: .knots),
       timeOnTarget: now.addingTimeInterval(60 * 60),
       declination: .init(value: 0, unit: .degrees),
@@ -58,7 +60,7 @@ struct FromToMathTests {
       from: from,
       to: to,
       speed: .init(value: 120, unit: .knots),
-      track: .init(angle: 0, reference: .true),  // Track aligned with bearing
+      track: TrueBearing(degrees: 0),  // Track aligned with bearing
       targetSpeed: .init(value: 120, unit: .knots),
       timeOnTarget: now.addingTimeInterval(60 * 60),
       declination: .init(value: 0, unit: .degrees),
@@ -85,7 +87,7 @@ struct FromToMathTests {
       from: from,
       to: to,
       speed: .init(value: 120, unit: .knots),
-      track: .init(angle: 90, reference: .true),  // Track is 90 degrees off bearing to target
+      track: TrueBearing(degrees: 90),  // Track is 90 degrees off bearing to target
       targetSpeed: .init(value: 120, unit: .knots),
       timeOnTarget: now.addingTimeInterval(60 * 60),
       declination: .init(value: 0, unit: .degrees),
@@ -112,7 +114,7 @@ struct FromToMathTests {
       from: from,
       to: to,
       speed: .init(value: 120, unit: .knots),
-      track: .init(angle: 0, reference: .true),
+      track: TrueBearing(degrees: 0),
       targetSpeed: .init(value: 120, unit: .knots),
       timeOnTarget: now.addingTimeInterval(60 * 60),  // 1 hour from now
       declination: .init(value: 0, unit: .degrees),
@@ -138,7 +140,7 @@ struct FromToMathTests {
       from: SF,
       to: LA,
       speed: .init(value: 120, unit: .knots),
-      track: .init(angle: 136.5, reference: .true),  // aligned with the SF→LA bearing
+      track: TrueBearing(degrees: 136.5),  // aligned with the SF→LA bearing
       targetSpeed: .init(value: 120, unit: .knots),
       timeOnTarget: now.addingTimeInterval(60 * 60),
       declination: .init(value: 0, unit: .degrees),
@@ -165,7 +167,7 @@ struct FromToMathTests {
         from: from,
         to: to,
         speed: speed,
-        track: .init(angle: 135, reference: .true),  // 135° off the run-in bearing
+        track: TrueBearing(degrees: 135),  // 135° off the run-in bearing
         targetSpeed: .init(value: 120, unit: .knots),
         timeOnTarget: tot,
         declination: .init(value: 0, unit: .degrees),
@@ -187,7 +189,7 @@ struct FromToMathTests {
       from: SF,
       to: LA,
       speed: .init(value: 120, unit: .knots),
-      track: .init(angle: 0, reference: .true),
+      track: TrueBearing(degrees: 0),
       targetSpeed: .init(value: 120, unit: .knots),
       timeOnTarget: now.addingTimeInterval(-60),  // TOT was a minute ago
       declination: .init(value: 0, unit: .degrees),
@@ -200,8 +202,8 @@ struct FromToMathTests {
   @Test("turnTime, 90 degree turn, calculates correctly")
   func turnTime90Degrees() {
     let speed = Measurement(value: 120, unit: UnitSpeed.knots)
-    let fromHeading = Bearing(angle: 0, reference: .magnetic)
-    let toHeading = Bearing(angle: 90, reference: .magnetic)
+    let fromHeading = MagneticBearing(degrees: 0)
+    let toHeading = MagneticBearing(degrees: 90)
 
     let turnTime = FromToMath.turnTime(
       fromHeading: fromHeading,
@@ -224,8 +226,8 @@ struct FromToMathTests {
   @Test("turnTime, 180 degree turn, calculates correctly")
   func turnTime180Degrees() {
     let speed = Measurement(value: 120, unit: UnitSpeed.knots)
-    let fromHeading = Bearing(angle: 0, reference: .magnetic)
-    let toHeading = Bearing(angle: 180, reference: .magnetic)
+    let fromHeading = MagneticBearing(degrees: 0)
+    let toHeading = MagneticBearing(degrees: 180)
 
     let turnTime = FromToMath.turnTime(
       fromHeading: fromHeading,
@@ -245,8 +247,8 @@ struct FromToMathTests {
   @Test("turnTime, small turn, returns zero")
   func turnTimeSmallTurn() {
     let speed = Measurement(value: 120, unit: UnitSpeed.knots)
-    let fromHeading = Bearing(angle: 0, reference: .magnetic)
-    let toHeading = Bearing(angle: 5, reference: .magnetic)  // 5° is less than 10° threshold
+    let fromHeading = MagneticBearing(degrees: 0)
+    let toHeading = MagneticBearing(degrees: 5)  // 5° is less than 10° threshold
 
     let turnTime = FromToMath.turnTime(
       fromHeading: fromHeading,
@@ -274,7 +276,7 @@ struct FromToMathTests {
       from: from,
       to: to,
       speed: .init(value: 120, unit: .knots),
-      track: .init(angle: 90, reference: .true),  // Heading east
+      track: TrueBearing(degrees: 90),  // Heading east
       targetSpeed: .init(value: 120, unit: .knots),
       timeOnTarget: now.addingTimeInterval(60 * 60),
       declination: .init(value: 0, unit: .degrees),
@@ -302,29 +304,6 @@ struct FromToMathTests {
     #expect(
       timeToGoSeconds.isApproximatelyEqual(
         to: 163,
-        relativeTolerance: 0.05
-      )
-    )
-  }
-
-  @Test("turnAnticipationDistance, 90 degree turn, calculates correctly")
-  func turnAnticipationDistance() {
-    let speed = Measurement(value: 120, unit: UnitSpeed.knots)
-    let fromHeading = Bearing(angle: 0, reference: .magnetic)
-    let toHeading = Bearing(angle: 90, reference: .magnetic)
-
-    let anticipationDistance = FromToMath.turnAnticipationDistance(
-      fromHeading: fromHeading,
-      toHeading: toHeading,
-      speed: speed
-    )
-
-    // Turn anticipation is typically half the turn time worth of distance
-    // Turn time ≈ 17.13 seconds, speed = 61.73 m/s
-    // Anticipation = 0.5 * 17.13 * 61.73 ≈ 529 meters ≈ 0.285 NM
-    #expect(
-      anticipationDistance.converted(to: .nauticalMiles).value.isApproximatelyEqual(
-        to: 0.285,
         relativeTolerance: 0.05
       )
     )

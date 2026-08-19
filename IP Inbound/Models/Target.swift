@@ -1,6 +1,8 @@
 import CoreLocation
 import Defaults
 import Foundation
+import MeasurementKit
+import MeasurementKitLocation
 import SwiftData
 
 @Model
@@ -14,10 +16,7 @@ final class Target: CustomDebugStringConvertible, Identifiable, Equatable, Hasha
   var offsetBearing: Double {
     get { _offsetBearing }
     set {
-      _offsetBearing =
-        newValue >= 0
-        ? newValue.truncatingRemainder(dividingBy: 360)
-        : (newValue.truncatingRemainder(dividingBy: 360) + 360).truncatingRemainder(dividingBy: 360)
+      _offsetBearing = Measurement(value: newValue, unit: UnitAngle.degrees).normalized.degrees
     }
   }
 
@@ -45,16 +44,11 @@ final class Target: CustomDebugStringConvertible, Identifiable, Equatable, Hasha
     }
   }
 
-  @Transient var offsetBearingMeasurement: Bearing {
-    get {
-      .init(
-        angle: offsetBearing,
-        reference: offsetBearingIsTrue ? .true : .magnetic
-      )
-    }
+  @Transient var offsetBearingMeasurement: OffsetBearing {
+    get { .init(degrees: offsetBearing, isTrue: offsetBearingIsTrue) }
     set {
       offsetBearing = newValue.degrees
-      offsetBearingIsTrue = newValue.reference == .true
+      offsetBearingIsTrue = newValue.isTrue
     }
   }
   @Transient var offsetDistanceMeasurement: Measurement<UnitLength> {
