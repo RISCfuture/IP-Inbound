@@ -19,11 +19,11 @@ struct CDIView: View {
   var crossTrackDistance: Measurement<UnitLength>?
   var distanceScale = Measurement(value: 4, unit: UnitLength.nauticalMiles)
 
+  /// Signed deviation in `[-1, 1]`; positive means the aircraft is right of course.
   private var deflection: CGFloat? {
     guard let crossTrackDistance else { return nil }
 
-    let deflection = crossTrackDistance / distanceScale
-    return min(deflection, 1.0)
+    return CGFloat(max(-1, min(1, crossTrackDistance / distanceScale)))
   }
 
   var body: some View {
@@ -74,7 +74,9 @@ struct CDIView: View {
         if let relativeBearing = relative(bearing: bearing) {
           CDIBearingPointerLayer(
             relativeAngle: relativeBearing,
-            deflection: deflection,
+            // The course lies on the side the aircraft must steer toward, so the bar deflects
+            // opposite the cross-track sign: right of course -> bar left -> fly left.
+            deflection: deflection.map { -$0 },
             scaleWidth: Self.scaleWidth,
             bearingColor: bearingColor
           )

@@ -359,10 +359,11 @@ struct IPTargetMathTests {
     )
 
     // The run-in axis runs due west through the target along 38°N, so a position
-    // ~1° (~60NM) south of it is ~60NM off-axis.
+    // ~1° (~60NM) south of it is ~60NM off-axis — and south is to the left of a westbound
+    // course, which the course-deviation convention signs negative.
     #expect(
       southOfTarget.crossTrackDistance.converted(to: .nauticalMiles).value.isApproximatelyEqual(
-        to: 60,
+        to: -60,
         relativeTolerance: 0.01
       )
     )
@@ -376,11 +377,10 @@ struct IPTargetMathTests {
       now: now
     )
 
-    // Cross track distance should be close to 1NM
-    // since we are
+    // North is to the right of the same westbound course, so the same offset signs positive.
     #expect(
       northOfTarget.crossTrackDistance.converted(to: .nauticalMiles).value.isApproximatelyEqual(
-        to: -60,
+        to: 60,
         relativeTolerance: 0.01
       )
     )

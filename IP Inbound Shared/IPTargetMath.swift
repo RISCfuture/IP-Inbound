@@ -57,11 +57,10 @@ struct IPTargetMath<T: GuidanceTarget> {
     return IP_ETA.elapsed(since: desiredTimeOverIP)
   }
 
-  /// How far the position lies off the run-in course line. Positive is **left** of course: the
-  /// sign the app's displays are drawn against, and the opposite of the course-deviation convention
-  /// `GreatCircleSegment` answers in.
+  /// How far the position lies off the run-in course line. Positive is **right** of course, the
+  /// course-deviation convention, so a positive deviation is corrected by turning left.
   var crossTrackDistance: Measurement<UnitLength> {
-    -target.IPToTarget.crossTrackDistance(to: coordinate)
+    target.IPToTarget.crossTrackDistance(to: coordinate)
   }
 
   var pposToIPToTargetETAAtMaxSpeed: Date? {
