@@ -4,7 +4,7 @@ import Foundation
 /// The shared contract for the Time-On-Target Live Activity. The app — which starts and ends the
 /// activity — and the widget extension — which renders it — refer to the same `ActivityAttributes`
 /// type; ActivityKit matches a running activity to its presentation by this type, so a single shared
-/// definition is required. It lives in the app sources (not ``IP Inbound Shared``) because ActivityKit
+/// definition is required. It lives in the app sources (not `IP Inbound Shared`) because ActivityKit
 /// is unavailable on watchOS, and the extension picks it up via explicit target membership.
 struct TOTActivityAttributes: ActivityAttributes {
   /// The name of the target being flown, fixed for the life of the activity.

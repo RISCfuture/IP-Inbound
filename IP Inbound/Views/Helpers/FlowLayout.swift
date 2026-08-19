@@ -3,7 +3,7 @@ import SwiftUI
 /// Lays children out left-to-right, wrapping to a new row when the next child would overflow the
 /// available width. Each child keeps its ideal width, so no child is split across rows.
 ///
-/// Children marked with ``SwiftUI/View/flowSeparator()`` act as separators: a separator is paired
+/// Children marked with ``SwiftUICore/View/flowSeparator()`` act as separators: a separator is paired
 /// with the child that follows it and is shown only when that child stays on the current row. When
 /// the following child wraps, the separator is dropped — so a row never begins or ends with one.
 struct FlowLayout: Layout {

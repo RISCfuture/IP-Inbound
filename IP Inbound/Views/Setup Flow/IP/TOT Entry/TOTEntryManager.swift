@@ -48,7 +48,7 @@ final class TOTEntryManager {
   private var formatChangeObserver: Task<Void, Never>?
   private var targetTimezone: TimeZone?
 
-  /// The `HH:MM:SS TZ` edit buffer. The keypad rewrites it a character at a time and ``time(from:)``
+  /// The `HH:MM:SS TZ` edit buffer. The keypad rewrites it a character at a time and `time(from:)`
   /// reads it back, so `String(format:)` builds it from raw components: every field is zero-padded to
   /// a fixed width and the digits stay ASCII no matter how the reader's locale renders numbers.
   var stringValue: String {

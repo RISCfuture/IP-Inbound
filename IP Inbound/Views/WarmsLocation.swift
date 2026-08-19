@@ -19,7 +19,7 @@ private struct WarmsLocation: ViewModifier {
 }
 
 extension View {
-  /// Warms the location stream for this view's lifetime without gating on a fix. See ``WarmsLocation``.
+  /// Warms the location stream for this view's lifetime without gating on a fix. See `WarmsLocation`.
   func warmsLocation() -> some View {
     modifier(WarmsLocation())
   }

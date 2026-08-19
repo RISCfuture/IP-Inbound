@@ -26,3 +26,40 @@ jobs:
           {"ios-label":"latest","runner":"macos-26","device":"iPhone 17 Pro","device-type":"com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro","os-version":"","xcode-version":"latest-stable"},
           {"ios-label":"latest","runner":"macos-26","device":"iPad Pro 13-inch (M5)","device-type":"com.apple.CoreSimulator.SimDeviceType.iPad-Pro-13-inch-M5-12GB","os-version":"","xcode-version":"latest-stable"}
         ]}
+
+  docs:
+    name: Documentation Build
+    runs-on: macos-26
+    steps:
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+      # setup-swift xcode-selects /Applications/Xcode_26.5.app, which is
+      # required to open project file format 100.
+      - uses: SwiftyLab/setup-swift@latest
+        with:
+          swift-version: "6.3"
+      - uses: actions/checkout@v6
+      - name: Enable macros
+        run: defaults write com.apple.dt.Xcode IDESkipMacroFingerprintValidation -bool YES
+      - name: Build documentation
+        # The app scheme embeds the watch app and the Live Activity extension, so one build
+        # documents all three modules. A generic destination compiles against the simulator
+        # SDK without booting a device, and nothing is installed or launched, so signing stays
+        # off. DocC has no strictness build setting, so --warnings-as-errors reaches it through
+        # OTHER_DOCC_FLAGS. docbuild documents the package dependencies too, and their DocC
+        # warnings are upstream's to fix, so the strict flag is looked up by module name and
+        # only this project's modules have a value to find. Nothing consumes the archives, so
+        # they build into the runner's scratch directory rather than the checkout.
+        run: |
+          # shellcheck disable=SC2016 # xcodebuild, not the shell, expands these
+          xcodebuild docbuild \
+            -project "IP Inbound.xcodeproj" \
+            -scheme "IP Inbound" \
+            -destination "generic/platform=iOS Simulator" \
+            -derivedDataPath "$RUNNER_TEMP/docs-dd" \
+            CODE_SIGNING_ALLOWED=NO \
+            'OTHER_DOCC_FLAGS=$(DOCC_STRICT_$(PRODUCT_MODULE_NAME))' \
+            DOCC_STRICT_IP_Inbound="--warnings-as-errors" \
+            DOCC_STRICT_IP_Inbound_Watch="--warnings-as-errors" \
+            DOCC_STRICT_Live_ActivityExtension="--warnings-as-errors"
