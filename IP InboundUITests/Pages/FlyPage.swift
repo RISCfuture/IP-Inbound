@@ -7,17 +7,14 @@ struct FlyPage: Page {
   let app: XCUIApplication
 
   var isDisplayed: Bool {
-    // Displayed if the flyView, CDI, or countdown element exists. On iPad the
-    // `flyView` identifier propagates onto a descendant button ("Recenter map"),
-    // so match across any element type.
+    // Displayed if the flyView container, the CDI, or the countdown exists. Each surfaces as a
+    // different element type, and the map-bearing iPad layout adds more, so match across any type.
     anyElement(identifier: "flyView").waitForExistence(timeout: 5)
       || cdi.waitForExistence(timeout: 2)
       || countdown.waitForExistence(timeout: 2)
   }
 
-  // The guidance content sets `.accessibilityIdentifier("cdi")`, but the ancestor `flyView` identifier
-  // propagates onto its descendants and overrides it, so the element is found by its label.
-  var cdi: XCUIElement { anyElement(label: "Course deviation indicator") }
+  var cdi: XCUIElement { anyElement(identifier: "cdi") }
   var countdown: XCUIElement { anyElement(identifier: "countdown") }
   var simulatorBanner: XCUIElement { app.staticTexts["simulatorBanner"] }
   var flySpeedDisplay: XCUIElement { app.staticTexts["flySpeedDisplay"] }
@@ -29,20 +26,10 @@ struct FlyPage: Page {
     let predicate = NSPredicate(format: "label CONTAINS[c] %@", "req.")
     return app.buttons.matching(predicate).firstMatch
   }
-  // The distance readout carries the `.isButton` trait (for unit cycling) and the ancestor
-  // `flyView` identifier propagates over its own, so it is found as a button by its distance label
-  // (e.g. "9.8 nmi"), which cycles through nmi / mi / km on tap.
-  var flyDistanceDisplay: XCUIElement {
-    let predicate = NSPredicate(format: "label MATCHES %@", ".*[0-9].*(nmi|mi|km)")
-    return app.buttons.matching(predicate).firstMatch
-  }
-  // The TOT readout carries the `.isButton` trait (for the local/zulu toggle) and the ancestor
-  // `flyView` identifier propagates over its own, so it is found as a button by its time label —
-  // either the zulu form ("1757Z") or the local one ("10:57 AM").
-  var flyTOTDisplay: XCUIElement {
-    let predicate = NSPredicate(format: "label MATCHES %@", "[0-9]{4}Z|[0-9]{1,2}:[0-9]{2}.*")
-    return app.buttons.matching(predicate).firstMatch
-  }
+  // Both readouts carry the `.isButton` trait for unit cycling and the local/zulu toggle, so they
+  // surface as buttons rather than static texts.
+  var flyDistanceDisplay: XCUIElement { app.buttons["flyDistanceDisplay"] }
+  var flyTOTDisplay: XCUIElement { app.buttons["flyTOTDisplay"] }
 
   var guidanceMode: String? {
     if anyElement(label: "P.POS → IP").exists { return "P.POS → IP" }
@@ -74,10 +61,9 @@ struct FlyPage: Page {
     flyTOTDisplay.forceTap()
   }
 
-  // On iPad the `flyView` accessibility identifier propagates onto its
-  // descendants, so the Fly screen's content surfaces with identifier "flyView"
-  // and the real text in the label. Match by identifier or label across any
-  // element type so the same queries resolve on both iPhone and iPad.
+  // The Fly screen's elements surface as different types across layouts — a header is a static
+  // text, a readout a button, the guidance content a container. Match across any element type so
+  // the same queries resolve on both iPhone and iPad.
   private func anyElement(identifier: String) -> XCUIElement {
     app.descendants(matching: .any).matching(identifier: identifier).firstMatch
   }

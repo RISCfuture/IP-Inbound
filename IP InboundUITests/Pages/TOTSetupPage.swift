@@ -47,13 +47,7 @@ struct TOTSetupPage: Page {
 
   @discardableResult
   func tapFly() -> FlyPage {
-    // The `flyView` identifier resolves to an otherElement on iPhone but
-    // propagates onto a descendant button ("Recenter map") on iPad, so match it
-    // regardless of element type.
-    tapButton(
-      "flyButton",
-      toReveal: app.descendants(matching: .any).matching(identifier: "flyView").firstMatch
-    )
+    tapButton("flyButton", toReveal: app.otherElements["flyView"])
     return FlyPage(app: app)
   }
 

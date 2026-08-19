@@ -56,6 +56,9 @@ struct FlyView: View {
         capturePostPassIfNeeded(guidance: guidance)
       }
     }
+    // The Fly screen is a container of separately readable elements, not one element itself.
+    // Declaring that keeps the identifier on the container; without it the identifier is applied to
+    // every descendant, replacing the ones the readouts set for themselves.
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier("flyView")
     .onAppear {

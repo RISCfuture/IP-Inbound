@@ -3,9 +3,7 @@ import XCUITestKit
 
 // swiftlint:disable prefer_nimble
 
-// SwiftUI propagates the enclosing `flyView` accessibility identifier to every
-// descendant, so the post-pass screen is located by its text content rather
-// than by element identifiers (mirroring `FlyPage`).
+// The post-pass screen sets no identifiers of its own, so it is located by the text it shows.
 struct PostPassPage: Page {
   let app: XCUIApplication
 
@@ -15,9 +13,8 @@ struct PostPassPage: Page {
 
   var titleText: XCUIElement { app.staticTexts["Past Target"] }
 
-  // The post-pass “Fly <target>” button is labeled with the next target's name, and SwiftUI
-  // overrides descendant identifiers with the enclosing `flyView` id, so match it by its label
-  // prefix rather than by identifier.
+  // The “Fly <target>” button is labeled with the next target's name, which is not known here, so
+  // it is matched by the part of the label that does not vary.
   var flyNextTargetButton: XCUIElement {
     app.buttons.matching(NSPredicate(format: "label BEGINSWITH[c] %@", "Fly ")).firstMatch
   }
