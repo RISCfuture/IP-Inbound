@@ -6,15 +6,15 @@ final class CoordinateEntryTests: BaseTestCase {
 
   // MARK: - Test 7
 
-  func testCoordinateEntry_DecimalDegrees() throws {
-    launchApp()
+  func testCoordinateEntry_DecimalDegrees() async throws {
+    await launchApp()
 
     let list = TargetListPage(app: app)
     let setup = list.createTarget(named: "DD Test")
 
     let coordPage = setup.tapSetCoordinates()
     coordPage.selectFormat("DD")
-    coordPage.enterLatLon(
+    await coordPage.enterLatLon(
       lat: (direction: "N", digits: "37.12345"),
       lon: (direction: "W", digits: "121.67890")
     )
@@ -33,15 +33,15 @@ final class CoordinateEntryTests: BaseTestCase {
 
   // MARK: - Test 8
 
-  func testCoordinateEntry_DegreesMinutesSeconds() throws {
-    launchApp()
+  func testCoordinateEntry_DegreesMinutesSeconds() async throws {
+    await launchApp()
 
     let list = TargetListPage(app: app)
     let setup = list.createTarget(named: "DMS Test")
 
     let coordPage = setup.tapSetCoordinates()
     coordPage.selectFormat("DMS")
-    coordPage.enterLatLon(
+    await coordPage.enterLatLon(
       lat: (direction: "N", digits: "37 12 34"),
       lon: (direction: "W", digits: "121 23 45")
     )
@@ -63,15 +63,15 @@ final class CoordinateEntryTests: BaseTestCase {
 
   // MARK: - Test 9
 
-  func testCoordinateEntry_DegreesDecimalMinutes() throws {
-    launchApp()
+  func testCoordinateEntry_DegreesDecimalMinutes() async throws {
+    await launchApp()
 
     let list = TargetListPage(app: app)
     let setup = list.createTarget(named: "DDM Test")
 
     let coordPage = setup.tapSetCoordinates()
     coordPage.selectFormat("DDM")
-    coordPage.enterLatLon(
+    await coordPage.enterLatLon(
       lat: (direction: "N", digits: "37 12.345"),
       lon: (direction: "W", digits: "121 23.456")
     )
@@ -93,8 +93,8 @@ final class CoordinateEntryTests: BaseTestCase {
 
   // MARK: - Test 10
 
-  func testCoordinateEntry_UTM() throws {
-    launchApp()
+  func testCoordinateEntry_UTM() async throws {
+    await launchApp()
 
     let list = TargetListPage(app: app)
     let setup = list.createTarget(named: "UTM Test")
@@ -113,8 +113,8 @@ final class CoordinateEntryTests: BaseTestCase {
 
   // MARK: - Test 11
 
-  func testCoordinateEntry_MGRS() throws {
-    launchApp()
+  func testCoordinateEntry_MGRS() async throws {
+    await launchApp()
 
     let list = TargetListPage(app: app)
     let setup = list.createTarget(named: "MGRS Test")
@@ -137,15 +137,15 @@ final class CoordinateEntryTests: BaseTestCase {
 
   // MARK: - Test 12
 
-  func testCoordinateEntry_SouthEastHemisphere() throws {
-    launchApp()
+  func testCoordinateEntry_SouthEastHemisphere() async throws {
+    await launchApp()
 
     let list = TargetListPage(app: app)
     let setup = list.createTarget(named: "SE Test")
 
     let coordPage = setup.tapSetCoordinates()
     coordPage.selectFormat("DD")
-    coordPage.enterLatLon(
+    await coordPage.enterLatLon(
       lat: (direction: "S", digits: "33.86880"),
       lon: (direction: "E", digits: "151.20930")
     )
@@ -164,8 +164,8 @@ final class CoordinateEntryTests: BaseTestCase {
 
   // MARK: - Test 13
 
-  func testCoordinateDisplay_TapCyclesFormat() throws {
-    launchApp()
+  func testCoordinateDisplay_TapCyclesFormat() async throws {
+    await launchApp()
 
     let list = TargetListPage(app: app)
     let setup = list.createTarget(named: "Cycle Test")
@@ -173,7 +173,7 @@ final class CoordinateEntryTests: BaseTestCase {
     // Enter DD coordinates
     let coordPage = setup.tapSetCoordinates()
     coordPage.selectFormat("DD")
-    coordPage.enterLatLon(
+    await coordPage.enterLatLon(
       lat: (direction: "N", digits: "37.12345"),
       lon: (direction: "W", digits: "121.67890")
     )

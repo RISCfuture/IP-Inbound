@@ -6,8 +6,8 @@ final class IPSetupTests: BaseTestCase {
 
   // MARK: - Test 18
 
-  func testBearingEntry_UpdatesInboundTrack() throws {
-    launchApp()
+  func testBearingEntry_UpdatesInboundTrack() async throws {
+    await launchApp()
     let list = TargetListPage(app: app)
     let setup = list.createTarget(named: "Bearing Test")
     let ipPage = setup.tapDefineIP()
@@ -45,8 +45,8 @@ final class IPSetupTests: BaseTestCase {
 
   // MARK: - Test 19
 
-  func testBearingReference_ChangesInboundValue() throws {
-    launchApp()
+  func testBearingReference_ChangesInboundValue() async throws {
+    await launchApp()
     let list = TargetListPage(app: app)
     let setup = list.createTarget(named: "BearingRef Test")
     let ipPage = setup.tapDefineIP()
@@ -93,8 +93,8 @@ final class IPSetupTests: BaseTestCase {
 
   // MARK: - Test 20
 
-  func testOffsetType_DistanceToTime() throws {
-    launchApp()
+  func testOffsetType_DistanceToTime() async throws {
+    await launchApp()
     let list = TargetListPage(app: app)
     let setup = list.createTarget(named: "OffsetType Test")
     let ipPage = setup.tapDefineIP()
@@ -134,8 +134,8 @@ final class IPSetupTests: BaseTestCase {
 
   // MARK: - Test 21
 
-  func testOffsetType_ValueConversion() throws {
-    launchApp()
+  func testOffsetType_ValueConversion() async throws {
+    await launchApp()
     let list = TargetListPage(app: app)
     let setup = list.createTarget(named: "Conversion Test")
     let ipPage = setup.tapDefineIP()
@@ -194,8 +194,8 @@ final class IPSetupTests: BaseTestCase {
 
   // MARK: - Test 22
 
-  func testGroundSpeedEntry_AffectsOffsetTime() throws {
-    launchApp()
+  func testGroundSpeedEntry_AffectsOffsetTime() async throws {
+    await launchApp()
     let list = TargetListPage(app: app)
     let setup = list.createTarget(named: "Speed Test")
     let ipPage = setup.tapDefineIP()
@@ -247,8 +247,8 @@ final class IPSetupTests: BaseTestCase {
 
   // MARK: - Test 23
 
-  func testFullIPConfiguration() throws {
-    launchApp()
+  func testFullIPConfiguration() async throws {
+    await launchApp()
     let list = TargetListPage(app: app)
     let setup = list.createTarget(named: "Full IP Test")
     let ipPage = setup.tapDefineIP()
@@ -258,7 +258,7 @@ final class IPSetupTests: BaseTestCase {
     ipPage.enterOffsetDistance("4.8")
     ipPage.enterGroundSpeed("120")
 
-    let totPage = ipPage.tapTimeOnTarget()
+    let totPage = await ipPage.tapTimeOnTarget()
     XCTAssertTrue(totPage.isDisplayed, "TOT page should load")
 
     // Verify time entry is functional (field should exist with default time)

@@ -6,7 +6,7 @@ import XCUITestKit
 
 final class HarnessFlythroughTests: BaseTestCase {
 
-  func testScriptedFlythroughShowsMovingGuidance() throws {
+  func testScriptedFlythroughShowsMovingGuidance() async throws {
     // TOT = 18:00:00Z; pin "now" to TOT − 30 s so the scripted path's elapsed
     // window covers the inbound portion through-and-past the target.
     let tot = Self.uiTestNowFormatter.date(from: "2026-05-18T18:00:00.000Z")!
@@ -32,7 +32,7 @@ final class HarnessFlythroughTests: BaseTestCase {
     app.resetAuthorizationStatus(for: .location)
     app.launch()
     waitForAppStability()
-    handleLocationPermissionIfNeeded()
+    await handleLocationPermissionIfNeeded()
 
     let list = TargetListPage(app: app)
     XCTAssertTrue(list.isDisplayed, "Target list should appear with the seeded target")
@@ -51,8 +51,8 @@ final class HarnessFlythroughTests: BaseTestCase {
     if !movingLabel.waitForExistence(timeout: 12) {
       // Fallback: tap through configured pages to Fly (no keyboard input).
       let ipPage = setupPage.tapDefineIP()
-      let totPage = ipPage.tapTimeOnTarget()
-      totPage.tapFly()
+      let totPage = await ipPage.tapTimeOnTarget()
+      await totPage.tapFly()
       XCTAssertTrue(
         movingLabel.waitForExistence(timeout: 12),
         "Moving guidance label should appear after tap-only navigation"

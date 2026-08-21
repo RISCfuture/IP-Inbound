@@ -14,8 +14,8 @@ final class IP_InboundUITestsLaunchTests: BaseTestCase {
   // Launches the app, captures a launch screenshot, and verifies the app reached its real initial
   // screen — the target list — by asserting its `addTargetButton`. A blank or crashed launch would
   // fail this assertion.
-  func testLaunch_ReachesTargetList() throws {
-    launchApp()
+  func testLaunch_ReachesTargetList() async throws {
+    await launchApp()
 
     captureLaunchScreenshot()
 

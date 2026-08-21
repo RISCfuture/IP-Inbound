@@ -6,8 +6,8 @@ final class TutorialTests: BaseTestCase {
 
   // MARK: - Test 35
 
-  func testTutorial_ShowsTitle() throws {
-    launchApp()
+  func testTutorial_ShowsTitle() async throws {
+    await launchApp()
     let list = TargetListPage(app: app)
     let tutorial = list.tapTutorial()
 
@@ -19,8 +19,8 @@ final class TutorialTests: BaseTestCase {
 
   // MARK: - Test 36
 
-  func testTutorial_ContainsSectionHeaders() throws {
-    launchApp()
+  func testTutorial_ContainsSectionHeaders() async throws {
+    await launchApp()
     let list = TargetListPage(app: app)
     let tutorial = list.tapTutorial()
 
@@ -38,8 +38,8 @@ final class TutorialTests: BaseTestCase {
 
   // MARK: - Test 37
 
-  func testTutorial_DismissReturnToList() throws {
-    launchApp()
+  func testTutorial_DismissReturnToList() async throws {
+    await launchApp()
     let list = TargetListPage(app: app)
     let tutorial = list.tapTutorial()
     XCTAssertTrue(tutorial.isDisplayed)
@@ -53,8 +53,8 @@ final class TutorialTests: BaseTestCase {
 
   // MARK: - Test 38
 
-  func testTutorial_DismissViaSwipeDown() throws {
-    launchApp()
+  func testTutorial_DismissViaSwipeDown() async throws {
+    await launchApp()
     let list = TargetListPage(app: app)
     let tutorial = list.tapTutorial()
     XCTAssertTrue(tutorial.isDisplayed)

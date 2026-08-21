@@ -46,7 +46,7 @@ class BaseTestCase: XCTestCase {
     now: Date? = nil,
     location: String? = defaultFix,
     path: String? = nil
-  ) {
+  ) async {
     let knownApps = ["codes.tim.FART"]
     for bundleID in knownApps {
       let other = XCUIApplication(bundleIdentifier: bundleID)
@@ -71,7 +71,7 @@ class BaseTestCase: XCTestCase {
     app.resetAuthorizationStatus(for: .location)
     app.launch()
     waitForAppStability()
-    handleLocationPermissionIfNeeded()
+    await handleLocationPermissionIfNeeded()
   }
 
   func setSimulatedLocation(latitude: Double, longitude: Double) {
@@ -84,12 +84,12 @@ class BaseTestCase: XCTestCase {
     XCUIDevice.shared.location = XCUILocation(location: location)
   }
 
-  func handleLocationPermissionIfNeeded() {
+  func handleLocationPermissionIfNeeded() async {
     // Tap the location prompt's "Allow While Using App" on SpringBoard directly,
     // at this known point in the flow, without depending on a follow-up
     // interaction (unlike `addUIInterruptionMonitor`). Safe to call defensively:
     // returns without failing if no prompt is present.
-    SystemAlert.dismiss(labels: ["Allow While Using App"])
+    await SystemAlert.dismiss(labels: ["Allow While Using App"])
   }
 
   func waitForAppStability(timeout: TimeInterval = 5) {

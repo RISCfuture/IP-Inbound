@@ -40,8 +40,8 @@ final class NavigationFlowTests: BaseTestCase {
 
   // MARK: - Test 24
 
-  func testForwardNavigationFlow() throws {
-    launchApp()
+  func testForwardNavigationFlow() async throws {
+    await launchApp()
     let list = TargetListPage(app: app)
     let setup = list.createTarget(named: "NavFlow")
 
@@ -49,11 +49,11 @@ final class NavigationFlowTests: BaseTestCase {
     ipPage.enterBearing("090")
     ipPage.enterOffsetDistance("5")
 
-    let totPage = ipPage.tapTimeOnTarget()
+    let totPage = await ipPage.tapTimeOnTarget()
     totPage.selectZuluTime()
     totPage.enterTime("18:00:00")
 
-    totPage.tapFly()
+    await totPage.tapFly()
 
     // Assert fly view loads (countdown mode expected in test environment)
     XCTAssertTrue(waitForFlyContent(), "Fly view content should appear after forward navigation")
@@ -81,8 +81,8 @@ final class NavigationFlowTests: BaseTestCase {
 
   // MARK: - Test 25
 
-  func testBackNavigationFlow() throws {
-    launchApp()
+  func testBackNavigationFlow() async throws {
+    await launchApp()
     let list = TargetListPage(app: app)
     let setup = list.createTarget(named: "BackNav")
 
@@ -100,11 +100,11 @@ final class NavigationFlowTests: BaseTestCase {
       "Bearing field should hold a value before navigating away"
     )
 
-    let totPage = ipPage.tapTimeOnTarget()
+    let totPage = await ipPage.tapTimeOnTarget()
     XCTAssertTrue(totPage.isDisplayed, "TOT page should appear")
 
     // Go back to IP setup
-    totPage.tapBackToIPSetup()
+    await totPage.tapBackToIPSetup()
 
     // Assert bearing field retains value; wait for it to repopulate after the
     // back navigation rather than sleeping a fixed interval.
@@ -119,7 +119,7 @@ final class NavigationFlowTests: BaseTestCase {
 
     // Go back to target setup via the IP Setup page's back button
     let ipBack2 = IPSetupPage(app: app)
-    ipBack2.tapBackToTargetSetup()
+    await ipBack2.tapBackToTargetSetup()
 
     // Wait for the name field to repopulate with the retained value rather than
     // sleeping a fixed interval before reading it.
@@ -143,8 +143,8 @@ final class NavigationFlowTests: BaseTestCase {
   // Verifies the post-auto-advance contract: re-selecting an already-configured target from the list
   // lands on the setup flow (Define Target), not the fly view. Auto-advance to fly was removed; only
   // the post-pass “Fly <target>” shortcut jumps straight to fly.
-  func testConfiguredTargetLandsOnSetup() throws {
-    launchApp()
+  func testConfiguredTargetLandsOnSetup() async throws {
+    await launchApp()
     let list = TargetListPage(app: app)
 
     // Fully configure target
@@ -155,11 +155,11 @@ final class NavigationFlowTests: BaseTestCase {
     ipPage.enterOffsetDistance("5")
     ipPage.enterGroundSpeed("120")
 
-    let totPage = ipPage.tapTimeOnTarget()
+    let totPage = await ipPage.tapTimeOnTarget()
     totPage.selectZuluTime()
     totPage.enterTime("18:00:00")
 
-    totPage.tapFly()
+    await totPage.tapFly()
 
     // Wait for fly view to render
     XCTAssertTrue(waitForFlyContent(), "Fly view should render on first visit")
@@ -191,8 +191,8 @@ final class NavigationFlowTests: BaseTestCase {
 
   // MARK: - Test 27
 
-  func testNewTargetLandsOnSetup() throws {
-    launchApp()
+  func testNewTargetLandsOnSetup() async throws {
+    await launchApp()
     let list = TargetListPage(app: app)
     let setup = list.createTarget(named: "NewSetup")
 
@@ -215,8 +215,8 @@ final class NavigationFlowTests: BaseTestCase {
 
   // MARK: - Test 28
 
-  func testNavigateBackFromFlyAllowsReconfig() throws {
-    launchApp()
+  func testNavigateBackFromFlyAllowsReconfig() async throws {
+    await launchApp()
     let list = TargetListPage(app: app)
     let setup = list.createTarget(named: "Reconfig")
 
@@ -224,11 +224,11 @@ final class NavigationFlowTests: BaseTestCase {
     ipPage.enterBearing("090")
     ipPage.enterOffsetDistance("5")
 
-    let totPage = ipPage.tapTimeOnTarget()
+    let totPage = await ipPage.tapTimeOnTarget()
     totPage.selectZuluTime()
     totPage.enterTime("18:00:00")
 
-    totPage.tapFly()
+    await totPage.tapFly()
     XCTAssertTrue(waitForFlyContent(), "Fly view should render")
 
     // Go back to TOT via nav bar back button (labeled with previous view's title)
@@ -255,7 +255,7 @@ final class NavigationFlowTests: BaseTestCase {
     XCTAssertTrue(totBack.isDisplayed, "Should be on TOT page after back from fly")
 
     // Go back forward to fly
-    totBack.tapFly()
+    await totBack.tapFly()
     XCTAssertTrue(
       waitForFlyContent(),
       "Fly view should render after reconfig"

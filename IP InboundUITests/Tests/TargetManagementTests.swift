@@ -6,8 +6,8 @@ final class TargetManagementTests: BaseTestCase {
 
   // MARK: - Test 1
 
-  func testCreateNewTarget() throws {
-    launchApp()
+  func testCreateNewTarget() async throws {
+    await launchApp()
     let list = TargetListPage(app: app)
     let setup = list.createTarget(named: "Alpha")
     XCTAssertTrue(setup.isDisplayed, "Should be on target setup view")
@@ -28,8 +28,8 @@ final class TargetManagementTests: BaseTestCase {
 
   // MARK: - Test 2
 
-  func testSelectExistingTarget() throws {
-    launchApp()
+  func testSelectExistingTarget() async throws {
+    await launchApp()
     let list = TargetListPage(app: app)
     let setup = list.createTarget(named: "Bravo")
     XCTAssertTrue(setup.isDisplayed)
@@ -54,8 +54,8 @@ final class TargetManagementTests: BaseTestCase {
 
   // MARK: - Test 3
 
-  func testDeleteTargetRemovesFromList() throws {
-    launchApp()
+  func testDeleteTargetRemovesFromList() async throws {
+    await launchApp()
     let list = TargetListPage(app: app)
 
     // Create Charlie
@@ -97,8 +97,8 @@ final class TargetManagementTests: BaseTestCase {
 
   // MARK: - Test 4
 
-  func testTargetListShowsCoordinates() throws {
-    launchApp()
+  func testTargetListShowsCoordinates() async throws {
+    await launchApp()
 
     let list = TargetListPage(app: app)
     let setup = list.createTarget(named: "CoordTarget")
@@ -106,7 +106,7 @@ final class TargetManagementTests: BaseTestCase {
     // Enter DD coordinates
     let coordPage = setup.tapSetCoordinates()
     coordPage.selectFormat("DD")
-    coordPage.enterLatLon(
+    await coordPage.enterLatLon(
       lat: (direction: "N", digits: "37.12345"),
       lon: (direction: "W", digits: "121.67890")
     )
@@ -141,8 +141,8 @@ final class TargetManagementTests: BaseTestCase {
 
   // MARK: - Test 5
 
-  func testTargetListShowsTimeOnTarget() throws {
-    launchApp()
+  func testTargetListShowsTimeOnTarget() async throws {
+    await launchApp()
 
     let list = TargetListPage(app: app)
     let setup = list.createTarget(named: "TOTListTarget")
@@ -151,7 +151,7 @@ final class TargetManagementTests: BaseTestCase {
     let ipPage = setup.tapDefineIP()
     ipPage.enterBearing("090")
     ipPage.enterOffsetDistance("5")
-    let totPage = ipPage.tapTimeOnTarget()
+    let totPage = await ipPage.tapTimeOnTarget()
     totPage.selectZuluTime()
     totPage.enterTime("18:00:00")
 
@@ -176,8 +176,8 @@ final class TargetManagementTests: BaseTestCase {
 
   // MARK: - Test 6
 
-  func testEmptyStateShowsNoTarget() throws {
-    launchApp()
+  func testEmptyStateShowsNoTarget() async throws {
+    await launchApp()
     guard isIPad else {
       throw XCTSkip("Empty state detail pane only visible on iPad")
     }

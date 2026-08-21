@@ -22,8 +22,8 @@ final class FindLocationTests: BaseTestCase {
 
   // MARK: - Test: search populates suggestions
 
-  func testFindLocation_SearchPopulatesSuggestions() throws {
-    launchApp()
+  func testFindLocation_SearchPopulatesSuggestions() async throws {
+    await launchApp()
 
     let setup = TargetListPage(app: app).createTarget(named: "Find Suggestions")
     let findLocation = setup.tapFindLocation()
@@ -40,8 +40,8 @@ final class FindLocationTests: BaseTestCase {
 
   // MARK: - Test: selecting a suggestion updates the target
 
-  func testFindLocation_SelectingSuggestionUpdatesTarget() throws {
-    launchApp()
+  func testFindLocation_SelectingSuggestionUpdatesTarget() async throws {
+    await launchApp()
 
     let setup = TargetListPage(app: app).createTarget(named: "Find Select")
 

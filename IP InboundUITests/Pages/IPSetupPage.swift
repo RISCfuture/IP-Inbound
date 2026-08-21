@@ -87,14 +87,14 @@ struct IPSetupPage: Page {
   }
 
   @discardableResult
-  func tapTimeOnTarget() -> TOTSetupPage {
-    tapButton("timeOnTargetButton", toReveal: app.segmentedControls["timeDisplayModePicker"])
+  func tapTimeOnTarget() async -> TOTSetupPage {
+    await tapButton("timeOnTargetButton", toReveal: app.segmentedControls["timeDisplayModePicker"])
     return TOTSetupPage(app: app)
   }
 
   @discardableResult
-  func tapBackToTargetSetup() -> TargetSetupPage {
-    tapButton("targetSetupButton", toReveal: app.textFields["targetNameField"])
+  func tapBackToTargetSetup() async -> TargetSetupPage {
+    await tapButton("targetSetupButton", toReveal: app.textFields["targetNameField"])
     return TargetSetupPage(app: app)
   }
 }

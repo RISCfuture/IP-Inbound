@@ -2,12 +2,6 @@
 
 source "https://rubygems.org"
 
-gem "abbrev"
-gem "csv"
-gem "fastlane"
-gem "logger"
-gem "mutex_m"
-gem "nkf"
-gem "ostruct"
+gem "fastlane", "~> 2.238"
 
 eval_gemfile("fastlane/Pluginfile") if File.exist?("fastlane/Pluginfile")

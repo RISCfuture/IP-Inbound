@@ -46,14 +46,14 @@ struct TOTSetupPage: Page {
   }
 
   @discardableResult
-  func tapFly() -> FlyPage {
-    tapButton("flyButton", toReveal: app.otherElements["flyView"])
+  func tapFly() async -> FlyPage {
+    await tapButton("flyButton", toReveal: app.otherElements["flyView"])
     return FlyPage(app: app)
   }
 
   @discardableResult
-  func tapBackToIPSetup() -> IPSetupPage {
-    tapButton("defineIPButton", toReveal: app.buttons["timeOnTargetButton"])
+  func tapBackToIPSetup() async -> IPSetupPage {
+    await tapButton("defineIPButton", toReveal: app.buttons["timeOnTargetButton"])
     return IPSetupPage(app: app)
   }
 

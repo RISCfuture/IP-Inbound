@@ -48,8 +48,8 @@ extension Page {
     _ identifier: String,
     toReveal expected: XCUIElement,
     attempts: UInt = 3
-  ) -> Bool {
-    Retry.untilVerified(
+  ) async -> Bool {
+    await Retry.untilVerified(
       maxAttempts: attempts,
       interval: 0,
       action: {
@@ -108,7 +108,7 @@ extension Page {
     }
   }
 
-  func tapDirection(_ direction: String) {
+  func tapDirection(_ direction: String) async {
     let button = app.buttons["keypad-\(direction)"]
     XCTAssertTrue(button.waitForExistence(timeout: 3), "\(direction) button should exist")
     if !button.waitUntilHittable() {
@@ -117,7 +117,7 @@ extension Page {
     // Tapping a direction swaps the keypad to numeric, so the key becomes
     // non-hittable. A single forceTap is intermittently dropped on iPad,
     // leaving the keypad on the direction page; retry the tap until it switches.
-    let switched = button.tap(until: {
+    let switched = await button.tap(until: {
       button.waitFor(NSPredicate(format: "isHittable == false"), timeout: ScaledTimeouts.short)
     })
     XCTAssertTrue(switched, "\(direction) button should disappear after tap")

@@ -26,10 +26,10 @@ struct CoordinateEntryPage: Page {
   func enterLatLon(
     lat: (direction: String, digits: String),
     lon: (direction: String, digits: String)
-  ) {
-    tapDirection(lat.direction)
+  ) async {
+    await tapDirection(lat.direction)
     enterOnKeypad(lat.digits)
-    tapDirection(lon.direction)
+    await tapDirection(lon.direction)
     enterOnKeypad(lon.digits)
   }
 

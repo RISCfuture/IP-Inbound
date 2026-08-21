@@ -6,8 +6,8 @@ final class TOTEntryTests: BaseTestCase {
 
   // MARK: - Test 14
 
-  func testTimeEntry_Local() throws {
-    launchApp()
+  func testTimeEntry_Local() async throws {
+    await launchApp()
 
     let list = TargetListPage(app: app)
     let setup = list.createTarget(named: "Local Time Test")
@@ -15,7 +15,7 @@ final class TOTEntryTests: BaseTestCase {
     let ipPage = setup.tapDefineIP()
     ipPage.enterBearing("090")
     ipPage.enterOffsetDistance("5")
-    let totPage = ipPage.tapTimeOnTarget()
+    let totPage = await ipPage.tapTimeOnTarget()
 
     totPage.selectLocalTime()
     totPage.enterTime("12:34:56")
@@ -36,8 +36,8 @@ final class TOTEntryTests: BaseTestCase {
 
   // MARK: - Test 15
 
-  func testTimeEntry_Zulu() throws {
-    launchApp()
+  func testTimeEntry_Zulu() async throws {
+    await launchApp()
 
     let list = TargetListPage(app: app)
     let setup = list.createTarget(named: "Zulu Time Test")
@@ -45,7 +45,7 @@ final class TOTEntryTests: BaseTestCase {
     let ipPage = setup.tapDefineIP()
     ipPage.enterBearing("090")
     ipPage.enterOffsetDistance("5")
-    let totPage = ipPage.tapTimeOnTarget()
+    let totPage = await ipPage.tapTimeOnTarget()
 
     totPage.selectZuluTime()
     totPage.enterTime("18:00:00")
@@ -69,8 +69,8 @@ final class TOTEntryTests: BaseTestCase {
 
   // MARK: - Test 16
 
-  func testTimeEntry_ToggleBetweenLocalAndZulu() throws {
-    launchApp()
+  func testTimeEntry_ToggleBetweenLocalAndZulu() async throws {
+    await launchApp()
 
     let list = TargetListPage(app: app)
     let setup = list.createTarget(named: "Toggle Test")
@@ -78,7 +78,7 @@ final class TOTEntryTests: BaseTestCase {
     let ipPage = setup.tapDefineIP()
     ipPage.enterBearing("090")
     ipPage.enterOffsetDistance("5")
-    let totPage = ipPage.tapTimeOnTarget()
+    let totPage = await ipPage.tapTimeOnTarget()
 
     totPage.selectZuluTime()
     totPage.enterTime("18:00:00")
@@ -92,7 +92,7 @@ final class TOTEntryTests: BaseTestCase {
     var localSecondary = totPage.secondaryTimeString()
     let deadline = Date().addingTimeInterval(5)
     while localSecondary == zuluSecondary, Date() < deadline {
-      _ = XCTWaiter.wait(for: [XCTestExpectation(description: "poll")], timeout: 0.1)
+      try await Task.sleep(for: .milliseconds(100))
       localSecondary = totPage.secondaryTimeString()
     }
 
@@ -110,15 +110,15 @@ final class TOTEntryTests: BaseTestCase {
 
   // MARK: - Test 17
 
-  func testTimeEntry_DefaultTimeIsSet() throws {
-    launchApp()
+  func testTimeEntry_DefaultTimeIsSet() async throws {
+    await launchApp()
     let list = TargetListPage(app: app)
     let setup = list.createTarget(named: "Default TOT Test")
 
     let ipPage = setup.tapDefineIP()
     ipPage.enterBearing("090")
     ipPage.enterOffsetDistance("5")
-    let totPage = ipPage.tapTimeOnTarget()
+    let totPage = await ipPage.tapTimeOnTarget()
 
     // The time entry field should display a non-zero time (30-minute default)
     let entryField = totPage.timeEntryField

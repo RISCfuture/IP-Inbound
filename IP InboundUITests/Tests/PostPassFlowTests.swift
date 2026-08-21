@@ -28,10 +28,10 @@ final class PostPassFlowTests: BaseTestCase {
 
   // MARK: - Methods
 
-  func testPostPass_ShowsPastTargetAndFliesNextTarget() throws {
+  func testPostPass_ShowsPastTargetAndFliesNextTarget() async throws {
     let now = try XCTUnwrap(Self.uiTestNowFormatter.date(from: Self.nowISO))
 
-    launchWithSeededTargets(now: now, location: Self.pastTargetFix)
+    await launchWithSeededTargets(now: now, location: Self.pastTargetFix)
 
     let list = TargetListPage(app: app)
     XCTAssertTrue(list.isDisplayed, "Target list should appear with the seeded targets")
@@ -47,8 +47,8 @@ final class PostPassFlowTests: BaseTestCase {
       // HarnessFlythroughTests's fallback. No keyboard input.
       let setup = TargetSetupPage(app: app)
       let ipPage = setup.tapDefineIP()
-      let totPage = ipPage.tapTimeOnTarget()
-      totPage.tapFly()
+      let totPage = await ipPage.tapTimeOnTarget()
+      await totPage.tapFly()
       XCTAssertTrue(
         postPass.waitUntilDisplayed(timeout: 12),
         "Post-pass screen should appear once past the target and past TOT"
@@ -94,7 +94,7 @@ final class PostPassFlowTests: BaseTestCase {
 
   // MARK: - Helpers
 
-  private func launchWithSeededTargets(now: Date, location: String) {
+  private func launchWithSeededTargets(now: Date, location: String) async {
     let knownApps = ["codes.tim.FART"]
     for bundleID in knownApps {
       let other = XCUIApplication(bundleIdentifier: bundleID)
@@ -119,7 +119,7 @@ final class PostPassFlowTests: BaseTestCase {
     app.resetAuthorizationStatus(for: .location)
     app.launch()
     waitForAppStability()
-    handleLocationPermissionIfNeeded()
+    await handleLocationPermissionIfNeeded()
   }
 
   // Screenshot capture on the next target's screen. Uses a generic `Page`
