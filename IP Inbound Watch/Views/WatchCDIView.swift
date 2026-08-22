@@ -38,26 +38,42 @@ struct WatchCDIView: View {
 // MARK: - Deviation needle
 
 private struct DeviationScale: View {
-  private static let maxOffset: CGFloat = 56
+  /// Distance between adjacent dot centers. Every dot is laid out in a frame of the same width, so
+  /// the pitch stays uniform across the row whatever size each dot is drawn at.
+  private static let dotPitch: CGFloat = 28
+  private static let dotFrame: CGFloat = 6
+
+  /// Full-scale needle travel, which lands the needle on the outermost dot — so one dot reads half
+  /// of ``CourseDeviation/fullScale``.
+  private static let fullScaleOffset = dotPitch * 2
+
+  private static let centerDotSize: CGFloat = 6,
+    outerDotSize: CGFloat = 4
+
+  private static let needleWidth: CGFloat = 4,
+    needleHeight: CGFloat = 34,
+    scaleHeight: CGFloat = 36
 
   var deviation: CourseDeviation
 
   var body: some View {
     ZStack {
-      HStack(spacing: 14) {
-        ForEach(0..<5) { index in
+      HStack(spacing: Self.dotPitch - Self.dotFrame) {
+        ForEach(-2...2, id: \.self) { dot in
+          let size = dot == 0 ? Self.centerDotSize : Self.outerDotSize
           Circle()
             .fill(.secondary)
-            .frame(width: index == 2 ? 6 : 4, height: index == 2 ? 6 : 4)
+            .frame(width: size, height: size)
+            .frame(width: Self.dotFrame)
         }
       }
       Capsule()
         .fill(.tint)
-        .frame(width: 4, height: 34)
-        .offset(x: deviation.needleOffset * Self.maxOffset)
+        .frame(width: Self.needleWidth, height: Self.needleHeight)
+        .offset(x: deviation.needleOffset * Self.fullScaleOffset)
         .animation(.easeOut(duration: 0.2), value: deviation.needleOffset)
     }
-    .frame(height: 36)
+    .frame(height: Self.scaleHeight)
     .accessibilityElement()
     .accessibilityLabel(Text("Course deviation"))
     .accessibilityValue(Text(deviation.announcement()))
