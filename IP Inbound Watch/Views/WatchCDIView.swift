@@ -23,7 +23,7 @@ struct WatchCDIView: View {
           .lineLimit(1)
           .minimumScaleFactor(0.7)
 
-        DeviationScale(crossTrackDistance: math.crossTrackDistance)
+        DeviationScale(deviation: math.courseDeviation)
 
         if let fromTo = math.pposToTarget {
           CDIReadouts(currentTrack: fromTo.trackMagnetic, fromTo: fromTo, target: target)
@@ -41,15 +41,9 @@ struct WatchCDIView: View {
 // MARK: - Deviation needle
 
 private struct DeviationScale: View {
-  private static let scale = Measurement(value: 4, unit: UnitLength.nauticalMiles)
   private static let maxOffset: CGFloat = 56
 
-  var crossTrackDistance: Measurement<UnitLength>
-
-  /// Signed deflection in `[-1, 1]`; positive means the aircraft is right of course.
-  private var deflection: CGFloat {
-    CGFloat(max(-1, min(1, crossTrackDistance / Self.scale)))
-  }
+  var deviation: CourseDeviation
 
   var body: some View {
     ZStack {
@@ -60,27 +54,16 @@ private struct DeviationScale: View {
             .frame(width: index == 2 ? 6 : 4, height: index == 2 ? 6 : 4)
         }
       }
-      // The course lies on the side the aircraft must steer toward, so the needle deflects opposite
-      // the cross-track sign: right of course → needle left → fly left.
       Capsule()
         .fill(.tint)
         .frame(width: 4, height: 34)
-        .offset(x: -deflection * Self.maxOffset)
-        .animation(.easeOut(duration: 0.2), value: deflection)
+        .offset(x: deviation.needleOffset * Self.maxOffset)
+        .animation(.easeOut(duration: 0.2), value: deviation.needleOffset)
     }
     .frame(height: 36)
     .accessibilityElement()
     .accessibilityLabel(Text("Course deviation"))
-    .accessibilityValue(Text(deviationDescription))
-  }
-
-  private var deviationDescription: String {
-    guard crossTrackDistance.magnitude > .zero else { return String(localized: "On course.") }
-    let distance = crossTrackDistance.magnitude.converted(to: .nauticalMiles)
-    let formatted = distance.formatted(distanceFormatStyle)
-    return crossTrackDistance > .zero
-      ? String(localized: "\(formatted) right of course.")
-      : String(localized: "\(formatted) left of course.")
+    .accessibilityValue(Text(deviation.announcement()))
   }
 }
 

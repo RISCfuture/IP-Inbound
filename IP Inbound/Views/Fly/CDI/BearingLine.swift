@@ -1,8 +1,12 @@
 import SwiftUI
 
 struct BearingLine: Shape {
-  var deflection: CGFloat?  // fraction of radius
-  var maxDeflection = 0.75  // fraction of radius, represents 100% deflection
+  /// Displacement of the deflected segment from center, as a fraction of full-scale travel in
+  /// `[-1, 1]`, positive to the right of the course as drawn. `nil` draws the course line with no
+  /// deflected segment at all.
+  var needleOffset: Double?
+  /// Full-scale needle travel, as a fraction of the rose's radius.
+  var fullScaleRadiusFraction: Double
 
   // Fractions of radius
   private let inset = 0.1,
@@ -14,8 +18,8 @@ struct BearingLine: Shape {
   func path(in rect: CGRect) -> Path {
     let center = CGPoint(x: rect.midX, y: rect.midY)
     let radius = min(rect.width, rect.height) / 2
-    let maxDeflection = radius * self.maxDeflection
-    let deflection = self.deflection.map { maxDeflection * $0 }
+    let travel = radius * fullScaleRadiusFraction
+    let offset = needleOffset.map { travel * $0 }
 
     var path = Path()
 
@@ -24,12 +28,12 @@ struct BearingLine: Shape {
     path.addLine(to: CGPoint(x: center.x, y: center.y - radius * deviationSegmentSize / 2))
 
     // Center deflected portion
-    if let deflection {
+    if let offset {
       path.move(
-        to: CGPoint(x: center.x + deflection, y: center.y - radius * deviationSegmentSize / 2)
+        to: CGPoint(x: center.x + offset, y: center.y - radius * deviationSegmentSize / 2)
       )
       path.addLine(
-        to: CGPoint(x: center.x + deflection, y: center.y + radius * deviationSegmentSize / 2)
+        to: CGPoint(x: center.x + offset, y: center.y + radius * deviationSegmentSize / 2)
       )
     }
 

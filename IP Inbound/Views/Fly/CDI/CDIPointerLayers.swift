@@ -30,16 +30,16 @@ struct CDIBearingPointerLayer: View {
   private static let bearingLineWidth: CGFloat = 5
 
   let relativeAngle: Double
-  let deflection: CGFloat?
-  let scaleWidth: Double
+  let needleOffset: Double?
+  let fullScaleRadiusFraction: Double
   let bearingColor: Color
 
   var body: some View {
     FixedRotatingView(targetAngle: relativeAngle) { angle in
       Group {
-        DeflectionMarkers(scaleWidth: scaleWidth)
+        DeflectionMarkers(fullScaleRadiusFraction: fullScaleRadiusFraction)
           .drawingGroup()
-        BearingLine(deflection: deflection, maxDeflection: scaleWidth)
+        BearingLine(needleOffset: needleOffset, fullScaleRadiusFraction: fullScaleRadiusFraction)
           .stroke(lineWidth: Self.bearingLineWidth)
           .foregroundStyle(bearingColor)
           .drawingGroup()

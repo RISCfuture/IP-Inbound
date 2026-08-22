@@ -63,6 +63,10 @@ struct IPTargetMath<T: GuidanceTarget> {
     target.IPToTarget.crossTrackDistance(to: coordinate)
   }
 
+  /// The aircraft's displacement from the run-in course line, as a course deviation indicator reads
+  /// it.
+  var courseDeviation: CourseDeviation { .init(crossTrackDistance: crossTrackDistance) }
+
   var pposToIPToTargetETAAtMaxSpeed: Date? {
     guard target.timeOnTarget != nil else { return nil }
 

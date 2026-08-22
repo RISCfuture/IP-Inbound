@@ -385,4 +385,17 @@ struct IPTargetMathTests {
       )
     )
   }
+
+  /// The needle mirrors the deviation — the single expression both platforms' indicators are drawn
+  /// from — and pins at either end of the scale rather than running off it.
+  @Test(
+    "needleOffset mirrors the deviation and pins at full scale",
+    arguments: [(-8.0, 1.0), (-2.0, 0.5), (0.0, 0.0), (2.0, -0.5), (8.0, -1.0)]
+  )
+  func courseDeviationNeedleOffset(crossTrackNM: Double, needleOffset: Double) {
+    let deviation = CourseDeviation(
+      crossTrackDistance: .init(value: crossTrackNM, unit: .nauticalMiles)
+    )
+    #expect(deviation.needleOffset.isApproximatelyEqual(to: needleOffset, absoluteTolerance: 1e-9))
+  }
 }

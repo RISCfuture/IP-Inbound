@@ -1,9 +1,11 @@
+import Defaults
 import MeasurementKit
 import MeasurementKitLocation
 import SwiftUI
 
 struct CDIView: View {
-  private static let scaleWidth = 0.75  // fraction of radius
+  /// Full-scale needle travel, as a fraction of the rose's radius.
+  private static let fullScaleRadiusFraction = 0.75
   private static let compassRoseLineWidth: CGFloat = 2,
     lubberLineWidth: CGFloat = 5
 
@@ -11,20 +13,18 @@ struct CDIView: View {
     ipColor = Color.yellow,
     targetColor = Color.red
 
-  var heading: MagneticBearing
+  var track: MagneticBearing
   var bearing: MagneticBearing?
   var bearingColor = Color.accentColor
   var IPDirectBearing: MagneticBearing?
   var targetDirectBearing: MagneticBearing?
-  var crossTrackDistance: Measurement<UnitLength>?
-  var distanceScale = Measurement(value: 4, unit: UnitLength.nauticalMiles)
+  /// Where the aircraft lies relative to the run-in course. `nil` in the phases that steer toward
+  /// the IP, which have no course line to deviate from, and draws the bar without its deflected
+  /// segment.
+  var deviation: CourseDeviation?
 
-  /// Signed deviation in `[-1, 1]`; positive means the aircraft is right of course.
-  private var deflection: CGFloat? {
-    guard let crossTrackDistance else { return nil }
-
-    return CGFloat(max(-1, min(1, crossTrackDistance / distanceScale)))
-  }
+  @Default(.distanceUnit)
+  private var distanceDefault
 
   var body: some View {
     GeometryReader { geo in
@@ -37,11 +37,11 @@ struct CDIView: View {
           .fontWeight(.bold)
           .accessibilityHidden(true)
 
-        FixedRotatingView(targetAngle: -heading.degrees) { angle in
+        FixedRotatingView(targetAngle: -track.degrees) { angle in
           Group {
             CompassRose()
               .stroke(lineWidth: Self.compassRoseLineWidth)
-            CompassNumbers(rotation: heading.degrees)
+            CompassNumbers(rotation: track.degrees)
               .drawingGroup()
           }
           .rotationEffect(.degrees(angle))
@@ -74,10 +74,8 @@ struct CDIView: View {
         if let relativeBearing = relative(bearing: bearing) {
           CDIBearingPointerLayer(
             relativeAngle: relativeBearing,
-            // The course lies on the side the aircraft must steer toward, so the bar deflects
-            // opposite the cross-track sign: right of course -> bar left -> fly left.
-            deflection: deflection.map { -$0 },
-            scaleWidth: Self.scaleWidth,
+            needleOffset: deviation?.needleOffset,
+            fullScaleRadiusFraction: Self.fullScaleRadiusFraction,
             bearingColor: bearingColor
           )
         }
@@ -94,7 +92,7 @@ struct CDIView: View {
   }
 
   private func relative(bearing: MagneticBearing?) -> Double? {
-    bearing.map { ($0 - heading).degrees }
+    bearing.map { ($0 - track).degrees }
   }
 }
 
@@ -103,7 +101,7 @@ extension CDIView {
     var components = [String]()
 
     components.append(
-      String(localized: "Track heading \(heading, format: .bearing).")
+      String(localized: "Track \(track, format: .bearing).")
     )
 
     if let bearing {
@@ -112,57 +110,54 @@ extension CDIView {
       )
     }
 
-    if let deviationDescription {
-      components.append(deviationDescription)
+    if let deviation {
+      components.append(deviation.announcement(in: distanceDefault.distanceUnit))
     }
 
     return components.joined(separator: " ")
   }
-
-  private var deviationDescription: String? {
-    guard let crossTrackDistance else { return nil }
-
-    let distance = crossTrackDistance.magnitude
-    guard distance > .zero else { return String(localized: "On course.") }
-
-    let formattedDistance = distance.formatted(distanceFormatStyle)
-
-    if crossTrackDistance > .zero {
-      return String(localized: "\(formattedDistance) right of course.")
-    }
-    return String(localized: "\(formattedDistance) left of course.")
-  }
 }
 
-#Preview("Full deflection") {
+#Preview("Full deflection right") {
   CDIView(
-    heading: MagneticBearing(degrees: 277),
+    track: MagneticBearing(degrees: 277),
     bearing: MagneticBearing(degrees: 218),
     IPDirectBearing: MagneticBearing(degrees: 121),
     targetDirectBearing: MagneticBearing(degrees: 213),
-    crossTrackDistance: .init(value: 1, unit: .nauticalMiles)
+    deviation: .init(crossTrackDistance: CourseDeviation.fullScale)
   )
   .padding()
 }
 
-#Preview("Maximum deflection") {
+#Preview("Half deflection left") {
   CDIView(
-    heading: MagneticBearing(degrees: 360),
+    track: MagneticBearing(degrees: 277),
+    bearing: MagneticBearing(degrees: 218),
+    IPDirectBearing: MagneticBearing(degrees: 121),
+    targetDirectBearing: MagneticBearing(degrees: 213),
+    deviation: .init(crossTrackDistance: .init(value: -2, unit: .nauticalMiles))
+  )
+  .padding()
+}
+
+#Preview("Over scale left") {
+  CDIView(
+    track: MagneticBearing(degrees: 360),
     bearing: MagneticBearing(degrees: 30),
     IPDirectBearing: MagneticBearing(degrees: 121),
     targetDirectBearing: MagneticBearing(degrees: 213),
-    crossTrackDistance: .init(value: 8, unit: .nauticalMiles)
+    deviation: .init(crossTrackDistance: .init(value: -8, unit: .nauticalMiles))
   )
   .padding()
 }
 
 #Preview("No bearing") {
   CDIView(
-    heading: MagneticBearing(degrees: 90),
+    track: MagneticBearing(degrees: 90),
     bearing: nil,
     IPDirectBearing: nil,
     targetDirectBearing: nil,
-    crossTrackDistance: nil
+    deviation: nil
   )
   .padding()
 }

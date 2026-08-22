@@ -64,24 +64,24 @@ private struct GuidanceNavigationDisplay: View {
       case .toIPWithSpeedGuidance, .toIPWithCountdown:
         if let fromTo = math?.pposToIP {
           CDIView(
-            heading: fromTo.trackMagnetic,
+            track: fromTo.trackMagnetic,
             bearing: fromTo.bearingMagnetic,
             bearingColor: .yellow,
             IPDirectBearing: nil,
             targetDirectBearing: math?.pposToTarget?.bearingMagnetic,
-            crossTrackDistance: nil
+            deviation: nil
           )
           .accessibilityIdentifier("cdi")
         }
       case .toTarget, .toTargetBypassingIP:
         if let math, let fromTo = math.pposToTarget {
           CDIView(
-            heading: fromTo.trackMagnetic,
+            track: fromTo.trackMagnetic,
             bearing: target.desiredTrackMagnetic,
             bearingColor: .red,
             IPDirectBearing: math.pposToIP?.bearingMagnetic,
             targetDirectBearing: fromTo.bearingMagnetic,
-            crossTrackDistance: math.crossTrackDistance
+            deviation: math.courseDeviation
           )
           .accessibilityIdentifier("cdi")
         }

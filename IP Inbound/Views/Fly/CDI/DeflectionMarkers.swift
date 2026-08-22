@@ -1,7 +1,9 @@
 import SwiftUI
 
 struct DeflectionMarkers: View {
-  var scaleWidth: Double  // fraction of radius
+  /// Full-scale needle travel, as a fraction of the rose's radius. The outermost marker sits at
+  /// full deflection.
+  var fullScaleRadiusFraction: Double
   var markerCount = 4  // must be even
 
   private let circleSize: CGFloat = 10,
@@ -26,7 +28,7 @@ struct DeflectionMarkers: View {
       .onChange(of: geometry.size) { _, _ in
         calculateMarkerPositions(in: geometry)
       }
-      .onChange(of: scaleWidth) { _, _ in
+      .onChange(of: fullScaleRadiusFraction) { _, _ in
         calculateMarkerPositions(in: geometry)
       }
     }
@@ -35,7 +37,7 @@ struct DeflectionMarkers: View {
   private func calculateMarkerPositions(in geometry: GeometryProxy) {
     let center = geometry.size.center
     let radius = geometry.size.minDimension / 2
-    let markerOffset = radius * scaleWidth
+    let markerOffset = radius * fullScaleRadiusFraction
     let markerCountPerSide = markerCount / 2
 
     markerPositions = (-markerCountPerSide...markerCountPerSide).compactMap { marker in
@@ -58,7 +60,7 @@ struct DeflectionMarkers: View {
 }
 
 #Preview {
-  DeflectionMarkers(scaleWidth: 0.75)
+  DeflectionMarkers(fullScaleRadiusFraction: 0.75)
     .frame(width: 300, height: 300)
     .padding()
 }
