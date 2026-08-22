@@ -1,40 +1,37 @@
-import CoreLocation
 import MeasurementKit
 import MeasurementKitLocation
 import SwiftUI
 
 /// Airborne display: a simplified course-deviation indicator driven by the watch's GPS. A deviation
-/// needle shows which way to steer onto the run-in course, with current/desired track, distance to
-/// go, and how early or late the arrival is tracking.
+/// needle shows which way to steer onto the run-in course — in the phases that fly one — with
+/// current/desired track, distance to go, and how early or late the arrival is tracking.
 struct WatchCDIView: View {
-  var location: CLLocation
-  var target: TargetSnapshot
+  var math: IPTargetMath<TargetSnapshot>
+  /// Where the aircraft lies relative to the run-in course. `nil` in the phases that steer toward
+  /// the IP, which have no course line to deviate from, and hides the needle.
+  var deviation: CourseDeviation?
 
   @ScaledMetric(relativeTo: .headline)
   private var nameFontSize = 16.0
 
   var body: some View {
-    // A fix with no usable ground speed or course has no run-in geometry to draw; the countdown is
-    // what the watch shows until one arrives.
-    if let math = IPTargetMath(location: location, target: target, now: Date()) {
-      VStack {
-        Text(target.name)
-          .font(.system(size: nameFontSize, weight: .semibold))
-          .lineLimit(1)
-          .minimumScaleFactor(0.7)
+    VStack {
+      Text(math.target.name)
+        .font(.system(size: nameFontSize, weight: .semibold))
+        .lineLimit(1)
+        .minimumScaleFactor(0.7)
 
-        DeviationScale(deviation: math.courseDeviation)
-
-        if let fromTo = math.pposToTarget {
-          CDIReadouts(currentTrack: fromTo.trackMagnetic, fromTo: fromTo, target: target)
-        }
+      if let deviation {
+        DeviationScale(deviation: deviation)
       }
-      .padding(.horizontal)
-      .accessibilityElement(children: .contain)
-      .accessibilityIdentifier("watchCDI")
-    } else {
-      WatchCountdownView(target: target)
+
+      if let fromTo = math.pposToTarget {
+        CDIReadouts(currentTrack: fromTo.trackMagnetic, fromTo: fromTo, target: math.target)
+      }
     }
+    .padding(.horizontal)
+    .accessibilityElement(children: .contain)
+    .accessibilityIdentifier("watchCDI")
   }
 }
 
@@ -165,15 +162,25 @@ extension LabeledReadout where Accessory == EmptyView {
 }
 
 #Preview("On Course") {
-  WatchCDIView(
-    location: WatchPreviewData.location(speedKnots: 250, course: 0),
-    target: WatchPreviewData.target
-  )
+  if let math = WatchPreviewData.math() {
+    WatchCDIView(math: math, deviation: math.courseDeviation)
+  }
+}
+
+#Preview("Left of Course") {
+  if let math = WatchPreviewData.math(offsetEastNM: 2) {
+    WatchCDIView(math: math, deviation: math.courseDeviation)
+  }
 }
 
 #Preview("Right of Course") {
-  WatchCDIView(
-    location: WatchPreviewData.location(speedKnots: 250, course: 0, offsetEastNM: 2),
-    target: WatchPreviewData.target
-  )
+  if let math = WatchPreviewData.math(offsetEastNM: -2) {
+    WatchCDIView(math: math, deviation: math.courseDeviation)
+  }
+}
+
+#Preview("Steering to the IP") {
+  if let math = WatchPreviewData.math() {
+    WatchCDIView(math: math, deviation: nil)
+  }
 }

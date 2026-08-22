@@ -13,12 +13,20 @@ struct GuidanceContentView: View {
   var coordinate: Coordinate
   var target: Target
   var guidance: Guidance
+  /// Where the aircraft lies relative to the run-in course, already blanked in the phases that have
+  /// no course line to deviate from.
+  var courseDeviation: CourseDeviation?
   var event: LocationEvent
 
   var body: some View {
     VStack {
       GuidanceHeader(target: target, guidance: guidance)
-      GuidanceNavigationDisplay(math: math, target: target, guidance: guidance)
+      GuidanceNavigationDisplay(
+        math: math,
+        target: target,
+        guidance: guidance,
+        courseDeviation: courseDeviation
+      )
       if event.isSimulating { SimulatorBanner(simName: event.simName) }
       GuidanceTimingDisplay(
         math: math,
@@ -58,6 +66,7 @@ private struct GuidanceNavigationDisplay: View {
   var math: IPTargetMath<Target>?
   var target: Target
   var guidance: Guidance
+  var courseDeviation: CourseDeviation?
 
   var body: some View {
     switch guidance {
@@ -69,7 +78,7 @@ private struct GuidanceNavigationDisplay: View {
             bearingColor: .yellow,
             IPDirectBearing: nil,
             targetDirectBearing: math?.pposToTarget?.bearingMagnetic,
-            deviation: nil
+            deviation: courseDeviation
           )
           .accessibilityIdentifier("cdi")
         }
@@ -81,7 +90,7 @@ private struct GuidanceNavigationDisplay: View {
             bearingColor: .red,
             IPDirectBearing: math.pposToIP?.bearingMagnetic,
             targetDirectBearing: fromTo.bearingMagnetic,
-            deviation: math.courseDeviation
+            deviation: courseDeviation
           )
           .accessibilityIdentifier("cdi")
         }
@@ -158,6 +167,7 @@ private struct GuidanceTimingDisplay: View {
     coordinate: location.geoCoordinate,
     target: target,
     guidance: .toIPWithSpeedGuidance,
+    courseDeviation: nil,
     event: helper.preIPEvent
   )
 }
@@ -166,11 +176,13 @@ private struct GuidanceTimingDisplay: View {
   let helper = PreviewHelper()
   let target = helper.target(minutesFromNow: 1)
   let location = helper.postIPLocation
+  let math = IPTargetMath(location: location, target: target, now: .now)
   GuidanceContentView(
-    math: IPTargetMath(location: location, target: target, now: .now),
+    math: math,
     coordinate: location.geoCoordinate,
     target: target,
     guidance: .toTarget,
+    courseDeviation: math?.courseDeviation,
     event: helper.postIPEvent
   )
 }
@@ -183,6 +195,7 @@ private struct GuidanceTimingDisplay: View {
     coordinate: helper.preIPLocation.geoCoordinate,
     target: target,
     guidance: .countdownOnly,
+    courseDeviation: nil,
     event: helper.preIPEvent
   )
 }

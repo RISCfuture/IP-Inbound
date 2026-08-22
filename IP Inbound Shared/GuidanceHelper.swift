@@ -100,3 +100,17 @@ struct GuidanceHelper<T: GuidanceTarget> {
     self.groundSpeed = location.groundSpeed ?? .zero
   }
 }
+
+// MARK: - Course Deviation
+
+extension GuidanceHelper {
+  /// The run-in course deviation, or `nil` in the phases that steer toward the IP rather than along
+  /// the run-in course: short of the IP the aircraft is vectored to a point, not a line, so its
+  /// offset from the extended centerline is not a number to fly.
+  var courseDeviation: CourseDeviation? {
+    switch guidance {
+      case .toTarget, .toTargetBypassingIP: math.courseDeviation
+      case .toIPWithSpeedGuidance, .toIPWithCountdown, .countdownOnly, .postPass: nil
+    }
+  }
+}

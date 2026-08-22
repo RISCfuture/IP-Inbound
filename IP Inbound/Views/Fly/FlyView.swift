@@ -45,6 +45,7 @@ struct FlyView: View {
             coordinate: location.geoCoordinate,
             target: target,
             guidance: guidance,
+            courseDeviation: guidanceHelper?.courseDeviation,
             event: event
           )
         }
