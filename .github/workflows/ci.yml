@@ -42,6 +42,21 @@ jobs:
       - uses: actions/checkout@v6
       - name: Enable macros
         run: defaults write com.apple.dt.Xcode IDESkipMacroFingerprintValidation -bool YES
+      - name: Record toolchain version
+        id: toolchain
+        run: echo "xcode=$(xcodebuild -version | tr '\n' '-')" >> "$GITHUB_OUTPUT"
+      - name: Cache SwiftPM dependencies
+        uses: actions/cache@v6
+        with:
+          path: ~/Library/Caches/org.swift.swiftpm
+          key: spm-${{ runner.os }}-${{ hashFiles('**/Package.resolved') }}
+          restore-keys: |
+            spm-${{ runner.os }}-
+      - name: Cache Xcode build products
+        uses: actions/cache@v6
+        with:
+          path: ${{ runner.temp }}/docs-dd
+          key: derived-docs-macos-26-${{ steps.toolchain.outputs.xcode }}-${{ hashFiles('**/Package.resolved') }}
       - name: Build documentation
         # The app scheme embeds the watch app and the Live Activity extension, so one build
         # documents all three modules. A generic destination compiles against the simulator
