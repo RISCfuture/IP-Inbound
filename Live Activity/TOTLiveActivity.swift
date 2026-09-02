@@ -18,6 +18,8 @@ struct TOTLiveActivity: Widget {
           .font(.caption)
           .textCase(.uppercase)
           .foregroundStyle(.secondary)
+        RunInSummary(state: context.state)
+          .font(.caption)
       }
       .multilineTextAlignment(.center)
       .frame(maxWidth: .infinity)
@@ -34,6 +36,8 @@ struct TOTLiveActivity: Widget {
               .font(.caption2)
               .textCase(.uppercase)
               .foregroundStyle(.secondary)
+            RunInSummary(state: context.state)
+              .font(.caption2)
           }
           .multilineTextAlignment(.center)
           .frame(maxWidth: .infinity)
@@ -57,6 +61,53 @@ struct TOTLiveActivity: Widget {
 /// (and the ring stays empty) rather than running backwards before the activity ends.
 private func countdownRange(to timeOnTarget: Date) -> ClosedRange<Date> {
   .now...max(timeOnTarget, .now.addingTimeInterval(1))
+}
+
+/// The distance still to fly to the IP and how the projected crossing compares with the plan, or
+/// nothing at all once the IP is behind the aircraft and only the countdown is left to show.
+///
+/// The extension links neither `IP Inbound Shared` nor `MeasurementKitLocation`, so the guidance math
+/// runs in the app and arrives here already solved; this only formats it.
+private struct RunInSummary: View {
+  var state: TOTActivityAttributes.ContentState
+
+  var body: some View {
+    if let distanceToIP = state.distanceToIP, let ipDeltaTime = state.ipDeltaTime {
+      Text("\(distanceToIP, format: .runInDistance) to IP · \(timing(ipDeltaTime))")
+        .foregroundStyle(.secondary)
+    }
+  }
+
+  /// Reads the signed delta as plain English, so "12s early" needs no sign convention to decode. The
+  /// rounding the app applies means values near zero really are on time rather than merely small.
+  private func timing(_ ipDeltaTime: Measurement<UnitDuration>) -> String {
+    let seconds = ipDeltaTime.converted(to: .seconds).value
+    guard abs(seconds) >= 1 else { return String(localized: "on time") }
+    let magnitude = Measurement(value: abs(seconds), unit: UnitDuration.seconds)
+    return seconds < 0
+      ? String(localized: "\(magnitude, format: .runInDelta) early")
+      : String(localized: "\(magnitude, format: .runInDelta) late")
+  }
+}
+
+extension FormatStyle where Self == Measurement<UnitLength>.FormatStyle {
+  fileprivate static var runInDistance: Self {
+    .measurement(
+      width: .abbreviated,
+      usage: .asProvided,
+      numberFormatStyle: .number.precision(.fractionLength(1))
+    )
+  }
+}
+
+extension FormatStyle where Self == Measurement<UnitDuration>.FormatStyle {
+  fileprivate static var runInDelta: Self {
+    .measurement(
+      width: .abbreviated,
+      usage: .asProvided,
+      numberFormatStyle: .number.precision(.fractionLength(0))
+    )
+  }
 }
 
 /// A self-updating textual countdown to `timeOnTarget`.
