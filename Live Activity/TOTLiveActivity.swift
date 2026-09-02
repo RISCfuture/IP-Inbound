@@ -78,34 +78,30 @@ private struct RunInSummary: View {
     }
   }
 
-  /// Reads the signed delta as plain English, so "12s early" needs no sign convention to decode. The
-  /// rounding the app applies means values near zero really are on time rather than merely small.
+  /// Reads the signed delta as plain English, so "1:20 early" needs no sign convention to decode.
+  /// The magnitude is a clock figure rather than a count of seconds, matching the countdown above it
+  /// and staying readable once the delta runs past a minute. The rounding the app applies means
+  /// values near zero really are on time rather than merely small.
   private func timing(_ ipDeltaTime: Measurement<UnitDuration>) -> String {
     let seconds = ipDeltaTime.converted(to: .seconds).value
     guard abs(seconds) >= 1 else { return String(localized: "on time") }
-    let magnitude = Measurement(value: abs(seconds), unit: UnitDuration.seconds)
+    let magnitude = Duration.seconds(abs(seconds)).formatted(
+      .time(pattern: .minuteSecond(padMinuteToLength: 1))
+    )
     return seconds < 0
-      ? String(localized: "\(magnitude, format: .runInDelta) early")
-      : String(localized: "\(magnitude, format: .runInDelta) late")
+      ? String(localized: "\(magnitude) early")
+      : String(localized: "\(magnitude) late")
   }
 }
 
 extension FormatStyle where Self == Measurement<UnitLength>.FormatStyle {
+  /// Mirrors `distanceFormatStyle` in `IP Inbound Shared`, which the extension cannot import, so the
+  /// Lock Screen renders distances exactly as the Fly screen does.
   fileprivate static var runInDistance: Self {
     .measurement(
       width: .abbreviated,
       usage: .asProvided,
-      numberFormatStyle: .number.precision(.fractionLength(1))
-    )
-  }
-}
-
-extension FormatStyle where Self == Measurement<UnitDuration>.FormatStyle {
-  fileprivate static var runInDelta: Self {
-    .measurement(
-      width: .abbreviated,
-      usage: .asProvided,
-      numberFormatStyle: .number.precision(.fractionLength(0))
+      numberFormatStyle: .number.rounded(increment: 0.1)
     )
   }
 }
