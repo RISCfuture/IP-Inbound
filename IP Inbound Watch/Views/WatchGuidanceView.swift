@@ -10,8 +10,10 @@ struct WatchGuidanceView: View {
   private var locationModel
 
   var body: some View {
-    if locationModel.authorizationDenied {
-      WatchLocationUnavailableView()
+    // Tested before the fix, because `accuracyLimited` arrives with one and the CDI must not be
+    // drawn from a deliberately coarsened position.
+    if let impediment = locationModel.diagnostics.impediment {
+      WatchLocationUnavailableView(impediment: impediment)
     } else if let location = locationModel.location {
       WatchLocatedGuidance(location: location, target: target)
     } else {
@@ -35,11 +37,45 @@ private struct WatchAcquiringFixView: View {
 }
 
 private struct WatchLocationUnavailableView: View {
+  var impediment: LocationImpediment
+
   var body: some View {
     ContentUnavailableView {
-      Label("Location Off", systemImage: "location.slash")
+      Label(title, systemImage: "location.slash")
     } description: {
-      Text("Allow location access for IP Inbound in Settings to see guidance.")
+      Text(explanation)
+    }
+    .accessibilityIdentifier(identifier)
+  }
+
+  private var title: LocalizedStringKey {
+    switch impediment {
+      case .locationServicesOff: "Location Services Off"
+      case .denied, .restricted: "Location Off"
+      case .accuracyLimited: "Precise Location Off"
+      case .unavailable: "No GPS"
+      case .serviceSessionRequired, .insufficientlyInUse: "Location Paused"
+    }
+  }
+
+  /// Every remedy is on the iPhone: the watch app has no Settings deep link, and the temporary
+  /// full-accuracy prompt is not documented for watchOS.
+  private var explanation: LocalizedStringKey {
+    switch impediment {
+      case .locationServicesOff: "Turn on Location Services in Settings to see guidance."
+      case .denied, .restricted: "Allow location access for IP Inbound in Settings to see guidance."
+      case .accuracyLimited: "Turn on Precise Location for IP Inbound to see guidance."
+      case .unavailable: "Waiting for a GPS fix."
+      case .serviceSessionRequired, .insufficientlyInUse: "Raise your wrist to resume guidance."
+    }
+  }
+
+  private var identifier: String {
+    switch impediment {
+      case .locationServicesOff, .denied, .restricted: "watchLocationOff"
+      case .accuracyLimited: "watchAccuracyLimited"
+      case .unavailable: "watchNoGPS"
+      case .serviceSessionRequired, .insufficientlyInUse: "watchLocationPaused"
     }
   }
 }

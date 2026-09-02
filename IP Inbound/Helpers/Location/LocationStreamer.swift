@@ -9,6 +9,10 @@ struct LocationEvent: Sendable {
   let simName: String?
   let error: Error?
 
+  /// Why Core Location is withholding a usable fix. `.clean` for a simulator feed, which Core
+  /// Location does not gate.
+  let diagnostics: LocationDiagnostics
+
   var isSimulating: Bool { simName != nil }
 
   var coordinate: Coordinate? { location?.geoCoordinate }
@@ -21,10 +25,16 @@ struct LocationEvent: Sendable {
   /// which taken at face value would dead-reckon the aircraft backwards along its track.
   var speed: Measurement<UnitSpeed>? { location?.groundSpeed }
 
-  init(location: CLLocation? = nil, simName: String? = nil, error: Error? = nil) {
+  init(
+    location: CLLocation? = nil,
+    simName: String? = nil,
+    error: Error? = nil,
+    diagnostics: LocationDiagnostics = .clean
+  ) {
     self.location = location
     self.simName = simName
     self.error = error
+    self.diagnostics = diagnostics
   }
 
   func extrapolate(to time: Date) -> Self {
@@ -62,7 +72,8 @@ struct LocationEvent: Sendable {
         timestamp: time
       ),
       simName: simName,
-      error: error
+      error: error,
+      diagnostics: diagnostics
     )
   }
 }
@@ -171,6 +182,7 @@ actor LocationActor {
 final class LocationStreamer: Sendable {
   static let shared = LocationStreamer()
   private static let simPriorityTimeout = 5.0  // seconds
+  private static let fullAccuracyPurposeKey = "CourseGuidance"
 
   private let dateProvider: DateProvider
   private var listenerCount = 0
@@ -183,6 +195,10 @@ final class LocationStreamer: Sendable {
 
   /// Most recently emitted location event.
   private(set) var latestEvent: LocationEvent?
+
+  /// Retained for as long as the run needs full accuracy: Core Location drops the temporary grant
+  /// the moment the session is released, so this cannot be a local in `requestFullAccuracy()`.
+  private var fullAccuracySession: CLServiceSession?
 
   private var realLocationTask: Task<Void, any Error>?
   private var simLocationTask: Task<Void, any Error>?
@@ -206,7 +222,9 @@ final class LocationStreamer: Sendable {
       realLocationTask = Task {
         do {
           for try await update in CLLocationUpdate.liveUpdates(.airborne) {
-            continuation.yield(LocationEvent(location: update.location))
+            continuation.yield(
+              LocationEvent(location: update.location, diagnostics: .init(update))
+            )
           }
         } catch {
           continuation.finish(throwing: error)
@@ -291,6 +309,17 @@ final class LocationStreamer: Sendable {
     if listenerCount == 0 { await _stop() }
   }
 
+  /// Requests temporary full accuracy, naming the purpose key that
+  /// `NSLocationTemporaryUsageDescriptionDictionary` explains to the pilot. Repeated calls reuse the
+  /// outstanding session rather than stacking prompts.
+  func requestFullAccuracy() {
+    guard fullAccuracySession == nil else { return }
+    fullAccuracySession = .init(
+      authorization: .whenInUse,
+      fullAccuracyPurposeKey: Self.fullAccuracyPurposeKey
+    )
+  }
+
   /// Extrapolate the most recent event forward to the current time. Callers that need a
   /// position snapshot (e.g. at the moment of a button tap) should prefer this over reading
   /// `latestEvent` directly, because the stream buffers at 200 ms intervals — at 400 kts,
@@ -308,6 +337,9 @@ final class LocationStreamer: Sendable {
     combinedTask = nil
 
     await simReceiver.stop()
+
+    fullAccuracySession?.invalidate()
+    fullAccuracySession = nil
 
     realLocationStream = nil
     simLocationStream = nil

@@ -71,6 +71,10 @@ actor UITestLocationProvider: LocationProviding {
   // swiftlint:disable:next async_without_await
   func stop() async {}
 
+  // A scripted feed is already at full accuracy and is not gated by Core Location.
+  // swiftlint:disable:next async_without_await
+  func requestFullAccuracy() async {}
+
   // swiftlint:disable:next async_without_await
   func currentEvent() async -> LocationEvent? {
     LocationEvent(location: locationNow())

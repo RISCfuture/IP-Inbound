@@ -193,4 +193,32 @@ struct LocationStreamerTests {
     #expect(extrapolatedLocation.courseAccuracy < 0)
     #expect(extrapolatedLocation.speedAccuracy < 0)
   }
+
+  @Test("extrapolate, carries the diagnostics onto the propagated fix")
+  func extrapolatePreservesDiagnostics() throws {
+    let now = Date()
+    var diagnostics = LocationDiagnostics()
+    diagnostics.accuracyLimited = true
+
+    // A reduced-accuracy fix is the case that matters: it arrives with a location, so it is the one
+    // the propagation could silently launder into a fix the CDI would treat as trustworthy.
+    let event = LocationEvent(
+      location: makeLocation(latitude: 37, longitude: -122, course: 90, speed: 100),
+      diagnostics: diagnostics
+    )
+
+    #expect(event.extrapolate(to: now.addingTimeInterval(5)).diagnostics == diagnostics)
+  }
+
+  @Test("impediment, defers to the pending prompt over an unanswered denial")
+  func impedimentDuringAuthorizationRequest() {
+    var diagnostics = LocationDiagnostics()
+    diagnostics.authorizationRequestInProgress = true
+    diagnostics.authorizationDenied = true
+
+    // The prompt is on screen and unanswered; reporting the denial would flash a refusal the pilot
+    // has not made on every first launch.
+    #expect(diagnostics.impediment == nil)
+    #expect(LocationDiagnostics.clean.impediment == nil)
+  }
 }

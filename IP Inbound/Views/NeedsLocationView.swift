@@ -19,7 +19,12 @@ struct NeedsLocationView<Content: View>: View {
 
   var body: some View {
     Group {
-      if let resolvedEvent, let location = resolvedEvent.location {
+      // The impediment is tested first because `accuracyLimited` arrives *with* a location: checked
+      // the other way round it would pass the fix straight to the CDI, which would then fly the
+      // run-in off a deliberately coarsened position.
+      if let impediment = resolvedEvent?.diagnostics.impediment {
+        NoLocationView(impediment: impediment)
+      } else if let resolvedEvent, let location = resolvedEvent.location {
         content(location, resolvedEvent)
       } else {
         NoLocationView()
