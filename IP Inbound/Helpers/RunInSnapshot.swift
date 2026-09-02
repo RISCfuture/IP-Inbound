@@ -1,3 +1,4 @@
+import Defaults
 import Foundation
 import MeasurementKit
 
@@ -10,7 +11,7 @@ import MeasurementKit
 struct RunInSnapshot: Equatable {
   /// The displayed precision of each figure, and so the threshold at which an update is worth pushing.
   private static let deltaTimeStep = Measurement(value: 5, unit: UnitDuration.seconds)
-  private static let distanceStep = Measurement(value: 0.1, unit: UnitLength.nauticalMiles)
+  private static let distanceFractionDigits = 1
 
   let ipDeltaTime: Measurement<UnitDuration>
   let distanceToIP: Measurement<UnitLength>
@@ -23,8 +24,17 @@ struct RunInSnapshot: Equatable {
       let distanceToIP = math.pposToIP?.distance
     else { return nil }
 
+    // The widget extension links neither `Defaults` nor the shared formatting, so the distance is
+    // converted to the pilot's chosen unit here and travels ready to display. Rounding in that unit
+    // is also what makes the quantisation match what they actually see.
+    let displayUnit = Defaults[.distanceUnit].distanceUnit
+    let step = Measurement(
+      value: pow(10, -Double(Self.distanceFractionDigits)),
+      unit: displayUnit
+    )
+
     self.ipDeltaTime = ipDeltaTime.rounded(to: Self.deltaTimeStep)
-    self.distanceToIP = distanceToIP.rounded(to: Self.distanceStep)
+    self.distanceToIP = distanceToIP.converted(to: displayUnit).rounded(to: step)
   }
 }
 
