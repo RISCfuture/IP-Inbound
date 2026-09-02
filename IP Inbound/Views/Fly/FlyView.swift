@@ -24,6 +24,7 @@ struct FlyView: View {
       let guidanceHelper = math.map { GuidanceHelper(math: $0, location: location, target: target) }
       let guidance = guidanceHelper?.guidance ?? .countdownOnly
       let isPastTarget = guidanceHelper?.isPastTarget ?? false
+      let runIn = math.flatMap(RunInSnapshot.init(math:))
 
       Group {
         if guidance == .postPass, let capture = postPassResult.capture {
@@ -55,6 +56,11 @@ struct FlyView: View {
       }
       .onChange(of: guidance, initial: true) {
         capturePostPassIfNeeded(guidance: guidance)
+      }
+      // `RunInSnapshot` is rounded to the precision the Lock Screen shows, so this fires when the
+      // pilot would see the figures move rather than once per fix.
+      .onChange(of: runIn, initial: true) {
+        LiveActivityController.shared.update(runIn: runIn, for: target)
       }
     }
     // The Fly screen is a container of separately readable elements, not one element itself.

@@ -47,6 +47,32 @@ final class LiveActivityController {
     }
   }
 
+  /// Pushes the live run-in figures onto a running activity, leaving the countdown alone.
+  ///
+  /// Fixes arrive at roughly 1 Hz, which is far more often than a Lock Screen readout can usefully
+  /// change; callers pass values already quantized to the precision they display, so this is only
+  /// reached when the pilot would actually see a difference.
+  func update(runIn: RunInSnapshot?, for target: Target) {
+    guard !ProcessInfo.processInfo.isRunningPreviewsOrTests,
+      let timeOnTarget = target.timeOnTarget
+    else { return }
+
+    let content = ActivityContent(
+      state: TOTActivityAttributes.ContentState(
+        timeOnTarget: timeOnTarget,
+        ipDeltaTime: runIn?.ipDeltaTime,
+        distanceToIP: runIn?.distanceToIP
+      ),
+      staleDate: timeOnTarget
+    )
+
+    Task {
+      for activity in Activity<TOTActivityAttributes>.activities {
+        await activity.update(content)
+      }
+    }
+  }
+
   private func endActivities() {
     Task {
       for activity in Activity<TOTActivityAttributes>.activities {

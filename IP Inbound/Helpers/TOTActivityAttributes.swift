@@ -19,5 +19,24 @@ struct TOTActivityAttributes: ActivityAttributes {
   struct ContentState: Codable, Hashable {
     /// The instant the activity counts down to.
     var timeOnTarget: Date
+
+    /// How the projected IP crossing compares with the one the run-in was planned around: negative
+    /// early, positive late. `nil` once the IP is behind the aircraft, or before there is a fix to
+    /// solve from.
+    var ipDeltaTime: Measurement<UnitDuration>?
+
+    /// The distance still to fly to the IP, where the run-in begins. `nil` in the same cases as
+    /// ``ipDeltaTime``.
+    var distanceToIP: Measurement<UnitLength>?
+
+    init(
+      timeOnTarget: Date,
+      ipDeltaTime: Measurement<UnitDuration>? = nil,
+      distanceToIP: Measurement<UnitLength>? = nil
+    ) {
+      self.timeOnTarget = timeOnTarget
+      self.ipDeltaTime = ipDeltaTime
+      self.distanceToIP = distanceToIP
+    }
   }
 }
