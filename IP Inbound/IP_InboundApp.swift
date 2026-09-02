@@ -27,6 +27,9 @@ struct IP_InboundApp: App {
 
   // MARK: - Instance Properties
 
+  @UIApplicationDelegateAdaptor(AppDelegate.self)
+  private var delegate
+
   private let modelContainer: ModelContainer
 
   @State private var services: AppServices?

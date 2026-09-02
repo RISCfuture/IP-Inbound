@@ -2,14 +2,16 @@ import SwiftUI
 
 @main
 struct IP_Inbound_Watch: App {
+  @WKApplicationDelegateAdaptor(WatchAppDelegate.self)
+  private var delegate
+
   @State private var connectivity = WatchConnectivityModel()
-  @State private var location = WatchLocationModel()
 
   var body: some Scene {
     WindowGroup {
       WatchRootView()
         .environment(connectivity)
-        .environment(location)
+        .environment(delegate.location)
     }
   }
 }
