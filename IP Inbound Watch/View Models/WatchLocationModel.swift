@@ -8,7 +8,9 @@ import Observation
 @Observable
 final class WatchLocationModel {
   private(set) var location: CLLocation?
-  private(set) var authorizationDenied = false
+
+  /// Why Core Location is withholding a fix, or `.clean` while nothing is wrong.
+  private(set) var diagnostics = LocationDiagnostics.clean
 
   private var task: Task<Void, Never>?
 
@@ -24,7 +26,7 @@ final class WatchLocationModel {
       do {
         for try await update in CLLocationUpdate.liveUpdates(.airborne) {
           guard let self else { return }
-          authorizationDenied = update.authorizationDenied || update.authorizationDeniedGlobally
+          diagnostics = .init(update)
           if let location = update.location { self.location = location }
         }
       } catch {

@@ -6,6 +6,11 @@
 	<string>IP Inbound can be used with flight simulators such as X-Plane if you enable Local Network access.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>IP Inbound needs to know your location in order to help you navigate to your target.</string>
+	<key>NSLocationTemporaryUsageDescriptionDictionary</key>
+	<dict>
+		<key>CourseGuidance</key>
+		<string>Precise location lets IP Inbound show your course deviation and time to the target accurately enough to fly the run-in.</string>
+	</dict>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>location</string>

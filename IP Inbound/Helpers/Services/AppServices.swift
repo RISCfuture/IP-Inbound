@@ -62,6 +62,8 @@ private struct FallbackLocationProvider: LocationProviding {
   func eventStream() async -> AsyncThrowingStream<LocationEvent, any Error>? { nil }
   // swiftlint:disable:next async_without_await
   func currentEvent() async -> LocationEvent? { nil }
+  // swiftlint:disable:next async_without_await
+  func requestFullAccuracy() async {}
 }
 
 @MainActor private let defaultAppServices = AppServices(
