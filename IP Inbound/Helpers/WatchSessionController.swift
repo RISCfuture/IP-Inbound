@@ -9,18 +9,13 @@ import WatchConnectivity
 final class WatchSessionController: NSObject {
   static let shared = WatchSessionController()
 
-  private static var isRunningPreviewsOrTests: Bool {
-    let info = ProcessInfo.processInfo
-    return info.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1"
-      || info.isRunningUITests
-      || NSClassFromString("XCTestCase") != nil
-  }
-
   private let session: WCSession?
   private var latestContext: [String: Any]?
 
   override private init() {
-    session = WCSession.isSupported() && !Self.isRunningPreviewsOrTests ? .default : nil
+    session =
+      WCSession.isSupported() && !ProcessInfo.processInfo.isRunningPreviewsOrTests
+      ? .default : nil
     super.init()
     session?.delegate = self
     session?.activate()

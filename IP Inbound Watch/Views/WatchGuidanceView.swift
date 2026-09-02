@@ -10,17 +10,13 @@ struct WatchGuidanceView: View {
   private var locationModel
 
   var body: some View {
-    Group {
-      if locationModel.authorizationDenied {
-        WatchLocationUnavailableView()
-      } else if let location = locationModel.location {
-        WatchLocatedGuidance(location: location, target: target)
-      } else {
-        WatchAcquiringFixView()
-      }
+    if locationModel.authorizationDenied {
+      WatchLocationUnavailableView()
+    } else if let location = locationModel.location {
+      WatchLocatedGuidance(location: location, target: target)
+    } else {
+      WatchAcquiringFixView()
     }
-    .onAppear { locationModel.start() }
-    .onDisappear { locationModel.stop() }
   }
 }
 
