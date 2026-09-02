@@ -3,8 +3,9 @@ name: Linters
 on:
   push:
     branches: [main]
+  # No base-branch filter: a stacked pull request targets the branch below it rather than
+  # main, and a filtered trigger would leave it with no checks until its parent merged.
   pull_request:
-    branches: [main]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
