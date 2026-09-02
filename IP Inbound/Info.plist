@@ -6,5 +6,9 @@
 	<string>IP Inbound can be used with flight simulators such as X-Plane if you enable Local Network access.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>IP Inbound needs to know your location in order to help you navigate to your target.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>location</string>
+	</array>
 </dict>
 </plist>

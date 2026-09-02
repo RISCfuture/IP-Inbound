@@ -9,20 +9,13 @@ import Foundation
 final class LiveActivityController {
   static let shared = LiveActivityController()
 
-  private static var isRunningPreviewsOrTests: Bool {
-    let info = ProcessInfo.processInfo
-    return info.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1"
-      || info.isRunningUITests
-      || NSClassFromString("XCTestCase") != nil
-  }
-
   private init() {}
 
   /// Starts — or updates, if one is already running — the Live Activity for the target the pilot is
   /// flying, or ends it when `target` is `nil`. No-ops when Live Activities are unavailable or
   /// disabled, or under previews and tests.
   func update(flying target: Target?) {
-    guard !Self.isRunningPreviewsOrTests,
+    guard !ProcessInfo.processInfo.isRunningPreviewsOrTests,
       ActivityAuthorizationInfo().areActivitiesEnabled
     else { return }
 
