@@ -1,7 +1,7 @@
 import CoreLocation
 import Foundation
 
-/// Holds the ``CLBackgroundActivitySession`` that keeps a run's location updates flowing once the app
+/// Holds the `CLBackgroundActivitySession` that keeps a run's location updates flowing once the app
 /// stops being frontmost.
 ///
 /// `FlyView` disables the idle timer, which defends against auto-lock and nothing else: a side-button
