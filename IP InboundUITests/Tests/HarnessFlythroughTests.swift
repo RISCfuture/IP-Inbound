@@ -36,6 +36,11 @@ final class HarnessFlythroughTests: BaseTestCase {
     app.launchEnvironment["UITEST_NOW"] = Self.uiTestNowFormatter.string(from: now)
     app.launchEnvironment["UITEST_LOCATION_PATH"] = path
     app.launchEnvironment["UITEST_SEED_TARGET"] = "1"
+    // The fallback navigation below passes through `TOTSetupView`, whose default auto-bump
+    // rewrites the seeded TOT to a later one. That inverts what this test asserts on: the
+    // aircraft becomes early rather than late, guidance switches to the push countdown, and
+    // that phase renders no early/late readout for the assertion to find.
+    app.launchEnvironment["UITEST_BYPASS_TOT_RESET"] = "1"
     app.resetAuthorizationStatus(for: .location)
     app.launch()
     waitForAppStability()
