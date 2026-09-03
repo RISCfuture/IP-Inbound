@@ -4,10 +4,10 @@ import SwiftUI
 
 /// The active run-in guidance for a target: a phase header, the navigation display (CDI or
 /// countdown), an optional simulator banner, and the timing/TOT readout. Composed of per-phase
-/// subviews driven by the current ``Guidance``.
+/// subviews driven by the current `Guidance`.
 struct GuidanceContentView: View {
   /// The run-in geometry, or `nil` when the fix reports no usable ground speed or course. Only the
-  /// phases that steer against a ground track read it; ``Guidance/countdownOnly`` is solved from
+  /// phases that steer against a ground track read it; `Guidance.countdownOnly` is solved from
   /// `coordinate` and the target alone.
   var math: IPTargetMath<Target>?
   /// Where the aircraft is. Every fix carries a position, whether or not it carries motion.

@@ -9,6 +9,9 @@ on target, the app plans the run and then flies it: a countdown to TOT on the gr
 guidance and an IP exit countdown before the IP, and a CDI with a speed correction on the run
 itself. Afterwards it reports how many seconds early or late the pass was.
 
+The geometry underneath all of that lives in `IP_Inbound_Shared`, which the watch app flies from
+too.
+
 ## Topics
 
 ### Setting up a run
@@ -26,14 +29,6 @@ itself. Afterwards it reports how many seconds early or late the pass was.
 - ``CDIView``
 - ``TimingView``
 - ``PostPassView``
-
-### Guidance math
-
-- ``Guidance``
-- ``GuidanceHelper``
-- ``IPTargetMath``
-- ``FromToMath``
-- ``OffsetBearing``
 
 ### Location and companions
 

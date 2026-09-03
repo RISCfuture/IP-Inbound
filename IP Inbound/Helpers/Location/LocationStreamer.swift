@@ -98,7 +98,7 @@ struct LocationEvent: Sendable {
 /// another term.
 private struct DeadReckonedAccuracy {
   /// Bound on the acceleration the aircraft may apply between fixes. The guidance already models it
-  /// as able to hold a level turn at ``FromToMath/bankAngle``; the lateral acceleration that implies
+  /// as able to hold a level turn at `FromToMath.bankAngle`; the lateral acceleration that implies
   /// is the strongest maneuver it expects, so it doubles as the envelope for climb, descent and
   /// speed change.
   private static var maneuverAcceleration: Measurement<UnitAcceleration> {
