@@ -45,7 +45,7 @@ private struct DeviationScale: View {
   private static let dotFrame: CGFloat = 6
 
   /// Full-scale needle travel, which lands the needle on the outermost dot — so one dot reads half
-  /// of ``CourseDeviation/fullScale``.
+  /// of `CourseDeviation.fullScale`.
   private static let fullScaleOffset = dotPitch * 2
 
   private static let centerDotSize: CGFloat = 6,
