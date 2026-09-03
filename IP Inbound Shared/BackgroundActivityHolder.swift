@@ -27,9 +27,9 @@ struct RunLocationUpdates {
 /// setup screens too, where there is nothing to keep alive.
 ///
 /// Core Location relaunches the app in the background when a run outlives the process, and a session
-/// the app does not recreate in the first moments of that launch ends for good. ``begin()`` therefore
-/// records that a run is outstanding, and ``rejoinRunInProgress()`` picks the record up at `@main`
-/// before any view exists.
+/// the app does not recreate in the first moments of that launch ends for good.
+/// ``begin(targetID:)`` therefore records that a run is outstanding, along with the target it is
+/// flying, and ``rejoinRunInProgress()`` picks the record up at `@main` before any view exists.
 ///
 /// A rejoined session arrives unclaimed: no run is on screen, and on a launch the system made none
 /// ever will be. ``endUnclaimedRun()`` disposes of one the moment the app becomes frontmost with no
@@ -50,6 +50,11 @@ final class BackgroundActivityHolder {
   /// namespace — which the watch target does not link in any case.
   private static let runInProgressKey = "runInProgress"
 
+  /// Which target the outstanding run is flying, so a relaunched process can put the pilot back on
+  /// it. A plain identifier rather than the model object: this file compiles into the watch too,
+  /// where there is no `Target`.
+  private static let runTargetIDKey = "runTargetID"
+
   /// Installed at `@main`, before any view appears.
   var locationUpdates: RunLocationUpdates?
 
@@ -63,6 +68,26 @@ final class BackgroundActivityHolder {
   /// layer's own.
   private var isDrivingUpdates = false
 
+  /// The target the outstanding run is flying, or `nil` when no run is recorded — or when the run
+  /// was recorded by the watch, which flies a target it never named.
+  ///
+  /// Answered only while a run is actually outstanding, so the two halves of the record cannot
+  /// disagree: a stale identifier read after the run ended would reopen the Fly screen on a run the
+  /// pilot has already left.
+  private(set) var runTargetID: String? {
+    get { isRunInProgress ? UserDefaults.standard.string(forKey: Self.runTargetIDKey) : nil }
+    set {
+      // Assigning `nil` through `UserDefaults.set(_:forKey:)` does not clear the key: the optional
+      // is boxed into the `Any?` parameter as a *non-nil* value that happens to wrap nothing, and
+      // the stored identifier survives untouched.
+      guard let newValue else {
+        UserDefaults.standard.removeObject(forKey: Self.runTargetIDKey)
+        return
+      }
+      UserDefaults.standard.set(newValue, forKey: Self.runTargetIDKey)
+    }
+  }
+
   private var isRunInProgress: Bool {
     get { UserDefaults.standard.bool(forKey: Self.runInProgressKey) }
     set { UserDefaults.standard.set(newValue, forKey: Self.runInProgressKey) }
@@ -72,10 +97,14 @@ final class BackgroundActivityHolder {
 
   /// Claims a session for the run the pilot is flying now, starting one if none is outstanding, and
   /// records that a run is in progress. Does nothing under previews and tests.
-  func begin() {
+  ///
+  /// - Parameter targetID: which target is being flown, so a relaunch can reopen it. The watch omits
+  ///   it: its target arrives over WatchConnectivity, which outlives the process on its own.
+  func begin(targetID: String? = nil) {
     guard !ProcessInfo.processInfo.isRunningPreviewsOrTests else { return }
     isClaimed = true
     isRunInProgress = true
+    runTargetID = targetID
     startSession()
   }
 
@@ -84,9 +113,22 @@ final class BackgroundActivityHolder {
   func end() {
     isClaimed = false
     isRunInProgress = false
+    runTargetID = nil
     session?.invalidate()
     session = nil
     releaseUpdates()
+  }
+
+  /// Whether a screen flying `targetID` is still the one the outstanding run belongs to, and so the
+  /// one that should tear it down.
+  ///
+  /// SwiftUI does not promise that a departing screen's `onDisappear` runs before its replacement's
+  /// `onAppear`, and flying straight on to the next target replaces the whole subtree. Torn down
+  /// unconditionally, the screen the pilot just left would end the run the screen they just arrived
+  /// at has already begun. A record naming no target — the watch's, or one written before this app
+  /// recorded them — is nobody else's to lose, so it is the caller's to end.
+  func ownsRun(flying targetID: String) -> Bool {
+    runTargetID == nil || runTargetID == targetID
   }
 
   /// Rejoins the session a run left outstanding when Core Location relaunched the app, and restarts

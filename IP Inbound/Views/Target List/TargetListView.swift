@@ -48,6 +48,14 @@ struct TargetListView: View {
       TutorialView()
     }
   }
+
+  /// - Parameter resumedTarget: a target whose run outlived the last process, opened straight onto
+  ///   the Fly screen. Seeded here rather than applied later because `SetupFlowView` lays out its
+  ///   navigation stack in its own initializer, so the intent has to be in hand before it is built.
+  init(resumedTarget: Target? = nil) {
+    _selectedTarget = State(initialValue: resumedTarget)
+    _targetToFly = State(initialValue: resumedTarget?.id)
+  }
 }
 
 #Preview("With Targets") {
