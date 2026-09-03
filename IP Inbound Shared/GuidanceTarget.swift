@@ -65,6 +65,20 @@ extension GuidanceTarget {
     return timeOnTarget.map { $0 - runInTime }
   }
 
+  /// The stretch of the run the pilot actually wants the countdown in front of them for: from the
+  /// time they should cross the IP through the time on target.
+  ///
+  /// `nil` when no time on target is briefed, and when the run-in leg does not resolve to a finite
+  /// duration — a target with no ground speed divides to infinity, and a range built from that is
+  /// not a window anyone can be shown.
+  public var runInWindow: ClosedRange<Date>? {
+    guard let timeOnTarget, let desiredTimeOverIP,
+      desiredTimeOverIP.timeIntervalSince(timeOnTarget).isFinite,
+      desiredTimeOverIP <= timeOnTarget
+    else { return nil }
+    return desiredTimeOverIP...timeOnTarget
+  }
+
   /// The latest the aircraft may cross the IP and still make its time-on-target, flying the run-in at
   /// the maximum allowable ground speed.
   public var maxAllowableTimeOverIP: Date? {
