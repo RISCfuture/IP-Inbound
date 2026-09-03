@@ -10,7 +10,7 @@ import WidgetKit
 struct TOTLiveActivity: Widget {
   var body: some WidgetConfiguration {
     ActivityConfiguration(for: TOTActivityAttributes.self) { context in
-      LiveActivityContent(attributes: context.attributes, state: context.state)
+      LiveActivityContent(context: context)
     } dynamicIsland: { context in
       DynamicIsland {
         DynamicIslandExpandedRegion(.center) {
@@ -57,8 +57,7 @@ struct TOTLiveActivity: Widget {
 /// run-in summary comes off and what is left is sized to be read at a glance — the target named
 /// quietly, the countdown as the thing the pilot is actually looking for.
 private struct LiveActivityContent: View {
-  var attributes: TOTActivityAttributes
-  var state: TOTActivityAttributes.ContentState
+  var context: ActivityViewContext<TOTActivityAttributes>
 
   @Environment(\.activityFamily)
   private var activityFamily
@@ -71,38 +70,23 @@ private struct LiveActivityContent: View {
   }
 
   private var watch: some View {
-    VStack(spacing: 2) {
-      Text(attributes.targetName)
-        .font(.caption)
-        .fontWeight(.light)
-        .foregroundStyle(.secondary)
-        .lineLimit(1)
-        .minimumScaleFactor(0.7)
-      TOTCountdown(timeOnTarget: state.timeOnTarget)
-        .font(.system(.title2, design: .rounded).weight(.bold))
-      Text("to TOT")
-        .font(.caption2)
-        .textCase(.uppercase)
-        .foregroundStyle(.secondary)
-    }
-    .multilineTextAlignment(.center)
-    .frame(maxWidth: .infinity)
-    .padding(.horizontal, 4)
+    TOTGlance(targetName: context.attributes.targetName, timeOnTarget: context.state.timeOnTarget)
+      .padding(.horizontal, 4)
   }
 
   private var lockScreen: some View {
     VStack(spacing: 2) {
-      Text(attributes.targetName)
+      Text(context.attributes.targetName)
         .font(.headline)
         .fontWeight(.light)
-      TOTCountdown(timeOnTarget: state.timeOnTarget)
+      TOTCountdown(timeOnTarget: context.state.timeOnTarget)
         .font(.title)
         .fontWeight(.bold)
       Text("to TOT")
         .font(.caption)
         .textCase(.uppercase)
         .foregroundStyle(.secondary)
-      RunInSummary(state: state)
+      RunInSummary(state: context.state)
         .font(.caption)
     }
     .multilineTextAlignment(.center)
@@ -171,28 +155,9 @@ extension TOTActivityAttributes.ContentState {
     .init(timeOnTarget: .now.addingTimeInterval(45))
   }
 
-  fileprivate static var past: TOTActivityAttributes.ContentState {
-    .init(timeOnTarget: .now.addingTimeInterval(-30))
-  }
-
   fileprivate static var far: TOTActivityAttributes.ContentState {
     .init(timeOnTarget: .now.addingTimeInterval(600))
   }
-}
-
-// The activity-preview macro only reaches the Lock Screen and the Dynamic Island — its
-// `ActivityPreviewViewKind` has no case for the watch. Setting the family on the content view
-// directly is the only way to see what the wrist gets.
-#Preview("Watch", traits: .fixedLayout(width: 190, height: 90)) {
-  LiveActivityContent(attributes: .preview, state: .near)
-    .environment(\.activityFamily, .small)
-    .background(.black)
-}
-
-#Preview("Watch, past TOT", traits: .fixedLayout(width: 190, height: 90)) {
-  LiveActivityContent(attributes: .preview, state: .past)
-    .environment(\.activityFamily, .small)
-    .background(.black)
 }
 
 #Preview("Notification", as: .content, using: TOTActivityAttributes.preview) {
