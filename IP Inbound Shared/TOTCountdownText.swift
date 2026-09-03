@@ -16,23 +16,31 @@ public struct TOTCountdownText: View {
   /// Defaults to ``font``.
   public var pastTOTFont: Font?
 
+  private var isCountingDown: Bool { timeOnTarget.map { $0 > Date() } ?? false }
+
   public var body: some View {
-    if let timeOnTarget, timeOnTarget > Date() {
-      Text(
-        .currentDate,
-        format: .timer(countingDownIn: Date.now..<timeOnTarget, maxPrecision: .seconds(1))
-      )
-      .font(font)
+    Self.text(timeOnTarget: timeOnTarget)
+      .font(isCountingDown ? font : (pastTOTFont ?? font))
       .contentTransition(.numericText())
-    } else {
-      Text("Past TOT")
-        .font(pastTOTFont ?? font)
-    }
   }
 
   public init(timeOnTarget: Date?, font: Font, pastTOTFont: Font? = nil) {
     self.timeOnTarget = timeOnTarget
     self.font = font
     self.pastTOTFont = pastTOTFont
+  }
+
+  /// The same countdown as a `Text`, for the inline widget family, which interpolates it into a
+  /// single run of text rather than composing it as a view.
+  ///
+  /// The past-TOT branch is what keeps the countdown's range from running backwards: built once the
+  /// time has gone by, `now..<timeOnTarget` is a range whose lower bound exceeds its upper, which
+  /// traps rather than reading zero.
+  public static func text(timeOnTarget: Date?) -> Text {
+    guard let timeOnTarget, timeOnTarget > Date() else { return Text("Past TOT") }
+    return Text(
+      .currentDate,
+      format: .timer(countingDownIn: Date.now..<timeOnTarget, maxPrecision: .seconds(1))
+    )
   }
 }

@@ -56,10 +56,7 @@ private struct RunInCountdown: View {
   /// The inline family renders a single run of text, so the countdown is interpolated into it
   /// rather than composed alongside it.
   private var inlineCountdown: Text {
-    Text(
-      .currentDate,
-      format: .timer(countingDownIn: Date.now..<timeOnTarget, maxPrecision: .seconds(1))
-    )
+    TOTCountdownText.text(timeOnTarget: timeOnTarget)
   }
 
   var body: some View {
