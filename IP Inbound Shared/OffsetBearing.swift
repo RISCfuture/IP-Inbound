@@ -4,8 +4,8 @@ import MeasurementKitLocation
 
 /// A run-in offset bearing in whichever datum the pilot entered it in.
 ///
-/// ``MeasurementKitLocation/Bearing`` carries its datum in the type, but IP Inbound lets the pilot pick true or magnetic
-/// on the setup form, so the datum is only known at runtime. This is the pair of possibilities as a
+/// `Bearing` carries its datum in the type, but IP Inbound lets the pilot pick true or magnetic on
+/// the setup form, so the datum is only known at runtime. This is the pair of possibilities as a
 /// value; converting it in either direction hands back a statically typed bearing again.
 public enum OffsetBearing: Hashable, Sendable {
   case `true`(TrueBearing)
