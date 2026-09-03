@@ -1,7 +1,7 @@
 import WatchKit
 
-/// Exists for the one thing SwiftUI's `App` cannot express: work that must happen on a launch Core
-/// Location makes on its own, before any view appears.
+/// Exists for the one thing SwiftUI's `App` cannot express: work that must happen the instant the
+/// process starts, on a launch Core Location makes on its own, before any view appears.
 @MainActor
 final class WatchAppDelegate: NSObject, WKApplicationDelegate {
   /// Owned here rather than as the `App`'s state, because a relaunch has to restart the stream before
@@ -13,8 +13,6 @@ final class WatchAppDelegate: NSObject, WKApplicationDelegate {
       resume: { [location] in location.start() },
       suspend: { [location] in location.stop() }
     )
-    BackgroundActivityHolder.shared.rejoinRunInProgress(
-      isBackgroundLaunch: WKApplication.shared().applicationState == .background
-    )
+    BackgroundActivityHolder.shared.rejoinRunInProgress()
   }
 }

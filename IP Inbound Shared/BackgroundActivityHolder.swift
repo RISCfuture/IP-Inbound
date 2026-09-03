@@ -28,8 +28,15 @@ struct RunLocationUpdates {
 ///
 /// Core Location relaunches the app in the background when a run outlives the process, and a session
 /// the app does not recreate in the first moments of that launch ends for good. ``begin()`` therefore
-/// records that a run is outstanding, and ``rejoinRunInProgress(isBackgroundLaunch:)`` picks the
-/// record up at `@main` before any view exists.
+/// records that a run is outstanding, and ``rejoinRunInProgress()`` picks the record up at `@main`
+/// before any view exists.
+///
+/// A rejoined session arrives unclaimed: no run is on screen, and on a launch the system made none
+/// ever will be. ``endUnclaimedRun()`` disposes of one the moment the app becomes frontmost with no
+/// Fly screen showing, which is also what clears a record left behind by a force-quit or a crash.
+/// Adjudicating there rather than at launch is deliberate — under the scene lifecycle an app launched
+/// into the foreground still reports `UIApplication.State.background` while it finishes launching, so
+/// the launch itself cannot say which kind it is.
 ///
 /// - Note: A session becomes active only if it is created while the app is foregrounded and in direct
 ///   use, and only if the app declares `location` in `UIBackgroundModes`. Both platforms do. From the
@@ -48,6 +55,10 @@ final class BackgroundActivityHolder {
 
   private var session: CLBackgroundActivitySession?
 
+  /// Whether a run on screen owns the current session, as opposed to one ``rejoinRunInProgress()``
+  /// recreated for a run this process did not start.
+  private var isClaimed = false
+
   /// Whether the stream the holder is driving is one it started itself, as opposed to the view
   /// layer's own.
   private var isDrivingUpdates = false
@@ -59,38 +70,46 @@ final class BackgroundActivityHolder {
 
   private init() {}
 
-  /// Starts a session and records that a run is outstanding, or does nothing if one is already
-  /// running or the process is a preview or a test.
+  /// Claims a session for the run the pilot is flying now, starting one if none is outstanding, and
+  /// records that a run is in progress. Does nothing under previews and tests.
   func begin() {
-    guard !ProcessInfo.processInfo.isRunningPreviewsOrTests, session == nil else { return }
-    session = CLBackgroundActivitySession()
+    guard !ProcessInfo.processInfo.isRunningPreviewsOrTests else { return }
+    isClaimed = true
     isRunInProgress = true
+    startSession()
   }
 
   /// Ends the session, lowers the background indicator, and forgets the run. Safe to call when none
   /// is running.
   func end() {
+    isClaimed = false
+    isRunInProgress = false
     session?.invalidate()
     session = nil
-    isRunInProgress = false
     releaseUpdates()
   }
 
   /// Rejoins the session a run left outstanding when Core Location relaunched the app, and restarts
   /// the location stream alongside it — the stream is what the system relaunched the app to deliver,
-  /// and dropping it forfeits the recovery.
-  ///
-  /// A launch into the foreground can only ever start a *new* session, which is not what an
-  /// outstanding record means, so that record is discarded instead: a run whose process died with the
-  /// pilot's phone in their hand is over.
-  func rejoinRunInProgress(isBackgroundLaunch: Bool) {
-    guard isBackgroundLaunch else {
-      isRunInProgress = false
-      return
-    }
-    guard isRunInProgress, session == nil else { return }
-    begin()
+  /// and dropping it forfeits the recovery. Belongs at `@main`: the window is the first moments of
+  /// the launch, and a session recreated later is a new one rather than the run's.
+  func rejoinRunInProgress() {
+    guard !ProcessInfo.processInfo.isRunningPreviewsOrTests, isRunInProgress else { return }
+    startSession()
     driveUpdates()
+  }
+
+  /// Ends a session no run on screen has claimed. With the app frontmost and no Fly screen showing,
+  /// a rejoined session belongs to a run that ended while the app was not running — as does the
+  /// record a force-quit or a crash left behind.
+  func endUnclaimedRun() {
+    guard !isClaimed else { return }
+    end()
+  }
+
+  private func startSession() {
+    guard session == nil else { return }
+    session = CLBackgroundActivitySession()
   }
 
   private func driveUpdates() {
