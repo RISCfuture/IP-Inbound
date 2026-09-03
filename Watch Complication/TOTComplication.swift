@@ -65,7 +65,8 @@ private struct RunInCountdown: View {
   }
 
   /// The inline family renders a single run of text, so the countdown is interpolated into it
-  /// rather than composed alongside it.
+  /// rather than composed alongside it. The face draws that run in its own font and tint, so there
+  /// is nothing to gain by styling either half.
   private var inlineCountdown: Text {
     .totCountdown(to: timeOnTarget, asOf: asOf)
   }
@@ -87,14 +88,15 @@ private struct RunInCountdown: View {
         Text("\(target.name) \(inlineCountdown)")
 
       default:
-        VStack(alignment: .leading, spacing: 0) {
+        VStack(alignment: .leading, spacing: 2) {
           Text(target.name)
             .font(.caption)
+            .fontWeight(.light)
             .foregroundStyle(.secondary)
             .lineLimit(1)
           TOTCountdownText(
             timeOnTarget: timeOnTarget,
-            font: .system(.title2, design: .rounded).weight(.semibold),
+            font: .system(.title2, design: .rounded).weight(.bold),
             asOf: asOf
           )
         }
@@ -120,4 +122,66 @@ private struct NoRun: View {
           .foregroundStyle(.secondary)
     }
   }
+}
+
+extension TargetSnapshot {
+  /// A briefed run for the previews: a four-mile run-in at 120 knots, with the time on target
+  /// `minutes` from now — negative for a run whose TOT has already gone by.
+  fileprivate static func preview(inMinutes minutes: Double) -> Self {
+    .init(
+      id: "preview",
+      name: "Bullseye",
+      latitude: 36.772367,
+      longitude: -115.453840,
+      offsetBearing: 180,
+      offsetBearingIsTrue: true,
+      offsetDistance: 4,
+      targetGroundSpeed: 120,
+      timeOnTarget: .now.addingTimeInterval(minutes * 60),
+      declination: 0
+    )
+  }
+}
+
+extension TOTEntry {
+  fileprivate static var runIn: Self { .init(date: .now, target: .preview(inMinutes: 2)) }
+  fileprivate static var distant: Self { .init(date: .now, target: .preview(inMinutes: 47)) }
+  fileprivate static var pastTOT: Self { .init(date: .now, target: .preview(inMinutes: -1)) }
+  fileprivate static var noRun: Self { .init(date: .now, target: nil) }
+}
+
+#Preview("Rectangular", as: .accessoryRectangular) {
+  TOTComplication()
+} timeline: {
+  TOTEntry.runIn
+  TOTEntry.distant
+  TOTEntry.pastTOT
+  TOTEntry.noRun
+}
+
+#Preview("Circular", as: .accessoryCircular) {
+  TOTComplication()
+} timeline: {
+  TOTEntry.runIn
+  TOTEntry.distant
+  TOTEntry.pastTOT
+  TOTEntry.noRun
+}
+
+#Preview("Corner", as: .accessoryCorner) {
+  TOTComplication()
+} timeline: {
+  TOTEntry.runIn
+  TOTEntry.distant
+  TOTEntry.pastTOT
+  TOTEntry.noRun
+}
+
+#Preview("Inline", as: .accessoryInline) {
+  TOTComplication()
+} timeline: {
+  TOTEntry.runIn
+  TOTEntry.distant
+  TOTEntry.pastTOT
+  TOTEntry.noRun
 }
