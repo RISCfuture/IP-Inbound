@@ -35,7 +35,7 @@ private let headingFormatStyle = Measurement<UnitAngle>.FormatStyle(
 
 extension Bearing {
   /// A bearing as a whole number of degrees followed by its datum letter — `"225°M"`.
-  public struct FormatStyle: Foundation.FormatStyle {
+  public struct FormatStyle: Foundation.FormatStyle, Sendable {
     private let measurementStyle: Measurement<UnitAngle>.FormatStyle
 
     public init(measurementStyle: Measurement<UnitAngle>.FormatStyle? = nil) {
@@ -55,7 +55,7 @@ extension Bearing {
 
 extension OffsetBearing {
   /// An offset bearing rendered in whichever datum the pilot entered it in.
-  public struct FormatStyle: Foundation.FormatStyle {
+  public struct FormatStyle: Foundation.FormatStyle, Sendable {
     private let measurementStyle: Measurement<UnitAngle>.FormatStyle?
 
     public init(measurementStyle: Measurement<UnitAngle>.FormatStyle? = nil) {
