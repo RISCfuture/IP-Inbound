@@ -23,19 +23,15 @@ struct WatchCountdownView: View {
         .minimumScaleFactor(0.7)
         .padding(.bottom)
 
+      TOTCountdownText(
+        timeOnTarget: target.timeOnTarget,
+        font: .system(.largeTitle, design: .rounded).weight(.semibold),
+        pastTOTFont: .system(size: pastTOTFontSize)
+      )
       if let timeOnTarget = target.timeOnTarget, timeOnTarget > Date() {
-        Text(
-          .currentDate,
-          format: .timer(countingDownIn: Date.now..<timeOnTarget, maxPrecision: .seconds(1))
-        )
-        .font(.system(.largeTitle, design: .rounded).weight(.semibold))
-        .contentTransition(.numericText())
         Text("to TOT")
           .font(.system(size: countdownUnitFontSize))
           .foregroundStyle(.secondary)
-      } else {
-        Text("Past TOT")
-          .font(.system(size: pastTOTFontSize))
       }
 
       Text("Guidance begins once you’re moving.")

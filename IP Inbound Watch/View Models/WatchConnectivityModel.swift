@@ -27,6 +27,17 @@ final class WatchConnectivityModel: NSObject {
     session?.activate()
   }
 
+  /// Publishes what the phone just said, and hands the same answer to the complication.
+  ///
+  /// Both delegate paths land here, so the watch face and the watch app can never be told different
+  /// things. ``Run/unknown`` never reaches the store by construction: it is the value the model
+  /// starts at, and ``Run/init(_:)`` cannot produce it — which matters, because writing it would
+  /// blank a complication that is still perfectly correct.
+  private func receive(_ snapshot: TargetSnapshot?) {
+    run = .init(snapshot)
+    WatchComplicationStore.update(snapshot)
+  }
+
   /// What the watch knows about the phone's run.
   ///
   /// The distinction between ``Run/unknown`` and ``Run/none`` is what keeps a launch from tearing
@@ -56,7 +67,7 @@ extension WatchConnectivityModel: WCSessionDelegate {
     error _: (any Error)?
   ) {
     let snapshot = WatchTargetPayload.snapshot(from: session.receivedApplicationContext)
-    Task { @MainActor in run = .init(snapshot) }
+    Task { @MainActor in receive(snapshot) }
   }
 
   nonisolated func session(
@@ -64,6 +75,14 @@ extension WatchConnectivityModel: WCSessionDelegate {
     didReceiveApplicationContext applicationContext: [String: Any]
   ) {
     let snapshot = WatchTargetPayload.snapshot(from: applicationContext)
-    Task { @MainActor in run = .init(snapshot) }
+    Task { @MainActor in receive(snapshot) }
+  }
+
+  /// The complication-priority delivery the phone sends alongside the application context. It
+  /// carries the same payload; arriving here wakes the watch app to refresh the watch face when the
+  /// pilot has not opened it.
+  nonisolated func session(_: WCSession, didReceiveUserInfo userInfo: [String: Any]) {
+    let snapshot = WatchTargetPayload.snapshot(from: userInfo)
+    Task { @MainActor in receive(snapshot) }
   }
 }

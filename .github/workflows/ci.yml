@@ -59,8 +59,8 @@ jobs:
           path: ${{ runner.temp }}/docs-dd
           key: derived-docs-macos-26-${{ steps.toolchain.outputs.xcode }}-${{ hashFiles('**/Package.resolved') }}
       - name: Build documentation
-        # The app scheme embeds the watch app, the Live Activity extension and the shared
-        # guidance framework, so one build documents all four modules. A generic destination
+        # The app scheme embeds the watch app, its complication, the Live Activity extension
+        # and the shared guidance framework, so one build documents all five modules. A generic destination
         # compiles against the simulator SDK without booting a device, and nothing is installed
         # or launched, so signing stays off. DocC has no strictness build setting, so
         # --warnings-as-errors reaches it through OTHER_DOCC_FLAGS. docbuild documents the
@@ -80,4 +80,5 @@ jobs:
             DOCC_STRICT_IP_Inbound="--warnings-as-errors" \
             DOCC_STRICT_IP_Inbound_Watch="--warnings-as-errors" \
             DOCC_STRICT_Live_ActivityExtension="--warnings-as-errors" \
-            DOCC_STRICT_IP_Inbound_Shared="--warnings-as-errors"
+            DOCC_STRICT_IP_Inbound_Shared="--warnings-as-errors" \
+            DOCC_STRICT_Watch_ComplicationExtension="--warnings-as-errors"

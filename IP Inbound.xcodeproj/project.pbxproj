@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		010FB64E2FEBA0640056ECE0 /* IP Inbound Watch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 010FB62E2FEBA0610056ECE0 /* IP Inbound Watch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		011479ED2F779D5F003AEBCC /* SwiftGeographic in Frameworks */ = {isa = PBXBuildFile; productRef = 011479EC2F779D5F003AEBCC /* SwiftGeographic */; };
+		014CCFE23049E01300E8D24F /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0172C0742FEC82A50034B332 /* WidgetKit.framework */; };
+		014CCFE33049E01300E8D24F /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0172C0762FEC82A50034B332 /* SwiftUI.framework */; };
+		014CCFEE3049E01300E8D24F /* Watch ComplicationExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 014CCFE13049E01300E8D24F /* Watch ComplicationExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		014CD0023049E05000E8D24F /* IP_Inbound_Shared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 014CCFF93049E04F00E8D24F /* IP_Inbound_Shared.framework */; };
 		014CD00C3049E05000E8D24F /* IP_Inbound_Shared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 014CCFF93049E04F00E8D24F /* IP_Inbound_Shared.framework */; };
 		014CD00D3049E05000E8D24F /* IP_Inbound_Shared.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 014CCFF93049E04F00E8D24F /* IP_Inbound_Shared.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -16,6 +19,10 @@
 		014CD0393049E06300E8D24F /* IP_Inbound_Shared.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 014CCFF93049E04F00E8D24F /* IP_Inbound_Shared.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		014CD03D3049E06600E8D24F /* IP_Inbound_Shared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 014CCFF93049E04F00E8D24F /* IP_Inbound_Shared.framework */; };
 		014CD03E3049E06600E8D24F /* IP_Inbound_Shared.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 014CCFF93049E04F00E8D24F /* IP_Inbound_Shared.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		014CD0423049E06900E8D24F /* IP_Inbound_Shared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 014CCFF93049E04F00E8D24F /* IP_Inbound_Shared.framework */; };
+		014CD0433049E06900E8D24F /* IP_Inbound_Shared.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 014CCFF93049E04F00E8D24F /* IP_Inbound_Shared.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		014CD0483049E08500E8D24F /* MeasurementKit in Frameworks */ = {isa = PBXBuildFile; productRef = 014CD0473049E08500E8D24F /* MeasurementKit */; };
+		014CD04A3049E08500E8D24F /* MeasurementKitLocation in Frameworks */ = {isa = PBXBuildFile; productRef = 014CD0493049E08500E8D24F /* MeasurementKitLocation */; };
 		0159221F2FCA2B28007FB6BB /* XCUITestKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0159221E2FCA2B28007FB6BB /* XCUITestKit */; };
 		0166FA742DCA685800970EFD /* DefaultsMacros in Frameworks */ = {isa = PBXBuildFile; productRef = 0166FA732DCA685800970EFD /* DefaultsMacros */; };
 		016F3ED22DD4F1E1006EEC6D /* Numerics in Frameworks */ = {isa = PBXBuildFile; productRef = 016F3ED12DD4F1E1006EEC6D /* Numerics */; };
@@ -68,6 +75,13 @@
 			remoteGlobalIDString = 010FB62D2FEBA0610056ECE0;
 			remoteInfo = "IP Inbound Watch Watch App";
 		};
+		014CCFEC3049E01300E8D24F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 01ECF4AE2CF3DF0D00BD0604 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 014CCFE03049E01300E8D24F;
+			remoteInfo = "Watch ComplicationExtension";
+		};
 		014CD0033049E05000E8D24F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 01ECF4AE2CF3DF0D00BD0604 /* Project object */;
@@ -97,6 +111,13 @@
 			remoteInfo = "IP Inbound Shared";
 		};
 		014CD03F3049E06600E8D24F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 01ECF4AE2CF3DF0D00BD0604 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 014CCFF83049E04F00E8D24F;
+			remoteInfo = "IP Inbound Shared";
+		};
+		014CD0443049E06900E8D24F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 01ECF4AE2CF3DF0D00BD0604 /* Project object */;
 			proxyType = 1;
@@ -143,6 +164,15 @@
 			);
 			name = "Embed Watch Content";
 		};
+		014CCFEF3049E01300E8D24F /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			dstPath = "";
+			dstSubfolder = PlugIns;
+			files = (
+				014CCFEE3049E01300E8D24F /* Watch ComplicationExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+		};
 		014CD0113049E05000E8D24F /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			dstPath = "";
@@ -170,6 +200,15 @@
 			);
 			name = "Embed Frameworks";
 		};
+		014CD0463049E06A00E8D24F /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			dstPath = "";
+			dstSubfolder = Frameworks;
+			files = (
+				014CD0433049E06900E8D24F /* IP_Inbound_Shared.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+		};
 		0172C0852FEC82A60034B332 /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			dstPath = "";
@@ -186,9 +225,11 @@
 		010FB63A2FEBA0630056ECE0 /* IP Inbound Watch Watch AppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "IP Inbound Watch Watch AppTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		010FB6442FEBA0630056ECE0 /* IP Inbound Watch Watch AppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "IP Inbound Watch Watch AppUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		01497EEC2DDC473400963D93 /* ci_post_clone.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = ci_post_clone.sh; sourceTree = "<group>"; };
+		014CCFE13049E01300E8D24F /* Watch ComplicationExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Watch ComplicationExtension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		014CCFF93049E04F00E8D24F /* IP_Inbound_Shared.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = IP_Inbound_Shared.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		014CD0013049E04F00E8D24F /* IP Inbound SharedTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "IP Inbound SharedTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		014CD04C3049E0C800E8D24F /* Live ActivityExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Live ActivityExtension.entitlements"; sourceTree = "<group>"; };
+		014CD04D3049E0CF00E8D24F /* Watch ComplicationExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Watch ComplicationExtension.entitlements"; sourceTree = "<group>"; };
 		016F3C1B2DC08E7A00F2A1AE /* Generate Screenshots.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Generate Screenshots.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0172C0732FEC82A50034B332 /* Live ActivityExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Live ActivityExtension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0172C0742FEC82A50034B332 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
@@ -234,6 +275,13 @@
 			);
 			target = 010FB62D2FEBA0610056ECE0 /* IP Inbound Watch */;
 		};
+		014CCFF33049E01300E8D24F /* Exceptions for "Watch Complication" folder in "Watch ComplicationExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 014CCFE03049E01300E8D24F /* Watch ComplicationExtension */;
+		};
 		0172C0892FEC82A60034B332 /* Exceptions for "Live Activity" folder in "Live ActivityExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -260,6 +308,14 @@
 		010FB6472FEBA0630056ECE0 /* IP Inbound Watch Watch UITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = "IP Inbound Watch Watch UITests";
+			sourceTree = "<group>";
+		};
+		014CCFE43049E01300E8D24F /* Watch Complication */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				014CCFF33049E01300E8D24F /* Exceptions for "Watch Complication" folder in "Watch ComplicationExtension" target */,
+			);
+			path = "Watch Complication";
 			sourceTree = "<group>";
 		};
 		014CD0073049E05000E8D24F /* IP Inbound SharedTests */ = {
@@ -331,6 +387,16 @@
 		010FB6412FEBA0630056ECE0 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
+			);
+		};
+		014CCFDE3049E01300E8D24F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+				014CD0483049E08500E8D24F /* MeasurementKit in Frameworks */,
+				014CCFE33049E01300E8D24F /* SwiftUI.framework in Frameworks */,
+				014CCFE23049E01300E8D24F /* WidgetKit.framework in Frameworks */,
+				014CD04A3049E08500E8D24F /* MeasurementKitLocation in Frameworks */,
+				014CD0423049E06900E8D24F /* IP_Inbound_Shared.framework in Frameworks */,
 			);
 		};
 		014CCFF63049E04F00E8D24F /* Frameworks */ = {
@@ -409,6 +475,7 @@
 		01ECF4AD2CF3DF0D00BD0604 = {
 			isa = PBXGroup;
 			children = (
+				014CD04D3049E0CF00E8D24F /* Watch ComplicationExtension.entitlements */,
 				014CD04C3049E0C800E8D24F /* Live ActivityExtension.entitlements */,
 				01497EED2DDC473400963D93 /* ci_scripts */,
 				01ECF4B82CF3DF0D00BD0604 /* IP Inbound */,
@@ -419,6 +486,7 @@
 				010FB63D2FEBA0630056ECE0 /* IP Inbound Watch Tests */,
 				010FB6472FEBA0630056ECE0 /* IP Inbound Watch Watch UITests */,
 				0172C0782FEC82A50034B332 /* Live Activity */,
+				014CCFE43049E01300E8D24F /* Watch Complication */,
 				01DA7A5E2FEBA0610056ECE0 /* IP Inbound Shared */,
 				014CD0073049E05000E8D24F /* IP Inbound SharedTests */,
 				01FC853F2CF4639A00C9F053 /* Frameworks */,
@@ -437,6 +505,7 @@
 				010FB63A2FEBA0630056ECE0 /* IP Inbound Watch Watch AppTests.xctest */,
 				010FB6442FEBA0630056ECE0 /* IP Inbound Watch Watch AppUITests.xctest */,
 				0172C0732FEC82A50034B332 /* Live ActivityExtension.appex */,
+				014CCFE13049E01300E8D24F /* Watch ComplicationExtension.appex */,
 				014CCFF93049E04F00E8D24F /* IP_Inbound_Shared.framework */,
 				014CD0013049E04F00E8D24F /* IP Inbound SharedTests.xctest */,
 			);
@@ -470,11 +539,13 @@
 				010FB62A2FEBA0610056ECE0 /* Sources */,
 				010FB62B2FEBA0610056ECE0 /* Frameworks */,
 				010FB62C2FEBA0610056ECE0 /* Resources */,
+				014CCFEF3049E01300E8D24F /* Embed Foundation Extensions */,
 				014CD03C3049E06300E8D24F /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				014CCFED3049E01300E8D24F /* PBXTargetDependency */,
 				014CD03B3049E06300E8D24F /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
@@ -534,6 +605,32 @@
 			productName = "IP Inbound Watch Watch AppUITests";
 			productReference = 010FB6442FEBA0630056ECE0 /* IP Inbound Watch Watch AppUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		014CCFE03049E01300E8D24F /* Watch ComplicationExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 014CCFF23049E01300E8D24F /* Build configuration list for PBXNativeTarget "Watch ComplicationExtension" */;
+			buildPhases = (
+				014CCFDD3049E01300E8D24F /* Sources */,
+				014CCFDE3049E01300E8D24F /* Frameworks */,
+				014CCFDF3049E01300E8D24F /* Resources */,
+				014CD0463049E06A00E8D24F /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				014CD0453049E06900E8D24F /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				014CCFE43049E01300E8D24F /* Watch Complication */,
+			);
+			name = "Watch ComplicationExtension";
+			packageProductDependencies = (
+				014CD0473049E08500E8D24F /* MeasurementKit */,
+				014CD0493049E08500E8D24F /* MeasurementKitLocation */,
+			);
+			productName = "Watch ComplicationExtension";
+			productReference = 014CCFE13049E01300E8D24F /* Watch ComplicationExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 		014CCFF83049E04F00E8D24F /* IP Inbound Shared */ = {
 			isa = PBXNativeTarget;
@@ -745,6 +842,9 @@
 						CreatedOnToolsVersion = 26.5;
 						TestTargetID = 010FB62D2FEBA0610056ECE0;
 					};
+					014CCFE03049E01300E8D24F = {
+						CreatedOnToolsVersion = 26.6;
+					};
 					014CCFF83049E04F00E8D24F = {
 						CreatedOnToolsVersion = 26.6;
 					};
@@ -800,6 +900,7 @@
 				01ECF4B52CF3DF0D00BD0604 /* IP Inbound */,
 				010FB62D2FEBA0610056ECE0 /* IP Inbound Watch */,
 				0172C0722FEC82A50034B332 /* Live ActivityExtension */,
+				014CCFE03049E01300E8D24F /* Watch ComplicationExtension */,
 				01ECF4C52CF3DF0F00BD0604 /* IP InboundTests */,
 				01ECF4CF2CF3DF0F00BD0604 /* IP InboundUITests */,
 				016F3C1A2DC08E7A00F2A1AE /* Generate Screenshots */,
@@ -823,6 +924,11 @@
 			);
 		};
 		010FB6422FEBA0630056ECE0 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+			);
+		};
+		014CCFDF3049E01300E8D24F /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			files = (
 			);
@@ -912,6 +1018,11 @@
 			files = (
 			);
 		};
+		014CCFDD3049E01300E8D24F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
 		014CCFF53049E04F00E8D24F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			files = (
@@ -965,6 +1076,11 @@
 			target = 010FB62D2FEBA0610056ECE0 /* IP Inbound Watch */;
 			targetProxy = 010FB64C2FEBA0640056ECE0 /* PBXContainerItemProxy */;
 		};
+		014CCFED3049E01300E8D24F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 014CCFE03049E01300E8D24F /* Watch ComplicationExtension */;
+			targetProxy = 014CCFEC3049E01300E8D24F /* PBXContainerItemProxy */;
+		};
 		014CD0043049E05000E8D24F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 014CCFF83049E04F00E8D24F /* IP Inbound Shared */;
@@ -989,6 +1105,11 @@
 			isa = PBXTargetDependency;
 			target = 014CCFF83049E04F00E8D24F /* IP Inbound Shared */;
 			targetProxy = 014CD03F3049E06600E8D24F /* PBXContainerItemProxy */;
+		};
+		014CD0453049E06900E8D24F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 014CCFF83049E04F00E8D24F /* IP Inbound Shared */;
+			targetProxy = 014CD0443049E06900E8D24F /* PBXContainerItemProxy */;
 		};
 		016F3C222DC08E7A00F2A1AE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1162,6 +1283,72 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
 				TEST_TARGET_NAME = "IP Inbound Watch";
+			};
+			name = Release;
+		};
+		014CCFF03049E01300E8D24F /* Debug configuration for PBXNativeTarget "Watch ComplicationExtension" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = "Watch ComplicationExtension.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 11;
+				DEVELOPMENT_TEAM = 2NFSK2WB24;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Watch Complication/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Watch Complication";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MARKETING_VERSION = 2.0.2;
+				PRODUCT_BUNDLE_IDENTIFIER = "codes.tim.IP-Inbound.watchkitapp.TOTComplication";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				TARGETED_DEVICE_FAMILY = 4;
+			};
+			name = Debug;
+		};
+		014CCFF13049E01300E8D24F /* Release configuration for PBXNativeTarget "Watch ComplicationExtension" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = "Watch ComplicationExtension.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 11;
+				DEVELOPMENT_TEAM = 2NFSK2WB24;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Watch Complication/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Watch Complication";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MARKETING_VERSION = 2.0.2;
+				PRODUCT_BUNDLE_IDENTIFIER = "codes.tim.IP-Inbound.watchkitapp.TOTComplication";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				TARGETED_DEVICE_FAMILY = 4;
 			};
 			name = Release;
 		};
@@ -1701,6 +1888,14 @@
 			);
 			defaultConfigurationName = Release;
 		};
+		014CCFF23049E01300E8D24F /* Build configuration list for PBXNativeTarget "Watch ComplicationExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				014CCFF03049E01300E8D24F /* Debug configuration for PBXNativeTarget "Watch ComplicationExtension" */,
+				014CCFF13049E01300E8D24F /* Release configuration for PBXNativeTarget "Watch ComplicationExtension" */,
+			);
+			defaultConfigurationName = Release;
+		};
 		014CD00E3049E05000E8D24F /* Build configuration list for PBXNativeTarget "IP Inbound Shared" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -1849,6 +2044,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 011479EB2F779D5F003AEBCC /* XCRemoteSwiftPackageReference "SwiftGeographic" */;
 			productName = SwiftGeographic;
+		};
+		014CD0473049E08500E8D24F /* MeasurementKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 455EB96FD3C3DE444A131339 /* XCRemoteSwiftPackageReference "MeasurementKit" */;
+			productName = MeasurementKit;
+		};
+		014CD0493049E08500E8D24F /* MeasurementKitLocation */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 455EB96FD3C3DE444A131339 /* XCRemoteSwiftPackageReference "MeasurementKit" */;
+			productName = MeasurementKitLocation;
 		};
 		0159221E2FCA2B28007FB6BB /* XCUITestKit */ = {
 			isa = XCSwiftPackageProductDependency;
