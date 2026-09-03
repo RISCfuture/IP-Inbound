@@ -55,7 +55,9 @@ final class BackgroundActivityHolder {
   /// where there is no `Target`.
   private static let runTargetIDKey = "runTargetID"
 
-  /// Installed at `@main`, before any view appears.
+  /// Installed at `@main`, before any view appears, by a platform whose location stream has no other
+  /// owner outside the view layer. The watch installs one; iPhone does not, because its run
+  /// controller holds the stream for as long as the run it is flying.
   var locationUpdates: RunLocationUpdates?
 
   private var session: CLBackgroundActivitySession?

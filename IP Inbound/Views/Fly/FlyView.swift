@@ -71,6 +71,7 @@ struct FlyView: View {
     .onAppear {
       target.isConfigured = true
       UIApplication.shared.isIdleTimerDisabled = true
+      RunController.shared.handOverToScreen()
       BackgroundActivityHolder.shared.begin(targetID: target.id)
       WatchSessionController.shared.update(flying: target)
       LiveActivityController.shared.update(flying: target)
