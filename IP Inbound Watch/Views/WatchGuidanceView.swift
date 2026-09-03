@@ -104,5 +104,15 @@ private struct WatchLocatedGuidance: View {
 
 #Preview("On Ground") {
   WatchGuidanceView(target: WatchPreviewData.target)
+    .environment(WatchLocationModel(previewLocation: WatchPreviewData.location(speedKnots: 0)))
+}
+
+#Preview("Airborne") {
+  WatchGuidanceView(target: WatchPreviewData.target)
+    .environment(WatchLocationModel(previewLocation: WatchPreviewData.location(speedKnots: 250)))
+}
+
+#Preview("Acquiring a fix") {
+  WatchGuidanceView(target: WatchPreviewData.target)
     .environment(WatchLocationModel())
 }

@@ -79,7 +79,10 @@ private struct RunInCountdown: View {
           }
 
       case .accessoryInline:
-        Text("\(target.name) \(inlineCountdown)")
+        // One run, unstyled: watchOS draws the inline family in the face's own font, so weights set
+        // here are dropped. The countdown is still interpolated rather than concatenated, because
+        // `Text` + `Text` is deprecated.
+        Text("\(Text(target.name)) \(inlineCountdown)")
 
       default:
         VStack(alignment: .leading, spacing: 2) {
