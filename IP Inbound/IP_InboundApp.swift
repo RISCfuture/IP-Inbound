@@ -27,6 +27,12 @@ struct IP_InboundApp: App {
 
   // MARK: - Instance Properties
 
+  @UIApplicationDelegateAdaptor(AppDelegate.self)
+  private var delegate
+
+  @Environment(\.scenePhase)
+  private var scenePhase
+
   private let modelContainer: ModelContainer
 
   @State private var services: AppServices?
@@ -48,6 +54,12 @@ struct IP_InboundApp: App {
         if services == nil {
           services = await AppServices.make()
         }
+      }
+      // Frontmost with no Fly screen showing means a session `@main` rejoined belongs to a run that
+      // is over, as does the record a force-quit or a crash left behind. A run still being flown
+      // claimed its session when `FlyView` appeared, and is left alone.
+      .onChange(of: scenePhase, initial: true) {
+        if scenePhase == .active { BackgroundActivityHolder.shared.endUnclaimedRun() }
       }
     }.modelContainer(modelContainer)
   }
