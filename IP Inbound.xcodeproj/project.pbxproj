@@ -9,8 +9,6 @@
 /* Begin PBXBuildFile section */
 		010FB64E2FEBA0640056ECE0 /* IP Inbound Watch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 010FB62E2FEBA0610056ECE0 /* IP Inbound Watch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		011479ED2F779D5F003AEBCC /* SwiftGeographic in Frameworks */ = {isa = PBXBuildFile; productRef = 011479EC2F779D5F003AEBCC /* SwiftGeographic */; };
-		014CCFE23049E01300E8D24F /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0172C0742FEC82A50034B332 /* WidgetKit.framework */; };
-		014CCFE33049E01300E8D24F /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0172C0762FEC82A50034B332 /* SwiftUI.framework */; };
 		014CD0023049E05000E8D24F /* IP_Inbound_Shared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 014CCFF93049E04F00E8D24F /* IP_Inbound_Shared.framework */; };
 		014CD00C3049E05000E8D24F /* IP_Inbound_Shared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 014CCFF93049E04F00E8D24F /* IP_Inbound_Shared.framework */; };
 		014CD00D3049E05000E8D24F /* IP_Inbound_Shared.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 014CCFF93049E04F00E8D24F /* IP_Inbound_Shared.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -18,7 +16,6 @@
 		014CD0393049E06300E8D24F /* IP_Inbound_Shared.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 014CCFF93049E04F00E8D24F /* IP_Inbound_Shared.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		014CD03D3049E06600E8D24F /* IP_Inbound_Shared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 014CCFF93049E04F00E8D24F /* IP_Inbound_Shared.framework */; };
 		014CD03E3049E06600E8D24F /* IP_Inbound_Shared.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 014CCFF93049E04F00E8D24F /* IP_Inbound_Shared.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		014CD0423049E06900E8D24F /* IP_Inbound_Shared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 014CCFF93049E04F00E8D24F /* IP_Inbound_Shared.framework */; };
 		0159221F2FCA2B28007FB6BB /* XCUITestKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0159221E2FCA2B28007FB6BB /* XCUITestKit */; };
 		0166FA742DCA685800970EFD /* DefaultsMacros in Frameworks */ = {isa = PBXBuildFile; productRef = 0166FA732DCA685800970EFD /* DefaultsMacros */; };
 		016F3ED22DD4F1E1006EEC6D /* Numerics in Frameworks */ = {isa = PBXBuildFile; productRef = 016F3ED12DD4F1E1006EEC6D /* Numerics */; };
@@ -29,6 +26,7 @@
 		01A9E0042FF1B3C400E5A1D9 /* MeasurementKitLocation in Frameworks */ = {isa = PBXBuildFile; productRef = 01A9E0032FF1B3C400E5A1D9 /* MeasurementKitLocation */; };
 		01A9E0112FF1B3C400E5A1D9 /* MeasurementKit in Frameworks */ = {isa = PBXBuildFile; productRef = 01A9E0102FF1B3C400E5A1D9 /* MeasurementKit */; };
 		01A9E0132FF1B3C400E5A1D9 /* MeasurementKitLocation in Frameworks */ = {isa = PBXBuildFile; productRef = 01A9E0122FF1B3C400E5A1D9 /* MeasurementKitLocation */; };
+		01A9E0152FF1B3C400E5A1D9 /* Numerics in Frameworks */ = {isa = PBXBuildFile; productRef = 01A9E0142FF1B3C400E5A1D9 /* Numerics */; };
 		01C059A72DBF49C600D733C1 /* AsyncAlgorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 01C059A62DBF49C600D733C1 /* AsyncAlgorithms */; };
 		01EB04182FCA2D0B007C3D1E /* XCUITestKit in Frameworks */ = {isa = PBXBuildFile; productRef = 01EB04172FCA2D0B007C3D1E /* XCUITestKit */; };
 		01ECF4F32CF3E2F800BD0604 /* Defaults in Frameworks */ = {isa = PBXBuildFile; productRef = 01ECF4F22CF3E2F800BD0604 /* Defaults */; };
@@ -46,7 +44,6 @@
 		E6A4F09A58AE2518B10F5CE0 /* MeasurementKit in Frameworks */ = {isa = PBXBuildFile; productRef = B83449F701954CD31C4C6218 /* MeasurementKit */; };
 		F5C0FFB0CACD3560610BA5C3 /* MeasurementKitLocation in Frameworks */ = {isa = PBXBuildFile; productRef = 47E80E982AE1E94EDDDA1BC7 /* MeasurementKitLocation */; };
 		FDF872692C630A40B99B510D /* MeasurementKitLocation in Frameworks */ = {isa = PBXBuildFile; productRef = 8EC548C52BD942411AA402B6 /* MeasurementKitLocation */; };
-		01A9E0152FF1B3C400E5A1D9 /* Numerics in Frameworks */ = {isa = PBXBuildFile; productRef = 01A9E0142FF1B3C400E5A1D9 /* Numerics */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1888,6 +1885,11 @@
 			package = 455EB96FD3C3DE444A131339 /* XCRemoteSwiftPackageReference "MeasurementKit" */;
 			productName = MeasurementKitLocation;
 		};
+		01A9E0142FF1B3C400E5A1D9 /* Numerics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 016F3ED02DD4F1E1006EEC6D /* XCRemoteSwiftPackageReference "swift-numerics" */;
+			productName = Numerics;
+		};
 		01C059A62DBF49C600D733C1 /* AsyncAlgorithms */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 01C059A52DBF49C600D733C1 /* XCRemoteSwiftPackageReference "swift-async-algorithms" */;
@@ -1972,11 +1974,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 455EB96FD3C3DE444A131339 /* XCRemoteSwiftPackageReference "MeasurementKit" */;
 			productName = MeasurementKit;
-		};
-		01A9E0142FF1B3C400E5A1D9 /* Numerics */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 016F3ED02DD4F1E1006EEC6D /* XCRemoteSwiftPackageReference "swift-numerics" */;
-			productName = Numerics;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
