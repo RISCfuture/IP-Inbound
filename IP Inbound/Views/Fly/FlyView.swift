@@ -71,12 +71,18 @@ struct FlyView: View {
     .onAppear {
       target.isConfigured = true
       UIApplication.shared.isIdleTimerDisabled = true
-      BackgroundActivityHolder.shared.begin()
+      RunController.shared.handOverToScreen()
+      BackgroundActivityHolder.shared.begin(targetID: target.id)
       WatchSessionController.shared.update(flying: target)
       LiveActivityController.shared.update(flying: target)
     }
+    // Flying straight on to the next target replaces this whole screen, and SwiftUI may raise the
+    // replacement before it lowers this one. Tearing the run down then would end the run the next
+    // target has already begun — its record, its watch context and its Live Activity alike — so the
+    // screen only dismantles a run it still owns.
     .onDisappear {
       UIApplication.shared.isIdleTimerDisabled = false
+      guard BackgroundActivityHolder.shared.ownsRun(flying: target.id) else { return }
       BackgroundActivityHolder.shared.end()
       WatchSessionController.shared.update(flying: nil)
       LiveActivityController.shared.update(flying: nil)

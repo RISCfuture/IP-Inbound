@@ -1,11 +1,22 @@
+import SwiftData
 import SwiftUI
 
 struct ContentView: View {
   @Environment(\.errorStore)
   private var errorStore
 
+  @Query private var targets: [Target]
+
+  /// The target of a run that outlived the last process, so the pilot lands back on it rather than
+  /// on an empty detail pane. Resolved here because this is the outermost view with a model context
+  /// to resolve it against.
+  private var resumedTarget: Target? {
+    guard let runTargetID = BackgroundActivityHolder.shared.runTargetID else { return nil }
+    return targets.first { $0.id == runTargetID }
+  }
+
   var body: some View {
-    TargetListView()
+    TargetListView(resumedTarget: resumedTarget)
       .warmsLocation()
       .alert(
         "Something went wrong.",

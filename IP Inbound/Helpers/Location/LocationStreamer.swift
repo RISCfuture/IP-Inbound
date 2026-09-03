@@ -208,6 +208,7 @@ final class LocationStreamer: Sendable {
     self.dateProvider = dateProvider
   }
 
+  /// Takes a listener's hold on the stream, starting it for the first one.
   func start() async {
     listenerCount += 1
     if listenerCount == 1 { await _start() }
@@ -304,7 +305,16 @@ final class LocationStreamer: Sendable {
     producer = .init(stream: stream!)
   }
 
+  /// Releases one listener's hold, tearing the stream down when the last one lets go.
+  ///
+  /// A release with no hold outstanding is ignored rather than counted. `NeedsLocationView` starts
+  /// the stream from a `task` and stops it from `onDisappear`, and a view that appears and
+  /// disappears within one runloop turn has its `task` cancelled before it ever starts — so the
+  /// release can genuinely arrive first. Counted, that would leave the tally below zero, where
+  /// ``start()`` can never see it reach one again and the app produces no fixes for the rest of the
+  /// process.
   func stop() async {
+    guard listenerCount > 0 else { return }
     listenerCount -= 1
     if listenerCount == 0 { await _stop() }
   }
@@ -340,6 +350,12 @@ final class LocationStreamer: Sendable {
 
     fullAccuracySession?.invalidate()
     fullAccuracySession = nil
+
+    // Consumers hold streams vended by this producer, and a restart installs a new one. Left
+    // running, the old producer would keep those consumers attached to a broadcast that has no
+    // source — silent rather than finished, so nothing downstream ever learns the fixes stopped.
+    await producer?.stop()
+    producer = nil
 
     realLocationStream = nil
     simLocationStream = nil

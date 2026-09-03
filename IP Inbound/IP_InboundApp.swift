@@ -79,6 +79,11 @@ struct IP_InboundApp: App {
       fatalError(error.localizedDescription)
     }
     Self.seedUITestTargetIfNeeded(into: modelContainer)
+
+    // Before any view exists, because on the launch this is for none ever will: Core Location
+    // relaunches the app in the background when a run outlives the process, and that launch
+    // connects no scene.
+    RunController.shared.resumeRunInProgress(in: modelContainer)
   }
 
   // MARK: - Type Methods

@@ -12,7 +12,6 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
     _: UIApplication,
     didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    BackgroundActivityHolder.shared.locationUpdates = .locationStreamer
     BackgroundActivityHolder.shared.rejoinRunInProgress()
     return true
   }
