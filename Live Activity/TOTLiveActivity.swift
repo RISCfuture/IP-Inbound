@@ -17,7 +17,11 @@ struct TOTLiveActivity: Widget {
           VStack(spacing: 2) {
             Text(context.attributes.targetName)
               .font(.headline)
-            TOTCountdownText(timeOnTarget: context.state.timeOnTarget, font: .title2)
+              .fontWeight(.light)
+            TOTCountdownText(
+              timeOnTarget: context.state.timeOnTarget,
+              font: .title2.weight(.bold)
+            )
             Text("to TOT")
               .font(.caption2)
               .textCase(.uppercase)
@@ -152,39 +156,66 @@ extension TOTActivityAttributes {
 }
 
 extension TOTActivityAttributes.ContentState {
-  fileprivate static var near: TOTActivityAttributes.ContentState {
+  /// Still short of the IP and running early, which is what puts the run-in summary on screen.
+  fileprivate static var early: TOTActivityAttributes.ContentState {
+    runIn(ipDeltaSeconds: -80, distanceToIP: 12)
+  }
+
+  /// Late enough to read as a clock figure rather than a count of seconds.
+  fileprivate static var late: TOTActivityAttributes.ContentState {
+    runIn(ipDeltaSeconds: 95, distanceToIP: 9)
+  }
+
+  /// Inside the sub-second band the app rounds to, where the summary says so in words.
+  fileprivate static var onTime: TOTActivityAttributes.ContentState {
+    runIn(ipDeltaSeconds: 0.4, distanceToIP: 7)
+  }
+
+  /// The IP is behind the aircraft, so the summary drops away and only the countdown is left.
+  fileprivate static var finalRun: TOTActivityAttributes.ContentState {
     .init(timeOnTarget: .now.addingTimeInterval(45))
   }
 
-  fileprivate static var far: TOTActivityAttributes.ContentState {
-    .init(timeOnTarget: .now.addingTimeInterval(600))
+  private static func runIn(
+    ipDeltaSeconds: Double,
+    distanceToIP: Double
+  ) -> TOTActivityAttributes.ContentState {
+    .init(
+      timeOnTarget: .now.addingTimeInterval(600),
+      ipDeltaTime: .init(value: ipDeltaSeconds, unit: .seconds),
+      distanceToIP: .init(value: distanceToIP, unit: .nauticalMiles)
+    )
   }
 }
 
 #Preview("Notification", as: .content, using: TOTActivityAttributes.preview) {
   TOTLiveActivity()
 } contentStates: {
-  TOTActivityAttributes.ContentState.near
-  TOTActivityAttributes.ContentState.far
+  TOTActivityAttributes.ContentState.early
+  TOTActivityAttributes.ContentState.late
+  TOTActivityAttributes.ContentState.onTime
+  TOTActivityAttributes.ContentState.finalRun
 }
 
 #Preview("Expanded", as: .dynamicIsland(.expanded), using: TOTActivityAttributes.preview) {
   TOTLiveActivity()
 } contentStates: {
-  TOTActivityAttributes.ContentState.near
-  TOTActivityAttributes.ContentState.far
+  TOTActivityAttributes.ContentState.early
+  TOTActivityAttributes.ContentState.late
+  TOTActivityAttributes.ContentState.onTime
+  TOTActivityAttributes.ContentState.finalRun
 }
 
 #Preview("Compact", as: .dynamicIsland(.compact), using: TOTActivityAttributes.preview) {
   TOTLiveActivity()
 } contentStates: {
-  TOTActivityAttributes.ContentState.near
-  TOTActivityAttributes.ContentState.far
+  TOTActivityAttributes.ContentState.early
+  TOTActivityAttributes.ContentState.finalRun
 }
 
 #Preview("Minimal", as: .dynamicIsland(.minimal), using: TOTActivityAttributes.preview) {
   TOTLiveActivity()
 } contentStates: {
-  TOTActivityAttributes.ContentState.near
-  TOTActivityAttributes.ContentState.far
+  TOTActivityAttributes.ContentState.early
+  TOTActivityAttributes.ContentState.finalRun
 }
