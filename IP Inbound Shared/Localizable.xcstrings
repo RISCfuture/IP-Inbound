@@ -1,0 +1,21 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "%@ left of course." : {
+
+    },
+    "%@ right of course." : {
+
+    },
+    "%@M" : {
+
+    },
+    "%@T" : {
+
+    },
+    "On course." : {
+
+    }
+  },
+  "version" : "1.0"
+}
