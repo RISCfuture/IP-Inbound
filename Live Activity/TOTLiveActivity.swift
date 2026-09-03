@@ -10,21 +10,7 @@ import WidgetKit
 struct TOTLiveActivity: Widget {
   var body: some WidgetConfiguration {
     ActivityConfiguration(for: TOTActivityAttributes.self) { context in
-      VStack(spacing: 2) {
-        Text(context.attributes.targetName)
-          .font(.headline)
-        TOTCountdown(timeOnTarget: context.state.timeOnTarget)
-          .font(.title)
-        Text("to TOT")
-          .font(.caption)
-          .textCase(.uppercase)
-          .foregroundStyle(.secondary)
-        RunInSummary(state: context.state)
-          .font(.caption)
-      }
-      .multilineTextAlignment(.center)
-      .frame(maxWidth: .infinity)
-      .padding()
+      LiveActivityContent(context: context)
     } dynamicIsland: { context in
       DynamicIsland {
         DynamicIslandExpandedRegion(.center) {
@@ -58,6 +44,69 @@ struct TOTLiveActivity: Widget {
         .scaleEffect(1.4)
       }
     }
+    // Without this the Apple Watch renders the mirrored activity from the Dynamic Island's compact
+    // regions, which sit flush against each other and share one weight — a run-in that reads as
+    // "Bullseye2:20".
+    .supplementalActivityFamilies([.small])
+  }
+}
+
+/// The activity as the Lock Screen and the Apple Watch each want it.
+///
+/// The watch gets its own layout rather than the Lock Screen's: it has a fraction of the room, so the
+/// run-in summary comes off and what is left is sized to be read at a glance — the target named
+/// quietly, the countdown as the thing the pilot is actually looking for.
+private struct LiveActivityContent: View {
+  var context: ActivityViewContext<TOTActivityAttributes>
+
+  @Environment(\.activityFamily)
+  private var activityFamily
+
+  var body: some View {
+    switch activityFamily {
+      case .small: watch
+      default: lockScreen
+    }
+  }
+
+  private var watch: some View {
+    VStack(spacing: 2) {
+      Text(context.attributes.targetName)
+        .font(.caption)
+        .fontWeight(.light)
+        .foregroundStyle(.secondary)
+        .lineLimit(1)
+        .minimumScaleFactor(0.7)
+      TOTCountdown(timeOnTarget: context.state.timeOnTarget)
+        .font(.system(.title2, design: .rounded).weight(.bold))
+      Text("to TOT")
+        .font(.caption2)
+        .textCase(.uppercase)
+        .foregroundStyle(.secondary)
+    }
+    .multilineTextAlignment(.center)
+    .frame(maxWidth: .infinity)
+    .padding(.horizontal, 4)
+  }
+
+  private var lockScreen: some View {
+    VStack(spacing: 2) {
+      Text(context.attributes.targetName)
+        .font(.headline)
+        .fontWeight(.light)
+      TOTCountdown(timeOnTarget: context.state.timeOnTarget)
+        .font(.title)
+        .fontWeight(.bold)
+      Text("to TOT")
+        .font(.caption)
+        .textCase(.uppercase)
+        .foregroundStyle(.secondary)
+      RunInSummary(state: context.state)
+        .font(.caption)
+    }
+    .multilineTextAlignment(.center)
+    .frame(maxWidth: .infinity)
+    .padding()
   }
 }
 
