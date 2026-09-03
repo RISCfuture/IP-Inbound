@@ -68,7 +68,13 @@ private struct RunInCountdown: View {
   var body: some View {
     switch family {
       case .accessoryCircular:
-        TOTProgressRing(timeOnTarget: timeOnTarget, legDuration: legDuration)
+        // The roomiest of the ring families, so the countdown goes inside it rather than leaving
+        // the pilot to read progress off the arc alone.
+        TOTProgressRing(
+          timeOnTarget: timeOnTarget,
+          legDuration: legDuration,
+          showsCountdown: true
+        )
 
       case .accessoryCorner:
         // The corner families draw a small graphic against the bezel; the countdown itself belongs
