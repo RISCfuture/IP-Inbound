@@ -21,6 +21,9 @@
     },
     "Time on target countdown" : {
       "comment" : "An accessibility label for the circular countdown to the time on target."
+    },
+    "to TOT" : {
+
     }
   },
   "version" : "1.0"
