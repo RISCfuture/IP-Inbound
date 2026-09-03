@@ -4,7 +4,7 @@ import SwiftUI
 /// How early or late an arrival is tracking against its time-on-target, paired with the readout color
 /// and direction icon. Shared by the Fly timing display, the post-pass verdict, and the watch CDI so a
 /// given tier always reads identically across the phone and watch.
-public enum TimingTier: CaseIterable, Hashable {
+public enum TimingTier: CaseIterable, Hashable, Sendable {
   case tooSlowWarning
   case tooSlowCaution
   case onTime

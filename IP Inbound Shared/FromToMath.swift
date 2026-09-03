@@ -2,7 +2,7 @@ import Foundation
 import MeasurementKit
 import MeasurementKitLocation
 
-public struct FromToMath: Equatable {
+public struct FromToMath: Equatable, Sendable {
   /// The bank angle the turn model flies. Shared with ``IPTargetMath``'s run-in sequencing, which
   /// sizes its buffer from the same turn geometry.
   public static let bankAngle = Measurement(value: 30, unit: UnitAngle.degrees)

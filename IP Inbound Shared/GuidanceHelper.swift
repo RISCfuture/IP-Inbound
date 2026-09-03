@@ -4,7 +4,7 @@ import MeasurementKit
 import MeasurementKitLocation
 
 /// Which phase of the run the aircraft is in, and therefore what the Fly screen shows.
-public enum Guidance {
+public enum Guidance: Sendable {
   /// Inbound to the IP and on schedule: fly the speed the crossing time asks for.
   case toIPWithSpeedGuidance
 

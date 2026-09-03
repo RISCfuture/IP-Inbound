@@ -4,7 +4,7 @@ import MeasurementKit
 /// Where the aircraft lies relative to the run-in course, in the terms a course deviation indicator
 /// is drawn and spoken in. Both platforms' indicators read their needle and their announcement from
 /// here, so neither can adopt a convention the other doesn't share.
-public struct CourseDeviation {
+public struct CourseDeviation: Sendable {
   /// The cross-track distance at which an indicator reaches the end of its scale.
   public static let fullScale = Measurement(value: 4, unit: UnitLength.nauticalMiles)
 
