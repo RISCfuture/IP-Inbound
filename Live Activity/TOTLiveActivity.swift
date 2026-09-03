@@ -5,8 +5,8 @@ import SwiftUI
 import WidgetKit
 
 /// The Lock Screen and Dynamic Island presentation of the Time-On-Target Live Activity. The countdown
-/// is rendered with the same self-updating `.timer(countingDownIn:)` format the in-app
-/// `CountdownTimerView` uses, so the system ticks it down without any pushed updates.
+/// is the shared `TOTCountdownText` the watch draws too, and the system ticks it down without any
+/// pushed updates.
 struct TOTLiveActivity: Widget {
   var body: some WidgetConfiguration {
     ActivityConfiguration(for: TOTActivityAttributes.self) { context in
@@ -17,8 +17,7 @@ struct TOTLiveActivity: Widget {
           VStack(spacing: 2) {
             Text(context.attributes.targetName)
               .font(.headline)
-            TOTCountdown(timeOnTarget: context.state.timeOnTarget)
-              .font(.title2)
+            TOTCountdownText(timeOnTarget: context.state.timeOnTarget, font: .title2)
             Text("to TOT")
               .font(.caption2)
               .textCase(.uppercase)
@@ -33,7 +32,8 @@ struct TOTLiveActivity: Widget {
         Text(context.attributes.targetName)
           .lineLimit(1)
       } compactTrailing: {
-        TOTCountdown(timeOnTarget: context.state.timeOnTarget)
+        // No font, so the compact region's own text sizing applies.
+        TOTCountdownText(timeOnTarget: context.state.timeOnTarget)
       } minimal: {
         TOTProgressRing(
           timeOnTarget: context.state.timeOnTarget,
@@ -70,8 +70,25 @@ private struct LiveActivityContent: View {
   }
 
   private var watch: some View {
-    TOTGlance(targetName: context.attributes.targetName, timeOnTarget: context.state.timeOnTarget)
-      .padding(.horizontal, 4)
+    VStack(spacing: 2) {
+      Text(context.attributes.targetName)
+        .font(.caption)
+        .fontWeight(.light)
+        .foregroundStyle(.secondary)
+        .lineLimit(1)
+        .minimumScaleFactor(0.7)
+      TOTCountdownText(
+        timeOnTarget: context.state.timeOnTarget,
+        font: .system(.title2, design: .rounded).weight(.bold)
+      )
+      Text("to TOT")
+        .font(.caption2)
+        .textCase(.uppercase)
+        .foregroundStyle(.secondary)
+    }
+    .multilineTextAlignment(.center)
+    .frame(maxWidth: .infinity)
+    .padding(.horizontal, 4)
   }
 
   private var lockScreen: some View {
@@ -79,9 +96,10 @@ private struct LiveActivityContent: View {
       Text(context.attributes.targetName)
         .font(.headline)
         .fontWeight(.light)
-      TOTCountdown(timeOnTarget: context.state.timeOnTarget)
-        .font(.title)
-        .fontWeight(.bold)
+      TOTCountdownText(
+        timeOnTarget: context.state.timeOnTarget,
+        font: .title.weight(.bold)
+      )
       Text("to TOT")
         .font(.caption)
         .textCase(.uppercase)
@@ -93,12 +111,6 @@ private struct LiveActivityContent: View {
     .frame(maxWidth: .infinity)
     .padding()
   }
-}
-
-/// The countdown range, clamped to stay ascending once the planned time passes so the timer reads zero
-/// (and the ring stays empty) rather than running backwards before the activity ends.
-private func countdownRange(to timeOnTarget: Date) -> ClosedRange<Date> {
-  .now...max(timeOnTarget, .now.addingTimeInterval(1))
 }
 
 /// The distance still to fly to the IP and how the projected crossing compares with the plan, or
@@ -128,16 +140,6 @@ private struct RunInSummary: View {
     return seconds < 0
       ? String(localized: "\(magnitude) early")
       : String(localized: "\(magnitude) late")
-  }
-}
-
-/// A self-updating textual countdown to `timeOnTarget`.
-private struct TOTCountdown: View {
-  var timeOnTarget: Date
-
-  var body: some View {
-    Text(timerInterval: countdownRange(to: timeOnTarget), countsDown: true)
-      .monospacedDigit()
   }
 }
 

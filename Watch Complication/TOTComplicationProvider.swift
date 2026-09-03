@@ -21,16 +21,11 @@ struct TOTComplicationProvider: TimelineProvider {
     completion(entry())
   }
 
-  /// Two entries are enough. The countdown ticks itself down, so the only moment the complication
-  /// has to be redrawn is the time on target itself, when it stops counting and says so. Everything
-  /// else arrives as a reload from the watch app.
+  /// One entry is enough. The countdown ticks itself down without being redrawn, and it reads the
+  /// same on either side of the time on target, so there is no later moment the complication has to
+  /// be drawn again for. A new run, or none, arrives as a reload from the watch app.
   func getTimeline(in _: Context, completion: @escaping (Timeline<TOTEntry>) -> Void) {
-    let now = entry()
-    var entries = [now]
-    if let timeOnTarget = now.target?.timeOnTarget, timeOnTarget > now.date {
-      entries.append(.init(date: timeOnTarget, target: now.target))
-    }
-    completion(.init(entries: entries, policy: .never))
+    completion(.init(entries: [entry()], policy: .never))
   }
 
   // `relevance()` is async because WidgetKit declares it so, not because it has anything to await.

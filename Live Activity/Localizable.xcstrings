@@ -1,0 +1,21 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "%@ early" : {
+
+    },
+    "%@ late" : {
+
+    },
+    "%@ to IP · %@" : {
+
+    },
+    "on time" : {
+
+    },
+    "to TOT" : {
+
+    }
+  },
+  "version" : "1.0"
+}

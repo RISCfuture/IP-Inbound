@@ -39,7 +39,6 @@ private struct TOTComplicationView: View {
       RunInCountdown(
         target: target,
         timeOnTarget: timeOnTarget,
-        asOf: entry.date,
         family: family
       )
     } else {
@@ -52,11 +51,6 @@ private struct RunInCountdown: View {
   var target: TargetSnapshot
   var timeOnTarget: Date
 
-  /// The moment this drawing stands for. WidgetKit renders an entry ahead of the date it is
-  /// scheduled for, so the countdown is read against that date rather than against the present —
-  /// which is what lets the entry scheduled at the time on target say the time has passed.
-  var asOf: Date
-
   var family: WidgetFamily
 
   /// How much of the ring is drawn: the run-in leg, the same extent the Live Activity uses.
@@ -68,7 +62,7 @@ private struct RunInCountdown: View {
   /// rather than composed alongside it. The face draws that run in its own font and tint, so there
   /// is nothing to gain by styling either half.
   private var inlineCountdown: Text {
-    .totCountdown(to: timeOnTarget, asOf: asOf)
+    TOTCountdownText.text(timeOnTarget: timeOnTarget)
   }
 
   var body: some View {
@@ -81,7 +75,7 @@ private struct RunInCountdown: View {
         // in the widget label, which is the only text the corner shows.
         TOTProgressRing(timeOnTarget: timeOnTarget, legDuration: legDuration)
           .widgetLabel {
-            TOTCountdownText(timeOnTarget: timeOnTarget, font: .caption, asOf: asOf)
+            TOTCountdownText(timeOnTarget: timeOnTarget, font: .caption)
           }
 
       case .accessoryInline:
@@ -96,9 +90,7 @@ private struct RunInCountdown: View {
             .lineLimit(1)
           TOTCountdownText(
             timeOnTarget: timeOnTarget,
-            font: .system(.title2, design: .rounded).weight(.bold),
-            pastTOTFont: .system(.headline, design: .rounded).weight(.bold),
-            asOf: asOf
+            font: .system(.title2, design: .rounded).weight(.bold)
           )
         }
         .frame(maxWidth: .infinity, alignment: .leading)
