@@ -6,8 +6,7 @@ import SwiftUI
 /// the minimal Dynamic Island, and the watch face's smallest complication families.
 ///
 /// Full extent is the IP-to-target leg — full while the aircraft is still inbound to the IP, emptying
-/// over the final `legDuration` to the time on target. The labels are suppressed so only the ring
-/// shows.
+/// over the final `legDuration` to the time on target.
 public struct TOTProgressRing: View {
   private static let minimumLegDuration = Measurement(value: 1, unit: UnitDuration.seconds)
 
@@ -16,6 +15,11 @@ public struct TOTProgressRing: View {
 
   /// How long the run-in leg takes, which is how much of the ring is drawn.
   public var legDuration: Measurement<UnitDuration>
+
+  /// Whether the countdown is drawn inside the ring. Only the circular complication has the room:
+  /// the corner family draws against the bezel and puts its countdown in the widget label, and the
+  /// minimal Dynamic Island is the tightest draw of all.
+  public var showsCountdown: Bool
 
   /// How much of the ring is drawn, floored at a second.
   ///
@@ -36,14 +40,21 @@ public struct TOTProgressRing: View {
     ProgressView(timerInterval: ringRange, countsDown: true) {
       EmptyView()
     } currentValueLabel: {
-      EmptyView()
+      if showsCountdown {
+        TOTCountdownText(timeOnTarget: timeOnTarget, font: .caption2)
+      }
     }
     .progressViewStyle(.circular)
     .accessibilityLabel(Text("Time on target countdown", bundle: .guidance))
   }
 
-  public init(timeOnTarget: Date, legDuration: Measurement<UnitDuration>) {
+  public init(
+    timeOnTarget: Date,
+    legDuration: Measurement<UnitDuration>,
+    showsCountdown: Bool = false
+  ) {
     self.timeOnTarget = timeOnTarget
     self.legDuration = legDuration
+    self.showsCountdown = showsCountdown
   }
 }
