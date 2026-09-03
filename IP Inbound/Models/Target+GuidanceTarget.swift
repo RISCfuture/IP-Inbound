@@ -1,4 +1,5 @@
 import Foundation
+import IP_Inbound_Shared
 
 extension Target: GuidanceTarget {
   /// A `Codable` value-type copy of this target's guidance geometry, for transmission to the Apple

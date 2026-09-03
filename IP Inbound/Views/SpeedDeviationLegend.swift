@@ -1,3 +1,4 @@
+import IP_Inbound_Shared
 import SwiftUI
 
 /// Legend used in the tutorial to explain the color/symbol scale of the in-flight speed deviation

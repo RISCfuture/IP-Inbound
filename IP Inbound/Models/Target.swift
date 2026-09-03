@@ -1,6 +1,7 @@
 import CoreLocation
 import Defaults
 import Foundation
+import IP_Inbound_Shared
 import MeasurementKit
 import MeasurementKitLocation
 import SwiftData

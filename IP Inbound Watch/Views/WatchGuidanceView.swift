@@ -1,4 +1,5 @@
 import CoreLocation
+import IP_Inbound_Shared
 import SwiftUI
 
 /// Drives run-in guidance for the flown target from the watch's own GPS: a countdown while on the

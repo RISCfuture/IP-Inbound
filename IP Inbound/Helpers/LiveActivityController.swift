@@ -1,5 +1,6 @@
 import ActivityKit
 import Foundation
+import IP_Inbound_Shared
 
 /// The Lock Screen / Dynamic Island counterpart to ``WatchSessionController``: starts a
 /// Time-On-Target Live Activity when the pilot begins flying a target and ends it when they leave the

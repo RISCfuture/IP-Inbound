@@ -1,5 +1,6 @@
 import Defaults
 import Foundation
+import IP_Inbound_Shared
 import MeasurementKitLocation
 import MeasurementKitUI
 import SwiftUI

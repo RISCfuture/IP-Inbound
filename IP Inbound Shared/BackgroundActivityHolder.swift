@@ -6,12 +6,20 @@ import Foundation
 /// The view layer owns that stream in the normal course of a run, but a launch Core Location makes
 /// on its own never reaches the view layer, so ``BackgroundActivityHolder`` drives it there instead —
 /// for exactly as long as the session it rejoined. Each app installs its own at `@main`.
-struct RunLocationUpdates {
+public struct RunLocationUpdates {
   /// Puts the location stream back after a relaunch.
-  let resume: @MainActor () -> Void
+  public let resume: @MainActor () -> Void
 
   /// Releases the stream `resume` started, leaving any the view layer holds alone.
-  let suspend: @MainActor () -> Void
+  public let suspend: @MainActor () -> Void
+
+  /// - Parameters:
+  ///   - resume: puts the location stream back after a relaunch.
+  ///   - suspend: releases the stream `resume` started.
+  public init(resume: @escaping @MainActor () -> Void, suspend: @escaping @MainActor () -> Void) {
+    self.resume = resume
+    self.suspend = suspend
+  }
 }
 
 /// Holds the `CLBackgroundActivitySession` that keeps a run's location updates flowing once the app
@@ -43,8 +51,10 @@ struct RunLocationUpdates {
 ///   background the reverse holds: an outstanding session can be rejoined, but a new one cannot be
 ///   started.
 @MainActor
-final class BackgroundActivityHolder {
-  static let shared = BackgroundActivityHolder()
+public final class BackgroundActivityHolder {
+  /// The process's holder. A run outlives any one screen, so the session it depends on is
+  /// process-wide too.
+  public static let shared = BackgroundActivityHolder()
 
   /// Internal recovery state rather than a preference, so it stays out of the pilot's `Defaults`
   /// namespace — which the watch target does not link in any case.
@@ -58,7 +68,7 @@ final class BackgroundActivityHolder {
   /// Installed at `@main`, before any view appears, by a platform whose location stream has no other
   /// owner outside the view layer. The watch installs one; iPhone does not, because its run
   /// controller holds the stream for as long as the run it is flying.
-  var locationUpdates: RunLocationUpdates?
+  public var locationUpdates: RunLocationUpdates?
 
   private var session: CLBackgroundActivitySession?
 
@@ -76,7 +86,7 @@ final class BackgroundActivityHolder {
   /// Answered only while a run is actually outstanding, so the two halves of the record cannot
   /// disagree: a stale identifier read after the run ended would reopen the Fly screen on a run the
   /// pilot has already left.
-  private(set) var runTargetID: String? {
+  public private(set) var runTargetID: String? {
     get { isRunInProgress ? UserDefaults.standard.string(forKey: Self.runTargetIDKey) : nil }
     set {
       // Assigning `nil` through `UserDefaults.set(_:forKey:)` does not clear the key: the optional
@@ -102,7 +112,7 @@ final class BackgroundActivityHolder {
   ///
   /// - Parameter targetID: which target is being flown, so a relaunch can reopen it. The watch omits
   ///   it: its target arrives over WatchConnectivity, which outlives the process on its own.
-  func begin(targetID: String? = nil) {
+  public func begin(targetID: String? = nil) {
     guard !ProcessInfo.processInfo.isRunningPreviewsOrTests else { return }
     isClaimed = true
     isRunInProgress = true
@@ -112,7 +122,7 @@ final class BackgroundActivityHolder {
 
   /// Ends the session, lowers the background indicator, and forgets the run. Safe to call when none
   /// is running.
-  func end() {
+  public func end() {
     isClaimed = false
     isRunInProgress = false
     runTargetID = nil
@@ -129,7 +139,7 @@ final class BackgroundActivityHolder {
   /// unconditionally, the screen the pilot just left would end the run the screen they just arrived
   /// at has already begun. A record naming no target — the watch's, or one written before this app
   /// recorded them — is nobody else's to lose, so it is the caller's to end.
-  func ownsRun(flying targetID: String) -> Bool {
+  public func ownsRun(flying targetID: String) -> Bool {
     runTargetID == nil || runTargetID == targetID
   }
 
@@ -137,7 +147,7 @@ final class BackgroundActivityHolder {
   /// the location stream alongside it — the stream is what the system relaunched the app to deliver,
   /// and dropping it forfeits the recovery. Belongs at `@main`: the window is the first moments of
   /// the launch, and a session recreated later is a new one rather than the run's.
-  func rejoinRunInProgress() {
+  public func rejoinRunInProgress() {
     guard !ProcessInfo.processInfo.isRunningPreviewsOrTests, isRunInProgress else { return }
     startSession()
     driveUpdates()
@@ -146,7 +156,7 @@ final class BackgroundActivityHolder {
   /// Ends a session no run on screen has claimed. With the app frontmost and no Fly screen showing,
   /// a rejoined session belongs to a run that ended while the app was not running — as does the
   /// record a force-quit or a crash left behind.
-  func endUnclaimedRun() {
+  public func endUnclaimedRun() {
     guard !isClaimed else { return }
     end()
   }

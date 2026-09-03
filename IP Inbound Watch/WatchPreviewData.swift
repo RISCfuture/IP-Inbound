@@ -1,5 +1,6 @@
 import CoreLocation
 import Foundation
+import IP_Inbound_Shared
 
 /// Sample data for watch previews: a configured target and synthetic GPS fixes on and off course.
 enum WatchPreviewData {

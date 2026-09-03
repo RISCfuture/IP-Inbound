@@ -1,5 +1,6 @@
 import CoreLocation
 import Foundation
+import IP_Inbound_Shared
 
 /// Parses launch-environment seeds so watch UI tests can drive the guidance views deterministically,
 /// bypassing WatchConnectivity and live GPS. Active only under the `-UITests` launch argument, so it

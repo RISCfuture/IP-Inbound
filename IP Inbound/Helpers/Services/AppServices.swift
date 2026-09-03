@@ -1,3 +1,4 @@
+import IP_Inbound_Shared
 import SwiftUI
 
 /// Single dependency aggregate for the injectable clock and location provider.

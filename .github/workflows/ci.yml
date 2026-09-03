@@ -59,14 +59,15 @@ jobs:
           path: ${{ runner.temp }}/docs-dd
           key: derived-docs-macos-26-${{ steps.toolchain.outputs.xcode }}-${{ hashFiles('**/Package.resolved') }}
       - name: Build documentation
-        # The app scheme embeds the watch app and the Live Activity extension, so one build
-        # documents all three modules. A generic destination compiles against the simulator
-        # SDK without booting a device, and nothing is installed or launched, so signing stays
-        # off. DocC has no strictness build setting, so --warnings-as-errors reaches it through
-        # OTHER_DOCC_FLAGS. docbuild documents the package dependencies too, and their DocC
-        # warnings are upstream's to fix, so the strict flag is looked up by module name and
-        # only this project's modules have a value to find. Nothing consumes the archives, so
-        # they build into the runner's scratch directory rather than the checkout.
+        # The app scheme embeds the watch app, the Live Activity extension and the shared
+        # guidance framework, so one build documents all four modules. A generic destination
+        # compiles against the simulator SDK without booting a device, and nothing is installed
+        # or launched, so signing stays off. DocC has no strictness build setting, so
+        # --warnings-as-errors reaches it through OTHER_DOCC_FLAGS. docbuild documents the
+        # package dependencies too, and their DocC warnings are upstream's to fix, so the strict
+        # flag is looked up by module name and only this project's modules have a value to find.
+        # Nothing consumes the archives, so they build into the runner's scratch directory rather
+        # than the checkout.
         run: |
           # shellcheck disable=SC2016 # xcodebuild, not the shell, expands these
           xcodebuild docbuild \
@@ -78,4 +79,5 @@ jobs:
             'OTHER_DOCC_FLAGS=$(DOCC_STRICT_$(PRODUCT_MODULE_NAME))' \
             DOCC_STRICT_IP_Inbound="--warnings-as-errors" \
             DOCC_STRICT_IP_Inbound_Watch="--warnings-as-errors" \
-            DOCC_STRICT_Live_ActivityExtension="--warnings-as-errors"
+            DOCC_STRICT_Live_ActivityExtension="--warnings-as-errors" \
+            DOCC_STRICT_IP_Inbound_Shared="--warnings-as-errors"

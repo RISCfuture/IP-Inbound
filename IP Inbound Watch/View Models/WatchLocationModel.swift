@@ -1,4 +1,5 @@
 import CoreLocation
+import IP_Inbound_Shared
 import Observation
 
 /// Streams the watch's own GPS fixes (position, course, and ground speed) for run-in guidance, and

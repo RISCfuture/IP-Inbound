@@ -2,7 +2,9 @@ import Foundation
 import MeasurementKitLocation
 
 extension IPTargetMath {
-  var isPastTarget: Bool {
+  /// Whether the target is behind the aircraft, measured along the run-in axis rather than by
+  /// distance, so a wide pass still counts as flown.
+  public var isPastTarget: Bool {
     // Vector from IP to target (the run-in axis)
     let IPToTargetVector = Coordinate.vector(
       from: target.IPCoordinate,
@@ -28,7 +30,7 @@ extension IPTargetMath {
   /// clock. False when `timeOnTarget` is unset. Pairs with ``isPastTarget``
   /// to gate the post-pass state: holding past the target before TOT keeps the
   /// IP→Target guidance visible.
-  var isAfterTOT: Bool {
+  public var isAfterTOT: Bool {
     guard let timeOnTarget = target.timeOnTarget else { return false }
     return now >= timeOnTarget
   }
