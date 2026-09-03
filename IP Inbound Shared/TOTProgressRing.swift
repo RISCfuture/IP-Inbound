@@ -29,7 +29,7 @@ public struct TOTProgressRing: View {
       EmptyView()
     }
     .progressViewStyle(.circular)
-    .accessibilityLabel("Time on target countdown")
+    .accessibilityLabel(Text("Time on target countdown", bundle: .guidance))
   }
 
   public init(timeOnTarget: Date, legDuration: Measurement<UnitDuration>) {

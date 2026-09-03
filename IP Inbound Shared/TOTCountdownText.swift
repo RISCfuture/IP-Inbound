@@ -22,6 +22,8 @@ public struct TOTCountdownText: View {
     Self.text(timeOnTarget: timeOnTarget)
       .font(isCountingDown ? font : (pastTOTFont ?? font))
       .contentTransition(.numericText())
+      .lineLimit(1)
+      .minimumScaleFactor(0.6)
   }
 
   public init(timeOnTarget: Date?, font: Font, pastTOTFont: Font? = nil) {
@@ -37,7 +39,9 @@ public struct TOTCountdownText: View {
   /// time has gone by, `now..<timeOnTarget` is a range whose lower bound exceeds its upper, which
   /// traps rather than reading zero.
   public static func text(timeOnTarget: Date?) -> Text {
-    guard let timeOnTarget, timeOnTarget > Date() else { return Text("Past TOT") }
+    guard let timeOnTarget, timeOnTarget > Date() else {
+      return Text("Past TOT", bundle: .guidance)
+    }
     return Text(
       .currentDate,
       format: .timer(countingDownIn: Date.now..<timeOnTarget, maxPrecision: .seconds(1))
