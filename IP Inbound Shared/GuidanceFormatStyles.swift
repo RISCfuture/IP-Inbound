@@ -47,8 +47,8 @@ extension Bearing {
       // translation can place it wherever that language puts it.
       let angle = measurementStyle.format(value.angle)
       return Datum.abbreviation == Magnetic.abbreviation
-        ? String(localized: "\(angle)M")
-        : String(localized: "\(angle)T")
+        ? String(localized: "\(angle)M", bundle: .guidance)
+        : String(localized: "\(angle)T", bundle: .guidance)
     }
   }
 }

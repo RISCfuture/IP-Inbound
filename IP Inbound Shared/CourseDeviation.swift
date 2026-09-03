@@ -35,11 +35,11 @@ public struct CourseDeviation: Sendable {
   /// - Returns: the spoken deviation.
   public func announcement(in unit: UnitLength = .nauticalMiles) -> String {
     let distance = crossTrackDistance.magnitude.converted(to: unit)
-    guard distance > .zero else { return String(localized: "On course.") }
+    guard distance > .zero else { return String(localized: "On course.", bundle: .guidance) }
 
     let formatted = distance.formatted(distanceFormatStyle)
     return crossTrackDistance > .zero
-      ? String(localized: "\(formatted) right of course.")
-      : String(localized: "\(formatted) left of course.")
+      ? String(localized: "\(formatted) right of course.", bundle: .guidance)
+      : String(localized: "\(formatted) left of course.", bundle: .guidance)
   }
 }
