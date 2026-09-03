@@ -53,6 +53,9 @@ struct TOTLiveActivity: Widget {
           timeOnTarget: context.state.timeOnTarget,
           legDuration: context.attributes.ipToTargetDuration
         )
+        // The minimal presentation is the tightest the ring is ever drawn, so it alone needs
+        // enlarging to stay readable.
+        .scaleEffect(1.4)
       }
     }
   }
@@ -101,32 +104,6 @@ private struct TOTCountdown: View {
   var body: some View {
     Text(timerInterval: countdownRange(to: timeOnTarget), countsDown: true)
       .monospacedDigit()
-  }
-}
-
-/// A self-updating circular countdown ring for the cramped minimal Dynamic Island, where a textual
-/// countdown clips. Full extent is the IP-to-target leg: full while still inbound to the IP, emptying
-/// over the final `legDuration` to TOT. The labels are suppressed so only the ring shows.
-private struct TOTProgressRing: View {
-  private static let minimumLegDuration = Measurement(value: 1, unit: UnitDuration.seconds)
-
-  var timeOnTarget: Date
-  var legDuration: Measurement<UnitDuration>
-
-  private var ringRange: ClosedRange<Date> {
-    let extent = max(legDuration, Self.minimumLegDuration)
-    return (timeOnTarget - extent)...timeOnTarget
-  }
-
-  var body: some View {
-    ProgressView(timerInterval: ringRange, countsDown: true) {
-      EmptyView()
-    } currentValueLabel: {
-      EmptyView()
-    }
-    .progressViewStyle(.circular)
-    .scaleEffect(1.4)
-    .accessibilityLabel("Time on target countdown")
   }
 }
 

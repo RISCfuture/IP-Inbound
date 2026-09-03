@@ -15,6 +15,12 @@
     },
     "On course." : {
 
+    },
+    "Past TOT" : {
+
+    },
+    "Time on target countdown" : {
+      "comment" : "An accessibility label for the circular countdown to the time on target."
     }
   },
   "version" : "1.0"
