@@ -6,7 +6,7 @@ extension ProcessInfo {
   /// per-tap 60-second `waitForQuiescenceIncludingAnimationsIdle` stalls. Views
   /// and services that rely on those APIs consult this flag and substitute a
   /// quiescent equivalent when set.
-  var isRunningUITests: Bool {
+  public var isRunningUITests: Bool {
     environment["XCTestConfigurationFilePath"] != nil
       || arguments.contains("-UITests")
   }
@@ -17,7 +17,7 @@ extension ProcessInfo {
   ///
   /// Wider than ``isRunningUITests``: previews set no launch argument, and a unit test hosted in the
   /// app process sets no `-UITests` either, but both must stay inert.
-  var isRunningPreviewsOrTests: Bool {
+  public var isRunningPreviewsOrTests: Bool {
     environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1"
       || isRunningUITests
       || NSClassFromString("XCTestCase") != nil

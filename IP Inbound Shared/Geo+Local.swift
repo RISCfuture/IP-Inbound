@@ -4,14 +4,14 @@ import MeasurementKitLocation
 
 extension Coordinate {
   /// The latitude in degrees.
-  var latitudeDeg: Double { latitude.degrees }
+  public var latitudeDeg: Double { latitude.degrees }
 
   /// The longitude in degrees.
-  var longitudeDeg: Double { longitude.degrees }
+  public var longitudeDeg: Double { longitude.degrees }
 
   /// The MGRS/UTM latitude band this coordinate falls in: the polar bands `A` and `Z` outside the
   /// grid's coverage, and one of the twenty eight-degree bands `C` through `X` inside it.
-  var utmBand: Character {
+  public var utmBand: Character {
     let bands: [Character] = [
       "C", "D", "E", "F", "G", "H", "J", "K", "L", "M",
       "N", "P", "Q", "R", "S", "T", "U", "V", "W", "X"
@@ -25,7 +25,7 @@ extension Coordinate {
 
   /// The displacement from `start` to `end` on the plane the two points project onto, for the
   /// dot-product tests that only need which side of an axis a point lies on.
-  static func vector(from start: Self, to end: Self) -> Vector {
+  public static func vector(from start: Self, to end: Self) -> Vector {
     let x =
       cos(end.latitude.radians) * cos(end.longitude.radians) - cos(start.latitude.radians)
       * cos(start.longitude.radians)
@@ -37,18 +37,18 @@ extension Coordinate {
   }
 }
 
-struct Vector: Codable, Equatable, Sendable {
-  let x: Double
-  let y: Double
+public struct Vector: Codable, Equatable, Sendable {
+  public let x: Double
+  public let y: Double
 
-  var magnitude: Double { sqrt(dot(self)) }
+  public var magnitude: Double { sqrt(dot(self)) }
 
-  var normalized: Self { .init(x / magnitude, y / magnitude) }
+  public var normalized: Self { .init(x / magnitude, y / magnitude) }
 
-  init(_ x: Double, _ y: Double) {
+  public init(_ x: Double, _ y: Double) {
     self.x = x
     self.y = y
   }
 
-  func dot(_ rhs: Self) -> Double { x * rhs.x + y * rhs.y }
+  public func dot(_ rhs: Self) -> Double { x * rhs.x + y * rhs.y }
 }

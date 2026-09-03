@@ -1,4 +1,5 @@
 import ActivityKit
+import IP_Inbound_Shared
 import MeasurementKit
 import SwiftUI
 import WidgetKit
@@ -66,14 +67,13 @@ private func countdownRange(to timeOnTarget: Date) -> ClosedRange<Date> {
 /// The distance still to fly to the IP and how the projected crossing compares with the plan, or
 /// nothing at all once the IP is behind the aircraft and only the countdown is left to show.
 ///
-/// The extension links neither `IP Inbound Shared` nor `MeasurementKitLocation`, so the guidance math
-/// runs in the app and arrives here already solved; this only formats it.
+/// The guidance math runs in the app and arrives here already solved; this only formats it.
 private struct RunInSummary: View {
   var state: TOTActivityAttributes.ContentState
 
   var body: some View {
     if let distanceToIP = state.distanceToIP, let ipDeltaTime = state.ipDeltaTime {
-      Text("\(distanceToIP, format: .runInDistance) to IP · \(timing(ipDeltaTime))")
+      Text("\(distanceToIP, format: distanceFormatStyle) to IP · \(timing(ipDeltaTime))")
         .foregroundStyle(.secondary)
     }
   }
@@ -91,18 +91,6 @@ private struct RunInSummary: View {
     return seconds < 0
       ? String(localized: "\(magnitude) early")
       : String(localized: "\(magnitude) late")
-  }
-}
-
-extension FormatStyle where Self == Measurement<UnitLength>.FormatStyle {
-  /// Mirrors `distanceFormatStyle` in `IP Inbound Shared`, which the extension cannot import, so the
-  /// Lock Screen renders distances exactly as the Fly screen does.
-  fileprivate static var runInDistance: Self {
-    .measurement(
-      width: .abbreviated,
-      usage: .asProvided,
-      numberFormatStyle: .number.rounded(increment: 0.1)
-    )
   }
 }
 

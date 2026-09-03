@@ -8,12 +8,23 @@ import MeasurementKitLocation
 ///
 /// The persisted `Target` (iPhone) and the wire-transmitted ``TargetSnapshot`` (Apple Watch) both
 /// conform, so ``IPTargetMath`` and ``GuidanceHelper`` drive identical guidance on either platform.
-protocol GuidanceTarget {
+public protocol GuidanceTarget {
+  /// Where the target is.
   var coordinate: Coordinate { get }
+
+  /// The direction from the target to the initial point, in the datum the pilot entered.
   var offsetBearingMeasurement: OffsetBearing { get }
+
+  /// How far the initial point lies from the target.
   var offsetDistanceMeasurement: Measurement<UnitLength> { get }
+
+  /// The ground speed the run-in is planned at.
   var targetGroundSpeedMeasurement: Measurement<UnitSpeed> { get }
+
+  /// The magnetic declination at the target.
   var declinationMeasurement: Measurement<UnitAngle> { get }
+
+  /// The briefed time on target, or `nil` when none has been set.
   var timeOnTarget: Date? { get }
 }
 
@@ -22,10 +33,10 @@ protocol GuidanceTarget {
 extension GuidanceTarget {
   /// Fraction of ground-speed increase allowable from the run-in speed when catching up to a late
   /// time-on-target.
-  static var allowableSpeedVariance: Double { 0.1 }
+  public static var allowableSpeedVariance: Double { 0.1 }
 
   /// The initial point: the target offset by the run-in bearing and distance.
-  var IPCoordinate: Coordinate {
+  public var IPCoordinate: Coordinate {
     coordinate.offset(
       bearing: offsetBearingMeasurement.toTrue(variation: declinationMeasurement),
       distance: offsetDistanceMeasurement
@@ -33,33 +44,37 @@ extension GuidanceTarget {
   }
 
   /// The run-in leg, from the initial point to the target.
-  var IPToTarget: GreatCircleSegment {
+  public var IPToTarget: GreatCircleSegment {
     .init(from: IPCoordinate, to: coordinate)
   }
 
   /// The run-in track: the reciprocal of the offset bearing (IP toward target).
-  var desiredTrack: OffsetBearing { offsetBearingMeasurement.reciprocal }
-  var desiredTrackMagnetic: MagneticBearing {
+  public var desiredTrack: OffsetBearing { offsetBearingMeasurement.reciprocal }
+  /// The run-in track, measured from magnetic north.
+  public var desiredTrackMagnetic: MagneticBearing {
     desiredTrack.toMagnetic(variation: declinationMeasurement)
   }
-  var desiredTrackTrue: TrueBearing { desiredTrack.toTrue(variation: declinationMeasurement) }
+  /// The run-in track, measured from true north.
+  public var desiredTrackTrue: TrueBearing {
+    desiredTrack.toTrue(variation: declinationMeasurement)
+  }
 
   /// When the aircraft should cross the IP to make its time-on-target at the planned ground speed.
-  var desiredTimeOverIP: Date? {
+  public var desiredTimeOverIP: Date? {
     let runInTime = IPToTarget.length / targetGroundSpeedMeasurement
     return timeOnTarget.map { $0 - runInTime }
   }
 
   /// The latest the aircraft may cross the IP and still make its time-on-target, flying the run-in at
   /// the maximum allowable ground speed.
-  var maxAllowableTimeOverIP: Date? {
+  public var maxAllowableTimeOverIP: Date? {
     let runInTime = IPToTarget.length / maxAllowableGroundSpeed
     return timeOnTarget.map { $0 - runInTime }
   }
 
   /// The fastest run-in ground speed the guidance will plan to, above which the aircraft is
   /// considered unable to make its time-on-target.
-  var maxAllowableGroundSpeed: Measurement<UnitSpeed> {
+  public var maxAllowableGroundSpeed: Measurement<UnitSpeed> {
     targetGroundSpeedMeasurement * (1 + Self.allowableSpeedVariance)
   }
 }
