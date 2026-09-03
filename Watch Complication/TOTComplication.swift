@@ -85,8 +85,7 @@ private struct RunInCountdown: View {
             .lineLimit(1)
           TOTCountdownText(
             timeOnTarget: timeOnTarget,
-            font: .system(.title2, design: .rounded).weight(.bold),
-            pastTOTFont: .system(.headline, design: .rounded).weight(.bold)
+            font: .system(.title2, design: .rounded).weight(.bold)
           )
         }
         .frame(maxWidth: .infinity, alignment: .leading)
