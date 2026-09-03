@@ -29,9 +29,13 @@ public struct TOTCountdownText: View {
       Text.countingDown(to: timeOnTarget, from: asOf)
         .font(font)
         .contentTransition(.numericText())
+        .lineLimit(1)
+        .minimumScaleFactor(0.6)
     } else {
       Text.pastTOT
         .font(pastTOTFont ?? font)
+        .lineLimit(1)
+        .minimumScaleFactor(0.6)
     }
   }
 

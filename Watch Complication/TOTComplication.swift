@@ -97,6 +97,7 @@ private struct RunInCountdown: View {
           TOTCountdownText(
             timeOnTarget: timeOnTarget,
             font: .system(.title2, design: .rounded).weight(.bold),
+            pastTOTFont: .system(.headline, design: .rounded).weight(.bold),
             asOf: asOf
           )
         }
