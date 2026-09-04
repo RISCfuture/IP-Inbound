@@ -74,23 +74,26 @@ struct WatchAppScreen {
   }
 }
 
-final class WatchGuidanceUITests: XCTestCase {
+nonisolated final class WatchGuidanceUITests: XCTestCase {
   override func setUp() {
     continueAfterFailure = false
   }
 
+  @MainActor
   func testPlaceholderShownWhenNoTargetIsFlown() {
     WatchAppScreen()
       .launchWithoutTarget()
       .assertPlaceholderVisible()
   }
 
+  @MainActor
   func testCountdownShownWhileOnGround() {
     WatchAppScreen()
       .launchOnGround()
       .assertCountdownVisible()
   }
 
+  @MainActor
   func testCDIShownWhenAirborne() {
     WatchAppScreen()
       .launchAirborne()

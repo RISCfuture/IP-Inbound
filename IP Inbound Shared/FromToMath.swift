@@ -1,6 +1,6 @@
-import Foundation
+public import Foundation
 import MeasurementKit
-import MeasurementKitLocation
+public import MeasurementKitLocation
 
 public struct FromToMath: Equatable, Sendable {
   /// The bank angle the turn model flies. Shared with ``IPTargetMath``'s run-in sequencing, which

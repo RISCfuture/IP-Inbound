@@ -1,5 +1,5 @@
-import Foundation
-import SwiftUI
+public import Foundation
+public import SwiftUI
 
 /// A self-updating countdown to a time on target.
 ///

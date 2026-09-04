@@ -1,6 +1,6 @@
-import Foundation
+public import Foundation
 import MeasurementKit
-import MeasurementKitLocation
+public import MeasurementKitLocation
 
 /// The geometry of a run-in target as the guidance math consumes it: where the target is, how the
 /// initial point (IP) is offset from it, the planned run-in ground speed and time-on-target, and the

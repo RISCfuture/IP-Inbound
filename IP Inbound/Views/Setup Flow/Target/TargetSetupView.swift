@@ -1,5 +1,6 @@
 import Defaults
 import MapKit
+import SwiftData
 import SwiftUI
 
 struct TargetSetupView: View {
