@@ -10,29 +10,18 @@ import WidgetKit
 struct TOTLiveActivity: Widget {
   var body: some WidgetConfiguration {
     ActivityConfiguration(for: TOTActivityAttributes.self) { context in
-      VStack(spacing: 2) {
-        Text(context.attributes.targetName)
-          .font(.headline)
-        TOTCountdown(timeOnTarget: context.state.timeOnTarget)
-          .font(.title)
-        Text("to TOT")
-          .font(.caption)
-          .textCase(.uppercase)
-          .foregroundStyle(.secondary)
-        RunInSummary(state: context.state)
-          .font(.caption)
-      }
-      .multilineTextAlignment(.center)
-      .frame(maxWidth: .infinity)
-      .padding()
+      LiveActivityContent(context: context)
     } dynamicIsland: { context in
       DynamicIsland {
         DynamicIslandExpandedRegion(.center) {
           VStack(spacing: 2) {
             Text(context.attributes.targetName)
               .font(.headline)
-            TOTCountdown(timeOnTarget: context.state.timeOnTarget)
-              .font(.title2)
+              .fontWeight(.light)
+            TOTCountdownText(
+              timeOnTarget: context.state.timeOnTarget,
+              font: .title2.weight(.bold)
+            )
             Text("to TOT")
               .font(.caption2)
               .textCase(.uppercase)
@@ -47,21 +36,84 @@ struct TOTLiveActivity: Widget {
         Text(context.attributes.targetName)
           .lineLimit(1)
       } compactTrailing: {
-        TOTCountdown(timeOnTarget: context.state.timeOnTarget)
+        TOTCountdownText(timeOnTarget: context.state.timeOnTarget, font: .body)
       } minimal: {
         TOTProgressRing(
           timeOnTarget: context.state.timeOnTarget,
           legDuration: context.attributes.ipToTargetDuration
         )
+        // The minimal presentation is the tightest the ring is ever drawn, so it alone needs
+        // enlarging to stay readable.
+        .scaleEffect(1.4)
       }
     }
+    // Without this the Apple Watch renders the mirrored activity from the Dynamic Island's compact
+    // regions, which sit flush against each other and share one weight — a run-in that reads as
+    // "Bullseye2:20".
+    .supplementalActivityFamilies([.small])
   }
 }
 
-/// The countdown range, clamped to stay ascending once the planned time passes so the timer reads zero
-/// (and the ring stays empty) rather than running backwards before the activity ends.
-private func countdownRange(to timeOnTarget: Date) -> ClosedRange<Date> {
-  .now...max(timeOnTarget, .now.addingTimeInterval(1))
+/// The activity as the Lock Screen and the Apple Watch each want it.
+///
+/// The watch gets its own layout rather than the Lock Screen's: it has a fraction of the room, so the
+/// run-in summary comes off and what is left is sized to be read at a glance — the target named
+/// quietly, the countdown as the thing the pilot is actually looking for.
+private struct LiveActivityContent: View {
+  var context: ActivityViewContext<TOTActivityAttributes>
+
+  @Environment(\.activityFamily)
+  private var activityFamily
+
+  var body: some View {
+    switch activityFamily {
+      case .small: watch
+      default: lockScreen
+    }
+  }
+
+  private var watch: some View {
+    VStack(spacing: 2) {
+      Text(context.attributes.targetName)
+        .font(.caption)
+        .fontWeight(.light)
+        .foregroundStyle(.secondary)
+        .lineLimit(1)
+        .minimumScaleFactor(0.7)
+      TOTCountdownText(
+        timeOnTarget: context.state.timeOnTarget,
+        font: .system(.title2, design: .rounded).weight(.bold)
+      )
+      Text("to TOT")
+        .font(.caption2)
+        .textCase(.uppercase)
+        .foregroundStyle(.secondary)
+    }
+    .multilineTextAlignment(.center)
+    .frame(maxWidth: .infinity)
+    .padding(.horizontal, 4)
+  }
+
+  private var lockScreen: some View {
+    VStack(spacing: 2) {
+      Text(context.attributes.targetName)
+        .font(.headline)
+        .fontWeight(.light)
+      TOTCountdownText(
+        timeOnTarget: context.state.timeOnTarget,
+        font: .title.weight(.bold)
+      )
+      Text("to TOT")
+        .font(.caption)
+        .textCase(.uppercase)
+        .foregroundStyle(.secondary)
+      RunInSummary(state: context.state)
+        .font(.caption)
+    }
+    .multilineTextAlignment(.center)
+    .frame(maxWidth: .infinity)
+    .padding()
+  }
 }
 
 /// The distance still to fly to the IP and how the projected crossing compares with the plan, or
@@ -94,42 +146,6 @@ private struct RunInSummary: View {
   }
 }
 
-/// A self-updating textual countdown to `timeOnTarget`.
-private struct TOTCountdown: View {
-  var timeOnTarget: Date
-
-  var body: some View {
-    Text(timerInterval: countdownRange(to: timeOnTarget), countsDown: true)
-      .monospacedDigit()
-  }
-}
-
-/// A self-updating circular countdown ring for the cramped minimal Dynamic Island, where a textual
-/// countdown clips. Full extent is the IP-to-target leg: full while still inbound to the IP, emptying
-/// over the final `legDuration` to TOT. The labels are suppressed so only the ring shows.
-private struct TOTProgressRing: View {
-  private static let minimumLegDuration = Measurement(value: 1, unit: UnitDuration.seconds)
-
-  var timeOnTarget: Date
-  var legDuration: Measurement<UnitDuration>
-
-  private var ringRange: ClosedRange<Date> {
-    let extent = max(legDuration, Self.minimumLegDuration)
-    return (timeOnTarget - extent)...timeOnTarget
-  }
-
-  var body: some View {
-    ProgressView(timerInterval: ringRange, countsDown: true) {
-      EmptyView()
-    } currentValueLabel: {
-      EmptyView()
-    }
-    .progressViewStyle(.circular)
-    .scaleEffect(1.4)
-    .accessibilityLabel("Time on target countdown")
-  }
-}
-
 extension TOTActivityAttributes {
   fileprivate static var preview: TOTActivityAttributes {
     TOTActivityAttributes(
@@ -140,39 +156,66 @@ extension TOTActivityAttributes {
 }
 
 extension TOTActivityAttributes.ContentState {
-  fileprivate static var near: TOTActivityAttributes.ContentState {
+  /// Still short of the IP and running early, which is what puts the run-in summary on screen.
+  fileprivate static var early: TOTActivityAttributes.ContentState {
+    runIn(ipDeltaSeconds: -80, distanceToIP: 12)
+  }
+
+  /// Late enough to read as a clock figure rather than a count of seconds.
+  fileprivate static var late: TOTActivityAttributes.ContentState {
+    runIn(ipDeltaSeconds: 95, distanceToIP: 9)
+  }
+
+  /// Inside the sub-second band the app rounds to, where the summary says so in words.
+  fileprivate static var onTime: TOTActivityAttributes.ContentState {
+    runIn(ipDeltaSeconds: 0.4, distanceToIP: 7)
+  }
+
+  /// The IP is behind the aircraft, so the summary drops away and only the countdown is left.
+  fileprivate static var finalRun: TOTActivityAttributes.ContentState {
     .init(timeOnTarget: .now.addingTimeInterval(45))
   }
 
-  fileprivate static var far: TOTActivityAttributes.ContentState {
-    .init(timeOnTarget: .now.addingTimeInterval(600))
+  private static func runIn(
+    ipDeltaSeconds: Double,
+    distanceToIP: Double
+  ) -> TOTActivityAttributes.ContentState {
+    .init(
+      timeOnTarget: .now.addingTimeInterval(600),
+      ipDeltaTime: .init(value: ipDeltaSeconds, unit: .seconds),
+      distanceToIP: .init(value: distanceToIP, unit: .nauticalMiles)
+    )
   }
 }
 
 #Preview("Notification", as: .content, using: TOTActivityAttributes.preview) {
   TOTLiveActivity()
 } contentStates: {
-  TOTActivityAttributes.ContentState.near
-  TOTActivityAttributes.ContentState.far
+  TOTActivityAttributes.ContentState.early
+  TOTActivityAttributes.ContentState.late
+  TOTActivityAttributes.ContentState.onTime
+  TOTActivityAttributes.ContentState.finalRun
 }
 
 #Preview("Expanded", as: .dynamicIsland(.expanded), using: TOTActivityAttributes.preview) {
   TOTLiveActivity()
 } contentStates: {
-  TOTActivityAttributes.ContentState.near
-  TOTActivityAttributes.ContentState.far
+  TOTActivityAttributes.ContentState.early
+  TOTActivityAttributes.ContentState.late
+  TOTActivityAttributes.ContentState.onTime
+  TOTActivityAttributes.ContentState.finalRun
 }
 
 #Preview("Compact", as: .dynamicIsland(.compact), using: TOTActivityAttributes.preview) {
   TOTLiveActivity()
 } contentStates: {
-  TOTActivityAttributes.ContentState.near
-  TOTActivityAttributes.ContentState.far
+  TOTActivityAttributes.ContentState.early
+  TOTActivityAttributes.ContentState.finalRun
 }
 
 #Preview("Minimal", as: .dynamicIsland(.minimal), using: TOTActivityAttributes.preview) {
   TOTLiveActivity()
 } contentStates: {
-  TOTActivityAttributes.ContentState.near
-  TOTActivityAttributes.ContentState.far
+  TOTActivityAttributes.ContentState.early
+  TOTActivityAttributes.ContentState.finalRun
 }

@@ -15,6 +15,14 @@ final class WatchLocationModel {
 
   private var task: Task<Void, Never>?
 
+  init() {}
+
+  /// Stands a fix in for the live stream, so a preview can draw the guidance a fix produces rather
+  /// than the acquiring-GPS placeholder every previewed model would otherwise be stuck on.
+  init(previewLocation: CLLocation) {
+    location = previewLocation
+  }
+
   /// Begins streaming live updates, prompting for when-in-use access on first use. Under UI tests a
   /// seeded fix stands in for the live stream so no permission prompt appears.
   func start() {

@@ -38,9 +38,6 @@
     "No Target" : {
 
     },
-    "Past TOT" : {
-
-    },
     "Precise Location Off" : {
       "comment" : "A title shown when Precise Location is switched off for IP Inbound."
     },

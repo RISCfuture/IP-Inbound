@@ -32,9 +32,17 @@ final class WatchSessionController: NSObject {
   /// target flown before the watch app is installed or reachable is delivered as soon as it becomes
   /// available — see ``sessionWatchStateDidChange(_:)``. `updateApplicationContext` throws while the
   /// watch app is absent; that's expected and harmless, since the next state change re-flushes.
+  ///
+  /// An installed complication gets the same payload a second way. The application context only
+  /// reaches the watch face once the watch app next runs, which for a TOT briefed on the ground and
+  /// then pocketed may be not at all; the complication transfer wakes the watch app to write it.
+  /// The system budgets those transfers, so this is a narrowing of the stale window, not a promise.
   private func flush() {
     guard let session, session.activationState == .activated, let latestContext else { return }
     try? session.updateApplicationContext(latestContext)
+    if session.isComplicationEnabled {
+      session.transferCurrentComplicationUserInfo(latestContext)
+    }
   }
 }
 
