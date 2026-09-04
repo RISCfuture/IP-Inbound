@@ -3,20 +3,36 @@ import Foundation
 import IP_Inbound_Shared
 import MeasurementKit
 import SwiftData
+import UIKit
 
-/// Flies the run when there is no screen to fly it.
+/// Owns the run: what it holds while it lasts, and when it stops lasting.
 ///
-/// The guidance the pilot reads is solved in `FlyView`'s body, which is the right place for it while
-/// there is a body to solve it in. There is not always: Core Location relaunches the app in the
-/// background when a run outlives the process, and that launch connects no scene, so no view is ever
-/// built. Left at that, the run-in figures on the Lock Screen freeze at whatever they read when the
-/// process died, and stay frozen until the pilot next looks at the phone.
+/// A run holds a great deal — the screen awake, the location stream alive once the app stops being
+/// frontmost, a countdown on the Lock Screen and on the watch face — and none of it belongs to the
+/// screen that happens to be showing. ``beginRun(flying:)`` raises all of it together and
+/// ``endRun()`` releases all of it together, so there is one answer to "is a run live?" rather than
+/// one per resource.
 ///
-/// So this drives the same figures from the same stream with nothing on screen, and steps aside the
-/// moment the Fly screen appears — ``handOverToScreen()`` — because two solvers reading two fixes
-/// would let the Lock Screen and the CDI disagree. It does not re-request the Live Activity: starting
-/// one is foreground-only, so a run whose activity did not survive the relaunch has nowhere to draw
-/// and this quietly pushes into an empty collection.
+/// Every run is bounded at both ends, by the window ``isRunLive(_:at:)`` draws. Left to the Fly
+/// screen alone a run would last from whenever the screen was opened until the pilot navigated
+/// away, and backgrounding the app does not do that — the background session is exactly what keeps
+/// the process alive — so a phone pocketed on that screen would hold the airborne GPS
+/// configuration through a brief hours before the run and through the flight home after it. The
+/// window opens a set lead before the time on target and closes at
+/// `GuidanceTarget.runExpiry`, and the run is over then whether or not anyone is looking.
+///
+/// It also flies the run when there is no screen to fly it. The guidance the pilot reads is solved
+/// in `FlyView`'s body, which is the right place for it while there is a body to solve it in. There
+/// is not always: Core Location relaunches the app in the background when a run outlives the
+/// process, and that launch connects no scene, so no view is ever built. Left at that, the run-in
+/// figures on the Lock Screen freeze at whatever they read when the process died, and stay frozen
+/// until the pilot next looks at the phone.
+///
+/// So ``resumeRunInProgress(in:)`` drives the same figures from the same stream with nothing on
+/// screen, and steps aside the moment the Fly screen appears, because two solvers reading two fixes
+/// would let the Lock Screen and the CDI disagree. It does not re-request the Live Activity:
+/// starting one is foreground-only, so a run whose activity did not survive the relaunch has nowhere
+/// to draw and this quietly pushes into an empty collection.
 @MainActor
 final class RunController {
   static let shared = RunController()
@@ -29,12 +45,9 @@ final class RunController {
   /// be resumed on every launch for the next twenty-four hours.
   private static let maxLead = Measurement(value: 2, unit: UnitDuration.hours)
 
-  /// How long past the planned time-on-target an unattended run keeps flying before it is abandoned.
-  /// A run nobody is watching has to stop on its own, or a relaunch begets a relaunch forever.
-  private static let grace = Measurement(value: 5, unit: UnitDuration.minutes)
-
   private var runTask: Task<Void, Never>?
-  private var deadlineTask: Task<Void, Never>?
+  private var startTask: Task<Void, Never>?
+  private var expiryTask: Task<Void, Never>?
 
   /// The last figures pushed, so a fix that would not move the Lock Screen's readout is not sent.
   /// `RunInSnapshot` is already rounded to the precision it displays at.
@@ -46,11 +59,11 @@ final class RunController {
 
   /// Whether a run on `target` is still worth flying at `now`.
   ///
-  /// A target with no time-on-target is never live: it has no run to be partway through, and nothing
-  /// to bound an unattended one by.
+  /// A target with no time-on-target is never live: it has no run to be partway through, and
+  /// nothing to bound one by.
   static func isRunLive(_ target: Target, at now: Date) -> Bool {
     guard let timeOnTarget = target.timeOnTarget else { return false }
-    return now >= timeOnTarget - maxLead && now <= timeOnTarget + grace
+    return now >= timeOnTarget - maxLead && !target.hasRunExpired(at: now)
   }
 
   private static func flownTarget(id: String, in container: ModelContainer) -> Target? {
@@ -59,13 +72,13 @@ final class RunController {
     return try? container.mainContext.fetch(descriptor).first
   }
 
-  /// Picks up a run the last process left outstanding and keeps flying it with no screen, or forgets
-  /// it when it is no longer one worth flying.
+  /// Picks up a run the last process left outstanding and keeps flying it with no screen, or takes
+  /// it down when it is no longer one worth flying.
   ///
   /// Belongs at `@main`, before any view exists, because on the launch this is for none ever will.
   /// It makes no assumption about whether it runs before or after the launch delegate rejoins the
-  /// background session — that order is undocumented, and both converge: abandoning the run clears
-  /// the record, so a rejoin that follows raises no session, and one that came first is torn down
+  /// background session — that order is undocumented, and both converge: ending the run clears the
+  /// record, so a rejoin that follows raises no session, and one that came first is torn down
   /// here.
   func resumeRunInProgress(in container: ModelContainer) {
     guard !ProcessInfo.processInfo.isRunningPreviewsOrTests, !hasResumed else { return }
@@ -75,20 +88,70 @@ final class RunController {
       let target = Self.flownTarget(id: targetID, in: container),
       Self.isRunLive(target, at: Date())
     else {
-      BackgroundActivityHolder.shared.end()
+      endUnclaimedRun()
       return
     }
 
     lastPushed = nil
     runTask = Task { [weak self] in await self?.fly(target) }
-    armDeadline(for: target)
+    armExpiry(for: target)
   }
 
-  /// Stops driving the run, leaving it running for the Fly screen that has just appeared to drive
-  /// instead. The screen pushes its own figures from the first fix it draws, so the handover leaves
-  /// no gap.
-  func handOverToScreen() {
-    stopDriving()
+  /// Raises everything the run on screen holds — the screen stays awake, the location stream
+  /// survives the app ceasing to be frontmost, and the countdown appears on the Lock Screen and on
+  /// the watch — and bounds it at both ends. A run whose window has not opened yet raises nothing
+  /// and waits for it.
+  ///
+  /// Steps the screenless solver aside as it goes — the screen pushes its own figures from the first
+  /// fix it draws, so the handover leaves no gap, and two solvers reading two fixes would let the
+  /// Lock Screen and the CDI disagree.
+  func beginRun(flying target: Target) {
+    stopSolving()
+    cancelStart()
+    cancelExpiry()
+
+    // A brief may be hours from the run it plans. Holding the screen awake and the aircraft's GPS
+    // running through all of it is the same waste the expiry exists to stop, at the other end of
+    // the run — so the screen waits at the near edge of the window rather than opening it early.
+    guard Self.isRunLive(target, at: Date()) else {
+      armStart(for: target)
+      return
+    }
+
+    raiseRun(flying: target)
+    armExpiry(for: target)
+  }
+
+  /// Releases everything the run holds, wherever it was being flown from.
+  ///
+  /// Does nothing when no run is outstanding. A screen that leaves after the run has already expired
+  /// would otherwise say "no run" a second time, and the watch pays for that in a transfer budget
+  /// the system meters.
+  func endRun() {
+    // Released ahead of the guard, and unconditionally. A run still waiting for its window to open
+    // holds a pending start but no record for the guard to read, and one raised under previews or
+    // tests pins the screen awake while `BackgroundActivityHolder` records nothing — so a guarded
+    // release would strand the timer in the first case and auto-lock in the second.
+    UIApplication.shared.isIdleTimerDisabled = false
+    cancelStart()
+    cancelExpiry()
+
+    guard BackgroundActivityHolder.shared.isRunOutstanding else { return }
+    stopSolving()
+    BackgroundActivityHolder.shared.end()
+    WatchSessionController.shared.update(flying: nil)
+    LiveActivityController.shared.update(flying: nil)
+  }
+
+  /// Releases a run nothing on screen has claimed: one this process rejoined for a run that ended
+  /// while it was not running, or the wreckage a force-quit or a crash left behind.
+  ///
+  /// A departing process gets no chance to take down its own Lock Screen countdown or clear the
+  /// watch face, so this is where that happens — the holder's own session is the least of what such
+  /// a run leaves standing.
+  func endUnclaimedRun() {
+    guard !BackgroundActivityHolder.shared.isRunClaimed else { return }
+    endRun()
   }
 
   private func fly(_ target: Target) async {
@@ -104,7 +167,7 @@ final class RunController {
       }
     } catch {
       // A stream that has failed has no further fixes to fly. The run is still bounded by its
-      // deadline, which ends it whether or not fixes ever resume.
+      // expiry, which ends it whether or not fixes ever resume.
     }
   }
 
@@ -123,30 +186,65 @@ final class RunController {
     LiveActivityController.shared.update(runIn: runIn, for: target)
   }
 
-  private func armDeadline(for target: Target) {
-    guard let timeOnTarget = target.timeOnTarget else { return }
-    let remaining = (timeOnTarget + Self.grace).timeIntervalSinceNow
+  /// Raises everything a live run holds. Separated from ``beginRun(flying:)`` so the decision of
+  /// *whether* the run is one to raise reads apart from the raising.
+  private func raiseRun(flying target: Target) {
+    UIApplication.shared.isIdleTimerDisabled = true
+    BackgroundActivityHolder.shared.begin(targetID: target.id)
+    WatchSessionController.shared.update(flying: target)
+    LiveActivityController.shared.update(flying: target)
+  }
 
-    deadlineTask = Task { [weak self] in
-      try? await Task.sleep(for: .seconds(max(remaining, 0)))
+  /// Waits at the near edge of the run's window and begins the run there. A target with no
+  /// time-on-target has no window, and one whose window has already opened or closed has none left
+  /// to wait for.
+  ///
+  /// Re-enters ``beginRun(flying:)`` rather than raising the run directly, so the window is judged
+  /// again on arrival: a process suspended across the edge wakes to a decision it makes then rather
+  /// than one it made hours earlier.
+  private func armStart(for target: Target) {
+    guard let timeOnTarget = target.timeOnTarget else { return }
+    let remaining = (timeOnTarget - Self.maxLead).timeIntervalSinceNow
+    guard remaining > 0 else { return }
+
+    startTask = Task { [weak self] in
+      try? await Task.sleep(for: .seconds(remaining))
       guard !Task.isCancelled else { return }
-      self?.abandonRun()
+      self?.beginRun(flying: target)
     }
   }
 
-  /// Ends a run that has outlived its time-on-target with nobody watching it.
-  private func abandonRun() {
-    stopDriving()
-    BackgroundActivityHolder.shared.end()
-    WatchSessionController.shared.update(flying: nil)
-    LiveActivityController.shared.update(flying: nil)
+  /// Schedules the end of the run for its expiry. A target with no time-on-target has no run to
+  /// bound — and none to fly, so nothing reaches here holding one.
+  private func armExpiry(for target: Target) {
+    cancelExpiry()
+    guard let runExpiry = target.runExpiry else { return }
+    let remaining = runExpiry.timeIntervalSinceNow
+
+    expiryTask = Task { [weak self] in
+      try? await Task.sleep(for: .seconds(max(remaining, 0)))
+      guard !Task.isCancelled else { return }
+      self?.endRun()
+    }
   }
 
-  private func stopDriving() {
+  /// Stops solving the run with no screen. Kept apart from ``cancelExpiry()``: the solver and the
+  /// bound have different lifetimes — a screen taking the run over stands the solver down and keeps
+  /// the bound — and one method doing both is what let the Fly screen cancel the only bound the run
+  /// had.
+  private func stopSolving() {
     runTask?.cancel()
     runTask = nil
-    deadlineTask?.cancel()
-    deadlineTask = nil
     lastPushed = nil
+  }
+
+  private func cancelStart() {
+    startTask?.cancel()
+    startTask = nil
+  }
+
+  private func cancelExpiry() {
+    expiryTask?.cancel()
+    expiryTask = nil
   }
 }

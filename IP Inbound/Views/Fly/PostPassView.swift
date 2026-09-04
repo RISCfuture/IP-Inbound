@@ -45,6 +45,13 @@ struct PostPassView: View {
     .init(isLate: !isEarly, isOnTime: isOnTime, isWithinCaution: isWithinCaution)
   }
 
+  /// What the screen is reporting. A run that lapsed short of the target has nothing to be past
+  /// but the time it was briefed for — and that is the same thing ``CountdownView`` says of a
+  /// time-on-target gone by, so it says it the same way.
+  private var title: LocalizedStringKey {
+    capture.crossedTarget ? "Past Target" : "Past TOT"
+  }
+
   private var missText: String {
     let amount = absoluteMiss.duration.formatted(
       .units(allowed: [.minutes, .seconds], width: .wide)
@@ -59,7 +66,7 @@ struct PostPassView: View {
       Spacer()
 
       VStack(spacing: Self.titleSpacing) {
-        Text("Past Target")
+        Text(title)
           .font(.title)
           .fontWeight(.bold)
         Text(capture.targetName)
@@ -113,7 +120,11 @@ struct PostPassView: View {
   let helper = PreviewHelper()
   let target = helper.target()
   PostPassView(
-    capture: .init(targetName: target.name, miss: .init(value: 1, unit: .seconds)),
+    capture: .init(
+      targetName: target.name,
+      miss: .init(value: 1, unit: .seconds),
+      crossedTarget: true
+    ),
     currentTarget: target,
     onSelectTarget: { _ in },
     onChooseTarget: {}
@@ -125,7 +136,11 @@ struct PostPassView: View {
   let helper = PreviewHelper()
   let target = helper.target()
   PostPassView(
-    capture: .init(targetName: target.name, miss: .init(value: 60, unit: .seconds)),
+    capture: .init(
+      targetName: target.name,
+      miss: .init(value: 60, unit: .seconds),
+      crossedTarget: true
+    ),
     currentTarget: target,
     onSelectTarget: { _ in },
     onChooseTarget: {}
@@ -137,7 +152,11 @@ struct PostPassView: View {
   let helper = PreviewHelper()
   let target = helper.target()
   PostPassView(
-    capture: .init(targetName: target.name, miss: .init(value: 200, unit: .seconds)),
+    capture: .init(
+      targetName: target.name,
+      miss: .init(value: 200, unit: .seconds),
+      crossedTarget: true
+    ),
     currentTarget: target,
     onSelectTarget: { _ in },
     onChooseTarget: {}
@@ -149,7 +168,11 @@ struct PostPassView: View {
   let helper = PreviewHelper()
   let target = helper.target()
   PostPassView(
-    capture: .init(targetName: target.name, miss: .init(value: -60, unit: .seconds)),
+    capture: .init(
+      targetName: target.name,
+      miss: .init(value: -60, unit: .seconds),
+      crossedTarget: true
+    ),
     currentTarget: target,
     onSelectTarget: { _ in },
     onChooseTarget: {}
@@ -161,7 +184,27 @@ struct PostPassView: View {
   let helper = PreviewHelper()
   let target = helper.target()
   PostPassView(
-    capture: .init(targetName: target.name, miss: .init(value: -200, unit: .seconds)),
+    capture: .init(
+      targetName: target.name,
+      miss: .init(value: -200, unit: .seconds),
+      crossedTarget: true
+    ),
+    currentTarget: target,
+    onSelectTarget: { _ in },
+    onChooseTarget: {}
+  )
+  .modelContainer(helper.modelContainer)
+}
+
+#Preview("Lapsed — Never Crossed") {
+  let helper = PreviewHelper()
+  let target = helper.target()
+  PostPassView(
+    capture: .init(
+      targetName: target.name,
+      miss: .init(value: 900, unit: .seconds),
+      crossedTarget: false
+    ),
     currentTarget: target,
     onSelectTarget: { _ in },
     onChooseTarget: {}

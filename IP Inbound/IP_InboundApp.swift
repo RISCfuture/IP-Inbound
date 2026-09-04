@@ -60,7 +60,7 @@ struct IP_InboundApp: App {
       // is over, as does the record a force-quit or a crash left behind. A run still being flown
       // claimed its session when `FlyView` appeared, and is left alone.
       .onChange(of: scenePhase, initial: true) {
-        if scenePhase == .active { BackgroundActivityHolder.shared.endUnclaimedRun() }
+        if scenePhase == .active { RunController.shared.endUnclaimedRun() }
       }
     }.modelContainer(modelContainer)
   }

@@ -100,6 +100,15 @@ public final class BackgroundActivityHolder {
     }
   }
 
+  /// Whether a run is recorded as outstanding: one this process is flying, or one a departed
+  /// process left behind. Callers tearing a run down consult it so that a second teardown — a
+  /// screen leaving after the run already expired — costs nothing.
+  public var isRunOutstanding: Bool { isRunInProgress }
+
+  /// Whether a run on screen owns the current session, as opposed to one ``rejoinRunInProgress()``
+  /// recreated for a run this process did not start.
+  public var isRunClaimed: Bool { isClaimed }
+
   private var isRunInProgress: Bool {
     get { UserDefaults.standard.bool(forKey: Self.runInProgressKey) }
     set { UserDefaults.standard.set(newValue, forKey: Self.runInProgressKey) }
@@ -156,8 +165,12 @@ public final class BackgroundActivityHolder {
   /// Ends a session no run on screen has claimed. With the app frontmost and no Fly screen showing,
   /// a rejoined session belongs to a run that ended while the app was not running — as does the
   /// record a force-quit or a crash left behind.
+  ///
+  /// A launch with no run recorded at all has nothing to adjudicate, and says so by doing nothing:
+  /// every foregrounding reaches here, and the callers layered over this one answer for a run by
+  /// spending budget the system meters.
   public func endUnclaimedRun() {
-    guard !isClaimed else { return }
+    guard !isClaimed, isRunInProgress else { return }
     end()
   }
 
