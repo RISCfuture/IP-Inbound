@@ -60,6 +60,7 @@ struct TargetSetupForm: View {
     .sheet(isPresented: $findLocationShown) {
       FindLocationView { coord, title in
         target.coordinate = .init(coord)
+        target.calculateDeclination()
         target.name = title
         findLocationShown = false
       }

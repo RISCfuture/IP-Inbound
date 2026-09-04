@@ -76,11 +76,24 @@ public enum LocationImpediment: Sendable, Equatable {
   /// Fixes are arriving, but reduced to a precision the run-in geometry cannot be flown from.
   case accuracyLimited
 
-  /// Whether the Settings app is where the pilot fixes this.
-  public var isResolvedInSettings: Bool {
+  /// Whether the pilot's answer to the authorization prompt is what stands in the way.
+  ///
+  /// These are the refusals that end the update stream outright, so they are also the only ones
+  /// worth restarting it for: the pilot has been somewhere else to lift one, and Core Location does
+  /// not re-offer a stream it ended.
+  public var deniesAuthorization: Bool {
     switch self {
       case .locationServicesOff, .denied, .restricted: true
       case .serviceSessionRequired, .insufficientlyInUse, .unavailable, .accuracyLimited: false
     }
   }
+
+  /// Whether the Settings app is where the pilot fixes this.
+  ///
+  /// The impediments Settings resolves are exactly the ones the pilot's answer to the authorization
+  /// prompt puts there, so this follows ``deniesAuthorization`` rather than switching over the same
+  /// cases a second time and leaving two lists to keep in agreement by hand. The two remain separate
+  /// questions: an impediment that Settings resolves without the prompt standing in the way — or one
+  /// the prompt causes that Settings cannot lift — is where this needs a switch of its own again.
+  public var isResolvedInSettings: Bool { deniesAuthorization }
 }
