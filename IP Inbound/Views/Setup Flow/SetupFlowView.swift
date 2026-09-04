@@ -41,6 +41,12 @@ struct SetupFlowView: View {
           }
         }
     }
+    // Setting a run up is the point at which the pilot has committed to flying one, so it is the
+    // point at which the GPS is worth warming and the authorization prompt is worth raising: the
+    // Fly screen then opens on a fix already in hand rather than on the acquiring-GPS placeholder.
+    // Scoping it here also means the hold is released when the pilot leaves the run — which is what
+    // a screen above the window's root can promise and its root cannot.
+    .warmsLocation()
   }
 
   init(

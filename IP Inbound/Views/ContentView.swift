@@ -18,7 +18,6 @@ struct ContentView: View {
 
   var body: some View {
     TargetListView(resumedTarget: resumedTarget)
-      .warmsLocation()
       .alert(
         "Something went wrong.",
         isPresented: isErrorPresented,

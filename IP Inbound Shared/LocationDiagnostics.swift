@@ -76,6 +76,18 @@ public enum LocationImpediment: Sendable, Equatable {
   /// Fixes are arriving, but reduced to a precision the run-in geometry cannot be flown from.
   case accuracyLimited
 
+  /// Whether the pilot's answer to the authorization prompt is what stands in the way.
+  ///
+  /// These are the refusals that end the update stream outright, so they are also the only ones
+  /// worth restarting it for: the pilot has been somewhere else to lift one, and Core Location does
+  /// not re-offer a stream it ended.
+  public var deniesAuthorization: Bool {
+    switch self {
+      case .locationServicesOff, .denied, .restricted: true
+      case .serviceSessionRequired, .insufficientlyInUse, .unavailable, .accuracyLimited: false
+    }
+  }
+
   /// Whether the Settings app is where the pilot fixes this.
   public var isResolvedInSettings: Bool {
     switch self {
