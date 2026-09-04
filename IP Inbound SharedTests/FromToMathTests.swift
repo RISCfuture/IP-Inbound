@@ -6,14 +6,14 @@ import Testing
 
 @testable import IP_Inbound_Shared
 
-@Suite("FromToMath")
-struct FromToMathTests {
+@Suite
+struct `FromToMath tests` {
   private let SF = Coordinate(latitude: 37.7749, longitude: -122.4194)
   private let LA = Coordinate(latitude: 34.0522, longitude: -118.2437)
   private let now = Date(timeIntervalSince1970: 1_700_000_000)
 
-  @Test("bearing, calculates correctly")
-  func fromToMathBearing() {
+  @Test
+  func `bearing, calculates correctly`() {
     let fromTo = FromToMath(
       from: SF,
       to: LA,
@@ -29,8 +29,8 @@ struct FromToMathTests {
     #expect(fromTo.bearing.degrees.isApproximatelyEqual(to: 136.5, relativeTolerance: 0.1))
   }
 
-  @Test("distance, calculates correctly")
-  func fromToMathDistance() {
+  @Test
+  func `distance, calculates correctly`() {
     let fromTo = FromToMath(
       from: SF,
       to: LA,
@@ -51,8 +51,8 @@ struct FromToMathTests {
     )
   }
 
-  @Test("timeToGo, straight line, calculates correctly")
-  func fromToMathTimeToGoStraightLine() {
+  @Test
+  func `timeToGo, straight line, calculates correctly`() {
     let from = Coordinate(latitude: 37.0, longitude: -122.0)
     let to = Coordinate(latitude: 38.0, longitude: -122.0)
 
@@ -76,8 +76,8 @@ struct FromToMathTests {
     )
   }
 
-  @Test("timeToGo, with turn, calculates correctly")
-  func fromToMathTimeToGoWithTurn() {
+  @Test
+  func `timeToGo, with turn, calculates correctly`() {
     // Create test coordinates
     let from = Coordinate(latitude: 37.0, longitude: -122.0)
     let to = Coordinate(latitude: 38.0, longitude: -122.0)
@@ -104,8 +104,8 @@ struct FromToMathTests {
     )
   }
 
-  @Test("deltaTOT, calculates correctly")
-  func fromToMathTOTDelta() {
+  @Test
+  func `deltaTOT, calculates correctly`() {
     let from = Coordinate(latitude: 37.0, longitude: -122.0)
     let to = Coordinate(latitude: 38.0, longitude: -122.0)
 
@@ -133,8 +133,8 @@ struct FromToMathTests {
     #expect(!fromTo.isLate)
   }
 
-  @Test("requiredGroundSpeed, with the track aligned, is the straight-line speed to make TOT")
-  func fromToMathRequiredGroundSpeed() throws {
+  @Test
+  func `requiredGroundSpeed, track aligned, is the straight-line speed to make TOT`() throws {
     // SF→LA is ~559.12 km. With a TOT one hour out and the track already aligned with the bearing
     // (no turn required), the required ground speed is 559.12 km/h ≈ 301.9 knots.
     let fromTo = FromToMath(
@@ -157,8 +157,8 @@ struct FromToMathTests {
     )
   }
 
-  @Test("requiredGroundSpeed, accounts for the turn so flying it arrives at TOT")
-  func fromToMathRequiredGroundSpeedAccountsForTurn() throws {
+  @Test
+  func `requiredGroundSpeed, accounts for the turn so flying it arrives at TOT`() throws {
     let from = Coordinate(latitude: 37.0, longitude: -122.0)
     let to = Coordinate(latitude: 38.0, longitude: -122.0)  // ~60NM due north
     let tot = now.addingTimeInterval(20 * 60)
@@ -184,8 +184,8 @@ struct FromToMathTests {
     #expect(abs(arrival.timeIntervalSince(tot)) < 1.0)
   }
 
-  @Test("requiredGroundSpeed, returns nil once TOT has passed")
-  func fromToMathRequiredGroundSpeedAfterTOT() {
+  @Test
+  func `requiredGroundSpeed, returns nil once TOT has passed`() {
     let fromTo = FromToMath(
       from: SF,
       to: LA,
@@ -200,8 +200,8 @@ struct FromToMathTests {
     #expect(fromTo.requiredGroundSpeed == nil)
   }
 
-  @Test("turnTime, 90 degree turn, calculates correctly")
-  func turnTime90Degrees() {
+  @Test
+  func `turnTime, 90 degree turn, calculates correctly`() {
     let speed = Measurement(value: 120, unit: UnitSpeed.knots)
     let fromHeading = MagneticBearing(degrees: 0)
     let toHeading = MagneticBearing(degrees: 90)
@@ -224,8 +224,8 @@ struct FromToMathTests {
     )
   }
 
-  @Test("turnTime, 180 degree turn, calculates correctly")
-  func turnTime180Degrees() {
+  @Test
+  func `turnTime, 180 degree turn, calculates correctly`() {
     let speed = Measurement(value: 120, unit: UnitSpeed.knots)
     let fromHeading = MagneticBearing(degrees: 0)
     let toHeading = MagneticBearing(degrees: 180)
@@ -245,8 +245,8 @@ struct FromToMathTests {
     )
   }
 
-  @Test("turnTime, small turn, returns zero")
-  func turnTimeSmallTurn() {
+  @Test
+  func `turnTime, small turn, returns zero`() {
     let speed = Measurement(value: 120, unit: UnitSpeed.knots)
     let fromHeading = MagneticBearing(degrees: 0)
     let toHeading = MagneticBearing(degrees: 5)  // 5° is less than 10° threshold
@@ -261,8 +261,8 @@ struct FromToMathTests {
     #expect(turnTime.converted(to: .seconds).value == 0)
   }
 
-  @Test("timeToGo, 90 degree turn, accounts for forward progress during turn")
-  func timeToGo90DegreeTurnPhysics() {
+  @Test
+  func `timeToGo, 90 degree turn, accounts for forward progress during turn`() {
     // Set up a scenario where we can verify the physics:
     // - Aircraft heading due east (90°)
     // - Target is due north (0°), 10,000 meters away

@@ -1,6 +1,7 @@
 import CoreLocation
 import Foundation
 import MeasurementKitLocation
+import RealModule
 import Testing
 
 @testable import IP_Inbound
@@ -31,11 +32,11 @@ func makeLocation(
   )
 }
 
-@Suite("LocationStreamer")
-struct LocationStreamerTests {
+@Suite
+struct `LocationStreamer tests` {
 
-  @Test("LocationEvent - derives coordinate, course, and speed from location")
-  func locationEventDerivesValuesFromLocation() throws {
+  @Test
+  func `LocationEvent - derives coordinate, course, and speed from location`() throws {
     let (latitudeDeg, longitudeDeg, courseDeg, speedMPS) = (37.7749, -122.4194, 45.0, 10.0)
     let location = makeLocation(
       latitude: latitudeDeg,
@@ -56,16 +57,16 @@ struct LocationStreamerTests {
     #expect(speed.converted(to: .metersPerSecond).value == speedMPS)
   }
 
-  @Test("LocationEvent - isSimulating reflects presence of a sim name")
-  func locationEventIsSimulatingReflectsSimName() {
+  @Test
+  func `LocationEvent - isSimulating reflects presence of a sim name`() {
     let location = makeLocation(latitude: 37.7749, longitude: -122.4194)
 
     #expect(LocationEvent(location: location).isSimulating == false)
     #expect(LocationEvent(location: location, simName: "XPlane").isSimulating == true)
   }
 
-  @Test("LocationEvent - a nil location yields nil derived values")
-  func locationEventNilLocationYieldsNilDerivedValues() {
+  @Test
+  func `LocationEvent - a nil location yields nil derived values`() {
     enum TestError: Error {
       case testCase
     }
@@ -78,8 +79,8 @@ struct LocationStreamerTests {
     #expect(event.speed == nil)
   }
 
-  @Test("LocationEvent - extrapolate returns same event if conditions not met")
-  func locationEventExtrapolateSameEventIfConditionsNotMet() throws {
+  @Test
+  func `LocationEvent - extrapolate returns same event if conditions not met`() throws {
     // Case 1: No location, so both events hold a nil CLLocation
     let event1 = LocationEvent()
     let extrapolated1 = event1.extrapolate(to: Date())
@@ -117,8 +118,8 @@ struct LocationStreamerTests {
     #expect(event3.extrapolate(to: now.addingTimeInterval(10)).location === stationary)
   }
 
-  @Test("LocationEvent - extrapolate calculates new position correctly")
-  func locationEventExtrapolateCalculatesNewPosition() throws {
+  @Test
+  func `LocationEvent - extrapolate calculates new position correctly`() throws {
     let now = Date()
     let location = makeLocation(
       latitude: 0,
@@ -169,8 +170,8 @@ struct LocationStreamerTests {
     #expect(extrapolatedLocation.speedAccuracy > location.speedAccuracy)
   }
 
-  @Test("LocationEvent - extrapolate leaves unavailable accuracies unavailable")
-  func locationEventExtrapolatePreservesUnavailableAccuracies() throws {
+  @Test
+  func `LocationEvent - extrapolate leaves unavailable accuracies unavailable`() throws {
     let now = Date()
     let location = makeLocation(
       latitude: 0,
@@ -195,8 +196,8 @@ struct LocationStreamerTests {
     #expect(extrapolatedLocation.speedAccuracy < 0)
   }
 
-  @Test("extrapolate, carries the diagnostics onto the propagated fix")
-  func extrapolatePreservesDiagnostics() throws {
+  @Test
+  func `extrapolate, carries the diagnostics onto the propagated fix`() throws {
     let now = Date()
     var diagnostics = LocationDiagnostics()
     diagnostics.accuracyLimited = true
@@ -211,8 +212,8 @@ struct LocationStreamerTests {
     #expect(event.extrapolate(to: now.addingTimeInterval(5)).diagnostics == diagnostics)
   }
 
-  @Test("impediment, defers to the pending prompt over an unanswered denial")
-  func impedimentDuringAuthorizationRequest() {
+  @Test
+  func `impediment, defers to the pending prompt over an unanswered denial`() {
     var diagnostics = LocationDiagnostics()
     diagnostics.authorizationRequestInProgress = true
     diagnostics.authorizationDenied = true

@@ -2,20 +2,21 @@ import CoreLocation
 import Foundation
 import MeasurementKit
 import MeasurementKitLocation
+import RealModule
 import Testing
 
 @testable import IP_Inbound
 @testable import IP_Inbound_Shared
 
-@Suite("IPTargetMath Tests")
-struct IPTargetMathTests {
+@Suite
+struct `IPTargetMath tests` {
   let target = Coordinate(latitude: 36.772367, longitude: -115.453840)
   let preIP = Coordinate(latitude: 36.876930, longitude: -115.481479)
   let postIP = Coordinate(latitude: 36.8078222222, longitude: -115.4840472222)
   private let now = Date(timeIntervalSince1970: 1_700_000_000)
 
-  @Test("isPastIP, is past, returns true")
-  func ipTargetMathIsPastIPWhenPast() {
+  @Test
+  func `isPastIP, is past, returns true`() {
     let target = Target(name: "Test Target", coordinate: target)
     target.offsetBearing = 359
     target.offsetDistance = 4.8
@@ -31,8 +32,8 @@ struct IPTargetMathTests {
     #expect(ipTargetMath.isPastIP)
   }
 
-  @Test("isPastIP, is not past, returns false")
-  func ipTargetMathIsPastIPWhenNotPast() {
+  @Test
+  func `isPastIP, is not past, returns false`() {
     let target = Target(name: "Test Target", coordinate: target)
     target.offsetBearing = 359
     target.offsetDistance = 4.8
@@ -48,8 +49,8 @@ struct IPTargetMathTests {
     #expect(!ipTargetMath.isPastIP)
   }
 
-  @Test("IP_ETA, calculates correctly")
-  func ipTargetMathIPETA() throws {
+  @Test
+  func `IP_ETA, calculates correctly`() throws {
     let target = Target(
       name: "Test Target",
       coordinate: Coordinate(latitude: 38.0, longitude: -122.0)
@@ -75,8 +76,8 @@ struct IPTargetMathTests {
     #expect(ETA.timeIntervalSince(now).isApproximatelyEqual(to: 15 * 60, relativeTolerance: 0.01))
   }
 
-  @Test("IPDeltaTime, calculates correctly")
-  func ipTargetMathDeltaTimes() throws {
+  @Test
+  func `IPDeltaTime, calculates correctly`() throws {
     let target = Target(
       name: "Test Target",
       coordinate: Coordinate(latitude: 38.0, longitude: -122.0)
@@ -103,8 +104,8 @@ struct IPTargetMathTests {
     )
   }
 
-  @Test("pposToIP timing references the desired IP-crossing time, not the target TOT")
-  func pposToIPTimingReferencesDesiredIPTime() throws {
+  @Test
+  func `pposToIP timing references the desired IP-crossing time, not the target TOT`() throws {
     let target = Target(
       name: "Test Target",
       coordinate: Coordinate(latitude: 38.0, longitude: -122.0)
@@ -162,8 +163,8 @@ struct IPTargetMathTests {
     )
   }
 
-  @Test("init(location:), unavailable course or speed, returns nil")
-  func noMathFromFixWithoutUsableMotion() {
+  @Test
+  func `init(location:), unavailable course or speed, returns nil`() {
     let target = Target(name: "Test Target", coordinate: target)
     target.offsetBearing = 359
     target.offsetDistance = 4.8
@@ -193,8 +194,8 @@ struct IPTargetMathTests {
     return target
   }
 
-  @Test("isPastIP, track straight at target, sequences at the perpendicular")
-  func isPastIPNoBufferWhenOnCourse() {
+  @Test
+  func `isPastIP, track straight at target, sequences at the perpendicular`() {
     let target = runInTarget(groundSpeedKts: 500)
     let IP = target.IPCoordinate
 
@@ -227,8 +228,8 @@ struct IPTargetMathTests {
     #expect(afterIP.isPastIP)
   }
 
-  @Test("isPastIP, track 90° off run-in, never sequences")
-  func isPastIPNeverSequencesAtNinetyDegrees() {
+  @Test
+  func `isPastIP, track 90° off run-in, never sequences`() {
     let target = runInTarget(groundSpeedKts: 500)
     let IP = target.IPCoordinate
 
@@ -248,8 +249,8 @@ struct IPTargetMathTests {
     #expect(!crossing.isPastIP)
   }
 
-  @Test("isPastIP, track 45° off run-in, sequences only after ~r/2")
-  func isPastIPHalfRadiusBufferAtFortyFiveDegrees() {
+  @Test
+  func `isPastIP, track 45° off run-in, sequences only after ~r/2`() {
     let groundSpeedKts = 500.0
     let target = runInTarget(groundSpeedKts: groundSpeedKts)
     let IP = target.IPCoordinate
@@ -290,8 +291,8 @@ struct IPTargetMathTests {
     #expect(afterBuffer.isPastIP)
   }
 
-  @Test("isPastIP, orbiting at the IP with track 135° off, does not sequence")
-  func isPastIPOrbitDoesNotSequence() {
+  @Test
+  func `isPastIP, orbiting at the IP with track 135° off, does not sequence`() {
     let target = runInTarget(groundSpeedKts: 500)
     let IP = target.IPCoordinate
 
@@ -311,8 +312,8 @@ struct IPTargetMathTests {
     #expect(!orbiting.isPastIP)
   }
 
-  @Test("isPastIP, far off the run-in axis, projects along the true course")
-  func isPastIPUsesTrueAlongTrackOffAxis() {
+  @Test
+  func `isPastIP, far off the run-in axis, projects along the true course`() {
     let target = runInTarget(groundSpeedKts: 500)
     let IP = target.IPCoordinate
 
@@ -339,8 +340,8 @@ struct IPTargetMathTests {
     #expect(!math.isPastIP)
   }
 
-  @Test("crossTrackDistance, calculates correctly")
-  func ipTargetMathCrossTrackDistance() {
+  @Test
+  func `crossTrackDistance, calculates correctly`() {
     // Set up a target
     let target = Target(
       name: "Test Target",
@@ -389,11 +390,11 @@ struct IPTargetMathTests {
 
   /// The needle mirrors the deviation — the single expression both platforms' indicators are drawn
   /// from — and pins at either end of the scale rather than running off it.
-  @Test(
-    "needleOffset mirrors the deviation and pins at full scale",
-    arguments: [(-8.0, 1.0), (-2.0, 0.5), (0.0, 0.0), (2.0, -0.5), (8.0, -1.0)]
-  )
-  func courseDeviationNeedleOffset(crossTrackNM: Double, needleOffset: Double) {
+  @Test(arguments: [(-8.0, 1.0), (-2.0, 0.5), (0.0, 0.0), (2.0, -0.5), (8.0, -1.0)])
+  func `needleOffset mirrors the deviation and pins at full scale`(
+    crossTrackNM: Double,
+    needleOffset: Double
+  ) {
     let deviation = CourseDeviation(
       crossTrackDistance: .init(value: crossTrackNM, unit: .nauticalMiles)
     )

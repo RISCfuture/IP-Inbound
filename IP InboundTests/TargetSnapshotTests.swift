@@ -1,11 +1,12 @@
 import Foundation
+import MeasurementKitLocation
 import Testing
 
 @testable import IP_Inbound
 @testable import IP_Inbound_Shared
 
-@Suite("TargetSnapshot")
-struct TargetSnapshotTests {
+@Suite
+struct `TargetSnapshot tests` {
   private func makeTarget() -> Target {
     let target = Target(
       name: "Bullseye",
@@ -21,8 +22,8 @@ struct TargetSnapshotTests {
     return target
   }
 
-  @Test("a target's snapshot preserves its run-in geometry")
-  func snapshotMatchesTarget() {
+  @Test
+  func `a target's snapshot preserves its run-in geometry`() {
     let target = makeTarget()
     let snapshot = target.snapshot
 

@@ -1,14 +1,15 @@
 import MeasurementKitLocation
+import RealModule
 import Testing
 
 @testable import IP_Inbound
 @testable import IP_Inbound_Shared
 
-@Suite("MGRSHelper")
-struct MGRSHelperTests {
+@Suite
+struct `MGRSHelper tests` {
 
-  @Test("Partial MGRS validation doesn't crash")
-  func partialMGRSValidation() {
+  @Test
+  func `Partial MGRS validation doesn't crash`() {
     // These should all return false without crashing
     #expect(!MGRSHelper.validate(""))  // Empty
     #expect(!MGRSHelper.validate("3"))  // Just zone start
@@ -25,8 +26,8 @@ struct MGRSHelperTests {
     #expect(MGRSHelper.validate("33XVG7459459364"))  // + 5 digit precision (max)
   }
 
-  @Test("Invalid character validation doesn't crash")
-  func invalidCharacterValidation() {
+  @Test
+  func `Invalid character validation doesn't crash`() {
     #expect(!MGRSHelper.validate("33I"))  // Invalid band letter I
     #expect(!MGRSHelper.validate("33O"))  // Invalid band letter O
     #expect(!MGRSHelper.validate("61X"))  // Invalid zone > 60
@@ -35,8 +36,8 @@ struct MGRSHelperTests {
     #expect(!MGRSHelper.validate("33XVG74593"))  // Odd number of coordinate digits
   }
 
-  @Test("MGRS formatting works correctly")
-  func mgrsFormatting() {
+  @Test
+  func `MGRS formatting works correctly`() {
     // Test with spaces
     #expect(MGRSHelper.format("33XVG745593", withSpaces: true) == "33X VG 745 593")
     #expect(MGRSHelper.format("33XVG", withSpaces: true) == "33X VG")
@@ -49,8 +50,8 @@ struct MGRSHelperTests {
     #expect(MGRSHelper.format("33X-VG-745-593", withSpaces: true) == "33X VG 745 593")
   }
 
-  @Test("Coordinate conversion works with valid strings")
-  func coordinateConversion() throws {
+  @Test
+  func `Coordinate conversion works with valid strings`() throws {
     // Known coordinate: Oslo, Norway
     let oslo = Coordinate(latitude: 59.9139, longitude: 10.7522)
     let mgrs = try #require(MGRSHelper.fromCoordinate(oslo, precision: .oneM))
@@ -72,8 +73,8 @@ struct MGRSHelperTests {
     )
   }
 
-  @Test("toCoordinate returns nil for invalid inputs without crashing")
-  func safeCoordinateParsing() {
+  @Test
+  func `toCoordinate returns nil for invalid inputs without crashing`() {
     #expect(MGRSHelper.toCoordinate("") == nil)
     #expect(MGRSHelper.toCoordinate("33") == nil)
     // "33X" is valid MGRS (zone + band) and can be parsed to a coordinate

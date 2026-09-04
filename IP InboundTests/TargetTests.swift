@@ -1,15 +1,16 @@
 import CoreLocation
 import MeasurementKit
 import MeasurementKitLocation
+import RealModule
 import Testing
 
 @testable import IP_Inbound
 @testable import IP_Inbound_Shared
 
-@Suite("Target")
-struct TargetTests {
-  @Test("offsetBearing, normalizes correctly")
-  func targetNormalizesBearing() {
+@Suite
+struct `Target tests` {
+  @Test
+  func `offsetBearing, normalizes correctly`() {
     let target = Target(name: "Test", coordinate: .zero)
     target.offsetBearing = 370
     #expect(target.offsetBearing == 10)
@@ -18,8 +19,8 @@ struct TargetTests {
     #expect(target.offsetBearing == 330)
   }
 
-  @Test("IPCoordinate, calculates correctly")
-  func targetIPCoordinate() {
+  @Test
+  func `IPCoordinate, calculates correctly`() {
     let target = Target(name: "Test", coordinate: Coordinate(latitude: 38.0, longitude: -122.0))
     target.offsetBearing = 180
     target.offsetDistance = 4
@@ -30,8 +31,8 @@ struct TargetTests {
     #expect(ipCoord.longitudeDeg == -122)
   }
 
-  @Test("setOffset, rounds distance to a whole unit and derives time from it")
-  func targetOffsetTypeChangeDistanceToTime() {
+  @Test
+  func `setOffset, rounds distance to a whole unit and derives time from it`() {
     let target = Target(name: "Test", coordinate: Coordinate(latitude: 38.0, longitude: -122.0))
     target.targetGroundSpeed = 120  // 120 knots
 
@@ -42,8 +43,8 @@ struct TargetTests {
     #expect(target.offsetTime.isApproximatelyEqual(to: 5, relativeTolerance: 0.01))
   }
 
-  @Test("setOffset, rounds time to a whole minute and derives distance from it")
-  func targetOffsetTypeChangeTimeToDistance() {
+  @Test
+  func `setOffset, rounds time to a whole minute and derives distance from it`() {
     let target = Target(name: "Test", coordinate: Coordinate(latitude: 38.0, longitude: -122.0))
     target.targetGroundSpeed = 120  // 120 knots
 
@@ -55,8 +56,8 @@ struct TargetTests {
     #expect(target.offsetDistance.isApproximatelyEqual(to: 8, relativeTolerance: 0.01))
   }
 
-  @Test("desiredTrack, calculates correctly")
-  func targetDesiredTracks() {
+  @Test
+  func `desiredTrack, calculates correctly`() {
     let target = Target(name: "Test", coordinate: Coordinate(latitude: 38.0, longitude: -122.0))
     target.offsetBearing = 45
     target.offsetBearingIsTrue = false  // magnetic
@@ -80,8 +81,8 @@ struct TargetTests {
     #expect(abs(target.desiredTrackMagnetic.degrees - 210) < 0.1)
   }
 
-  @Test("desiredTimeOverIP, calculates correctly")
-  func targetDesiredTimeOverIP() throws {
+  @Test
+  func `desiredTimeOverIP, calculates correctly`() throws {
     let target = Target(name: "Test", coordinate: Coordinate(latitude: 38.0, longitude: -122.0))
 
     // Configure target
@@ -101,8 +102,8 @@ struct TargetTests {
     )
   }
 
-  @Test("maxAllowableTimeOverIP, calculates correctly")
-  func targetMaxAllowableTimeOverIP() throws {
+  @Test
+  func `maxAllowableTimeOverIP, calculates correctly`() throws {
     let target = Target(name: "Test", coordinate: Coordinate(latitude: 38.0, longitude: -122.0))
 
     // Configure target
@@ -126,8 +127,8 @@ struct TargetTests {
     )
   }
 
-  @Test("calculateDeclination, calculates correctly")
-  func targetCalculateDeclination() {
+  @Test
+  func `calculateDeclination, calculates correctly`() {
     let target = Target(name: "Test", coordinate: Coordinate(latitude: 38.0, longitude: -122.0))
     target.calculateDeclination()
 
