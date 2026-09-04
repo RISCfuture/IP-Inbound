@@ -1,4 +1,5 @@
 import Foundation
+import MeasurementKitLocation
 import Testing
 
 @testable import IP_Inbound

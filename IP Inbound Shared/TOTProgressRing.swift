@@ -1,6 +1,6 @@
-import Foundation
+public import Foundation
 import MeasurementKit
-import SwiftUI
+public import SwiftUI
 
 /// A self-updating circular countdown to a time on target, for the places a textual countdown clips:
 /// the minimal Dynamic Island, and the watch face's smallest complication families.

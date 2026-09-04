@@ -12,8 +12,8 @@
 //            the new SnapshotHelper.swift
 // -----------------------------------------------------
 
-import Foundation
-import XCTest
+public import Foundation
+public import XCTest
 
 @MainActor
 func setupSnapshot(_ app: XCUIApplication, waitForAnimations: Bool = true) {
@@ -294,7 +294,7 @@ private extension XCUIElementAttributes {
 private extension XCUIElementQuery {
   var networkLoadingIndicators: XCUIElementQuery {
     let isNetworkLoadingIndicator = NSPredicate { (evaluatedObject, _) in
-      guard let element = evaluatedObject as? XCUIElementAttributes else { return false }
+      guard let element = evaluatedObject as? any XCUIElementAttributes else { return false }
 
       return element.isNetworkLoadingIndicator
     }
@@ -311,7 +311,7 @@ private extension XCUIElementQuery {
     let deviceWidth = app.windows.firstMatch.frame.width
 
     let isStatusBar = NSPredicate { (evaluatedObject, _) in
-      guard let element = evaluatedObject as? XCUIElementAttributes else { return false }
+      guard let element = evaluatedObject as? any XCUIElementAttributes else { return false }
 
       return element.isStatusBar(deviceWidth)
     }

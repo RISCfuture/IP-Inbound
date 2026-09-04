@@ -5,7 +5,7 @@ import CoreLocation
 import XCTest
 import XCUITestKit
 
-final class Generate_Screenshots: XCTestCase {
+nonisolated final class Generate_Screenshots: XCTestCase {
 
   // MARK: - Type Properties
 
@@ -58,6 +58,7 @@ final class Generate_Screenshots: XCTestCase {
   /// pages. Pins `UITEST_LOCATION` to the target's coordinate so
   /// `NewTargetButton.resolvedCoordinate` captures it; no seeded target, so the
   /// initial target list is empty.
+  @MainActor
   func testScreenshots_setup() throws {
     let app = launchHarness(now: nil, locationFix: Self.targetFix, seedTarget: false)
     makeTarget(app: app, screenshot: true)
@@ -66,6 +67,7 @@ final class Generate_Screenshots: XCTestCase {
     app.terminate()
   }
 
+  @MainActor
   func testScreenshots_ground() throws {
     let app = launchHarnessAndOpenFlyView(
       now: Self.iso(offsetMinutes: -30),
@@ -76,6 +78,7 @@ final class Generate_Screenshots: XCTestCase {
     app.terminate()
   }
 
+  @MainActor
   func testScreenshots_ipEarly() throws {
     let app = launchHarnessAndOpenFlyView(
       now: Self.iso(offsetMinutes: -15),
@@ -86,6 +89,7 @@ final class Generate_Screenshots: XCTestCase {
     app.terminate()
   }
 
+  @MainActor
   func testScreenshots_ip() throws {
     let app = launchHarnessAndOpenFlyView(
       now: Self.iso(offsetMinutes: -7),
@@ -96,6 +100,7 @@ final class Generate_Screenshots: XCTestCase {
     app.terminate()
   }
 
+  @MainActor
   func testScreenshots_ipLate() throws {
     let app = launchHarnessAndOpenFlyView(
       now: Self.iso(offsetMinutes: -3),
@@ -106,6 +111,7 @@ final class Generate_Screenshots: XCTestCase {
     app.terminate()
   }
 
+  @MainActor
   func testScreenshots_postIP() throws {
     let app = launchHarnessAndOpenFlyView(
       now: Self.iso(offsetMinutes: -2),
@@ -116,6 +122,7 @@ final class Generate_Screenshots: XCTestCase {
     app.terminate()
   }
 
+  @MainActor
   func testScreenshots_postPass() throws {
     let app = launchHarnessAndOpenFlyView(
       now: Self.iso(offsetSeconds: 8),
@@ -138,6 +145,7 @@ final class Generate_Screenshots: XCTestCase {
   /// rich-fix `UITEST_LOCATION`, and optionally one or two seeded configured
   /// targets. Handles the location-permission alert and the Apple Intelligence
   /// banner before returning.
+  @MainActor
   private func launchHarness(
     now: String?,
     locationFix: String,
@@ -179,6 +187,7 @@ final class Generate_Screenshots: XCTestCase {
   /// drives any residual setup pages so the test lands on FlyView (or the
   /// post-pass view when `guidance == .postPass`). Mirrors the fallback in
   /// `PostPassFlowTests` for SwiftUI's occasional setup-path restore.
+  @MainActor
   private func launchHarnessAndOpenFlyView(
     now: String?,
     locationFix: String,
@@ -208,6 +217,7 @@ final class Generate_Screenshots: XCTestCase {
     return app
   }
 
+  @MainActor
   private func makeTarget(app: XCUIApplication, screenshot: Bool = false) {
     // `UITEST_LOCATION` (set by the harness) is the target's intended
     // coordinate, so `NewTargetButton.resolvedCoordinate` captures it here.
@@ -254,6 +264,7 @@ final class Generate_Screenshots: XCTestCase {
     app.buttons["timeOnTargetButton"].tap()
   }
 
+  @MainActor
   private func setTimeEntry(app: XCUIApplication, minutesFromNow: Double) {
     XCTAssertTrue(
       app.segmentedControls["timeDisplayModePicker"]
@@ -274,6 +285,7 @@ final class Generate_Screenshots: XCTestCase {
     Thread.sleep(forTimeInterval: 1)
   }
 
+  @MainActor
   private func clearAndTypeText(in textField: XCUIElement, text: String, app _: XCUIApplication) {
     textField.tap()
     Thread.sleep(forTimeInterval: 0.2)
@@ -282,6 +294,7 @@ final class Generate_Screenshots: XCTestCase {
     textField.typeText(text + "\n")
   }
 
+  @MainActor
   private func enterDigits(app: XCUIApplication, digits: String) {
     for digit in digits {
       if digit.isNumber || digit.isLetter {

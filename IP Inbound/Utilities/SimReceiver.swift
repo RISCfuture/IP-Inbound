@@ -50,8 +50,8 @@ final actor SimReceiver {
   private static let logger = Logger(label: "codes.tim.IP-Inbound.SimReceiver")
 
   private let port: Int
-  private var group: EventLoopGroup?
-  private var channel: Channel?
+  private var group: (any EventLoopGroup)?
+  private var channel: (any Channel)?
 
   private let continuation: AsyncStream<SimData>.Continuation
   let stream: AsyncStream<SimData>

@@ -6,6 +6,7 @@ final class TutorialTests: BaseTestCase {
 
   // MARK: - Test 35
 
+  @MainActor
   func testTutorial_ShowsTitle() async throws {
     await launchApp()
     let list = TargetListPage(app: app)
@@ -19,6 +20,7 @@ final class TutorialTests: BaseTestCase {
 
   // MARK: - Test 36
 
+  @MainActor
   func testTutorial_ContainsSectionHeaders() async throws {
     await launchApp()
     let list = TargetListPage(app: app)
@@ -38,6 +40,7 @@ final class TutorialTests: BaseTestCase {
 
   // MARK: - Test 37
 
+  @MainActor
   func testTutorial_DismissReturnToList() async throws {
     await launchApp()
     let list = TargetListPage(app: app)
@@ -53,6 +56,7 @@ final class TutorialTests: BaseTestCase {
 
   // MARK: - Test 38
 
+  @MainActor
   func testTutorial_DismissViaSwipeDown() async throws {
     await launchApp()
     let list = TargetListPage(app: app)

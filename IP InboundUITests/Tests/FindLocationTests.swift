@@ -22,6 +22,7 @@ final class FindLocationTests: BaseTestCase {
 
   // MARK: - Test: search populates suggestions
 
+  @MainActor
   func testFindLocation_SearchPopulatesSuggestions() async throws {
     await launchApp()
 
@@ -40,6 +41,7 @@ final class FindLocationTests: BaseTestCase {
 
   // MARK: - Test: selecting a suggestion updates the target
 
+  @MainActor
   func testFindLocation_SelectingSuggestionUpdatesTarget() async throws {
     await launchApp()
 
@@ -93,6 +95,7 @@ final class FindLocationTests: BaseTestCase {
   // Waits until the displayed coordinates label differs from `previous`
   // (the coordinate lookup is asynchronous) and returns the new value.
   // Returns the last observed value if it never changes within the timeout.
+  @MainActor
   private func waitForCoordinatesLabelToChange(
     from previous: String,
     on page: TargetSetupPage,
@@ -107,6 +110,7 @@ final class FindLocationTests: BaseTestCase {
     return page.coordinatesLabel()
   }
 
+  @MainActor
   private func nameFieldValue() -> String {
     let field = app.textFields["targetNameField"]
     XCTAssertTrue(field.waitForExistence(timeout: 5), "Target name field should exist")

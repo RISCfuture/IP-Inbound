@@ -1,6 +1,6 @@
-import Foundation
+public import Foundation
 import MeasurementKit
-import MeasurementKitLocation
+public import MeasurementKitLocation
 
 /// A `Codable`, value-type copy of a target's guidance geometry, suitable for transmitting to the
 /// Apple Watch over WatchConnectivity. Conforms to ``GuidanceTarget`` so the watch drives the same
