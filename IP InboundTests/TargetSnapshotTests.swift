@@ -2,6 +2,7 @@ import Foundation
 import Testing
 
 @testable import IP_Inbound
+@testable import IP_Inbound_Shared
 
 @Suite("TargetSnapshot")
 struct TargetSnapshotTests {

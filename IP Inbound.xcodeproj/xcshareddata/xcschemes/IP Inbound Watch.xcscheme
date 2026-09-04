@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "2650"
+   LastUpgradeVersion = "2660"
    version = "1.7">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -63,6 +63,17 @@
                BlueprintIdentifier = "010FB6432FEBA0630056ECE0"
                BuildableName = "IP Inbound Watch Watch AppUITests.xctest"
                BlueprintName = "IP Inbound Watch Watch AppUITests"
+               ReferencedContainer = "container:IP Inbound.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "014CD0003049E04F00E8D24F"
+               BuildableName = "IP Inbound SharedTests.xctest"
+               BlueprintName = "IP Inbound SharedTests"
                ReferencedContainer = "container:IP Inbound.xcodeproj">
             </BuildableReference>
          </TestableReference>

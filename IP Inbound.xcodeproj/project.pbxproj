@@ -9,21 +9,33 @@
 /* Begin PBXBuildFile section */
 		010FB64E2FEBA0640056ECE0 /* IP Inbound Watch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 010FB62E2FEBA0610056ECE0 /* IP Inbound Watch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		011479ED2F779D5F003AEBCC /* SwiftGeographic in Frameworks */ = {isa = PBXBuildFile; productRef = 011479EC2F779D5F003AEBCC /* SwiftGeographic */; };
+		014CD0023049E05000E8D24F /* IP_Inbound_Shared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 014CCFF93049E04F00E8D24F /* IP_Inbound_Shared.framework */; };
+		014CD00C3049E05000E8D24F /* IP_Inbound_Shared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 014CCFF93049E04F00E8D24F /* IP_Inbound_Shared.framework */; };
+		014CD00D3049E05000E8D24F /* IP_Inbound_Shared.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 014CCFF93049E04F00E8D24F /* IP_Inbound_Shared.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		014CD0383049E06300E8D24F /* IP_Inbound_Shared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 014CCFF93049E04F00E8D24F /* IP_Inbound_Shared.framework */; };
+		014CD0393049E06300E8D24F /* IP_Inbound_Shared.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 014CCFF93049E04F00E8D24F /* IP_Inbound_Shared.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		014CD03D3049E06600E8D24F /* IP_Inbound_Shared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 014CCFF93049E04F00E8D24F /* IP_Inbound_Shared.framework */; };
+		014CD03E3049E06600E8D24F /* IP_Inbound_Shared.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 014CCFF93049E04F00E8D24F /* IP_Inbound_Shared.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		0159221F2FCA2B28007FB6BB /* XCUITestKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0159221E2FCA2B28007FB6BB /* XCUITestKit */; };
 		0166FA742DCA685800970EFD /* DefaultsMacros in Frameworks */ = {isa = PBXBuildFile; productRef = 0166FA732DCA685800970EFD /* DefaultsMacros */; };
 		016F3ED22DD4F1E1006EEC6D /* Numerics in Frameworks */ = {isa = PBXBuildFile; productRef = 016F3ED12DD4F1E1006EEC6D /* Numerics */; };
 		0172C0752FEC82A50034B332 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0172C0742FEC82A50034B332 /* WidgetKit.framework */; };
 		0172C0772FEC82A50034B332 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0172C0762FEC82A50034B332 /* SwiftUI.framework */; };
 		0172C0842FEC82A60034B332 /* Live ActivityExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 0172C0732FEC82A50034B332 /* Live ActivityExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		01A9E0022FF1B3C400E5A1D9 /* MeasurementKit in Frameworks */ = {isa = PBXBuildFile; productRef = 01A9E0012FF1B3C400E5A1D9 /* MeasurementKit */; };
+		01A9E0042FF1B3C400E5A1D9 /* MeasurementKitLocation in Frameworks */ = {isa = PBXBuildFile; productRef = 01A9E0032FF1B3C400E5A1D9 /* MeasurementKitLocation */; };
+		01A9E0112FF1B3C400E5A1D9 /* MeasurementKit in Frameworks */ = {isa = PBXBuildFile; productRef = 01A9E0102FF1B3C400E5A1D9 /* MeasurementKit */; };
+		01A9E0132FF1B3C400E5A1D9 /* MeasurementKitLocation in Frameworks */ = {isa = PBXBuildFile; productRef = 01A9E0122FF1B3C400E5A1D9 /* MeasurementKitLocation */; };
+		01A9E0152FF1B3C400E5A1D9 /* Numerics in Frameworks */ = {isa = PBXBuildFile; productRef = 01A9E0142FF1B3C400E5A1D9 /* Numerics */; };
 		01C059A72DBF49C600D733C1 /* AsyncAlgorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 01C059A62DBF49C600D733C1 /* AsyncAlgorithms */; };
 		01EB04182FCA2D0B007C3D1E /* XCUITestKit in Frameworks */ = {isa = PBXBuildFile; productRef = 01EB04172FCA2D0B007C3D1E /* XCUITestKit */; };
 		01ECF4F32CF3E2F800BD0604 /* Defaults in Frameworks */ = {isa = PBXBuildFile; productRef = 01ECF4F22CF3E2F800BD0604 /* Defaults */; };
 		01F13CF52DBEE074000E58A2 /* NIO in Frameworks */ = {isa = PBXBuildFile; productRef = 01F13CF42DBEE074000E58A2 /* NIO */; };
 		01F13CF72DBEE074000E58A2 /* NIOPosix in Frameworks */ = {isa = PBXBuildFile; productRef = 01F13CF62DBEE074000E58A2 /* NIOPosix */; };
 		01F13CFE2DBEE65B000E58A2 /* Logging in Frameworks */ = {isa = PBXBuildFile; productRef = 01F13CFD2DBEE65B000E58A2 /* Logging */; };
+		0A3F5C1E7B24D9E60F81AC35 /* MeasurementKitUI in Frameworks */ = {isa = PBXBuildFile; productRef = 0A3F5C1E7B24D9E60F81AC36 /* MeasurementKitUI */; };
 		11FF78DBCBBC60FA9B3AE087 /* MeasurementKitLocation in Frameworks */ = {isa = PBXBuildFile; productRef = 767F98DBE5020FE2C1A1D4F6 /* MeasurementKitLocation */; };
 		1850B2B634F254E6D441D0C7 /* MeasurementKit in Frameworks */ = {isa = PBXBuildFile; productRef = C39CDA7F653FF59E91757A29 /* MeasurementKit */; };
-		0A3F5C1E7B24D9E60F81AC35 /* MeasurementKitUI in Frameworks */ = {isa = PBXBuildFile; productRef = 0A3F5C1E7B24D9E60F81AC36 /* MeasurementKitUI */; };
 		33F711A51A154974B88B5DA7 /* MeasurementKitLocation in Frameworks */ = {isa = PBXBuildFile; productRef = 82B3BDDD1791A1F0A898CD40 /* MeasurementKitLocation */; };
 		4D2A3EAF7F6461F1F5D12E4D /* MeasurementKit in Frameworks */ = {isa = PBXBuildFile; productRef = 4538DB955AE06783DA1D19CB /* MeasurementKit */; };
 		6B2BC84D01DF41E8847B6899 /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = 4E66068E9AFD4993959FE327 /* Sentry */; };
@@ -55,6 +67,41 @@
 			proxyType = 1;
 			remoteGlobalIDString = 010FB62D2FEBA0610056ECE0;
 			remoteInfo = "IP Inbound Watch Watch App";
+		};
+		014CD0033049E05000E8D24F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 01ECF4AE2CF3DF0D00BD0604 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 014CCFF83049E04F00E8D24F;
+			remoteInfo = "IP Inbound Shared";
+		};
+		014CD0053049E05000E8D24F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 01ECF4AE2CF3DF0D00BD0604 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 01ECF4B52CF3DF0D00BD0604;
+			remoteInfo = "IP Inbound";
+		};
+		014CD00A3049E05000E8D24F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 01ECF4AE2CF3DF0D00BD0604 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 014CCFF83049E04F00E8D24F;
+			remoteInfo = "IP Inbound Shared";
+		};
+		014CD03A3049E06300E8D24F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 01ECF4AE2CF3DF0D00BD0604 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 014CCFF83049E04F00E8D24F;
+			remoteInfo = "IP Inbound Shared";
+		};
+		014CD03F3049E06600E8D24F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 01ECF4AE2CF3DF0D00BD0604 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 014CCFF83049E04F00E8D24F;
+			remoteInfo = "IP Inbound Shared";
 		};
 		016F3C212DC08E7A00F2A1AE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -96,6 +143,33 @@
 			);
 			name = "Embed Watch Content";
 		};
+		014CD0113049E05000E8D24F /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			dstPath = "";
+			dstSubfolder = Frameworks;
+			files = (
+				014CD00D3049E05000E8D24F /* IP_Inbound_Shared.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+		};
+		014CD03C3049E06300E8D24F /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			dstPath = "";
+			dstSubfolder = Frameworks;
+			files = (
+				014CD0393049E06300E8D24F /* IP_Inbound_Shared.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+		};
+		014CD0413049E06600E8D24F /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			dstPath = "";
+			dstSubfolder = Frameworks;
+			files = (
+				014CD03E3049E06600E8D24F /* IP_Inbound_Shared.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+		};
 		0172C0852FEC82A60034B332 /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			dstPath = "";
@@ -112,6 +186,9 @@
 		010FB63A2FEBA0630056ECE0 /* IP Inbound Watch Watch AppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "IP Inbound Watch Watch AppTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		010FB6442FEBA0630056ECE0 /* IP Inbound Watch Watch AppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "IP Inbound Watch Watch AppUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		01497EEC2DDC473400963D93 /* ci_post_clone.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = ci_post_clone.sh; sourceTree = "<group>"; };
+		014CCFF93049E04F00E8D24F /* IP_Inbound_Shared.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = IP_Inbound_Shared.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		014CD0013049E04F00E8D24F /* IP Inbound SharedTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "IP Inbound SharedTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		014CD04C3049E0C800E8D24F /* Live ActivityExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Live ActivityExtension.entitlements"; sourceTree = "<group>"; };
 		016F3C1B2DC08E7A00F2A1AE /* Generate Screenshots.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Generate Screenshots.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0172C0732FEC82A50034B332 /* Live ActivityExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Live ActivityExtension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0172C0742FEC82A50034B332 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
@@ -122,13 +199,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		0140E8842FEDC27B0030CF68 /* Exceptions for "IP Inbound Watch" folder in "IP Inbound Watch" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = 010FB62D2FEBA0610056ECE0 /* IP Inbound Watch */;
-		};
 		0123BC7F2F67F35400FF7A8E /* Exceptions for "IP InboundTests" folder in "IP InboundTests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -156,6 +226,13 @@
 				Info.plist,
 			);
 			target = 01ECF4B52CF3DF0D00BD0604 /* IP Inbound */;
+		};
+		0140E8842FEDC27B0030CF68 /* Exceptions for "IP Inbound Watch" folder in "IP Inbound Watch" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 010FB62D2FEBA0610056ECE0 /* IP Inbound Watch */;
 		};
 		0172C0892FEC82A60034B332 /* Exceptions for "Live Activity" folder in "Live ActivityExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
@@ -185,6 +262,11 @@
 			path = "IP Inbound Watch Watch UITests";
 			sourceTree = "<group>";
 		};
+		014CD0073049E05000E8D24F /* IP Inbound SharedTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "IP Inbound SharedTests";
+			sourceTree = "<group>";
+		};
 		016F3C1C2DC08E7A00F2A1AE /* Generate Screenshots */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = "Generate Screenshots";
@@ -206,8 +288,8 @@
 		01ECF4B82CF3DF0D00BD0604 /* IP Inbound */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				0140E8822FEDC27B0030CF68 /* Exceptions for "IP Inbound" folder in "Live ActivityExtension" target */,
 				0140E8832FEDC27B0030CF68 /* Exceptions for "IP Inbound" folder in "IP Inbound" target */,
+				0140E8822FEDC27B0030CF68 /* Exceptions for "IP Inbound" folder in "Live ActivityExtension" target */,
 			);
 			path = "IP Inbound";
 			sourceTree = "<group>";
@@ -236,6 +318,7 @@
 			files = (
 				E6A4F09A58AE2518B10F5CE0 /* MeasurementKit in Frameworks */,
 				FDF872692C630A40B99B510D /* MeasurementKitLocation in Frameworks */,
+				014CD0383049E06300E8D24F /* IP_Inbound_Shared.framework in Frameworks */,
 			);
 		};
 		010FB6372FEBA0630056ECE0 /* Frameworks */ = {
@@ -250,6 +333,22 @@
 			files = (
 			);
 		};
+		014CCFF63049E04F00E8D24F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+				01A9E0022FF1B3C400E5A1D9 /* MeasurementKit in Frameworks */,
+				01A9E0042FF1B3C400E5A1D9 /* MeasurementKitLocation in Frameworks */,
+			);
+		};
+		014CCFFE3049E04F00E8D24F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+				014CD0023049E05000E8D24F /* IP_Inbound_Shared.framework in Frameworks */,
+				01A9E0112FF1B3C400E5A1D9 /* MeasurementKit in Frameworks */,
+				01A9E0132FF1B3C400E5A1D9 /* MeasurementKitLocation in Frameworks */,
+				01A9E0152FF1B3C400E5A1D9 /* Numerics in Frameworks */,
+			);
+		};
 		016F3C182DC08E7A00F2A1AE /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
@@ -259,6 +358,7 @@
 		0172C0702FEC82A50034B332 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
+				014CD03D3049E06600E8D24F /* IP_Inbound_Shared.framework in Frameworks */,
 				0172C0772FEC82A50034B332 /* SwiftUI.framework in Frameworks */,
 				0172C0752FEC82A50034B332 /* WidgetKit.framework in Frameworks */,
 				4D2A3EAF7F6461F1F5D12E4D /* MeasurementKit in Frameworks */,
@@ -275,6 +375,7 @@
 				011479ED2F779D5F003AEBCC /* SwiftGeographic in Frameworks */,
 				01C059A72DBF49C600D733C1 /* AsyncAlgorithms in Frameworks */,
 				6B2BC84D01DF41E8847B6899 /* Sentry in Frameworks */,
+				014CD00C3049E05000E8D24F /* IP_Inbound_Shared.framework in Frameworks */,
 				A467258E809782A9762210EC /* MeasurementKit in Frameworks */,
 				33F711A51A154974B88B5DA7 /* MeasurementKitLocation in Frameworks */,
 				0A3F5C1E7B24D9E60F81AC35 /* MeasurementKitUI in Frameworks */,
@@ -308,8 +409,8 @@
 		01ECF4AD2CF3DF0D00BD0604 = {
 			isa = PBXGroup;
 			children = (
+				014CD04C3049E0C800E8D24F /* Live ActivityExtension.entitlements */,
 				01497EED2DDC473400963D93 /* ci_scripts */,
-				01DA7A5E2FEBA0610056ECE0 /* IP Inbound Shared */,
 				01ECF4B82CF3DF0D00BD0604 /* IP Inbound */,
 				01ECF4C92CF3DF0F00BD0604 /* IP InboundTests */,
 				01ECF4D32CF3DF0F00BD0604 /* IP InboundUITests */,
@@ -318,6 +419,8 @@
 				010FB63D2FEBA0630056ECE0 /* IP Inbound Watch Tests */,
 				010FB6472FEBA0630056ECE0 /* IP Inbound Watch Watch UITests */,
 				0172C0782FEC82A50034B332 /* Live Activity */,
+				01DA7A5E2FEBA0610056ECE0 /* IP Inbound Shared */,
+				014CD0073049E05000E8D24F /* IP Inbound SharedTests */,
 				01FC853F2CF4639A00C9F053 /* Frameworks */,
 				01ECF4B72CF3DF0D00BD0604 /* Products */,
 			);
@@ -334,6 +437,8 @@
 				010FB63A2FEBA0630056ECE0 /* IP Inbound Watch Watch AppTests.xctest */,
 				010FB6442FEBA0630056ECE0 /* IP Inbound Watch Watch AppUITests.xctest */,
 				0172C0732FEC82A50034B332 /* Live ActivityExtension.appex */,
+				014CCFF93049E04F00E8D24F /* IP_Inbound_Shared.framework */,
+				014CD0013049E04F00E8D24F /* IP Inbound SharedTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -349,6 +454,14 @@
 		};
 /* End PBXGroup section */
 
+/* Begin PBXHeadersBuildPhase section */
+		014CCFF43049E04F00E8D24F /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			files = (
+			);
+		};
+/* End PBXHeadersBuildPhase section */
+
 /* Begin PBXNativeTarget section */
 		010FB62D2FEBA0610056ECE0 /* IP Inbound Watch */ = {
 			isa = PBXNativeTarget;
@@ -357,12 +470,15 @@
 				010FB62A2FEBA0610056ECE0 /* Sources */,
 				010FB62B2FEBA0610056ECE0 /* Frameworks */,
 				010FB62C2FEBA0610056ECE0 /* Resources */,
+				014CD03C3049E06300E8D24F /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
+			dependencies = (
+				014CD03B3049E06300E8D24F /* PBXTargetDependency */,
+			);
 			fileSystemSynchronizedGroups = (
 				010FB62F2FEBA0610056ECE0 /* IP Inbound Watch */,
-				01DA7A5E2FEBA0610056ECE0 /* IP Inbound Shared */,
 			);
 			name = "IP Inbound Watch";
 			packageProductDependencies = (
@@ -419,6 +535,56 @@
 			productReference = 010FB6442FEBA0630056ECE0 /* IP Inbound Watch Watch AppUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		014CCFF83049E04F00E8D24F /* IP Inbound Shared */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 014CD00E3049E05000E8D24F /* Build configuration list for PBXNativeTarget "IP Inbound Shared" */;
+			buildPhases = (
+				014CCFF43049E04F00E8D24F /* Headers */,
+				014CCFF53049E04F00E8D24F /* Sources */,
+				014CCFF63049E04F00E8D24F /* Frameworks */,
+				014CCFF73049E04F00E8D24F /* Resources */,
+			);
+			buildRules = (
+			);
+			fileSystemSynchronizedGroups = (
+				01DA7A5E2FEBA0610056ECE0 /* IP Inbound Shared */,
+			);
+			name = "IP Inbound Shared";
+			packageProductDependencies = (
+				01A9E0012FF1B3C400E5A1D9 /* MeasurementKit */,
+				01A9E0032FF1B3C400E5A1D9 /* MeasurementKitLocation */,
+			);
+			productName = "IP Inbound Shared";
+			productReference = 014CCFF93049E04F00E8D24F /* IP_Inbound_Shared.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		014CD0003049E04F00E8D24F /* IP Inbound SharedTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 014CD0123049E05000E8D24F /* Build configuration list for PBXNativeTarget "IP Inbound SharedTests" */;
+			buildPhases = (
+				014CCFFD3049E04F00E8D24F /* Sources */,
+				014CCFFE3049E04F00E8D24F /* Frameworks */,
+				014CCFFF3049E04F00E8D24F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				014CD0043049E05000E8D24F /* PBXTargetDependency */,
+				014CD0063049E05000E8D24F /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				014CD0073049E05000E8D24F /* IP Inbound SharedTests */,
+			);
+			name = "IP Inbound SharedTests";
+			packageProductDependencies = (
+				01A9E0102FF1B3C400E5A1D9 /* MeasurementKit */,
+				01A9E0122FF1B3C400E5A1D9 /* MeasurementKitLocation */,
+				01A9E0142FF1B3C400E5A1D9 /* Numerics */,
+			);
+			productName = "IP Inbound SharedTests";
+			productReference = 014CD0013049E04F00E8D24F /* IP Inbound SharedTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		016F3C1A2DC08E7A00F2A1AE /* Generate Screenshots */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 016F3C232DC08E7A00F2A1AE /* Build configuration list for PBXNativeTarget "Generate Screenshots" */;
@@ -450,8 +616,12 @@
 				0172C06F2FEC82A50034B332 /* Sources */,
 				0172C0702FEC82A50034B332 /* Frameworks */,
 				0172C0712FEC82A50034B332 /* Resources */,
+				014CD0413049E06600E8D24F /* Embed Frameworks */,
 			);
 			buildRules = (
+			);
+			dependencies = (
+				014CD0403049E06600E8D24F /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				0172C0782FEC82A50034B332 /* Live Activity */,
@@ -473,6 +643,7 @@
 				01ECF4B42CF3DF0D00BD0604 /* Resources */,
 				010FB6522FEBA0640056ECE0 /* Embed Watch Content */,
 				0172C0852FEC82A60034B332 /* Embed Foundation Extensions */,
+				014CD0113049E05000E8D24F /* Embed Frameworks */,
 				C8D493EE46664369A7D42761 /* Upload Debug Symbols to Sentry */,
 			);
 			buildRules = (
@@ -480,9 +651,9 @@
 			dependencies = (
 				010FB64D2FEBA0640056ECE0 /* PBXTargetDependency */,
 				0172C0832FEC82A60034B332 /* PBXTargetDependency */,
+				014CD00B3049E05000E8D24F /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				01DA7A5E2FEBA0610056ECE0 /* IP Inbound Shared */,
 				01ECF4B82CF3DF0D00BD0604 /* IP Inbound */,
 			);
 			name = "IP Inbound";
@@ -560,8 +731,8 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 2650;
-				LastUpgradeCheck = 2640;
+				LastSwiftUpdateCheck = 2660;
+				LastUpgradeCheck = 2660;
 				TargetAttributes = {
 					010FB62D2FEBA0610056ECE0 = {
 						CreatedOnToolsVersion = 26.5;
@@ -573,6 +744,13 @@
 					010FB6432FEBA0630056ECE0 = {
 						CreatedOnToolsVersion = 26.5;
 						TestTargetID = 010FB62D2FEBA0610056ECE0;
+					};
+					014CCFF83049E04F00E8D24F = {
+						CreatedOnToolsVersion = 26.6;
+					};
+					014CD0003049E04F00E8D24F = {
+						CreatedOnToolsVersion = 26.6;
+						TestTargetID = 01ECF4B52CF3DF0D00BD0604;
 					};
 					016F3C1A2DC08E7A00F2A1AE = {
 						CreatedOnToolsVersion = 16.3;
@@ -627,6 +805,8 @@
 				016F3C1A2DC08E7A00F2A1AE /* Generate Screenshots */,
 				010FB6392FEBA0630056ECE0 /* IP Inbound Watch Watch AppTests */,
 				010FB6432FEBA0630056ECE0 /* IP Inbound Watch Watch AppUITests */,
+				014CCFF83049E04F00E8D24F /* IP Inbound Shared */,
+				014CD0003049E04F00E8D24F /* IP Inbound SharedTests */,
 			);
 		};
 /* End PBXProject section */
@@ -643,6 +823,16 @@
 			);
 		};
 		010FB6422FEBA0630056ECE0 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+			);
+		};
+		014CCFF73049E04F00E8D24F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+			);
+		};
+		014CCFFF3049E04F00E8D24F /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			files = (
 			);
@@ -722,6 +912,16 @@
 			files = (
 			);
 		};
+		014CCFF53049E04F00E8D24F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
+		014CCFFD3049E04F00E8D24F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
 		016F3C172DC08E7A00F2A1AE /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			files = (
@@ -765,6 +965,31 @@
 			target = 010FB62D2FEBA0610056ECE0 /* IP Inbound Watch */;
 			targetProxy = 010FB64C2FEBA0640056ECE0 /* PBXContainerItemProxy */;
 		};
+		014CD0043049E05000E8D24F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 014CCFF83049E04F00E8D24F /* IP Inbound Shared */;
+			targetProxy = 014CD0033049E05000E8D24F /* PBXContainerItemProxy */;
+		};
+		014CD0063049E05000E8D24F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 01ECF4B52CF3DF0D00BD0604 /* IP Inbound */;
+			targetProxy = 014CD0053049E05000E8D24F /* PBXContainerItemProxy */;
+		};
+		014CD00B3049E05000E8D24F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 014CCFF83049E04F00E8D24F /* IP Inbound Shared */;
+			targetProxy = 014CD00A3049E05000E8D24F /* PBXContainerItemProxy */;
+		};
+		014CD03B3049E06300E8D24F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 014CCFF83049E04F00E8D24F /* IP Inbound Shared */;
+			targetProxy = 014CD03A3049E06300E8D24F /* PBXContainerItemProxy */;
+		};
+		014CD0403049E06600E8D24F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 014CCFF83049E04F00E8D24F /* IP Inbound Shared */;
+			targetProxy = 014CD03F3049E06600E8D24F /* PBXContainerItemProxy */;
+		};
 		016F3C222DC08E7A00F2A1AE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 01ECF4B52CF3DF0D00BD0604 /* IP Inbound */;
@@ -793,6 +1018,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "IP Inbound Watch/IP Inbound Watch.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 11;
 				DEVELOPMENT_TEAM = 2NFSK2WB24;
@@ -825,6 +1051,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "IP Inbound Watch/IP Inbound Watch.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 11;
 				DEVELOPMENT_TEAM = 2NFSK2WB24;
@@ -938,6 +1165,146 @@
 			};
 			name = Release;
 		};
+		014CD00F3049E05000E8D24F /* Debug configuration for PBXNativeTarget "IP Inbound Shared" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALLOW_TARGET_PLATFORM_SPECIALIZATION = YES;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 11;
+				DEAD_CODE_STRIPPING = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = (
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.5;
+				MARKETING_VERSION = 2.0.2;
+				PRODUCT_BUNDLE_IDENTIFIER = "codes.tim.IP-Inbound.Shared";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SDKROOT = auto;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx watchos watchsimulator xros xrsimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INSTALL_MODULE = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				TARGETED_DEVICE_FAMILY = "1,2,4,7";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+				XROS_DEPLOYMENT_TARGET = 26.5;
+			};
+			name = Debug;
+		};
+		014CD0103049E05000E8D24F /* Release configuration for PBXNativeTarget "IP Inbound Shared" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALLOW_TARGET_PLATFORM_SPECIALIZATION = YES;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 11;
+				DEAD_CODE_STRIPPING = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = (
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.5;
+				MARKETING_VERSION = 2.0.2;
+				PRODUCT_BUNDLE_IDENTIFIER = "codes.tim.IP-Inbound.Shared";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SDKROOT = auto;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx watchos watchsimulator xros xrsimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INSTALL_MODULE = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				TARGETED_DEVICE_FAMILY = "1,2,4,7";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+				XROS_DEPLOYMENT_TARGET = 26.5;
+			};
+			name = Release;
+		};
+		014CD0133049E05000E8D24F /* Debug configuration for PBXNativeTarget "IP Inbound SharedTests" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALLOW_TARGET_PLATFORM_SPECIALIZATION = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 11;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = 2NFSK2WB24;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.5;
+				MARKETING_VERSION = 2.0.2;
+				PRODUCT_BUNDLE_IDENTIFIER = "codes.tim.IP-Inbound.IP-Inbound-SharedTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/IP Inbound.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/IP Inbound";
+				XROS_DEPLOYMENT_TARGET = 26.5;
+			};
+			name = Debug;
+		};
+		014CD0143049E05000E8D24F /* Release configuration for PBXNativeTarget "IP Inbound SharedTests" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALLOW_TARGET_PLATFORM_SPECIALIZATION = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 11;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = 2NFSK2WB24;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.5;
+				MARKETING_VERSION = 2.0.2;
+				PRODUCT_BUNDLE_IDENTIFIER = "codes.tim.IP-Inbound.IP-Inbound-SharedTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/IP Inbound.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/IP Inbound";
+				XROS_DEPLOYMENT_TARGET = 26.5;
+			};
+			name = Release;
+		};
 		016F3C242DC08E7A00F2A1AE /* Debug configuration for PBXNativeTarget "Generate Screenshots" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -981,6 +1348,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = "Live ActivityExtension.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 11;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -1012,6 +1380,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = "Live ActivityExtension.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 11;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -1332,6 +1701,22 @@
 			);
 			defaultConfigurationName = Release;
 		};
+		014CD00E3049E05000E8D24F /* Build configuration list for PBXNativeTarget "IP Inbound Shared" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				014CD00F3049E05000E8D24F /* Debug configuration for PBXNativeTarget "IP Inbound Shared" */,
+				014CD0103049E05000E8D24F /* Release configuration for PBXNativeTarget "IP Inbound Shared" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		014CD0123049E05000E8D24F /* Build configuration list for PBXNativeTarget "IP Inbound SharedTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				014CD0133049E05000E8D24F /* Debug configuration for PBXNativeTarget "IP Inbound SharedTests" */,
+				014CD0143049E05000E8D24F /* Release configuration for PBXNativeTarget "IP Inbound SharedTests" */,
+			);
+			defaultConfigurationName = Release;
+		};
 		016F3C232DC08E7A00F2A1AE /* Build configuration list for PBXNativeTarget "Generate Screenshots" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -1480,6 +1865,31 @@
 			package = 016F3ED02DD4F1E1006EEC6D /* XCRemoteSwiftPackageReference "swift-numerics" */;
 			productName = Numerics;
 		};
+		01A9E0012FF1B3C400E5A1D9 /* MeasurementKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 455EB96FD3C3DE444A131339 /* XCRemoteSwiftPackageReference "MeasurementKit" */;
+			productName = MeasurementKit;
+		};
+		01A9E0032FF1B3C400E5A1D9 /* MeasurementKitLocation */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 455EB96FD3C3DE444A131339 /* XCRemoteSwiftPackageReference "MeasurementKit" */;
+			productName = MeasurementKitLocation;
+		};
+		01A9E0102FF1B3C400E5A1D9 /* MeasurementKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 455EB96FD3C3DE444A131339 /* XCRemoteSwiftPackageReference "MeasurementKit" */;
+			productName = MeasurementKit;
+		};
+		01A9E0122FF1B3C400E5A1D9 /* MeasurementKitLocation */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 455EB96FD3C3DE444A131339 /* XCRemoteSwiftPackageReference "MeasurementKit" */;
+			productName = MeasurementKitLocation;
+		};
+		01A9E0142FF1B3C400E5A1D9 /* Numerics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 016F3ED02DD4F1E1006EEC6D /* XCRemoteSwiftPackageReference "swift-numerics" */;
+			productName = Numerics;
+		};
 		01C059A62DBF49C600D733C1 /* AsyncAlgorithms */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 01C059A52DBF49C600D733C1 /* XCRemoteSwiftPackageReference "swift-async-algorithms" */;
@@ -1510,15 +1920,15 @@
 			package = 01F13CFC2DBEE65B000E58A2 /* XCRemoteSwiftPackageReference "swift-log" */;
 			productName = Logging;
 		};
-		0FB064D238D0BF11C58B07F0 /* MeasurementKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 455EB96FD3C3DE444A131339 /* XCRemoteSwiftPackageReference "MeasurementKit" */;
-			productName = MeasurementKit;
-		};
 		0A3F5C1E7B24D9E60F81AC36 /* MeasurementKitUI */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 455EB96FD3C3DE444A131339 /* XCRemoteSwiftPackageReference "MeasurementKit" */;
 			productName = MeasurementKitUI;
+		};
+		0FB064D238D0BF11C58B07F0 /* MeasurementKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 455EB96FD3C3DE444A131339 /* XCRemoteSwiftPackageReference "MeasurementKit" */;
+			productName = MeasurementKit;
 		};
 		4538DB955AE06783DA1D19CB /* MeasurementKit */ = {
 			isa = XCSwiftPackageProductDependency;

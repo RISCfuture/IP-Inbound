@@ -5,19 +5,19 @@ import CoreLocation
 /// Every one of these renders as the same "No location" screen without it, which tells the pilot
 /// nothing about whether the fix is coming, whether they can do something about it, or whether the
 /// guidance they *are* seeing is trustworthy.
-struct LocationDiagnostics: Sendable, Equatable {
+public struct LocationDiagnostics: Sendable, Equatable {
   /// Nothing is wrong. The state of a feed that Core Location does not gate — a flight simulator's,
   /// or a scripted one under UI tests.
-  static let clean = Self()
+  public static let clean = Self()
 
-  var accuracyLimited = false
-  var authorizationDenied = false
-  var authorizationDeniedGlobally = false
-  var authorizationRequestInProgress = false
-  var authorizationRestricted = false
-  var insufficientlyInUse = false
-  var locationUnavailable = false
-  var serviceSessionRequired = false
+  public var accuracyLimited = false
+  public var authorizationDenied = false
+  public var authorizationDeniedGlobally = false
+  public var authorizationRequestInProgress = false
+  public var authorizationRestricted = false
+  public var insufficientlyInUse = false
+  public var locationUnavailable = false
+  public var serviceSessionRequired = false
 
   /// The one state worth showing the pilot, or `nil` when guidance should be drawn as usual.
   ///
@@ -25,7 +25,7 @@ struct LocationDiagnostics: Sendable, Equatable {
   /// because the fix is missing *because* of it. `accuracyLimited` comes last because it is the only
   /// case that arrives with a location attached, so it is the only one that suppresses guidance that
   /// would otherwise draw.
-  var impediment: LocationImpediment? {
+  public var impediment: LocationImpediment? {
     // The prompt is on screen and the pilot has not answered it. Reporting a denial they have not
     // made would be wrong, and would flash on every first launch.
     if authorizationRequestInProgress { return nil }
@@ -39,9 +39,9 @@ struct LocationDiagnostics: Sendable, Equatable {
     return nil
   }
 
-  init() {}
+  public init() {}
 
-  init(_ update: CLLocationUpdate) {
+  public init(_ update: CLLocationUpdate) {
     accuracyLimited = update.accuracyLimited
     authorizationDenied = update.authorizationDenied
     authorizationDeniedGlobally = update.authorizationDeniedGlobally
@@ -54,7 +54,7 @@ struct LocationDiagnostics: Sendable, Equatable {
 }
 
 /// What stands between the pilot and run-in guidance, and therefore what to say about it.
-enum LocationImpediment: Sendable, Equatable {
+public enum LocationImpediment: Sendable, Equatable {
   /// Location Services is off for the whole device.
   case locationServicesOff
 
@@ -77,7 +77,7 @@ enum LocationImpediment: Sendable, Equatable {
   case accuracyLimited
 
   /// Whether the Settings app is where the pilot fixes this.
-  var isResolvedInSettings: Bool {
+  public var isResolvedInSettings: Bool {
     switch self {
       case .locationServicesOff, .denied, .restricted: true
       case .serviceSessionRequired, .insufficientlyInUse, .unavailable, .accuracyLimited: false

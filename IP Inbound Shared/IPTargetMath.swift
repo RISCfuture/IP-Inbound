@@ -3,21 +3,33 @@ import Foundation
 import MeasurementKit
 import MeasurementKitLocation
 
-struct IPTargetMath<T: GuidanceTarget> {
+/// The run-in geometry a single fix produces against a target: where the aircraft sits relative to
+/// the initial point and the target, when it will reach each, and how far it lies off the run-in
+/// course. The phone and the watch both solve from this, so their guidance cannot disagree.
+public struct IPTargetMath<T: GuidanceTarget> {
   private static var sequenceCutoffAngle: Measurement<UnitAngle> {
     .init(value: 90, unit: .degrees)
   }
 
-  var coordinate: Coordinate
-  var speed: Measurement<UnitSpeed>
-  var course: TrueBearing
-  let target: T
-  let now: Date
+  /// Where the aircraft is.
+  public var coordinate: Coordinate
+
+  /// The aircraft's ground speed.
+  public var speed: Measurement<UnitSpeed>
+
+  /// The aircraft's track over the ground.
+  public var course: TrueBearing
+
+  /// The target being run in on.
+  public let target: T
+
+  /// The instant the geometry is solved for.
+  public let now: Date
 
   /// Timing toward the IP. Because the destination is the IP, the run-to time reference is the
   /// desired IP-crossing time (`desiredTimeOverIP`) — not the target's time-on-target — so
   /// early/late and required-ground-speed read against when the aircraft should cross the IP.
-  var pposToIP: FromToMath? {
+  public var pposToIP: FromToMath? {
     guard let desiredTimeOverIP = target.desiredTimeOverIP else { return nil }
     return .init(
       from: coordinate,
@@ -31,7 +43,9 @@ struct IPTargetMath<T: GuidanceTarget> {
     )
   }
 
-  var pposToTarget: FromToMath? {
+  /// Timing straight to the target, referenced to its time-on-target, for the phases that bypass
+  /// the IP.
+  public var pposToTarget: FromToMath? {
     guard let timeOnTarget = target.timeOnTarget else { return nil }
     return .init(
       from: coordinate,
@@ -45,29 +59,35 @@ struct IPTargetMath<T: GuidanceTarget> {
     )
   }
 
-  var isPastIP: Bool {
+  /// Whether the initial point is behind the aircraft, allowing for the buffer a turn onto the
+  /// run-in course needs.
+  public var isPastIP: Bool {
     guard let signedAlongTrackDistance, let sequencingBuffer else { return false }
     return signedAlongTrackDistance >= sequencingBuffer
   }
 
-  var IP_ETA: Date? { pposToIP?.timeOfArrival }
+  /// When the aircraft will reach the IP at its current speed.
+  public var IP_ETA: Date? { pposToIP?.timeOfArrival }
 
-  var IPDeltaTime: Measurement<UnitDuration>? {
+  /// How far the projected IP crossing falls from the time the plan wants it, negative when early.
+  public var IPDeltaTime: Measurement<UnitDuration>? {
     guard let IP_ETA, let desiredTimeOverIP = target.desiredTimeOverIP else { return nil }
     return IP_ETA.elapsed(since: desiredTimeOverIP)
   }
 
   /// How far the position lies off the run-in course line. Positive is **right** of course, the
   /// course-deviation convention, so a positive deviation is corrected by turning left.
-  var crossTrackDistance: Measurement<UnitLength> {
+  public var crossTrackDistance: Measurement<UnitLength> {
     target.IPToTarget.crossTrackDistance(to: coordinate)
   }
 
   /// The aircraft's displacement from the run-in course line, as a course deviation indicator reads
   /// it.
-  var courseDeviation: CourseDeviation { .init(crossTrackDistance: crossTrackDistance) }
+  public var courseDeviation: CourseDeviation { .init(crossTrackDistance: crossTrackDistance) }
 
-  var pposToIPToTargetETAAtMaxSpeed: Date? {
+  /// The earliest the aircraft could reach the target by way of the IP, flying the fastest run-in
+  /// speed the guidance will plan to. Later than the time-on-target means the plan cannot be made.
+  public var pposToIPToTargetETAAtMaxSpeed: Date? {
     guard target.timeOnTarget != nil else { return nil }
 
     let maxSpeed = target.maxAllowableGroundSpeed
@@ -107,7 +127,15 @@ struct IPTargetMath<T: GuidanceTarget> {
 
   private var declination: Measurement<UnitAngle> { target.declinationMeasurement }
 
-  init(
+  /// Solves the run-in geometry from an explicit position, speed and track.
+  ///
+  /// - Parameters:
+  ///   - coordinate: where the aircraft is.
+  ///   - speed: its ground speed.
+  ///   - course: its track over the ground.
+  ///   - target: the target being run in on.
+  ///   - now: the instant to solve for.
+  public init(
     coordinate: Coordinate,
     speed: Measurement<UnitSpeed>,
     course: TrueBearing,
@@ -129,7 +157,7 @@ struct IPTargetMath<T: GuidanceTarget> {
   ///   - location: the fix to solve from.
   ///   - target: the target being run in on.
   ///   - now: the current time.
-  init?(location: CLLocation, target: T, now: Date) {
+  public init?(location: CLLocation, target: T, now: Date) {
     guard let speed = location.groundSpeed, let course = location.courseTrue else { return nil }
     self.init(
       coordinate: location.geoCoordinate,

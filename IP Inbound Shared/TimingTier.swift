@@ -4,7 +4,7 @@ import SwiftUI
 /// How early or late an arrival is tracking against its time-on-target, paired with the readout color
 /// and direction icon. Shared by the Fly timing display, the post-pass verdict, and the watch CDI so a
 /// given tier always reads identically across the phone and watch.
-enum TimingTier: CaseIterable, Hashable {
+public enum TimingTier: CaseIterable, Hashable, Sendable {
   case tooSlowWarning
   case tooSlowCaution
   case onTime
@@ -13,7 +13,7 @@ enum TimingTier: CaseIterable, Hashable {
 
   /// On-time window the run-in guidance flies to: arrivals within this much of the time-on-target
   /// read as on-time.
-  static let runInOnTimeDeltaTOT = Measurement(value: 30, unit: UnitDuration.seconds)
+  public static let runInOnTimeDeltaTOT = Measurement(value: 30, unit: UnitDuration.seconds)
 
   /// Allowable deviation from target speed, as a fraction of target speed, before the arrival leaves
   /// the caution band for a warning — equivalently, the fraction of the nominal flight time that
@@ -22,7 +22,7 @@ enum TimingTier: CaseIterable, Hashable {
 
   /// The bright asset color for this tier: green on-time, then the too-slow / too-fast palette in
   /// caution or warning shades.
-  var color: Color {
+  public var color: Color {
     switch self {
       case .tooSlowWarning: .init("TooSlowWarning")
       case .tooSlowCaution: .init("TooSlowCaution")
@@ -34,7 +34,7 @@ enum TimingTier: CaseIterable, Hashable {
 
   /// The direction icon for this tier: chevrons up when late, down when early, doubled at the warning
   /// threshold, and a checkmark on-time.
-  var systemImage: String {
+  public var systemImage: String {
     switch self {
       case .tooSlowWarning: "chevron.up.2"
       case .tooSlowCaution: "chevron.up"
@@ -50,7 +50,7 @@ enum TimingTier: CaseIterable, Hashable {
   ///     fast).
   ///   - isOnTime: whether the arrival is within the on-time window.
   ///   - isWithinCaution: whether the arrival is within the caution band (otherwise a warning).
-  init(isLate: Bool, isOnTime: Bool, isWithinCaution: Bool) {
+  public init(isLate: Bool, isOnTime: Bool, isWithinCaution: Bool) {
     if isOnTime {
       self = .onTime
     } else if isLate {
@@ -63,7 +63,7 @@ enum TimingTier: CaseIterable, Hashable {
   /// Classifies `fromTo`’s projected arrival relative to `timeOnTarget`: on-time within
   /// `onTimeDeltaTOT`, and in caution within a band proportional to the nominal flight time at target
   /// speed.
-  init(
+  public init(
     fromTo: FromToMath,
     timeOnTarget: Date,
     onTimeDeltaTOT: Measurement<UnitDuration> = Self.runInOnTimeDeltaTOT

@@ -1,5 +1,6 @@
 import Defaults
 import Foundation
+import IP_Inbound_Shared
 import MeasurementKit
 
 /// The run-in figures a Live Activity shows, rounded to the precision it displays them at.
