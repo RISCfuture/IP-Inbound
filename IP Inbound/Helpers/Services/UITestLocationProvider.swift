@@ -83,13 +83,10 @@ actor UITestLocationProvider: LocationProviding {
   // swiftlint:disable:next async_without_await
   func eventStream() async -> AsyncThrowingStream<LocationEvent, any Error>? {
     let snapshot = locationNow()
-    let shouldReplay = waypoints.count > 1
     return AsyncThrowingStream { continuation in
       let id = UUID()
       continuation.yield(LocationEvent(location: snapshot))
-      if shouldReplay {
-        Task { await self.registerAndReplay(id: id, continuation: continuation) }
-      }
+      Task { await self.registerAndReplay(id: id, continuation: continuation) }
       continuation.onTermination = { _ in
         Task { await self.removeContinuation(id) }
       }
@@ -113,9 +110,11 @@ actor UITestLocationProvider: LocationProviding {
   private func replay(id: UUID) async {
     // eventStream() already emitted the initial fix, so wait one interval before the first replayed
     // sample (otherwise the start fix is emitted twice). Keep emitting — clamped at the last
-    // waypoint once the path ends — so consumers keep re-rendering as the clock advances past the
-    // path and pick up time-driven state changes (e.g. crossing TOT). The loop ends when the
-    // consumer cancels and the continuation is removed.
+    // waypoint once the path ends, and from the outset for a single fix — so consumers keep
+    // re-rendering as the clock advances and pick up time-driven state changes (e.g. crossing TOT).
+    // A stationary aircraft still produces fixes, so a feed that fell silent would not be standing
+    // in for anything Core Location does. The loop ends when the consumer cancels and the
+    // continuation is removed.
     while continuations[id] != nil {
       try? await Task.sleep(for: .milliseconds(Self.replayIntervalMS))
       guard let continuation = continuations[id] else { break }
