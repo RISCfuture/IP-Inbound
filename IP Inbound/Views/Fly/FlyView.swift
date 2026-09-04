@@ -16,6 +16,13 @@ struct FlyView: View {
 
   @State private var postPassResult = PostPassResult()
 
+  /// The phase for a fix there is no run-in geometry to solve from. The countdown stands until the
+  /// tasking lapses, which needs no geometry to judge — and leaving a lapsed run counting down would
+  /// hold the screen on a run everything else has already stood down.
+  private var guidanceWithoutGeometry: Guidance {
+    target.hasRunExpired(at: services.clock.now) ? .postPass : .countdownOnly
+  }
+
   var body: some View {
     NeedsLocationView { location, event in
       // A fix carrying no usable ground speed or course has no run-in geometry to solve, so the
@@ -23,7 +30,7 @@ struct FlyView: View {
       // position and the target, which every fix supplies.
       let math = IPTargetMath(location: location, target: target, now: services.clock.now)
       let guidanceHelper = math.map { GuidanceHelper(math: $0, location: location, target: target) }
-      let guidance = guidanceHelper?.guidance ?? .countdownOnly
+      let guidance = guidanceHelper?.guidance ?? guidanceWithoutGeometry
       let isPastTarget = guidanceHelper?.isPastTarget ?? false
       let runIn = math.flatMap(RunInSnapshot.init(math:))
 
@@ -71,32 +78,21 @@ struct FlyView: View {
     .accessibilityIdentifier("flyView")
     .onAppear {
       target.isConfigured = true
-      UIApplication.shared.isIdleTimerDisabled = true
-      RunController.shared.handOverToScreen()
-      BackgroundActivityHolder.shared.begin(targetID: target.id)
-      WatchSessionController.shared.update(flying: target)
-      LiveActivityController.shared.update(flying: target)
+      RunController.shared.beginRun(flying: target)
     }
     // Flying straight on to the next target replaces this whole screen, and SwiftUI may raise the
     // replacement before it lowers this one. Tearing the run down then would end the run the next
-    // target has already begun — its record, its watch context and its Live Activity alike — so the
-    // screen only dismantles a run it still owns.
+    // target has already begun — raised, or still waiting for its window to open — so the screen
+    // only dismantles a run it still owns.
     .onDisappear {
-      UIApplication.shared.isIdleTimerDisabled = false
-      guard BackgroundActivityHolder.shared.ownsRun(flying: target.id) else { return }
-      BackgroundActivityHolder.shared.end()
-      WatchSessionController.shared.update(flying: nil)
-      LiveActivityController.shared.update(flying: nil)
+      guard RunController.shared.ownsRun(flying: target) else { return }
+      RunController.shared.endRun()
     }
   }
 
   private func capturePostPassIfNeeded(guidance: Guidance) {
     guard guidance == .postPass, let timeOnTarget = target.timeOnTarget else { return }
-    postPassResult.capture(
-      targetName: target.name,
-      timeOnTarget: timeOnTarget,
-      now: services.clock.now
-    )
+    postPassResult.capture(targetName: target.name, timeOnTarget: timeOnTarget)
   }
 }
 

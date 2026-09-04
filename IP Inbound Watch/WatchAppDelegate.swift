@@ -11,8 +11,8 @@ final class WatchAppDelegate: NSObject, WKApplicationDelegate {
 
   func applicationDidFinishLaunching() {
     BackgroundActivityHolder.shared.locationUpdates = .init(
-      resume: { [location] in location.start() },
-      suspend: { [location] in location.stop() }
+      resume: { [location] in location.start(.session) },
+      suspend: { [location] in location.stop(.session) }
     )
     BackgroundActivityHolder.shared.rejoinRunInProgress()
   }

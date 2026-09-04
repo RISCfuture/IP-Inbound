@@ -35,6 +35,12 @@ extension GuidanceTarget {
   /// time-on-target.
   public static var allowableSpeedVariance: Double { 0.1 }
 
+  /// How long past the briefed time on target a run stays one anybody is flying.
+  ///
+  /// Long enough that a badly late pass, or a pilot still reading their result, is never cut off
+  /// mid-thought; short enough that a run cannot outlive the sortie it belongs to.
+  public static var postTOTGrace: Measurement<UnitDuration> { .init(value: 15, unit: .minutes) }
+
   /// The initial point: the target offset by the run-in bearing and distance.
   public var IPCoordinate: Coordinate {
     coordinate.offset(
@@ -79,6 +85,13 @@ extension GuidanceTarget {
     return desiredTimeOverIP...timeOnTarget
   }
 
+  /// When the run stops being one anybody is flying, and everything it holds is released: the
+  /// background location session, the countdown on the Lock Screen and on the watch face, and the
+  /// guidance's offer to fly it.
+  ///
+  /// `nil` when no time on target is briefed — a target with no plan has no run to expire.
+  public var runExpiry: Date? { timeOnTarget.map { $0 + Self.postTOTGrace } }
+
   /// The latest the aircraft may cross the IP and still make its time-on-target, flying the run-in at
   /// the maximum allowable ground speed.
   public var maxAllowableTimeOverIP: Date? {
@@ -90,5 +103,17 @@ extension GuidanceTarget {
   /// considered unable to make its time-on-target.
   public var maxAllowableGroundSpeed: Measurement<UnitSpeed> {
     targetGroundSpeedMeasurement * (1 + Self.allowableSpeedVariance)
+  }
+
+  /// Whether the run is over at `now`.
+  ///
+  /// A target with no time on target has no run to be over: it has nothing to expire, and answering
+  /// `true` would have every surface read an unbriefed target as stale rather than as unstarted.
+  ///
+  /// - Parameter now: the moment to judge the run against.
+  /// - Returns: `true` once the run's expiry has arrived.
+  public func hasRunExpired(at now: Date) -> Bool {
+    guard let runExpiry else { return false }
+    return now >= runExpiry
   }
 }

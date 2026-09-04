@@ -8,9 +8,10 @@ import Observation
 ///
 /// Two owners hold the stream: the view layer, for as long as a run is on screen, and the
 /// background-activity holder that rejoins a session at launch, for as long as that session outlives
-/// a run. Holds are counted rather than exclusive, so neither owner's release can take the GPS away
-/// from the other — a run still being flown keeps its fixes when the holder disposes of a session no
-/// screen claimed.
+/// a run. Each holds in its own name rather than adding to a tally, so neither owner's release can
+/// take the GPS away from the other — a run still being flown keeps its fixes when the holder
+/// disposes of a session no screen claimed — and neither can come away holding twice, which is what
+/// a run handed straight on to the next target would otherwise leave the view layer doing.
 @MainActor
 @Observable
 final class WatchLocationModel {
@@ -19,7 +20,8 @@ final class WatchLocationModel {
   /// Why Core Location is withholding a fix, or `.clean` while nothing is wrong.
   private(set) var diagnostics = LocationDiagnostics.clean
 
-  private var listenerCount = 0
+  /// Who is holding the stream open.
+  private var holders: Set<Holder> = []
 
   /// Which run of the stream ``task`` belongs to. A stream that ends after ``retry()`` has already
   /// replaced it would otherwise clear the handle of the one now running, stranding a task nothing
@@ -36,32 +38,32 @@ final class WatchLocationModel {
     location = previewLocation
   }
 
-  /// Takes a listener's hold on the stream, starting it for the first one and prompting for
-  /// when-in-use access on first use.
-  func start() {
-    listenerCount += 1
-    if listenerCount == 1 { startStream() }
+  /// Takes `holder`'s hold on the stream, starting it for the first one and prompting for
+  /// when-in-use access on first use. A holder that asks again while it already holds changes
+  /// nothing, so no owner can strand a hold nothing will ever release.
+  func start(_ holder: Holder) {
+    let wasIdle = holders.isEmpty
+    holders.insert(holder)
+    if wasIdle { startStream() }
   }
 
-  /// Releases one listener's hold, stopping the stream when the last one lets go.
+  /// Releases `holder`'s hold, stopping the stream when the last one lets go.
   ///
-  /// A release with no hold outstanding is ignored rather than counted: the holder suspends a stream
-  /// it may never have resumed, and the run's own screen can report the run over first. Counted,
-  /// that would leave the tally below zero, where ``start()`` could never see it reach one again and
-  /// the watch would show no fix for the rest of the process.
-  func stop() {
-    guard listenerCount > 0 else { return }
-    listenerCount -= 1
-    if listenerCount == 0 { stopStream() }
+  /// A release from an owner that holds nothing is nothing to act on: the background-activity
+  /// holder suspends a stream it may never have resumed, and the run's own screen can report the
+  /// run over first.
+  func stop(_ holder: Holder) {
+    guard holders.remove(holder) != nil, holders.isEmpty else { return }
+    stopStream()
   }
 
-  /// Puts the stream back for the listeners still holding it, without disturbing their holds.
+  /// Puts the stream back for the owners still holding it, without disturbing their holds.
   ///
   /// Core Location ends the stream on a refusal and does not re-offer it, so a pilot who allows
   /// access afterwards would stay on the refusal screen for the rest of the run. Nothing else
   /// restarts it: the watch has no Settings deep link to come back from, only a wrist raised again.
   func retry() {
-    guard listenerCount > 0 else { return }
+    guard !holders.isEmpty else { return }
     startStream()
   }
 
@@ -113,5 +115,12 @@ final class WatchLocationModel {
   private func stopStream() {
     task?.cancel()
     task = nil
+  }
+
+  /// The two things that keep the watch's GPS running: the run on screen, and the background
+  /// session `BackgroundActivityHolder` rejoins at launch for a run that outlived the process.
+  enum Holder {
+    case screen
+    case session
   }
 }

@@ -56,11 +56,12 @@ struct IP_InboundApp: App {
           services = await AppServices.make()
         }
       }
-      // Frontmost with no Fly screen showing means a session `@main` rejoined belongs to a run that
-      // is over, as does the record a force-quit or a crash left behind. A run still being flown
-      // claimed its session when `FlyView` appeared, and is left alone.
+      // Frontmost with nothing in this process flying the run means the record a force-quit or a
+      // crash left behind, or a session `@main` rejoined for a run that was already over. A run
+      // still being flown is left alone — by the Fly screen, or with no screen at all on the launch
+      // Core Location made.
       .onChange(of: scenePhase, initial: true) {
-        if scenePhase == .active { BackgroundActivityHolder.shared.endUnclaimedRun() }
+        if scenePhase == .active { RunController.shared.endUnclaimedRun() }
       }
     }.modelContainer(modelContainer)
   }

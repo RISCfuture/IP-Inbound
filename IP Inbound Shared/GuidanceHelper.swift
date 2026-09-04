@@ -59,6 +59,9 @@ public struct GuidanceHelper<T: GuidanceTarget> {
   /// Whether the planned time-on-target has elapsed.
   public var isAfterTOT: Bool { math.isAfterTOT }
 
+  /// Whether the run has outlived its time-on-target by more than the plan allows.
+  public var isRunExpired: Bool { math.isRunExpired }
+
   /// How far the projected IP crossing falls from the time the plan wants it, negative when early.
   public var ipDeltaTime: Measurement<UnitDuration> { math.IPDeltaTime ?? .zero }
 
@@ -78,8 +81,11 @@ public struct GuidanceHelper<T: GuidanceTarget> {
 
   /// The phase of the run the current fix puts the aircraft in.
   public var guidance: Guidance {
-    // Not moving - just show countdown
-    if !isMoving { return .countdownOnly }
+    // Not moving, with the tasking still live - just show countdown. A lapsed run falls through to
+    // the stand-down below instead: the expiry is a fact about the plan rather than about the fix,
+    // and a tasking has lapsed whether the aircraft is holding, sitting on the ground, or reporting
+    // no speed at all.
+    if !isMoving, !isRunExpired { return .countdownOnly }
 
     // Past the target AND past TOT - show how the pass went and offer the
     // next target. Crossing the target before TOT (an early arrival on a
@@ -88,7 +94,15 @@ public struct GuidanceHelper<T: GuidanceTarget> {
     if isPastTarget, isAfterTOT { return .postPass }
 
     // After IP - show IP to target guidance with CDI cross-track deviation and relative time indicator
-    if isPastIP { return .toTarget }
+    // A run-in already under way is the pilot's to finish however late it has run, so this stands
+    // ahead of the expiry below. Under way means airborne: an aircraft below the movement threshold
+    // is flying no run-in, wherever on the axis it happens to sit.
+    if isMoving, isPastIP { return .toTarget }
+
+    // The tasking has lapsed with no run-in under way - every route to the target is later than the
+    // plan tolerates, and steering one would dress a dead tasking up as a live one. The pass reads
+    // as flown, which against the plan it is.
+    if isRunExpired { return .postPass }
 
     // Prior to IP - determine guidance mode based on timing
     guard math.IPDeltaTime != nil, target.timeOnTarget != nil else {
