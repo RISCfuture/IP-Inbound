@@ -5,12 +5,12 @@ import Testing
 
 @testable import IP_Inbound
 
-@Suite("Streams")
-struct StreamsTests {
+@Suite
+struct `Streams tests` {
 
-  @Test("MulticastStream - can broadcast to multiple consumers")
-  func multicastStreamBroadcast() async throws {
-    let (stream, continuation) = AsyncThrowingStream<Int, Error>.makeStream()
+  @Test
+  func `MulticastStream - can broadcast to multiple consumers`() async throws {
+    let (stream, continuation) = AsyncThrowingStream<Int, any Error>.makeStream()
     let multicastStream = MulticastStream(stream: stream)
 
     let consumer1 = await multicastStream.consume()
@@ -33,17 +33,17 @@ struct StreamsTests {
     continuation.finish()
   }
 
-  @Test("MulticastStream - handles errors correctly")
-  func multicastStreamErrors() async throws {
+  @Test
+  func `MulticastStream - handles errors correctly`() async throws {
     enum TestError: Error {
       case testCase
     }
 
-    let (stream, continuation) = AsyncThrowingStream<Int, Error>.makeStream()
+    let (stream, continuation) = AsyncThrowingStream<Int, any Error>.makeStream()
     let multicastStream = MulticastStream(stream: stream)
     let consumer = await multicastStream.consume()
 
-    let task = Task { () -> Error? in
+    let task = Task { () -> (any Error)? in
       do {
         for try await value in consumer where value == 2 {
           continuation.finish(throwing: TestError.testCase)
@@ -63,9 +63,9 @@ struct StreamsTests {
     await multicastStream.stop()
   }
 
-  @Test("MulticastStream - stopping finishes the streams it vended", .timeLimit(.minutes(1)))
-  func multicastStreamStopFinishesConsumers() async throws {
-    let (stream, continuation) = AsyncThrowingStream<Int, Error>.makeStream()
+  @Test(.timeLimit(.minutes(1)))
+  func `MulticastStream - stopping finishes the streams it vended`() async throws {
+    let (stream, continuation) = AsyncThrowingStream<Int, any Error>.makeStream()
     defer { continuation.finish() }
 
     let multicastStream = MulticastStream(stream: stream)
@@ -78,9 +78,9 @@ struct StreamsTests {
     for try await _ in consumer {}
   }
 
-  @Test("bootstrap - prepends initial value to stream")
-  func bootstrapPrependsInitialValue() async throws {
-    let (stream, continuation) = AsyncThrowingStream<Int, Error>.makeStream()
+  @Test
+  func `bootstrap - prepends initial value to stream`() async throws {
+    let (stream, continuation) = AsyncThrowingStream<Int, any Error>.makeStream()
     let bootstrappedStream = bootstrap(stream: stream, initial: 0)
 
     let expected = [0, 1, 2, 3]
@@ -97,8 +97,8 @@ struct StreamsTests {
     continuation.finish()
   }
 
-  @Test("extrapolate - extrapolates values driven by an injected clock")
-  func extrapolateEmitsClockDrivenValues() async throws {
+  @Test
+  func `extrapolate - extrapolates values driven by an injected clock`() async throws {
     let interval = 0.2
     let maxTime = 1.0
     let valueRatePerSecond = 10.0
@@ -111,7 +111,7 @@ struct StreamsTests {
     let clock = SteppingClock(start: Date(timeIntervalSinceReferenceDate: 0), step: interval)
     let dateProvider = DateProvider(now: { clock.advance() }, offsetFromRealTime: .zero)
 
-    let (stream, continuation) = AsyncThrowingStream<TestEvent, Error>.makeStream()
+    let (stream, continuation) = AsyncThrowingStream<TestEvent, any Error>.makeStream()
     let extrapolatedStream = extrapolate(
       stream: stream,
       maxTime: maxTime,
