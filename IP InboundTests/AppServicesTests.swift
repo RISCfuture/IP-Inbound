@@ -3,19 +3,19 @@ import Testing
 
 @testable import IP_Inbound
 
-@Suite("AppServices.make")
+@Suite
 @MainActor
-struct AppServicesTests {
-  @Test("not UI testing → live SystemClock + LocationStreamer")
-  func live() async {
+struct `AppServices.make` {
+  @Test
+  func `not UI testing → live SystemClock + LocationStreamer`() async {
     let info = StubProcessInfo(env: [:])  // no XCTestConfigurationFilePath, no -UITests
     let services = await AppServices.make(processInfo: info)
     #expect(services.clock is SystemClock)
     #expect(services.location is LocationStreamer)
   }
 
-  @Test("UI testing with UITEST_NOW → UITestClock")
-  func uiTestClock() async {
+  @Test
+  func `UI testing with UITEST_NOW → UITestClock`() async {
     let info = StubProcessInfo(
       env: ["XCTestConfigurationFilePath": "/x", "UITEST_NOW": "2026-05-18T18:00:00Z"]
     )
@@ -23,8 +23,8 @@ struct AppServicesTests {
     #expect(services.clock is UITestClock)
   }
 
-  @Test("UI testing, UITEST_NOW missing → per-field fallback to SystemClock")
-  func perFieldFallback() async {
+  @Test
+  func `UI testing, UITEST_NOW missing → per-field fallback to SystemClock`() async {
     let info = StubProcessInfo(
       env: ["XCTestConfigurationFilePath": "/x", "UITEST_LOCATION": "1,2,0,0,0"]
     )
@@ -33,13 +33,8 @@ struct AppServicesTests {
     #expect(services.location is UITestLocationProvider)
   }
 
-  @Test(
-    """
-    UI testing with UITEST_NOW + UITEST_LOCATION → UITestClock + UITestLocationProvider (no live \
-    streamer)
-    """
-  )
-  func uiTestFullFake() async {
+  @Test
+  func `UITEST_NOW and UITEST_LOCATION replace both the clock and the live streamer`() async {
     let info = StubProcessInfo(
       env: [
         "XCTestConfigurationFilePath": "/x",
