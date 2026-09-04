@@ -56,6 +56,14 @@ final class PostPassFlowTests: BaseTestCase {
       )
     }
 
+    // This route crosses the target, so the screen reports a pass flown. The page locates itself
+    // by identifier now that the headline distinguishes that from a run that merely lapsed, so the
+    // crossed headline is asserted here rather than implied by the screen having appeared.
+    XCTAssertTrue(
+      postPass.crossedTitle.waitForExistence(timeout: 5),
+      "A pass flown over the target should read ‘Past Target’"
+    )
+
     XCTAssertTrue(
       app.staticTexts["Flythrough"].waitForExistence(timeout: 5),
       "Post-pass screen should name the flown target"

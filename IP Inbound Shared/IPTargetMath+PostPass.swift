@@ -34,4 +34,12 @@ extension IPTargetMath {
     guard let timeOnTarget = target.timeOnTarget else { return false }
     return now >= timeOnTarget
   }
+
+  /// True once the run has outlived its time-on-target by more than the plan allows. False when
+  /// `timeOnTarget` is unset.
+  ///
+  /// Where ``isAfterTOT`` says the planned moment has gone by, this says the tasking itself has
+  /// lapsed: there is no run-in left to fly toward the target, and nothing the run holds is worth
+  /// holding any longer.
+  public var isRunExpired: Bool { target.hasRunExpired(at: now) }
 }

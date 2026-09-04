@@ -12,7 +12,14 @@ struct `Post-Pass tests` {
   private let targetCoordinate = Coordinate(latitude: 36.772367, longitude: -115.453840)
   private let postIP = Coordinate(latitude: 36.8078222222, longitude: -115.4840472222)
   private let beyondTarget = Coordinate(latitude: 36.700000, longitude: -115.453840)
+  /// Well up the run-in axis from the IP, which sits 4.8 NM off a 359° offset at about 36.852.
+  private let shortOfIP = Coordinate(latitude: 37.100000, longitude: -115.453840)
   private let now = Date(timeIntervalSince1970: 1_700_000_000)
+
+  /// A time on target far enough back that the run has expired, by a minute.
+  private var expiredTimeOnTarget: Date {
+    now - (Target.postTOTGrace + Measurement(value: 1, unit: UnitDuration.minutes))
+  }
 
   // MARK: - isPastTarget (geometric)
 
@@ -111,6 +118,57 @@ struct `Post-Pass tests` {
     #expect(guidance != .postPass)
   }
 
+  @Test
+  func `guidance stands down short of the IP only once the run has expired`() throws {
+    let location = makeLocation(at: shortOfIP)
+    let withinGrace = makeTarget(timeOnTarget: now.addingTimeInterval(-60))
+    let expired = makeTarget(timeOnTarget: expiredTimeOnTarget)
+
+    let stillFlying = try #require(
+      GuidanceHelper(location: location, target: withinGrace, now: now)
+    ).guidance
+    let stoodDown = try #require(
+      GuidanceHelper(location: location, target: expired, now: now)
+    ).guidance
+
+    // A minute late is a run the pilot may still be pressing; a quarter of an hour is not.
+    #expect(stillFlying != .postPass)
+    #expect(stoodDown == .postPass)
+  }
+
+  @Test
+  func `guidance stands a lapsed run down with the aircraft below the movement threshold`() throws {
+    // A fix below the threshold - on the ground, in a hold, or reporting no speed at all - is what
+    // the countdown is for, right up until there is no longer a run to count down to.
+    let location = makeLocation(at: shortOfIP, speedKnots: 0)
+    let withinGrace = makeTarget(timeOnTarget: now.addingTimeInterval(-60))
+    let expired = makeTarget(timeOnTarget: expiredTimeOnTarget)
+
+    let stillCountingDown = try #require(
+      GuidanceHelper(location: location, target: withinGrace, now: now)
+    ).guidance
+    let stoodDown = try #require(
+      GuidanceHelper(location: location, target: expired, now: now)
+    ).guidance
+
+    #expect(stillCountingDown == .countdownOnly)
+    #expect(stoodDown == .postPass)
+  }
+
+  @Test
+  func `guidance keeps the run-in past the IP however late the run has run`() throws {
+    // The pilot is still flying this one, so the expiry that stands the guidance down short of the
+    // IP must not reach it.
+    let location = makeLocation(at: postIP)
+    let target = makeTarget(timeOnTarget: expiredTimeOnTarget)
+
+    let guidance = try #require(
+      GuidanceHelper(location: location, target: target, now: now)
+    ).guidance
+
+    #expect(guidance == .toTarget)
+  }
+
   // MARK: - NextTarget pick
 
   @Test
@@ -171,8 +229,9 @@ struct `Post-Pass tests` {
     let result = PostPassResult()
     let tot = Date(timeIntervalSince1970: 1_700_000_000)
 
-    result.capture(targetName: "First", timeOnTarget: tot, now: tot.addingTimeInterval(5))
-    result.capture(targetName: "Second", timeOnTarget: tot, now: tot.addingTimeInterval(99))
+    result.recordCrossing(at: tot.addingTimeInterval(5))
+    result.capture(targetName: "First", timeOnTarget: tot)
+    result.capture(targetName: "Second", timeOnTarget: tot)
 
     let firstCapture = try #require(result.capture)
     #expect(firstCapture.targetName == "First")
@@ -181,7 +240,8 @@ struct `Post-Pass tests` {
     result.reset()
     #expect(result.capture == nil)
 
-    result.capture(targetName: "Third", timeOnTarget: tot, now: tot.addingTimeInterval(-3))
+    result.recordCrossing(at: tot.addingTimeInterval(-3))
+    result.capture(targetName: "Third", timeOnTarget: tot)
     let thirdCapture = try #require(result.capture)
     #expect(thirdCapture.targetName == "Third")
     #expect(thirdCapture.miss == Measurement(value: -3, unit: .seconds))
@@ -195,19 +255,25 @@ struct `Post-Pass tests` {
     // The aircraft crossed the target 20 s before TOT; the post-pass state is only entered once the
     // clock reaches TOT, so the miss must come from the recorded crossing — a 20 s-early pass.
     result.recordCrossing(at: tot.addingTimeInterval(-20))
-    result.capture(targetName: "T", timeOnTarget: tot, now: tot)
+    result.capture(targetName: "T", timeOnTarget: tot)
 
     #expect(result.capture?.miss == Measurement(value: -20, unit: .seconds))
+    #expect(result.capture?.crossedTarget == true)
   }
 
   @Test
-  func `PostPassResult.capture falls back to now when no crossing was recorded`() {
+  func `PostPassResult.capture reports no miss when the target was never crossed`() throws {
     let result = PostPassResult()
     let tot = Date(timeIntervalSince1970: 1_700_000_000)
 
-    result.capture(targetName: "T", timeOnTarget: tot, now: tot.addingTimeInterval(8))
+    result.capture(targetName: "T", timeOnTarget: tot)
 
-    #expect(result.capture?.miss == Measurement(value: 8, unit: .seconds))
+    // The run lapsed with the target still ahead of it. Timing that against the moment the guidance
+    // stood down would report the grace period as a pass the aircraft never flew, so there is no
+    // miss to report at all.
+    let capture = try #require(result.capture)
+    #expect(capture.miss == nil)
+    #expect(!capture.crossedTarget)
   }
 
   // MARK: - Helpers
@@ -236,8 +302,8 @@ struct `Post-Pass tests` {
     makeLocation(at: beyondTarget)
   }
 
-  private func makeLocation(at coordinate: Coordinate) -> CLLocation {
-    let speedMS = Measurement(value: 500, unit: UnitSpeed.knots)
+  private func makeLocation(at coordinate: Coordinate, speedKnots: Double = 500) -> CLLocation {
+    let speedMS = Measurement(value: speedKnots, unit: UnitSpeed.knots)
       .converted(to: .metersPerSecond).value
     return CLLocation(
       coordinate: coordinate.clCoordinate,

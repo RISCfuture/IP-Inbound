@@ -6,7 +6,9 @@ import Foundation
 /// type; ActivityKit matches a running activity to its presentation by this type, so a single shared
 /// definition is required. It lives in the app sources (not `IP Inbound Shared`) because ActivityKit
 /// is unavailable on watchOS, and the extension picks it up via explicit target membership.
-struct TOTActivityAttributes: ActivityAttributes {
+/// `Equatable` so the app can ask whether a running activity is the one it wants: the attributes are
+/// fixed when an activity is requested, so they are what says which target it was drawn for.
+struct TOTActivityAttributes: ActivityAttributes, Equatable {
   /// The name of the target being flown, fixed for the life of the activity.
   var targetName: String
 

@@ -24,6 +24,19 @@ final class FlyViewTests: BaseTestCase {
   // only route to that state at a speed well above the 30 kn movement threshold.
   private static let noCourseFix = "36.935565,-115.457402,1502,-1,62"
 
+  // The countdown fix's position flown at 62 m/s (~120 kn): on the run-in axis, ~5 NM short of the
+  // IP, and moving. Short of the IP is what the stand-down test needs — a run-in already under way
+  // keeps its guidance however late it has run.
+  private static let shortOfIPMovingFix = "36.935565,-115.457402,1502,179,62"
+
+  // `GuidanceTarget.postTOTGrace`, restated because a UI test runs in its own process and cannot
+  // import the app's modules. A run stands down this far past its time on target.
+  private static let postTOTGraceSeconds: TimeInterval = 15 * 60
+
+  // How far inside the grace the run is when the Fly screen is reached: long enough that setup
+  // navigation cannot eat it on a loaded machine, short enough to keep the test near two minutes.
+  private static let standDownMargin: TimeInterval = 90
+
   // MARK: - Helpers
 
   @discardableResult
@@ -322,6 +335,45 @@ final class FlyViewTests: BaseTestCase {
     XCTAssertNil(
       flyPage.guidanceMode,
       "A fix with no usable course has no run-in geometry to show a phase for"
+    )
+  }
+
+  // MARK: - Test 37
+
+  @MainActor
+  func testFlyView_StandsDownOnceTheRunExpires() async throws {
+    // Arrives with the run still inside its grace and then touches nothing. A run outlives the
+    // screen showing it, so nothing but the clock can end one — and the pilot who pockets the phone
+    // on this screen is exactly who the bound is for.
+    let flyPage = try await launchSeededFlythrough(
+      fix: Self.shortOfIPMovingFix,
+      secondsBeforeTOT: Self.standDownMargin - Self.postTOTGraceSeconds
+    )
+    XCTAssertTrue(flyPage.isDisplayed, "Fly screen should appear")
+
+    // Past the time on target but inside the grace, the run is still one the pilot may be pressing,
+    // so it is still steering. Asserting it here is what makes the wait below a transition rather
+    // than a state.
+    XCTAssertEqual(
+      flyPage.guidanceMode,
+      "P.POS → Target",
+      "Inside the grace a lapsed run should still be steering to the target"
+    )
+
+    let postPass = PostPassPage(app: app)
+    XCTAssertTrue(
+      postPass.waitUntilDisplayed(timeout: Self.standDownMargin + 60),
+      "The run should stand itself down once its expiry passes, with no interaction"
+    )
+    // The target was never crossed — the aircraft is still short of the IP — so the screen must
+    // report the time on target gone by, not a pass it did not fly.
+    XCTAssertTrue(
+      postPass.lapsedTitle.exists,
+      "A run that lapsed short of the target should read 'Past TOT', not 'Past Target'"
+    )
+    XCTAssertNil(
+      flyPage.guidanceMode,
+      "No steering guidance should remain once the run has stood down"
     )
   }
 }
