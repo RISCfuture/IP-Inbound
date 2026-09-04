@@ -10,6 +10,9 @@ struct WatchRootView: View {
   @Environment(WatchLocationModel.self)
   private var location
 
+  @Environment(\.scenePhase)
+  private var scenePhase
+
   var body: some View {
     Group {
       if let target = connectivity.currentTarget {
@@ -35,6 +38,14 @@ struct WatchRootView: View {
           location.start()
           BackgroundActivityHolder.shared.begin()
       }
+    }
+    // A wrist raised again is how a pilot who has just allowed location access comes back — the
+    // watch has no Settings deep link to return from. Gated on a refusal so the stream is only
+    // rebuilt where rebuilding it can help.
+    .onChange(of: scenePhase) {
+      guard scenePhase == .active, location.diagnostics.impediment?.deniesAuthorization == true
+      else { return }
+      location.retry()
     }
   }
 }

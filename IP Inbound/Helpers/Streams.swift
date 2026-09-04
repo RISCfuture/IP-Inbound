@@ -31,9 +31,18 @@ actor MulticastStream<T: Sendable, E: Error> {
     }
   }
 
+  /// Ends the broadcast and every stream vended from it.
+  ///
+  /// Cancelling the broadcast alone would leave consumers attached to a source that has stopped
+  /// producing — silent rather than finished, so a `for await` over one would suspend for the rest
+  /// of the process instead of ending. Finishing them says the elements have run out, which is what
+  /// a consumer is written to handle.
   func stop() {
     broadcastTask?.cancel()
     broadcastTask = nil
+
+    for continuation in consumers.values { continuation.finish() }
+    consumers.removeAll()
   }
 
   func consume() -> AsyncThrowingStream<T, any Error> {

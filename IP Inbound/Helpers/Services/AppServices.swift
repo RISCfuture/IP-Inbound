@@ -54,7 +54,7 @@ private struct AppServicesKey: EnvironmentKey {
 /// injects a real `AppServices`; this is only reached in previews that do not
 /// inject their own services, and during the brief window before the first
 /// `task` on the root view completes.
-private struct FallbackLocationProvider: LocationProviding {
+private final class FallbackLocationProvider: LocationProviding {
   // swiftlint:disable:next async_without_await
   func start() async {}
   // swiftlint:disable:next async_without_await
