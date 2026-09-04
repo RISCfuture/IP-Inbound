@@ -4,11 +4,11 @@ import Testing
 
 @testable import IP_Inbound
 
-@Suite("ClockProviding")
+@Suite
 @MainActor
-struct ClockProvidingTests {
-  @Test("UITestClock parses ISO-8601 and reports a stable offset")
-  func uiTestClockParsesAndOffsets() throws {
+struct `ClockProviding tests` {
+  @Test
+  func `UITestClock parses ISO-8601 and reports a stable offset`() throws {
     let target = Date(timeIntervalSince1970: 1_700_000_000)  // fixed past instant
     let iso = ISO8601DateFormatter().string(from: target)
     let info = StubProcessInfo(env: ["UITEST_NOW": iso])
@@ -24,8 +24,8 @@ struct ClockProvidingTests {
     #expect(abs(clock.dateProvider.now().timeIntervalSince(clock.now)) < 1)
   }
 
-  @Test("UITestClock parses fractional ISO-8601 and honors sub-seconds")
-  func uiTestClockFractional() throws {
+  @Test
+  func `UITestClock parses fractional ISO-8601 and honors sub-seconds`() throws {
     let raw = "2026-05-18T18:00:00.500Z"
     let info = StubProcessInfo(env: ["UITEST_NOW": raw])
     let clock = try #require(UITestClock(processInfo: info))
@@ -36,8 +36,8 @@ struct ClockProvidingTests {
     #expect(abs(clock.now.timeIntervalSinceNow - expected.timeIntervalSinceNow) < 2)
   }
 
-  @Test("UITestClock fails init when env var missing or unparseable")
-  func uiTestClockFailable() {
+  @Test
+  func `UITestClock fails init when env var missing or unparseable`() {
     #expect(UITestClock(processInfo: StubProcessInfo(env: [:])) == nil)
     #expect(UITestClock(processInfo: StubProcessInfo(env: ["UITEST_NOW": "not-a-date"])) == nil)
   }

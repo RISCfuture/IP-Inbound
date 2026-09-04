@@ -5,10 +5,10 @@ import Testing
 
 @testable import IP_Inbound
 
-@Suite("UITestLocationProvider")
-struct UITestLocationProviderTests {
-  @Test("parses a rich single fix")
-  func richFix() async throws {
+@Suite
+struct `UITestLocationProvider tests` {
+  @Test
+  func `parses a rich single fix`() async throws {
     let info = StubProcessInfo(env: ["UITEST_LOCATION": "36.87,-115.48,1502,179,257"])
     let provider = try #require(UITestLocationProvider(processInfo: info, dateProvider: .system))
     let event = try #require(await provider.currentEvent())
@@ -19,8 +19,8 @@ struct UITestLocationProviderTests {
     #expect(abs(loc.course - 179) < 1e-6)
   }
 
-  @Test("interpolates a scripted path against the clock")
-  func scriptedPath() async throws {
+  @Test
+  func `interpolates a scripted path against the clock`() async throws {
     // Controllable clock: now() reads a mutable instant so simulated time can
     // be advanced deterministically without sleeping. Test-only @unchecked
     // Sendable (single-threaded: the mutation happens-before the awaited read),
@@ -49,8 +49,8 @@ struct UITestLocationProviderTests {
     #expect(abs(loc.speed - 100) < 1e-6)
   }
 
-  @Test("fails init when neither env var is present or JSON is malformed")
-  func failable() {
+  @Test
+  func `fails init when neither env var is present or JSON is malformed`() {
     #expect(
       UITestLocationProvider(processInfo: StubProcessInfo(env: [:]), dateProvider: .system) == nil
     )

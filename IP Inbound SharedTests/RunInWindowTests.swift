@@ -3,8 +3,8 @@ import Testing
 
 @testable import IP_Inbound_Shared
 
-@Suite("Run-in window")
-struct RunInWindowTests {
+@Suite
+struct `Run-in window` {
   private let timeOnTarget = Date(timeIntervalSince1970: 1_700_000_000)
 
   /// A four-mile offset flown at 120 knots is a two-minute run-in.
@@ -27,21 +27,21 @@ struct RunInWindowTests {
     )
   }
 
-  @Test("runs from the desired IP crossing through the time on target")
-  func spansTheRunIn() throws {
+  @Test
+  func `runs from the desired IP crossing through the time on target`() throws {
     let window = try #require(target(timeOnTarget: timeOnTarget).runInWindow)
 
     #expect(window.upperBound == timeOnTarget)
     #expect(abs(window.lowerBound.timeIntervalSince(timeOnTarget) + 120) < 1)
   }
 
-  @Test("is nothing when no time on target is briefed")
-  func needsATimeOnTarget() {
+  @Test
+  func `is nothing when no time on target is briefed`() {
     #expect(target(timeOnTarget: nil).runInWindow == nil)
   }
 
-  @Test("is nothing when the run-in leg has no finite duration")
-  func rejectsAnInfiniteLeg() {
+  @Test
+  func `is nothing when the run-in leg has no finite duration`() {
     // A target with no ground speed divides to an infinite run-in, which is not a range anyone can
     // be shown — and building a `ClosedRange` from it would be a bound the Smart Stack never leaves.
     #expect(target(timeOnTarget: timeOnTarget, targetGroundSpeed: 0).runInWindow == nil)

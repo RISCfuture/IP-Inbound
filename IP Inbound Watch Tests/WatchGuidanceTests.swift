@@ -1,11 +1,12 @@
 import CoreLocation
 import Foundation
+import IP_Inbound_Shared
 import Testing
 
 @testable import IP_Inbound_Watch
 
-@Suite("Watch guidance")
-struct WatchGuidanceTests {
+@Suite
+struct `Watch guidance` {
   private func makeSnapshot() -> TargetSnapshot {
     .init(
       id: "test",
@@ -36,22 +37,22 @@ struct WatchGuidanceTests {
     )
   }
 
-  @Test("a snapshot survives the WatchConnectivity round trip")
-  func payloadRoundTrip() throws {
+  @Test
+  func `a snapshot survives the WatchConnectivity round trip`() throws {
     let snapshot = makeSnapshot()
     let context = WatchTargetPayload.context(for: snapshot)
     let decoded = try #require(WatchTargetPayload.snapshot(from: context))
     #expect(decoded == snapshot)
   }
 
-  @Test("an empty payload clears the target")
-  func emptyPayloadIsNil() {
+  @Test
+  func `an empty payload clears the target`() {
     let context = WatchTargetPayload.context(for: nil)
     #expect(WatchTargetPayload.snapshot(from: context) == nil)
   }
 
-  @Test("ground speed shows the countdown; airborne speed shows the CDI")
-  func isMovingThreshold() throws {
+  @Test
+  func `ground speed shows the countdown; airborne speed shows the CDI`() throws {
     let snapshot = makeSnapshot()
     let taxiing = try #require(
       GuidanceHelper(location: location(speedKnots: 5), target: snapshot, now: .now)

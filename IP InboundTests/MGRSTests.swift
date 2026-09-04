@@ -6,11 +6,11 @@ import Testing
 @testable import IP_Inbound
 @testable import IP_Inbound_Shared
 
-@Suite("MGRS")
-struct MGRSTests {
+@Suite
+struct `MGRS tests` {
 
-  @Test("Coordinate to MGRS conversion")
-  func coordinateToMGRS() throws {
+  @Test
+  func `Coordinate to MGRS conversion`() throws {
     // Test known coordinate conversions
     let testCases: [(lat: Double, lon: Double, expectedPrefix: String)] = [
       // Washington DC area
@@ -36,8 +36,8 @@ struct MGRSTests {
     }
   }
 
-  @Test("MGRS to coordinate parsing")
-  func mgrsToCoordinate() throws {
+  @Test
+  func `MGRS to coordinate parsing`() throws {
     // Test parsing various MGRS formats
     // Note: These are real MGRS strings with their actual parsed coordinates
     let testCases: [(mgrs: String, expectedLat: Double, expectedLon: Double, tolerance: Double)] = [
@@ -77,8 +77,8 @@ struct MGRSTests {
     }
   }
 
-  @Test("MGRS precision levels")
-  func mgrsPrecisionLevels() throws {
+  @Test
+  func `MGRS precision levels`() throws {
     let coordinate = Coordinate(latitude: 38.8977, longitude: -77.0365)
 
     let precisionTests: [(precision: MGRSHelper.Precision, expectedLength: Int)] = [
