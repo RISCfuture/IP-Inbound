@@ -1,4 +1,4 @@
-import Foundation
+public import Foundation
 import MeasurementKit
 
 /// Where the aircraft lies relative to the run-in course, in the terms a course deviation indicator

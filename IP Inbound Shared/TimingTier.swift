@@ -1,5 +1,5 @@
 import MeasurementKit
-import SwiftUI
+public import SwiftUI
 
 /// How early or late an arrival is tracking against its time-on-target, paired with the readout color
 /// and direction icon. Shared by the Fly timing display, the post-pass verdict, and the watch CDI so a

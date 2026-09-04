@@ -1,5 +1,5 @@
-import CoreLocation
-import Defaults
+public import CoreLocation
+public import Defaults
 import Foundation
 
 enum DisplayMode: String, Defaults.Serializable {
