@@ -56,7 +56,7 @@ extension TimeZoneHelper {
   /// error — the device being offline, a dropped connection, a MapKit service hiccup, or
   /// task cancellation — that our best-effort time-zone lookup already handles by falling
   /// back to `nil`. Reporting those only produces noise, so we drop them here.
-  private static func reportUnexpected(_ error: Error) {
+  private static func reportUnexpected(_ error: any Error) {
     guard !isExpectedGeocodingError(error) else { return }
     SentrySDK.capture(error: error) { scope in
       scope.setLevel(.warning)
@@ -64,7 +64,7 @@ extension TimeZoneHelper {
     }
   }
 
-  private static func isExpectedGeocodingError(_ error: Error) -> Bool {
+  private static func isExpectedGeocodingError(_ error: any Error) -> Bool {
     if error is CancellationError { return true }
 
     let nsError = error as NSError

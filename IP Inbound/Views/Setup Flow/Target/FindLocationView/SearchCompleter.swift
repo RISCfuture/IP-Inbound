@@ -5,7 +5,7 @@ import Observation
 @Observable
 class SearchCompleter: NSObject, @preconcurrency MKLocalSearchCompleterDelegate {
   private(set) var suggestions: [MKLocalSearchCompletion] = []
-  private(set) var error: Error?
+  private(set) var error: (any Error)?
 
   private let completer: MKLocalSearchCompleter = {
     let completer = MKLocalSearchCompleter()
@@ -29,7 +29,7 @@ class SearchCompleter: NSObject, @preconcurrency MKLocalSearchCompleterDelegate 
     error = nil
   }
 
-  func completer(_: MKLocalSearchCompleter, didFailWithError error: Error) {
+  func completer(_: MKLocalSearchCompleter, didFailWithError error: any Error) {
     suggestions = []
     self.error = error
   }

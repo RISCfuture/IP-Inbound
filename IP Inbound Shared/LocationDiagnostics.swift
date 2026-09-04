@@ -1,4 +1,4 @@
-import CoreLocation
+public import CoreLocation
 
 /// Why Core Location is not delivering a usable fix, as reported alongside each `CLLocationUpdate`.
 ///

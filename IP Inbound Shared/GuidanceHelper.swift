@@ -1,5 +1,5 @@
-import CoreLocation
-import Foundation
+public import CoreLocation
+public import Foundation
 import MeasurementKit
 import MeasurementKitLocation
 

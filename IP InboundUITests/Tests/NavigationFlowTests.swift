@@ -6,6 +6,7 @@ import XCTest
 final class NavigationFlowTests: BaseTestCase {
 
   // Wait for fly view content (countdown mode expected in test environment)
+  @MainActor
   private func waitForFlyContent(timeout: TimeInterval = 15) -> Bool {
     let guidanceMsg = app.staticTexts["Guidance begins once aircraft is moving."]
     if guidanceMsg.waitForExistence(timeout: timeout) { return true }
@@ -20,6 +21,7 @@ final class NavigationFlowTests: BaseTestCase {
   // Target — the sidebar stays visible. Re-selecting the same cell on iPad
   // does not reset the detail (SetupFlowView is `.id`-bound to the target),
   // so the test has to drive this back-traversal explicitly.
+  @MainActor
   private func navigateBackFromFly() {
     // Use `targetNameField` (only present on the root TargetSetupView, not on
     // TOT/IP/Fly) so the back loop doesn't stop early. `defineIPButton` also
@@ -40,6 +42,7 @@ final class NavigationFlowTests: BaseTestCase {
 
   // MARK: - Test 24
 
+  @MainActor
   func testForwardNavigationFlow() async throws {
     await launchApp()
     let list = TargetListPage(app: app)
@@ -66,6 +69,7 @@ final class NavigationFlowTests: BaseTestCase {
   // Polls a text field's `value` — re-querying each tick — until it equals `expectedValue`. Avoids
   // both fixed settle sleeps and the stale-snapshot pitfalls of `XCTNSPredicateExpectation` bound
   // to an element captured mid-navigation-transition.
+  @MainActor
   private func waitForFieldValue(
     _ field: @autoclosure () -> XCUIElement,
     equals expectedValue: String,
@@ -81,6 +85,7 @@ final class NavigationFlowTests: BaseTestCase {
 
   // MARK: - Test 25
 
+  @MainActor
   func testBackNavigationFlow() async throws {
     await launchApp()
     let list = TargetListPage(app: app)
@@ -143,6 +148,7 @@ final class NavigationFlowTests: BaseTestCase {
   // Verifies the post-auto-advance contract: re-selecting an already-configured target from the list
   // lands on the setup flow (Define Target), not the fly view. Auto-advance to fly was removed; only
   // the post-pass “Fly <target>” shortcut jumps straight to fly.
+  @MainActor
   func testConfiguredTargetLandsOnSetup() async throws {
     await launchApp()
     let list = TargetListPage(app: app)
@@ -191,6 +197,7 @@ final class NavigationFlowTests: BaseTestCase {
 
   // MARK: - Test 27
 
+  @MainActor
   func testNewTargetLandsOnSetup() async throws {
     await launchApp()
     let list = TargetListPage(app: app)
@@ -215,6 +222,7 @@ final class NavigationFlowTests: BaseTestCase {
 
   // MARK: - Test 28
 
+  @MainActor
   func testNavigateBackFromFlyAllowsReconfig() async throws {
     await launchApp()
     let list = TargetListPage(app: app)

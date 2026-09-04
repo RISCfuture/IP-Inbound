@@ -1,6 +1,6 @@
-import Foundation
+public import Foundation
 import MeasurementKit
-import MeasurementKitLocation
+public import MeasurementKitLocation
 
 /// A run-in offset bearing in whichever datum the pilot entered it in.
 ///

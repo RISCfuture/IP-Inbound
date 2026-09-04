@@ -1,7 +1,7 @@
-import CoreLocation
-import Foundation
+public import CoreLocation
+public import Foundation
 import MeasurementKit
-import MeasurementKitLocation
+public import MeasurementKitLocation
 
 /// The run-in geometry a single fix produces against a target: where the aircraft sits relative to
 /// the initial point and the target, when it will reach each, and how far it lies off the run-in

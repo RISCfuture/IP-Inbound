@@ -1,8 +1,8 @@
 import CoreLocation
-import Defaults
-import Foundation
+public import Defaults
+public import Foundation
 import IP_Inbound_Shared
-import MeasurementKitLocation
+public import MeasurementKitLocation
 import SwiftGeographic
 
 // MARK: - Coordinate Format

@@ -1,6 +1,6 @@
 import Foundation
 import MeasurementKit
-import MeasurementKitLocation
+public import MeasurementKitLocation
 
 extension Coordinate {
   /// The latitude in degrees.

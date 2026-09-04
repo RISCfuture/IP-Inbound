@@ -1,6 +1,7 @@
 import IP_Inbound_Shared
 import MapKit
 import MeasurementKitLocation
+import SwiftData
 import SwiftUI
 
 struct TargetSetupMap: View {

@@ -6,6 +6,7 @@ import XCUITestKit
 
 final class HarnessFlythroughTests: BaseTestCase {
 
+  @MainActor
   func testScriptedFlythroughShowsMovingGuidance() async throws {
     // TOT = 18:00:00Z; pin "now" to TOT − 30 s so the aircraft is inbound and behind its planned
     // time from the first fix, which is what puts a timing readout on screen straight away.

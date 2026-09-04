@@ -1,6 +1,6 @@
-import Foundation
+public import Foundation
 import MeasurementKit
-import MeasurementKitLocation
+public import MeasurementKitLocation
 
 /// Distances read to a tenth, the resolution the run-in is flown to.
 let distanceNumberFormatStyle = FloatingPointFormatStyle<Double>.number.rounded(

@@ -1,6 +1,7 @@
 // swiftlint:disable force_try
 
 import CoreLocation
+import MeasurementKitLocation
 import SwiftData
 
 final class PreviewHelper {

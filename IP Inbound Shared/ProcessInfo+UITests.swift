@@ -1,4 +1,4 @@
-import Foundation
+public import Foundation
 
 extension ProcessInfo {
   /// MapKit and CoreLocation live updates keep the app from signalling idle to

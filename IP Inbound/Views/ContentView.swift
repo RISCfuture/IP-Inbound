@@ -40,7 +40,7 @@ struct ContentView: View {
 
   private func errorMessage(for error: any Error) -> String {
     var parts = [error.localizedDescription]
-    if let error = error as? LocalizedError {
+    if let error = error as? any LocalizedError {
       parts.append(contentsOf: [error.failureReason, error.recoverySuggestion].compactMap(\.self))
     }
     return parts.joined(separator: "\n\n")

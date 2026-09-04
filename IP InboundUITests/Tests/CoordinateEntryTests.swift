@@ -6,6 +6,7 @@ final class CoordinateEntryTests: BaseTestCase {
 
   // MARK: - Test 7
 
+  @MainActor
   func testCoordinateEntry_DecimalDegrees() async throws {
     await launchApp()
 
@@ -33,6 +34,7 @@ final class CoordinateEntryTests: BaseTestCase {
 
   // MARK: - Test 8
 
+  @MainActor
   func testCoordinateEntry_DegreesMinutesSeconds() async throws {
     await launchApp()
 
@@ -63,6 +65,7 @@ final class CoordinateEntryTests: BaseTestCase {
 
   // MARK: - Test 9
 
+  @MainActor
   func testCoordinateEntry_DegreesDecimalMinutes() async throws {
     await launchApp()
 
@@ -93,6 +96,7 @@ final class CoordinateEntryTests: BaseTestCase {
 
   // MARK: - Test 10
 
+  @MainActor
   func testCoordinateEntry_UTM() async throws {
     await launchApp()
 
@@ -113,6 +117,7 @@ final class CoordinateEntryTests: BaseTestCase {
 
   // MARK: - Test 11
 
+  @MainActor
   func testCoordinateEntry_MGRS() async throws {
     await launchApp()
 
@@ -137,6 +142,7 @@ final class CoordinateEntryTests: BaseTestCase {
 
   // MARK: - Test 12
 
+  @MainActor
   func testCoordinateEntry_SouthEastHemisphere() async throws {
     await launchApp()
 
@@ -164,6 +170,7 @@ final class CoordinateEntryTests: BaseTestCase {
 
   // MARK: - Test 13
 
+  @MainActor
   func testCoordinateDisplay_TapCyclesFormat() async throws {
     await launchApp()
 
@@ -216,6 +223,7 @@ final class CoordinateEntryTests: BaseTestCase {
   // Waits until the displayed coordinates label differs from `previous`
   // (e.g. after a format-cycle tap) and returns the new value. Returns the
   // last observed value if it never changes within the timeout.
+  @MainActor
   private func waitForCoordinatesLabelToChange(
     from previous: String,
     on page: TargetSetupPage,
@@ -230,6 +238,7 @@ final class CoordinateEntryTests: BaseTestCase {
     return page.coordinatesLabel()
   }
 
+  @MainActor
   private func navigateToListAndDelete(_ name: String) {
     let setup = TargetSetupPage(app: app)
     if !isIPad {

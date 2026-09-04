@@ -8,7 +8,7 @@ import Observation
 struct LocationEvent: Sendable {
   let location: CLLocation?
   let simName: String?
-  let error: Error?
+  let error: (any Error)?
 
   /// Why Core Location is withholding a usable fix. `.clean` for a simulator feed, which Core
   /// Location does not gate.
@@ -29,7 +29,7 @@ struct LocationEvent: Sendable {
   init(
     location: CLLocation? = nil,
     simName: String? = nil,
-    error: Error? = nil,
+    error: (any Error)? = nil,
     diagnostics: LocationDiagnostics = .clean
   ) {
     self.location = location
