@@ -32,10 +32,10 @@ struct WatchRootView: View {
           // Location made, a session has already been rejoined that this must not tear down.
           break
         case .none:
-          location.stop()
+          location.stop(.screen)
           BackgroundActivityHolder.shared.end()
         case .flying:
-          location.start()
+          location.start(.screen)
           BackgroundActivityHolder.shared.begin()
       }
     }

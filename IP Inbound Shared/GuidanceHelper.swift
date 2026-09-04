@@ -59,6 +59,9 @@ public struct GuidanceHelper<T: GuidanceTarget> {
   /// Whether the planned time-on-target has elapsed.
   public var isAfterTOT: Bool { math.isAfterTOT }
 
+  /// Whether the run has outlived its time-on-target by more than the plan allows.
+  public var isRunExpired: Bool { math.isRunExpired }
+
   /// How far the projected IP crossing falls from the time the plan wants it, negative when early.
   public var ipDeltaTime: Measurement<UnitDuration> { math.IPDeltaTime ?? .zero }
 
@@ -88,7 +91,14 @@ public struct GuidanceHelper<T: GuidanceTarget> {
     if isPastTarget, isAfterTOT { return .postPass }
 
     // After IP - show IP to target guidance with CDI cross-track deviation and relative time indicator
+    // A run-in already under way is the pilot's to finish however late it has run, so this stands
+    // ahead of the expiry below.
     if isPastIP { return .toTarget }
+
+    // Short of the IP with the tasking lapsed - every route to the target is later than the plan
+    // tolerates, and steering one would dress a dead tasking up as a live one. The pass reads as
+    // flown, which against the plan it is.
+    if isRunExpired { return .postPass }
 
     // Prior to IP - determine guidance mode based on timing
     guard math.IPDeltaTime != nil, target.timeOnTarget != nil else {

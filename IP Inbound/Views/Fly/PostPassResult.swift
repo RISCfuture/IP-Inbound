@@ -17,7 +17,11 @@ final class PostPassResult {
   func capture(targetName: String, timeOnTarget: Date, now: Date) {
     guard capture == nil else { return }
     let crossing = crossingTime ?? now
-    capture = .init(targetName: targetName, miss: crossing.elapsed(since: timeOnTarget))
+    capture = .init(
+      targetName: targetName,
+      miss: crossing.elapsed(since: timeOnTarget),
+      crossedTarget: crossingTime != nil
+    )
   }
 
   func reset() {
@@ -30,6 +34,11 @@ final class PostPassResult {
 
     /// How far the crossing fell from the planned time-on-target: positive late, negative early.
     let miss: Measurement<UnitDuration>
+
+    /// Whether the aircraft actually crossed the target, as opposed to the run lapsing with the
+    /// target still ahead of it. The two are different results and read differently: one is a pass
+    /// flown, the other a pass that never happened.
+    let crossedTarget: Bool
   }
 }
 
