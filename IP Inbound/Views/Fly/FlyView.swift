@@ -16,13 +16,24 @@ struct FlyView: View {
 
   @State private var postPassResult = PostPassResult()
 
+  /// The phase the last fix put the aircraft in, fed back so the early-arrival threshold can hold its
+  /// ground against a lead hovering at the boundary.
+  @State private var previousGuidance: Guidance?
+
   var body: some View {
     NeedsLocationView { location, event in
       // A fix carrying no usable ground speed or course has no run-in geometry to solve, so the
       // guidance falls back to the countdown until one arrives. Its readouts are drawn from the
       // position and the target, which every fix supplies.
       let math = IPTargetMath(location: location, target: target, now: services.clock.now)
-      let guidanceHelper = math.map { GuidanceHelper(math: $0, location: location, target: target) }
+      let guidanceHelper = math.map {
+        GuidanceHelper(
+          math: $0,
+          location: location,
+          target: target,
+          previousGuidance: previousGuidance
+        )
+      }
       let guidance = guidanceHelper?.guidance ?? .countdownOnly
       let isPastTarget = guidanceHelper?.isPastTarget ?? false
       let runIn = math.flatMap(RunInSnapshot.init(math:))
@@ -56,6 +67,7 @@ struct FlyView: View {
         if isPastTarget { postPassResult.recordCrossing(at: services.clock.now) }
       }
       .onChange(of: guidance, initial: true) {
+        previousGuidance = guidance
         capturePostPassIfNeeded(guidance: guidance)
       }
       // `RunInSnapshot` is rounded to the precision the Lock Screen shows, so this fires when the

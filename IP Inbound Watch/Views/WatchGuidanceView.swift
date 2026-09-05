@@ -81,23 +81,44 @@ private struct WatchLocationUnavailableView: View {
   }
 }
 
-/// Chooses between the airborne indicator and the countdown for a fix, and hands the indicator the
-/// run-in geometry and the deviation its phase calls for. A fix carrying no usable ground speed or
-/// course has no geometry to solve, so the countdown stands until one arrives.
+/// Chooses between the airborne indicator and the countdown for a fix from the phase of the run it
+/// puts the aircraft in, and hands the indicator the run-in geometry and the deviation that phase
+/// calls for. The countdown stands wherever there is no run-in left to steer: on the ground, once the
+/// pass is flown, and for a fix carrying no usable ground speed or course, which has no geometry to
+/// solve at all.
 private struct WatchLocatedGuidance: View {
   var location: CLLocation
   var target: TargetSnapshot
 
+  @State private var previousGuidance: Guidance?
+
   var body: some View {
-    if let math = IPTargetMath(location: location, target: target, now: Date()) {
-      let helper = GuidanceHelper(math: math, location: location, target: target)
-      if helper.isMoving {
-        WatchCDIView(math: math, deviation: helper.courseDeviation)
+    let math = IPTargetMath(location: location, target: target, now: Date())
+    let helper = math.map {
+      GuidanceHelper(
+        math: $0,
+        location: location,
+        target: target,
+        previousGuidance: previousGuidance
+      )
+    }
+    let guidance = helper?.guidance ?? .countdownOnly
+
+    Group {
+      if let math, steersRunIn(guidance) {
+        WatchCDIView(math: math, deviation: helper?.courseDeviation)
       } else {
-        WatchCountdownView(target: target)
+        WatchCountdownView(target: target, guidance: guidance)
       }
-    } else {
-      WatchCountdownView(target: target)
+    }
+    .onChange(of: guidance, initial: true) { previousGuidance = guidance }
+  }
+
+  /// Whether `guidance` has a run-in to steer, and so something for the indicator to draw.
+  private func steersRunIn(_ guidance: Guidance) -> Bool {
+    switch guidance {
+      case .toIPWithSpeedGuidance, .toIPWithCountdown, .toTarget, .toTargetBypassingIP: true
+      case .countdownOnly, .postPass: false
     }
   }
 }
