@@ -58,9 +58,13 @@ struct IP_InboundApp: App {
       }
       // Frontmost with no Fly screen showing means a session `@main` rejoined belongs to a run that
       // is over, as does the record a force-quit or a crash left behind. A run still being flown
-      // claimed its session when `FlyView` appeared, and is left alone.
+      // claimed its session when `FlyView` appeared, and is left alone. A countdown armed for a
+      // brief nobody flew belongs to no run at all, so it is swept on the same footing.
       .onChange(of: scenePhase, initial: true) {
-        if scenePhase == .active { RunController.shared.endUnclaimedRun() }
+        if scenePhase == .active {
+          RunController.shared.endUnclaimedRun()
+          LiveActivityController.shared.sweepExpiredCountdowns(at: Date())
+        }
       }
     }.modelContainer(modelContainer)
   }

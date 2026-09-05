@@ -8,6 +8,13 @@ struct TOTSetupView: View {
   private static let timeAdvancePast = Measurement(value: 5, unit: UnitDuration.minutes)
   private static let contentSpacing = 20.0
 
+  /// How long the entry has to settle before the countdown is armed for it.
+  ///
+  /// The keypad writes the time on target on every keystroke, so a brief typed in full walks through
+  /// half a dozen times the pilot never meant. Waiting out a pause spares the system that many
+  /// cancel-and-reschedule rounds and arms the time they stopped at.
+  private static let armingDelay = Measurement(value: 1.5, unit: UnitDuration.seconds)
+
   @Bindable var target: Target
 
   @Environment(\.services)
@@ -51,6 +58,15 @@ struct TOTSetupView: View {
       }.padding(.horizontal)
     }
     .onAppear(perform: seedTimeOnTargetIfNeeded)
+    // Arming here rather than on the way out is what makes the feature work for the pilot it is for:
+    // a phone pocketed straight off this screen never fires `onDisappear`, and a target deleted
+    // while it is showing would fire one against a model already gone.
+    .task(id: target.timeOnTarget) { await armCountdown() }
+  }
+
+  private func armCountdown() async {
+    guard (try? await Task.sleep(for: Self.armingDelay.duration)) != nil else { return }
+    LiveActivityController.shared.arm(target, at: services.clock.now)
   }
 
   private func seedTimeOnTargetIfNeeded() {
