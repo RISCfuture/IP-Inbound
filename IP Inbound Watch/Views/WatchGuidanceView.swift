@@ -2,8 +2,8 @@ import CoreLocation
 import IP_Inbound_Shared
 import SwiftUI
 
-/// Drives run-in guidance for the flown target from the watch's own GPS: a countdown while on the
-/// ground, a course-deviation indicator once moving. Gates on location availability.
+/// Drives run-in guidance for the flown target from the watch's own GPS, drawing whichever screen
+/// the phase of the run calls for. Gates on location availability.
 struct WatchGuidanceView: View {
   var target: TargetSnapshot
 
@@ -81,23 +81,52 @@ private struct WatchLocationUnavailableView: View {
   }
 }
 
-/// Chooses between the airborne indicator and the countdown for a fix, and hands the indicator the
-/// run-in geometry and the deviation its phase calls for. A fix carrying no usable ground speed or
-/// course has no geometry to solve, so the countdown stands until one arrives.
+/// Chooses between the airborne indicator and the countdown for a fix from the phase of the run it
+/// puts the aircraft in, and hands the indicator the run-in geometry and the deviation that phase
+/// calls for. The countdown stands wherever there is no run-in left to steer: on the ground, once the
+/// pass is flown, and for a fix carrying no usable ground speed or course, which has no geometry to
+/// solve at all.
 private struct WatchLocatedGuidance: View {
   var location: CLLocation
   var target: TargetSnapshot
 
+  /// The phase the last fix with geometry to solve put the aircraft in. A fix carrying no usable
+  /// ground speed or course leaves it standing: it says nothing about where the run has got to, and
+  /// letting it read as the on-ground countdown would drop a hold-off already under way.
+  @State private var previousGuidance: Guidance?
+
   var body: some View {
-    if let math = IPTargetMath(location: location, target: target, now: Date()) {
-      let helper = GuidanceHelper(math: math, location: location, target: target)
-      if helper.isMoving {
-        WatchCDIView(math: math, deviation: helper.courseDeviation)
+    let math = IPTargetMath(location: location, target: target, now: Date())
+    let helper = math.map {
+      GuidanceHelper(
+        math: $0,
+        location: location,
+        target: target,
+        previousGuidance: previousGuidance
+      )
+    }
+    let solvedGuidance = helper?.guidance
+    let guidance = solvedGuidance ?? .countdownOnly
+
+    Group {
+      if let math, steersRunIn(guidance) {
+        WatchCDIView(math: math, deviation: helper?.courseDeviation)
       } else {
-        WatchCountdownView(target: target)
+        WatchCountdownView(target: target, guidance: guidance)
       }
-    } else {
-      WatchCountdownView(target: target)
+    }
+    // Only a fix that solved has a phase to carry forward: the countdown a bare fix falls back to
+    // is what the screen shows, not a reading of the run.
+    .onChange(of: solvedGuidance, initial: true) {
+      if let solvedGuidance { previousGuidance = solvedGuidance }
+    }
+  }
+
+  /// Whether `guidance` has a run-in to steer, and so something for the indicator to draw.
+  private func steersRunIn(_ guidance: Guidance) -> Bool {
+    switch guidance {
+      case .toIPWithSpeedGuidance, .toIPWithCountdown, .toTarget, .toTargetBypassingIP: true
+      case .countdownOnly, .postPass: false
     }
   }
 }
