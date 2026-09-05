@@ -16,7 +16,11 @@ struct WatchRootView: View {
   var body: some View {
     Group {
       if let target = connectivity.currentTarget {
+        // A run's screen belongs to its target. Without this the guidance keeps its identity across
+        // a change of target sent from the phone, and with it the phase it carries from fix to fix —
+        // so the new run's first fix would be judged against a hold-off the old run was in.
         WatchGuidanceView(target: target)
+          .id(target.id)
       } else {
         WatchPlaceholderView()
       }

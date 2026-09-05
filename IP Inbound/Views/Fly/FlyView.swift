@@ -16,6 +16,12 @@ struct FlyView: View {
 
   @State private var postPassResult = PostPassResult()
 
+  /// The phase the last fix with geometry to solve put the aircraft in, fed back so the early-arrival
+  /// threshold can hold its ground against a lead hovering at the boundary. A fix carrying no usable
+  /// ground speed or course leaves it standing: it says nothing about where the run has got to, and
+  /// letting it read as the on-ground countdown would drop a hold-off already under way.
+  @State private var previousGuidance: Guidance?
+
   /// The phase for a fix there is no run-in geometry to solve from. The countdown stands until the
   /// tasking lapses, which needs no geometry to judge — and leaving a lapsed run counting down would
   /// hold the screen on a run everything else has already stood down.
@@ -29,8 +35,16 @@ struct FlyView: View {
       // guidance falls back to the countdown until one arrives. Its readouts are drawn from the
       // position and the target, which every fix supplies.
       let math = IPTargetMath(location: location, target: target, now: services.clock.now)
-      let guidanceHelper = math.map { GuidanceHelper(math: $0, location: location, target: target) }
-      let guidance = guidanceHelper?.guidance ?? guidanceWithoutGeometry
+      let guidanceHelper = math.map {
+        GuidanceHelper(
+          math: $0,
+          location: location,
+          target: target,
+          previousGuidance: previousGuidance
+        )
+      }
+      let solvedGuidance = guidanceHelper?.guidance
+      let guidance = solvedGuidance ?? guidanceWithoutGeometry
       let isPastTarget = guidanceHelper?.isPastTarget ?? false
       let runIn = math.flatMap(RunInSnapshot.init(math:))
 
@@ -61,6 +75,11 @@ struct FlyView: View {
       }
       .onChange(of: isPastTarget, initial: true) {
         if isPastTarget { postPassResult.recordCrossing(at: services.clock.now) }
+      }
+      // Only a fix that solved has a phase to carry forward: the countdown a bare fix falls back to
+      // is what the screen shows, not a reading of the run.
+      .onChange(of: solvedGuidance, initial: true) {
+        if let solvedGuidance { previousGuidance = solvedGuidance }
       }
       .onChange(of: guidance, initial: true) {
         capturePostPassIfNeeded(guidance: guidance)
