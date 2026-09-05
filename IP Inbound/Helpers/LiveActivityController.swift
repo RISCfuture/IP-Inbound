@@ -137,7 +137,7 @@ final class LiveActivityController {
     let content = Self.content(timeOnTarget: timeOnTarget)
 
     enqueue {
-      await self.disarmActivities(for: targetID)
+      await self.cancelArmed(for: targetID)
       await self.startOrUpdate(attributes: attributes, content: content)
     }
   }
@@ -160,10 +160,10 @@ final class LiveActivityController {
   /// itself `armingLeadTime` ahead of the time on target. A pilot who briefs a run and pockets the
   /// phone through taxi and transit gets the countdown without ever reopening the app.
   ///
-  /// A scheduled activity cannot be rescheduled, so this cancels whatever was armed and asks again;
-  /// the armed target is whichever one was briefed last. It stands aside for a run already
-  /// outstanding, whose countdown is on the Lock Screen already and carries the run-in figures this
-  /// one could not.
+  /// A scheduled activity cannot be rescheduled, so this cancels whatever countdown was standing and
+  /// asks again; the armed target is whichever one was briefed last. It stands aside for a run
+  /// already outstanding, whose countdown is on the Lock Screen already and carries the run-in
+  /// figures this one could not.
   ///
   /// - Parameters:
   ///   - target: the target to arm the countdown for.
@@ -181,8 +181,7 @@ final class LiveActivityController {
     let alertConfiguration = Self.alertConfiguration(for: target)
 
     enqueue {
-      await self.end(Self.isArmed)
-      self.requestArmed(
+      await self.armOrAdopt(
         attributes: attributes,
         content: content,
         alertConfiguration: alertConfiguration,
@@ -191,9 +190,13 @@ final class LiveActivityController {
     }
   }
 
-  /// Cancels the countdown armed for one target, which is no longer there to fly.
+  /// Cancels every countdown for one target, whichever life it is in: the target has been deleted,
+  /// and nothing should still be counting down to a run that cannot be flown.
+  ///
+  /// Wider than the cancelling ``update(flying:)`` does, which spares a countdown that has already
+  /// started so the run can adopt it. There is no run to adopt this one.
   func disarm(targetID: String) {
-    enqueue { await self.disarmActivities(for: targetID) }
+    enqueue { await self.end { $0.attributes.targetID == targetID } }
   }
 
   /// Takes down a countdown nobody flew.
@@ -252,6 +255,35 @@ final class LiveActivityController {
     await updateLiveActivities(content)
   }
 
+  /// Puts the briefed target's countdown up, or brings up to date the one already showing it.
+  ///
+  /// Briefing is not a one-shot: the pilot walks back to the Time on Target screen and the arming
+  /// runs again. By then the countdown armed on the first visit may have reached its start date and
+  /// be on the Lock Screen — and a countdown that has started is no longer armed, so cancelling only
+  /// what is armed would leave it standing and ask for a second one beside it.
+  ///
+  /// Nothing here belongs to a run — ``arm(_:at:)`` stands aside for one — so a countdown drawn for
+  /// some other target is one no brief still wants, and goes.
+  private func armOrAdopt(
+    attributes: TOTActivityAttributes,
+    content: ActivityContent<TOTActivityAttributes.ContentState>,
+    alertConfiguration: AlertConfiguration,
+    plan: ArmPlan
+  ) async {
+    guard !liveActivities.contains(where: { $0.attributes == attributes }) else {
+      await updateLiveActivities(content)
+      return
+    }
+
+    await end { _ in true }
+    requestArmed(
+      attributes: attributes,
+      content: content,
+      alertConfiguration: alertConfiguration,
+      plan: plan
+    )
+  }
+
   private func requestArmed(
     attributes: TOTActivityAttributes,
     content: ActivityContent<TOTActivityAttributes.ContentState>,
@@ -277,7 +309,9 @@ final class LiveActivityController {
     }
   }
 
-  private func disarmActivities(for targetID: String) async {
+  /// Cancels what is still waiting to start for one target, leaving a countdown that has already
+  /// started for ``startOrUpdate(attributes:content:)`` to adopt.
+  private func cancelArmed(for targetID: String) async {
     await end { Self.isArmed($0) && $0.attributes.targetID == targetID }
   }
 
