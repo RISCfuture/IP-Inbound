@@ -14,8 +14,8 @@ import Sentry
 /// no background updates are needed to keep it running.
 ///
 /// An armed countdown is an `Activity` like any other and sits in the same collection, so nothing
-/// here reads that collection whole: every operation is scoped by ``isLive(_:)`` or ``isArmed(_:)``
-/// to the life it belongs to. A run ending must not quietly cancel a countdown armed for the next
+/// here reads that collection whole: every operation is scoped by activity state to the life it
+/// belongs to. A run ending must not quietly cancel a countdown armed for the next
 /// one, and a fix pushed for the run being flown must not overwrite one armed for a target the
 /// aircraft is nowhere near.
 @MainActor
@@ -58,7 +58,7 @@ final class LiveActivityController {
   /// date. A stale countdown still counts: it is on the Lock Screen, and is the app's to update and
   /// to take down.
   ///
-  /// Isolated to no actor, along with ``isArmed(_:)``, because an `Activity` handed to a main-actor
+  /// Isolated to no actor, along with `isArmed(_:)`, because an `Activity` handed to a main-actor
   /// function joins the main actor's region and can no longer be sent to the ending and updating
   /// calls that follow.
   nonisolated private static func isLive(_ activity: Activity<TOTActivityAttributes>) -> Bool {
@@ -157,7 +157,7 @@ final class LiveActivityController {
   }
 
   /// Arms the countdown for a target the pilot has just briefed, so it reaches the Lock Screen by
-  /// itself ``armingLeadTime`` ahead of the time on target. A pilot who briefs a run and pockets the
+  /// itself `armingLeadTime` ahead of the time on target. A pilot who briefs a run and pockets the
   /// phone through taxi and transit gets the countdown without ever reopening the app.
   ///
   /// A scheduled activity cannot be rescheduled, so this cancels whatever was armed and asks again;
