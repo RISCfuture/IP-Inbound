@@ -210,6 +210,7 @@ final class RunController {
   /// spend a metered transfer and dismiss a Lock Screen countdown only to request it again.
   private func raiseRun(flying target: Target) {
     UIApplication.shared.isIdleTimerDisabled = true
+    endSupersededRun(flying: target)
     BackgroundActivityHolder.shared.begin(targetID: target.id)
     WatchSessionController.shared.update(flying: target)
     LiveActivityController.shared.update(flying: target)
@@ -229,9 +230,26 @@ final class RunController {
     UIApplication.shared.isIdleTimerDisabled = false
 
     guard BackgroundActivityHolder.shared.isRunOutstanding else { return }
+    // Read before the holder forgets it: the Lock Screen countdown comes down by the target it was
+    // drawn for, so one armed for a target this run was not flying is left standing.
+    let flownTargetID = BackgroundActivityHolder.shared.runTargetID
     BackgroundActivityHolder.shared.end()
     WatchSessionController.shared.update(flying: nil)
-    LiveActivityController.shared.update(flying: nil)
+    LiveActivityController.shared.endRun(flying: flownTargetID)
+  }
+
+  /// Takes down the Lock Screen countdown of the run this one is flown straight on from.
+  ///
+  /// The screen flying that run declines to end it — by the time its `onDisappear` arrives the run
+  /// belongs to the target the pilot moved on to — so its countdown would stand beside the new one
+  /// until the last of them expired. Only the countdown needs saying: everything else the superseded
+  /// run held is the same resource this one is about to claim from it.
+  private func endSupersededRun(flying target: Target) {
+    guard let supersededTargetID = BackgroundActivityHolder.shared.runTargetID,
+      supersededTargetID != target.id
+    else { return }
+
+    LiveActivityController.shared.endRun(flying: supersededTargetID)
   }
 
   /// Waits at the near edge of the run's window and begins the run there. A target with no
