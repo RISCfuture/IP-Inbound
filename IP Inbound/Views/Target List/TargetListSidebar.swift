@@ -30,7 +30,7 @@ struct TargetListSidebar: View {
         TargetListItem(target: target)
       }.onDelete { offsets in
         for offset in offsets {
-          modelContext.delete(sortedTargets[offset])
+          delete(sortedTargets[offset])
         }
       }
     }
@@ -49,6 +49,13 @@ struct TargetListSidebar: View {
         .accessibilityIdentifier("tutorialButton")
       }
     }
+  }
+
+  /// A deleted target's identifier is read before it goes, because a countdown armed for it outlives
+  /// the model and is the app's to take down.
+  private func delete(_ target: Target) {
+    LiveActivityController.shared.disarm(targetID: target.id)
+    modelContext.delete(target)
   }
 }
 

@@ -8,10 +8,24 @@ struct TOTSetupView: View {
   private static let timeAdvancePast = Measurement(value: 5, unit: UnitDuration.minutes)
   private static let contentSpacing = 20.0
 
+  /// How long the entry has to settle before the countdown is armed for it.
+  ///
+  /// The keypad writes the time on target on every keystroke, so a brief typed in full walks through
+  /// half a dozen times the pilot never meant. Waiting out a pause spares the system that many
+  /// cancel-and-reschedule rounds and arms the time they stopped at.
+  private static let armingDelay = Measurement(value: 1.5, unit: UnitDuration.seconds)
+
   @Bindable var target: Target
 
   @Environment(\.services)
   private var services
+
+  @Environment(\.scenePhase)
+  private var scenePhase
+
+  /// The time on target the countdown standing was armed for, so that the two things that can arm
+  /// one — the entry settling, and the pilot leaving with it — cannot arm the same brief twice.
+  @State private var armedTimeOnTarget: Date?
 
   /// UI-test affordance: when the harness pins a past `UITEST_NOW` to exercise post-pass behavior,
   /// the auto-bump in ``seedTimeOnTargetIfNeeded()`` would silently overwrite the seeded TOT. This
@@ -51,6 +65,27 @@ struct TOTSetupView: View {
       }.padding(.horizontal)
     }
     .onAppear(perform: seedTimeOnTargetIfNeeded)
+    // Arming here rather than on the way out is what makes the feature work for the pilot it is for:
+    // a phone pocketed straight off this screen never fires `onDisappear`, and a target deleted
+    // while it is showing would fire one against a model already gone.
+    .task(id: target.timeOnTarget) { await armCountdownOnceSettled() }
+    // The pilot leaving settles a brief as surely as a pause does, and is the one signal that
+    // cannot wait for the delay: starting an activity is refused outside the foreground, so a brief
+    // typed and pocketed inside the settling window would otherwise arm nothing at all.
+    .onChange(of: scenePhase) {
+      if scenePhase != .active { armCountdown() }
+    }
+  }
+
+  private func armCountdownOnceSettled() async {
+    guard (try? await Task.sleep(for: Self.armingDelay.duration)) != nil else { return }
+    armCountdown()
+  }
+
+  private func armCountdown() {
+    guard armedTimeOnTarget != target.timeOnTarget else { return }
+    armedTimeOnTarget = target.timeOnTarget
+    LiveActivityController.shared.arm(target, at: services.clock.now)
   }
 
   private func seedTimeOnTargetIfNeeded() {

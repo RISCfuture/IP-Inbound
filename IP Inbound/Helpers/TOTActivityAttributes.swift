@@ -9,6 +9,14 @@ import Foundation
 /// `Equatable` so the app can ask whether a running activity is the one it wants: the attributes are
 /// fixed when an activity is requested, so they are what says which target it was drawn for.
 struct TOTActivityAttributes: ActivityAttributes, Equatable {
+  /// Which target the activity was drawn for, so a countdown armed ahead of the brief can be
+  /// cancelled when that target is deleted without disturbing one armed for any other.
+  ///
+  /// Optional so that an activity encoded before this field existed still decodes: the synthesized
+  /// decoding treats a missing key as `nil` rather than throwing, and an activity that fails to
+  /// decode is one the app can no longer see — or take down.
+  var targetID: String?
+
   /// The name of the target being flown, fixed for the life of the activity.
   var targetName: String
 

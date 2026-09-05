@@ -150,6 +150,7 @@ private struct RunInSummary: View {
 extension TOTActivityAttributes {
   fileprivate static var preview: TOTActivityAttributes {
     TOTActivityAttributes(
+      targetID: "preview",
       targetName: "Bullseye",
       ipToTargetDuration: .init(value: 120, unit: .seconds)
     )

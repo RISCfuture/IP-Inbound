@@ -59,9 +59,13 @@ struct IP_InboundApp: App {
       // Frontmost with nothing in this process flying the run means the record a force-quit or a
       // crash left behind, or a session `@main` rejoined for a run that was already over. A run
       // still being flown is left alone — by the Fly screen, or with no screen at all on the launch
-      // Core Location made.
+      // Core Location made. A countdown armed for a brief nobody flew belongs to no run at all, so
+      // it is swept on the same footing.
       .onChange(of: scenePhase, initial: true) {
-        if scenePhase == .active { RunController.shared.endUnclaimedRun() }
+        if scenePhase == .active {
+          RunController.shared.endUnclaimedRun()
+          LiveActivityController.shared.sweepExpiredCountdowns(at: Date())
+        }
       }
     }.modelContainer(modelContainer)
   }
