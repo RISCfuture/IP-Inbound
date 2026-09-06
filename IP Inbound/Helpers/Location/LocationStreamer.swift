@@ -185,8 +185,20 @@ final class LocationStreamer: Sendable {
   private static let simPriorityTimeout = 5.0  // seconds
   private static let fullAccuracyPurposeKey = "CourseGuidance"
 
+  /// How long the stream outlives its last listener before it is torn down.
+  ///
+  /// Flying on to the next target rebuilds the entire setup flow, and SwiftUI promises nothing about
+  /// whether the departing subtree lets go before the arriving one takes hold. A release that lands
+  /// first would take the tally to zero mid-run and tear down a stream that is about to be asked
+  /// for again — dropping the full-accuracy session with it, and putting the precise-location prompt
+  /// back in front of a pilot who is flying. A hold taken inside this window finds the stream still
+  /// running and costs nothing; nobody taking one leaves the teardown no later than it would have
+  /// been.
+  private static let teardownGrace = Duration.milliseconds(500)
+
   private let dateProvider: DateProvider
   private var listenerCount = 0
+  private var teardownTask: Task<Void, Never>?
   private var simReceiver = SimReceiver()
 
   private var realLocationStream: AsyncThrowingStream<LocationEvent?, any Error>?
@@ -211,6 +223,7 @@ final class LocationStreamer: Sendable {
 
   /// Takes a listener's hold on the stream, starting it for the first one.
   func start() async {
+    teardownTask?.cancel()
     listenerCount += 1
     if listenerCount == 1 { await _start() }
   }
@@ -306,7 +319,8 @@ final class LocationStreamer: Sendable {
     producer = .init(stream: stream!)
   }
 
-  /// Releases one listener's hold, tearing the stream down when the last one lets go.
+  /// Releases one listener's hold, tearing the stream down ``teardownGrace`` after the last one lets
+  /// go.
   ///
   /// A release with no hold outstanding is ignored rather than counted. `NeedsLocationView` starts
   /// the stream from a `task` and stops it from `onDisappear`, and a view that appears and
@@ -314,10 +328,26 @@ final class LocationStreamer: Sendable {
   /// release can genuinely arrive first. Counted, that would leave the tally below zero, where
   /// ``start()`` can never see it reach one again and the app produces no fixes for the rest of the
   /// process.
-  func stop() async {
+  func stop() {
     guard listenerCount > 0 else { return }
     listenerCount -= 1
-    if listenerCount == 0 { await _stop() }
+    if listenerCount == 0 { scheduleTeardown() }
+  }
+
+  private func scheduleTeardown() {
+    teardownTask = Task { [weak self] in
+      try? await Task.sleep(for: Self.teardownGrace)
+      guard !Task.isCancelled else { return }
+      await self?.teardownIfUnheld()
+    }
+  }
+
+  /// Tears the stream down unless a listener has taken it over in the meantime. The tally is read
+  /// here rather than in the waiting task so that a hold taken while this was already on its way to
+  /// the actor still saves the stream.
+  private func teardownIfUnheld() async {
+    guard listenerCount == 0 else { return }
+    await _stop()
   }
 
   /// Requests temporary full accuracy, naming the purpose key that
