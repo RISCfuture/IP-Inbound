@@ -97,6 +97,7 @@ struct NewTargetButton: View {
       selectedTarget?.id == target.id
     else { return }
     target.coordinate = coordinate
+    target.calculateDeclination()
   }
 
   /// The fix already in hand, or failing that the first one to arrive before the seed gives up.
