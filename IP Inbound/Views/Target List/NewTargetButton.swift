@@ -9,6 +9,12 @@ struct NewTargetButton: View {
   /// starts typing is never made to wait on the GPS.
   private static let seedTimeout = Duration.seconds(2)
 
+  /// How far a target may sit from its placeholder and still count as untouched by the pilot.
+  /// ``TargetSetupMap`` writes the camera's centre back to the target as the camera settles, and a
+  /// camera settling where it was just put reports a centre a hair off the coordinate it was given.
+  /// A pilot who has moved the target has moved it further than a fraction of one point of pan.
+  private static let untouchedTolerance = Measurement(value: 10, unit: UnitLength.meters)
+
   @Binding var selectedTarget: Target?
 
   @Environment(\.modelContext)
@@ -22,10 +28,11 @@ struct NewTargetButton: View {
 
   var body: some View {
     Button {
-      let target = Target(name: String(localized: "New Target"), coordinate: placeholderCoordinate)
+      let placeholder = placeholderCoordinate
+      let target = Target(name: String(localized: "New Target"), coordinate: placeholder)
       modelContext.insert(target)
       selectedTarget = target
-      Task { await seedPresentPosition(into: target) }
+      Task { await seedPresentPosition(into: target, replacing: placeholder) }
     } label: {
       Label("Add Target", systemImage: "plus")
     }
@@ -88,16 +95,27 @@ struct NewTargetButton: View {
   /// carries a floor because an unbalanced release once wedged the stream for the life of the
   /// process; an unbalanced *acquire* is the same wound the other way round, and would leave the
   /// airborne configuration running with nothing on screen reading it.
-  private func seedPresentPosition(into target: Target) async {
+  ///
+  /// The target's setup screen is already open while this runs, so the seed is a suggestion for a
+  /// coordinate nobody has chosen yet, not an answer that outranks one the pilot has: it is dropped
+  /// unless the target still sits on the placeholder it was created with.
+  private func seedPresentPosition(into target: Target, replacing placeholder: Coordinate) async {
     let provider = services.location
     await provider.start()
     defer { Task { await provider.stop() } }
 
     guard let coordinate = await presentPosition(from: provider),
-      selectedTarget?.id == target.id
+      selectedTarget?.id == target.id,
+      isUntouched(target, since: placeholder)
     else { return }
     target.coordinate = coordinate
     target.calculateDeclination()
+  }
+
+  /// Whether the pilot has yet to put the target anywhere, leaving the seed the best coordinate
+  /// anyone has for it.
+  private func isUntouched(_ target: Target, since placeholder: Coordinate) -> Bool {
+    target.coordinate.distance(to: placeholder) <= Self.untouchedTolerance
   }
 
   /// The fix already in hand, or failing that the first one to arrive before the seed gives up.
