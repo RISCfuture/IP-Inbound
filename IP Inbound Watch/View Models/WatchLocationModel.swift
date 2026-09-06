@@ -65,8 +65,16 @@ final class WatchLocationModel {
     startStream()
   }
 
+  /// Starts the live stream, forgetting whatever the last one reported.
+  ///
+  /// A refusal belongs to the stream that met it. Carried into the stream a ``retry()`` puts back to
+  /// find out whether the pilot has lifted it, it would answer the question before it was asked —
+  /// leaving the watch on the refusal screen until a fix happened along to contradict it.
+  ///
   /// Under UI tests a seeded fix stands in for the live stream so no permission prompt appears.
   private func startStream() {
+    diagnostics = .clean
+
     if let seededLocation = WatchUITestSupport.seededLocation {
       location = seededLocation
       return
