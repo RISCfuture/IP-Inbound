@@ -62,6 +62,21 @@ struct StreamsTests {
     await multicastStream.stop()
   }
 
+  @Test("MulticastStream - stopping finishes the streams it vended", .timeLimit(.minutes(1)))
+  func multicastStreamStopFinishesConsumers() async throws {
+    let (stream, continuation) = AsyncThrowingStream<Int, Error>.makeStream()
+    defer { continuation.finish() }
+
+    let multicastStream = MulticastStream(stream: stream)
+    let consumer = await multicastStream.consume()
+    await multicastStream.stop()
+
+    // A consumer left attached to a stopped broadcast has no element coming and no end coming
+    // either, so this loop would suspend for the rest of the run and the time limit is what would
+    // report it.
+    for try await _ in consumer {}
+  }
+
   @Test("bootstrap - prepends initial value to stream")
   func bootstrapPrependsInitialValue() async throws {
     let (stream, continuation) = AsyncThrowingStream<Int, Error>.makeStream()
