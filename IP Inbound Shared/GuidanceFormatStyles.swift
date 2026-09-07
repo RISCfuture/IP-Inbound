@@ -13,6 +13,23 @@ public let distanceFormatStyle = Measurement<UnitLength>.FormatStyle(
   numberFormatStyle: distanceNumberFormatStyle
 )
 
+/// A time on target in the reader's own time zone and time-of-day convention.
+public let localTOTFormatStyle = Date.FormatStyle(
+  date: .omitted,
+  time: .shortened,
+  timeZone: .autoupdatingCurrent,
+  capitalizationContext: .standalone
+)
+/// Zulu time is an aviation convention with a fixed presentation — four 24-hour digits followed by a
+/// `Z` — so it renders verbatim against a Gregorian calendar rather than through the reader's
+/// calendar and time-of-day conventions.
+public let zuluTOTFormatStyle = Date.VerbatimFormatStyle(
+  format:
+    "\(hour: .twoDigits(clock: .twentyFourHour, hourCycle: .zeroBased))\(minute: .twoDigits)Z",
+  timeZone: .gmt,
+  calendar: .init(identifier: .gregorian)
+)
+
 /// Speeds read to the knot; finer resolution is noise the pilot cannot fly.
 let speedNumberFormatStyle = FloatingPointFormatStyle<Double>.number.rounded(
   increment: 1.0

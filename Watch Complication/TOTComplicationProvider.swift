@@ -21,10 +21,10 @@ struct TOTComplicationProvider: TimelineProvider {
     completion(entry())
   }
 
-  /// Three entries are enough. The countdown ticks itself down, so the only moments the
-  /// complication has to be redrawn are the time on target, when it stops counting and says so, and
-  /// the run's expiry, when there is no longer a run to count for. Everything else arrives as a
-  /// reload from the watch app.
+  /// Four entries are enough. The countdown ticks itself down, so the only moments the complication
+  /// has to be redrawn are the closing time, when the briefed time gives way to a countdown, the
+  /// time on target, when it stops counting and says so, and the run's expiry, when there is no
+  /// longer a run to count for. Everything else arrives as a reload from the watch app.
   ///
   /// The expiry entry is what lets the face clear itself. Nothing has to reach the watch for it to
   /// land — no transfer, no wrist raise — which matters, because the phone that would otherwise say
@@ -33,6 +33,9 @@ struct TOTComplicationProvider: TimelineProvider {
     let now = entry()
     var entries = [now]
     if let target = now.target {
+      if let closingTime = target.closingTime, closingTime > now.date {
+        entries.append(.init(date: closingTime, target: target))
+      }
       if let timeOnTarget = target.timeOnTarget, timeOnTarget > now.date {
         entries.append(.init(date: timeOnTarget, target: target))
       }
