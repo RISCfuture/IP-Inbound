@@ -18,9 +18,7 @@
 		014CD0383049E06300E8D24F /* IP_Inbound_Shared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 014CCFF93049E04F00E8D24F /* IP_Inbound_Shared.framework */; };
 		014CD0393049E06300E8D24F /* IP_Inbound_Shared.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 014CCFF93049E04F00E8D24F /* IP_Inbound_Shared.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		014CD03D3049E06600E8D24F /* IP_Inbound_Shared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 014CCFF93049E04F00E8D24F /* IP_Inbound_Shared.framework */; };
-		014CD03E3049E06600E8D24F /* IP_Inbound_Shared.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 014CCFF93049E04F00E8D24F /* IP_Inbound_Shared.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		014CD0423049E06900E8D24F /* IP_Inbound_Shared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 014CCFF93049E04F00E8D24F /* IP_Inbound_Shared.framework */; };
-		014CD0433049E06900E8D24F /* IP_Inbound_Shared.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 014CCFF93049E04F00E8D24F /* IP_Inbound_Shared.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		014CD0483049E08500E8D24F /* MeasurementKit in Frameworks */ = {isa = PBXBuildFile; productRef = 014CD0473049E08500E8D24F /* MeasurementKit */; };
 		014CD04A3049E08500E8D24F /* MeasurementKitLocation in Frameworks */ = {isa = PBXBuildFile; productRef = 014CD0493049E08500E8D24F /* MeasurementKitLocation */; };
 		0159221F2FCA2B28007FB6BB /* XCUITestKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0159221E2FCA2B28007FB6BB /* XCUITestKit */; };
@@ -196,7 +194,6 @@
 			dstPath = "";
 			dstSubfolder = Frameworks;
 			files = (
-				014CD03E3049E06600E8D24F /* IP_Inbound_Shared.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 		};
@@ -205,7 +202,6 @@
 			dstPath = "";
 			dstSubfolder = Frameworks;
 			files = (
-				014CD0433049E06900E8D24F /* IP_Inbound_Shared.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 		};
