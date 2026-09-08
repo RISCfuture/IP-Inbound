@@ -234,11 +234,11 @@ private struct NoRun: View {
       case .accessoryInline:
         Text("No run")
       case .accessoryCorner:
-        Image(systemName: "scope")
+        Image.pipper
           .accessibilityLabel("No run")
           .widgetLabel { Text("No run") }
       default:
-        Image(systemName: "scope")
+        Image.pipper
           .accessibilityLabel("No run")
           .foregroundStyle(.secondary)
     }
