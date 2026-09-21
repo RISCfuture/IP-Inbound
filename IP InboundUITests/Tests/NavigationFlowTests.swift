@@ -30,7 +30,12 @@ final class NavigationFlowTests: BaseTestCase {
       isIPad ? app.textFields["targetNameField"] : app.buttons["addTargetButton"]
     for _ in 0..<6 {
       if exitMarker.waitForExistence(timeout: 1) { break }
-      let backButton = app.navigationBars.buttons.element(boundBy: 0)
+      // By identity, not position: on iPad the split view's sidebar toggle shares the
+      // navigation bar and sits to the *left* of the back button, so the first button
+      // by index is "Hide Sidebar". Tapping that collapses the sidebar instead of
+      // navigating, which both strands the traversal and takes `addTargetButton` — the
+      // marker for "the list is showing" — out of the hierarchy entirely.
+      let backButton = app.buttons["BackButton"]
       guard backButton.waitForExistence(timeout: 3) else { break }
       if backButton.isHittable {
         backButton.tap()
@@ -248,8 +253,9 @@ final class NavigationFlowTests: BaseTestCase {
         backButton.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
       }
     } else {
-      // Fallback: tap first nav bar back button
-      let fallback = app.navigationBars.buttons.element(boundBy: 0)
+      // Fallback: the back button by identity. Indexing would find iPad's sidebar
+      // toggle, which shares the navigation bar and precedes it.
+      let fallback = app.buttons["BackButton"]
       if fallback.isHittable {
         fallback.tap()
       } else {
