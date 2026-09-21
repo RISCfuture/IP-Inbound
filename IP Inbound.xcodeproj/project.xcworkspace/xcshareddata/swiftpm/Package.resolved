@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/RISCfuture/MeasurementKit",
       "state" : {
-        "revision" : "d04642c96f5406ed3b504334593a268d698d47ca",
-        "version" : "1.0.0"
+        "revision" : "0df57fb5051bf8565894b7d15805eb36725aef16",
+        "version" : "1.1.0"
       }
     },
     {
@@ -105,8 +105,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/RISCfuture/SwiftGeographic",
       "state" : {
-        "revision" : "bc7d538199711522b2572448df7df7b2e614a2e4",
-        "version" : "1.0.1"
+        "revision" : "265b36a965d843d9b0c3fb3ae8ba44b17f70489e",
+        "version" : "1.0.2"
       }
     },
     {
@@ -114,8 +114,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/RISCfuture/XCUITestKit",
       "state" : {
-        "branch" : "main",
-        "revision" : "797d5d183a67b0bb3034250d34d27f838f6cbab5"
+        "revision" : "b76d0fc269f04019767530b0180671738128fe7e",
+        "version" : "1.0.0"
       }
     }
   ],

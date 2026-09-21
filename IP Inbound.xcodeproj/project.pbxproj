@@ -41,11 +41,14 @@
 		0A3F5C1E7B24D9E60F81AC35 /* MeasurementKitUI in Frameworks */ = {isa = PBXBuildFile; productRef = 0A3F5C1E7B24D9E60F81AC36 /* MeasurementKitUI */; };
 		11FF78DBCBBC60FA9B3AE087 /* MeasurementKitLocation in Frameworks */ = {isa = PBXBuildFile; productRef = 767F98DBE5020FE2C1A1D4F6 /* MeasurementKitLocation */; };
 		1850B2B634F254E6D441D0C7 /* MeasurementKit in Frameworks */ = {isa = PBXBuildFile; productRef = C39CDA7F653FF59E91757A29 /* MeasurementKit */; };
+		2EF3EE970BF6ED20C4EC64BE /* MeasurementKitLocation in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 8EC548C52BD942411AA402B6 /* MeasurementKitLocation */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		33F711A51A154974B88B5DA7 /* MeasurementKitLocation in Frameworks */ = {isa = PBXBuildFile; productRef = 82B3BDDD1791A1F0A898CD40 /* MeasurementKitLocation */; };
 		4D2A3EAF7F6461F1F5D12E4D /* MeasurementKit in Frameworks */ = {isa = PBXBuildFile; productRef = 4538DB955AE06783DA1D19CB /* MeasurementKit */; };
 		6B2BC84D01DF41E8847B6899 /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = 4E66068E9AFD4993959FE327 /* Sentry */; };
 		8416DECA39F31478DDFB0BE0 /* MeasurementKit in Frameworks */ = {isa = PBXBuildFile; productRef = 52D2C667A9D8E475E50E4108 /* MeasurementKit */; };
+		871A88DF78806DB3841A6D68 /* MeasurementKitUI in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 0A3F5C1E7B24D9E60F81AC36 /* MeasurementKitUI */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		A467258E809782A9762210EC /* MeasurementKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0FB064D238D0BF11C58B07F0 /* MeasurementKit */; };
+		D150EF75B9EE889F262A5958 /* MeasurementKitLocation in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 82B3BDDD1791A1F0A898CD40 /* MeasurementKitLocation */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		E6A4F09A58AE2518B10F5CE0 /* MeasurementKit in Frameworks */ = {isa = PBXBuildFile; productRef = B83449F701954CD31C4C6218 /* MeasurementKit */; };
 		F5C0FFB0CACD3560610BA5C3 /* MeasurementKitLocation in Frameworks */ = {isa = PBXBuildFile; productRef = 47E80E982AE1E94EDDDA1BC7 /* MeasurementKitLocation */; };
 		FDF872692C630A40B99B510D /* MeasurementKitLocation in Frameworks */ = {isa = PBXBuildFile; productRef = 8EC548C52BD942411AA402B6 /* MeasurementKitLocation */; };
@@ -177,6 +180,8 @@
 			dstSubfolder = Frameworks;
 			files = (
 				014CD00D3049E05000E8D24F /* IP_Inbound_Shared.framework in Embed Frameworks */,
+				D150EF75B9EE889F262A5958 /* MeasurementKitLocation in Embed Frameworks */,
+				871A88DF78806DB3841A6D68 /* MeasurementKitUI in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 		};
@@ -186,6 +191,7 @@
 			dstSubfolder = Frameworks;
 			files = (
 				014CD0393049E06300E8D24F /* IP_Inbound_Shared.framework in Embed Frameworks */,
+				2EF3EE970BF6ED20C4EC64BE /* MeasurementKitLocation in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 		};
@@ -1956,15 +1962,15 @@
 			repositoryURL = "https://github.com/RISCfuture/SwiftGeographic";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.1;
+				minimumVersion = 1.0.2;
 			};
 		};
 		0159221D2FCA2B28007FB6BB /* XCRemoteSwiftPackageReference "XCUITestKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/RISCfuture/XCUITestKit";
 			requirement = {
-				branch = main;
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
 			};
 		};
 		016F3ED02DD4F1E1006EEC6D /* XCRemoteSwiftPackageReference "swift-numerics" */ = {
@@ -2012,7 +2018,7 @@
 			repositoryURL = "https://github.com/RISCfuture/MeasurementKit";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
+				minimumVersion = 1.1.0;
 			};
 		};
 		F48BBB649D7A4A6387FBF73C /* XCRemoteSwiftPackageReference "sentry-cocoa" */ = {
