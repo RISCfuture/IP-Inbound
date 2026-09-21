@@ -1,0 +1,9 @@
+# GitHub now names macOS images after their Xcode major version rather than the OS.
+# actionlint validates `runs-on` against a list baked into the binary, which does not
+# yet carry `xcode-27`, so the label is declared here to keep the check meaningful
+# rather than silenced. It is a hosted image, not a self-hosted runner; this is the
+# only mechanism actionlint offers for teaching it a new label.
+self-hosted-runner:
+  labels:
+    - xcode-27
+    - xcode-27-xlarge
