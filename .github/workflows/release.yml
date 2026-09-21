@@ -26,7 +26,7 @@ concurrency:
 
 jobs:
   release:
-    uses: RISCfuture/XCUITestKit/.github/workflows/ios-release.yml@main
+    uses: RISCfuture/XCUITestKit/.github/workflows/ios-release.yml@1.0.0
     with:
       # The watch app and the Live Activity extension are embedded in the iOS archive.
       platforms: '["iOS"]'

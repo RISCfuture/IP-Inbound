@@ -1956,15 +1956,15 @@
 			repositoryURL = "https://github.com/RISCfuture/SwiftGeographic";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.1;
+				minimumVersion = 1.0.2;
 			};
 		};
 		0159221D2FCA2B28007FB6BB /* XCRemoteSwiftPackageReference "XCUITestKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/RISCfuture/XCUITestKit";
 			requirement = {
-				branch = main;
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
 			};
 		};
 		016F3ED02DD4F1E1006EEC6D /* XCRemoteSwiftPackageReference "swift-numerics" */ = {
@@ -2012,7 +2012,7 @@
 			repositoryURL = "https://github.com/RISCfuture/MeasurementKit";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
+				minimumVersion = 1.1.0;
 			};
 		};
 		F48BBB649D7A4A6387FBF73C /* XCRemoteSwiftPackageReference "sentry-cocoa" */ = {
