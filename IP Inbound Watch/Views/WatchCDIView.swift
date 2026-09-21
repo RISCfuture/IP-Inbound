@@ -173,8 +173,13 @@ private struct LabeledReadout<Value: View, Accessory: View>: View {
 }
 
 extension LabeledReadout where Accessory == EmptyView {
+  /// Assigns rather than delegating to the designated initializer: Xcode's preview instrumentation
+  /// wraps a delegating `self.init` in an expression, which the compiler rejects, and the file's
+  /// previews then fail to build.
   init(title: LocalizedStringKey, value: Value) {
-    self.init(title: title, value: value, accessory: EmptyView())
+    self.title = title
+    self.value = value
+    accessory = EmptyView()
   }
 }
 

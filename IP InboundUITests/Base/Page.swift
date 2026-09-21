@@ -127,8 +127,11 @@ extension Page {
     numericButton.waitUntilHittable()
   }
 
+  /// Taps the navigation back button, addressed by identity rather than by index: on iPad the
+  /// split view's sidebar toggle shares the navigation bar and precedes the back button, so the
+  /// first button by index is "Hide Sidebar".
   func tapBackButton() {
-    let backButton = app.navigationBars.buttons.element(boundBy: 0)
+    let backButton = app.buttons["BackButton"]
     backButton.forceTap()
   }
 

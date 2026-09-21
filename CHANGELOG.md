@@ -9,6 +9,12 @@ and as plain text on the store, where the field shows whatever it is given
 verbatim: a line that only makes sense with its formatting will read badly in one
 of the two places.
 
+## 3.0
+
+IP Inbound now requires iOS 27 and watchOS 27. If your iPhone or Apple Watch is
+on an older version, the App Store will keep offering you 2.1.0 and it will go
+on working — but this is where new versions stop until you update.
+
 ## 2.1.0
 
 ### Apple Watch
