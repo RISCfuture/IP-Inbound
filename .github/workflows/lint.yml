@@ -14,12 +14,9 @@ concurrency:
 jobs:
   swiftlint:
     name: Run SwiftLint
-    runs-on: macos-latest
+    runs-on: xcode-27
     steps:
       - uses: actions/checkout@v6
-      - uses: SwiftyLab/setup-swift@latest
-        with:
-          swift-version: "6.3"
       # .swiftlint.yml's parent_config is a gist URL that SwiftLint fetches itself, and a slow or
       # unreachable gist fails the run. Fetching it here with retries, then pointing the config at
       # the local copy, takes the network out of the linter's path.
@@ -37,7 +34,7 @@ jobs:
     name: Run swift-format
     runs-on: ubuntu-latest
     container:
-      image: swift:latest
+      image: swift:6.4
     steps:
       - uses: actions/checkout@v6
       - name: Download .swift-format config
