@@ -30,6 +30,11 @@ jobs:
     with:
       # The watch app and the Live Activity extension are embedded in the iOS archive.
       platforms: '["iOS"]'
+      # Required upstream, with no default: the runner image is each app's own decision.
+      runner: macos-26
+      # Named explicitly so the release bundler matches the Ruby .ruby-version pins;
+      # upstream would otherwise install its own default.
+      ruby-version: "4.0.7"
       version: ${{ inputs.version || github.ref_name }}
       certificates-repo: RISCfuture/certificates
       verify-lane: ci_verify_release_notes
