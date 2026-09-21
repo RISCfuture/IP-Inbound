@@ -267,7 +267,7 @@ final class LocationStreamer: Sendable {
     }
 
     guard let realLocationStream, let simLocationStream else {
-      await stop()
+      stop()
       return
     }
 

@@ -57,7 +57,7 @@ hold over an IP to a target.
 
 ## Requirements
 
-This app is written in Swift 6 and targets iOS 18.
+This app is written in Swift 6 and requires iOS 27 and watchOS 27.
 
 ## Development
 

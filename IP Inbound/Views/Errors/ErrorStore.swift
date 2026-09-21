@@ -1,6 +1,7 @@
 import Observation
 import Sentry
 
+@MainActor
 @Observable
 final class ErrorStore {
   var error: (any Error)? {
@@ -12,4 +13,6 @@ final class ErrorStore {
       }
     }
   }
+
+  nonisolated init() {}
 }
