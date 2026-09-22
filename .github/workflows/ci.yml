@@ -18,6 +18,13 @@ jobs:
       scheme: "IP Inbound"
       unit-test-plan: "Unit Tests"
       ui-test-plan: "UI Tests"
+      # Above the upstream default of 150. The iPad leg finished at 2h11m on the
+      # xcode-27 image — roughly 18 minutes of headroom — and this budget also has
+      # to cover the outer retry and the rescue pass, either of which would blow
+      # straight through 150. The suite is slow structurally rather than in any one
+      # test: it runs serially, and a 235-second test spends its time on quiescence
+      # waits and accessibility-tree captures, not on the ~60 interactions it makes.
+      ui-timeout-minutes: 210
       build-matrix: |
         {"include":[
           {"ios-label":"latest","runner":"xcode-27","device":"iPhone 17 Pro","device-type":"com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro","os-version":"","xcode-version":"latest-stable"}
