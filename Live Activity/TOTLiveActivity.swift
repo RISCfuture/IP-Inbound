@@ -33,11 +33,12 @@ struct TOTLiveActivity: Widget {
           .frame(maxWidth: .infinity)
         }
       } compactLeading: {
-        Text(context.attributes.targetName)
-          .lineLimit(1)
+        CompactTargetName(targetName: context.attributes.targetName)
       } compactTrailing: {
-        // No font, so the compact region's own text sizing applies.
-        TOTCountdownText(timeOnTarget: context.state.timeOnTarget)
+        CompactCountdown(
+          timeOnTarget: context.state.timeOnTarget,
+          legDuration: context.attributes.ipToTargetDuration
+        )
       } minimal: {
         TOTProgressRing(
           timeOnTarget: context.state.timeOnTarget,
@@ -47,6 +48,12 @@ struct TOTLiveActivity: Widget {
         // enlarging to stay readable.
         .scaleEffect(1.4)
       }
+      // The compact regions' default margins are wide at the island's rounded ends and all but
+      // gone against the camera. Upright in landscape that leaves each region off the island's axis,
+      // one to each side, so the inner margins are widened to match the outer ones and the glyph
+      // and ring centre on their own.
+      .contentMargins(.trailing, 8, for: .compactLeading)
+      .contentMargins(.leading, 8, for: .compactTrailing)
     }
     // Without this the Apple Watch renders the mirrored activity from the Dynamic Island's compact
     // regions, which sit flush against each other and share one weight — a run-in that reads as
@@ -114,6 +121,56 @@ private struct LiveActivityContent: View {
     .multilineTextAlignment(.center)
     .frame(maxWidth: .infinity)
     .padding()
+  }
+}
+
+/// The target's name beside the countdown in the compact Dynamic Island, or a glyph standing in for
+/// it when the island is too narrow for text — as it is when it stands upright in landscape.
+private struct CompactTargetName: View {
+  static let glyph = "scope"
+
+  var targetName: String
+
+  @Environment(\.isDynamicIslandLimitedInWidth)
+  private var isLimitedInWidth
+
+  var body: some View {
+    if isLimitedInWidth {
+      Image(systemName: Self.glyph)
+        .accessibilityLabel(targetName)
+    } else {
+      Text(targetName)
+        .lineLimit(1)
+    }
+  }
+}
+
+/// The countdown in the compact Dynamic Island's trailing region, or the progress ring in its place
+/// when the island is too narrow for text.
+///
+/// Upright in landscape the island has no width to give, and a timer lays out at the width of the
+/// longest value it could ever show, so it cannot sit in that space as a glance-sized mark. The ring
+/// the minimal presentation draws says the same thing — how much of the run-in is left — in a shape
+/// that fits.
+private struct CompactCountdown: View {
+  var timeOnTarget: Date
+  var legDuration: Measurement<UnitDuration>
+
+  @Environment(\.isDynamicIslandLimitedInWidth)
+  private var isLimitedInWidth
+
+  var body: some View {
+    if isLimitedInWidth {
+      // Sized by the glyph at the island's other end rather than by the region, which the ring would
+      // otherwise fill edge to edge — a pair of marks drawn at one size reads as a pair.
+      Image(systemName: CompactTargetName.glyph)
+        .hidden()
+        .accessibilityHidden(true)
+        .overlay { TOTProgressRing(timeOnTarget: timeOnTarget, legDuration: legDuration) }
+    } else {
+      // No font, so the compact region's own text sizing applies.
+      TOTCountdownText(timeOnTarget: timeOnTarget)
+    }
   }
 }
 
