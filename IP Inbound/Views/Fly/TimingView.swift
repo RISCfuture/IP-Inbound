@@ -48,17 +48,33 @@ struct TimingView: View {
   }
 }
 
-#Preview("On Time") {
-  let helper = PreviewHelper()
-  let math = IPTargetMath(
-    location: helper.postIPLocation,
-    target: helper.target(minutesFromNow: 1),
-    now: .now
-  )!
-  TimingView(timeOnTarget: math.pposToTarget!.timeOfArrival, fromTo: math.pposToTarget!)
+/// A timing tier as the canvas labels it, with the arrival offset that lands a run in it.
+private struct TimingTierPreview: CustomStringConvertible {
+  var tier: TimingTier
+
+  var description: String {
+    switch tier {
+      case .onTime: "On Time"
+      case .tooFastCaution: "Early — Caution"
+      case .tooFastWarning: "Early — Warning"
+      case .tooSlowCaution: "Late — Caution"
+      case .tooSlowWarning: "Late — Warning"
+    }
+  }
+
+  /// How far the time on target sits after the projected arrival.
+  var timeOnTargetOffset: TimeInterval {
+    switch tier {
+      case .onTime: 0
+      case .tooFastCaution: 20
+      case .tooFastWarning: 600
+      case .tooSlowCaution: -20
+      case .tooSlowWarning: -600
+    }
+  }
 }
 
-#Preview("Early — Caution") {
+#Preview(arguments: TimingTier.allCases.map(TimingTierPreview.init)) { preview in
   let helper = PreviewHelper()
   let math = IPTargetMath(
     location: helper.postIPLocation,
@@ -66,38 +82,8 @@ struct TimingView: View {
     now: .now
   )!
   let fromTo = math.pposToTarget!
-  TimingView(timeOnTarget: fromTo.timeOfArrival.addingTimeInterval(20), fromTo: fromTo)
-}
-
-#Preview("Early — Warning") {
-  let helper = PreviewHelper()
-  let math = IPTargetMath(
-    location: helper.postIPLocation,
-    target: helper.target(minutesFromNow: 1),
-    now: .now
-  )!
-  let fromTo = math.pposToTarget!
-  TimingView(timeOnTarget: fromTo.timeOfArrival.addingTimeInterval(600), fromTo: fromTo)
-}
-
-#Preview("Late — Caution") {
-  let helper = PreviewHelper()
-  let math = IPTargetMath(
-    location: helper.postIPLocation,
-    target: helper.target(minutesFromNow: 1),
-    now: .now
-  )!
-  let fromTo = math.pposToTarget!
-  TimingView(timeOnTarget: fromTo.timeOfArrival.addingTimeInterval(-20), fromTo: fromTo)
-}
-
-#Preview("Late — Warning") {
-  let helper = PreviewHelper()
-  let math = IPTargetMath(
-    location: helper.postIPLocation,
-    target: helper.target(minutesFromNow: 1),
-    now: .now
-  )!
-  let fromTo = math.pposToTarget!
-  TimingView(timeOnTarget: fromTo.timeOfArrival.addingTimeInterval(-600), fromTo: fromTo)
+  TimingView(
+    timeOnTarget: fromTo.timeOfArrival.addingTimeInterval(preview.timeOnTargetOffset),
+    fromTo: fromTo
+  )
 }
