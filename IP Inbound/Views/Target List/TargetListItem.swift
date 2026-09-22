@@ -46,38 +46,35 @@ struct TargetListItem: View {
   }
 }
 
-#Preview("With TOT") {
-  let helper = PreviewHelper()
+/// A list row's state as the canvas labels it.
+private enum TargetListItemPreview: CaseIterable, CustomStringConvertible {
+  case withTOT, noTOT, localTime, zuluTime
 
-  List {
-    TargetListItem(target: helper.target())
+  var description: String {
+    switch self {
+      case .withTOT: "With TOT"
+      case .noTOT: "No TOT"
+      case .localTime: "Local Time"
+      case .zuluTime: "Zulu Time"
+    }
+  }
+
+  func apply(to target: Target) {
+    switch self {
+      case .withTOT: break
+      case .noTOT: target.timeOnTarget = nil
+      case .localTime: Defaults[.TOTDisplayMode] = .local
+      case .zuluTime: Defaults[.TOTDisplayMode] = .zulu
+    }
   }
 }
 
-#Preview("No TOT") {
+#Preview(arguments: TargetListItemPreview.allCases) { preview in
   let helper = PreviewHelper()
   let target = helper.target()
 
   List {
     TargetListItem(target: target)
   }
-  .onAppear { target.timeOnTarget = nil }
-}
-
-#Preview("Local Time") {
-  let helper = PreviewHelper()
-
-  List {
-    TargetListItem(target: helper.target())
-  }
-  .onAppear { Defaults[.TOTDisplayMode] = .local }
-}
-
-#Preview("Zulu Time") {
-  let helper = PreviewHelper()
-
-  List {
-    TargetListItem(target: helper.target())
-  }
-  .onAppear { Defaults[.TOTDisplayMode] = .zulu }
+  .onAppear { preview.apply(to: target) }
 }

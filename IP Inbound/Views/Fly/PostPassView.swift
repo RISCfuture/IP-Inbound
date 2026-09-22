@@ -132,86 +132,40 @@ private struct PostPassMissView: View {
   }
 }
 
-#Preview("On Time") {
-  let helper = PreviewHelper()
-  let target = helper.target()
-  PostPassView(
-    capture: .init(
-      targetName: target.name,
-      miss: Measurement(value: 1, unit: .seconds)
-    ),
-    currentTarget: target,
-    onSelectTarget: { _ in },
-    onChooseTarget: {}
-  )
-  .modelContainer(helper.modelContainer)
+/// A pass outcome as the canvas labels it, with the miss that produces it.
+private enum PostPassPreview: CaseIterable, CustomStringConvertible {
+  case onTime, lateCaution, lateWarning, earlyCaution, earlyWarning, lapsed
+
+  var description: String {
+    switch self {
+      case .onTime: "On Time"
+      case .lateCaution: "Late — Caution"
+      case .lateWarning: "Late — Warning"
+      case .earlyCaution: "Early — Caution"
+      case .earlyWarning: "Early — Warning"
+      case .lapsed: "Lapsed — Never Crossed"
+    }
+  }
+
+  var miss: Measurement<UnitDuration>? {
+    let seconds: Double? =
+      switch self {
+        case .onTime: 1
+        case .lateCaution: 60
+        case .lateWarning: 200
+        case .earlyCaution: -60
+        case .earlyWarning: -200
+        case .lapsed: nil
+      }
+    return seconds.map { Measurement(value: $0, unit: .seconds) }
+  }
 }
 
-#Preview("Late — Caution") {
+#Preview(arguments: PostPassPreview.allCases) { preview in
   let helper = PreviewHelper()
   let target = helper.target()
   PostPassView(
-    capture: .init(
-      targetName: target.name,
-      miss: Measurement(value: 60, unit: .seconds)
-    ),
-    currentTarget: target,
-    onSelectTarget: { _ in },
-    onChooseTarget: {}
-  )
-  .modelContainer(helper.modelContainer)
-}
-
-#Preview("Late — Warning") {
-  let helper = PreviewHelper()
-  let target = helper.target()
-  PostPassView(
-    capture: .init(
-      targetName: target.name,
-      miss: Measurement(value: 200, unit: .seconds)
-    ),
-    currentTarget: target,
-    onSelectTarget: { _ in },
-    onChooseTarget: {}
-  )
-  .modelContainer(helper.modelContainer)
-}
-
-#Preview("Early — Caution") {
-  let helper = PreviewHelper()
-  let target = helper.target()
-  PostPassView(
-    capture: .init(
-      targetName: target.name,
-      miss: Measurement(value: -60, unit: .seconds)
-    ),
-    currentTarget: target,
-    onSelectTarget: { _ in },
-    onChooseTarget: {}
-  )
-  .modelContainer(helper.modelContainer)
-}
-
-#Preview("Early — Warning") {
-  let helper = PreviewHelper()
-  let target = helper.target()
-  PostPassView(
-    capture: .init(
-      targetName: target.name,
-      miss: Measurement(value: -200, unit: .seconds)
-    ),
-    currentTarget: target,
-    onSelectTarget: { _ in },
-    onChooseTarget: {}
-  )
-  .modelContainer(helper.modelContainer)
-}
-
-#Preview("Lapsed — Never Crossed") {
-  let helper = PreviewHelper()
-  let target = helper.target()
-  PostPassView(
-    capture: .init(targetName: target.name, miss: nil),
+    capture: .init(targetName: target.name, miss: preview.miss),
     currentTarget: target,
     onSelectTarget: { _ in },
     onChooseTarget: {}

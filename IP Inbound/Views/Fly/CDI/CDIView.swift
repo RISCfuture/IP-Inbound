@@ -119,46 +119,56 @@ extension CDIView {
   }
 }
 
-#Preview("Full deflection right") {
-  CDIView(
-    track: MagneticBearing(degrees: 277),
-    bearing: MagneticBearing(degrees: 218),
-    IPDirectBearing: MagneticBearing(degrees: 121),
-    targetDirectBearing: MagneticBearing(degrees: 213),
-    deviation: .init(crossTrackDistance: CourseDeviation.fullScale)
-  )
-  .padding()
+/// A needle position as the canvas labels it, with the bearings and deviation that put it there.
+private struct CDIPreview: CustomStringConvertible {
+  static let all = [
+    Self(
+      description: "Full deflection right",
+      track: MagneticBearing(degrees: 277),
+      bearing: MagneticBearing(degrees: 218),
+      IPDirectBearing: MagneticBearing(degrees: 121),
+      targetDirectBearing: MagneticBearing(degrees: 213),
+      deviation: .init(crossTrackDistance: CourseDeviation.fullScale)
+    ),
+    Self(
+      description: "Half deflection left",
+      track: MagneticBearing(degrees: 277),
+      bearing: MagneticBearing(degrees: 218),
+      IPDirectBearing: MagneticBearing(degrees: 121),
+      targetDirectBearing: MagneticBearing(degrees: 213),
+      deviation: .init(crossTrackDistance: .init(value: -2, unit: .nauticalMiles))
+    ),
+    Self(
+      description: "Over scale left",
+      track: MagneticBearing(degrees: 360),
+      bearing: MagneticBearing(degrees: 30),
+      IPDirectBearing: MagneticBearing(degrees: 121),
+      targetDirectBearing: MagneticBearing(degrees: 213),
+      deviation: .init(crossTrackDistance: .init(value: -8, unit: .nauticalMiles))
+    ),
+    Self(
+      description: "No bearing",
+      track: MagneticBearing(degrees: 90),
+      bearing: nil,
+      IPDirectBearing: nil,
+      targetDirectBearing: nil,
+      deviation: nil
+    )
+  ]
+
+  var description: String
+  var track: MagneticBearing
+  var bearing, IPDirectBearing, targetDirectBearing: MagneticBearing?
+  var deviation: CourseDeviation?
 }
 
-#Preview("Half deflection left") {
+#Preview(arguments: CDIPreview.all) { preview in
   CDIView(
-    track: MagneticBearing(degrees: 277),
-    bearing: MagneticBearing(degrees: 218),
-    IPDirectBearing: MagneticBearing(degrees: 121),
-    targetDirectBearing: MagneticBearing(degrees: 213),
-    deviation: .init(crossTrackDistance: .init(value: -2, unit: .nauticalMiles))
-  )
-  .padding()
-}
-
-#Preview("Over scale left") {
-  CDIView(
-    track: MagneticBearing(degrees: 360),
-    bearing: MagneticBearing(degrees: 30),
-    IPDirectBearing: MagneticBearing(degrees: 121),
-    targetDirectBearing: MagneticBearing(degrees: 213),
-    deviation: .init(crossTrackDistance: .init(value: -8, unit: .nauticalMiles))
-  )
-  .padding()
-}
-
-#Preview("No bearing") {
-  CDIView(
-    track: MagneticBearing(degrees: 90),
-    bearing: nil,
-    IPDirectBearing: nil,
-    targetDirectBearing: nil,
-    deviation: nil
+    track: preview.track,
+    bearing: preview.bearing,
+    IPDirectBearing: preview.IPDirectBearing,
+    targetDirectBearing: preview.targetDirectBearing,
+    deviation: preview.deviation
   )
   .padding()
 }
