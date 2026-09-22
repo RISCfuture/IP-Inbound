@@ -75,7 +75,7 @@ struct TargetListPage: Page {
     guard UIDevice.current.userInterfaceIdiom != .pad else { return self }
     for _ in 0..<6 {
       if addTargetButton.waitForExistence(timeout: 1) { break }
-      let backButton = app.navigationBars.buttons.element(boundBy: 0)
+      let backButton = app.buttons["BackButton"]
       guard backButton.waitForExistence(timeout: 3) else { break }
       if backButton.isHittable {
         backButton.tap()
