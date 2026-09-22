@@ -17,6 +17,10 @@ on working — but this is where new versions stop until you update.
 
 - With your iPhone in landscape, the Dynamic Island shows your run as a target
   symbol and a ring that runs down to your time on target.
+- Siri and Shortcuts: ask Siri “Time on target in IP Inbound” to hear how long
+  you have, or “End the run in IP Inbound” when you’re done. Each of your
+  targets also appears as a shortcut in the Shortcuts app, which opens its Fly
+  screen. On Apple Watch, ask Siri how long it is to your time on target.
 
 ## 2.1.0
 

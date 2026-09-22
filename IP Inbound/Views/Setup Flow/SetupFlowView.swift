@@ -15,6 +15,11 @@ struct SetupFlowView: View {
 
   @State private var path: [SetupFlowStep]
 
+  /// Whether the flow still owes the Fly screen it was asked to open on. It is owed until that
+  /// screen has appeared: until then an empty path is the split view's doing, and after it, the
+  /// pilot's.
+  @State private var owesFlyScreen: Bool
+
   var body: some View {
     NavigationStack(path: $path) {
       TargetSetupView(target: target)
@@ -38,10 +43,16 @@ struct SetupFlowView: View {
               )
               .onAppear {
                 target.isConfigured = true
+                owesFlyScreen = false
               }
           }
         }
     }
+    // A collapsed split view empties the path of a stack it pushes as its detail, after the
+    // initializer has laid that path out, and how soon after depends on how the app was brought
+    // forward. A flow asked to open on the Fly screen while the target list is showing — as a Siri
+    // request is, on iPhone — would otherwise open at its start.
+    .onChange(of: path, initial: true, restoreOwedFlyScreen)
     // Setting a run up is the point at which the pilot has committed to flying one, so it is the
     // point at which the GPS is worth warming and the authorization prompt is worth raising: the
     // Fly screen then opens on a fix already in hand rather than on the acquiring-GPS placeholder.
@@ -60,6 +71,13 @@ struct SetupFlowView: View {
     self.onSelectTarget = onSelectTarget
     self.onChooseTarget = onChooseTarget
     _path = State(initialValue: startAtFly ? [.fly] : [.targetSetup])
+    _owesFlyScreen = State(initialValue: startAtFly)
+  }
+
+  private func restoreOwedFlyScreen() {
+    guard owesFlyScreen, path.isEmpty else { return }
+    // The split view empties the path mid-update, and a push made inside that update is dropped.
+    Task { path = [.fly] }
   }
 }
 

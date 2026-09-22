@@ -61,11 +61,13 @@ struct IP_InboundApp: App {
       // crash left behind, or a session `@main` rejoined for a run that was already over. A run
       // still being flown is left alone — by the Fly screen, or with no screen at all on the launch
       // Core Location made. A countdown armed for a brief nobody flew belongs to no run at all, so
-      // it is swept on the same footing.
+      // it is swept on the same footing. Siri's "Fly <target>" phrases are refreshed here too, so a
+      // target added since the last launch can be named.
       .onChange(of: scenePhase, initial: true) {
         if scenePhase == .active {
           RunController.shared.endUnclaimedRun()
           LiveActivityController.shared.sweepExpiredCountdowns(at: Date())
+          IPInboundShortcuts.updateAppShortcutParameters()
         }
       }
     }.modelContainer(modelContainer)

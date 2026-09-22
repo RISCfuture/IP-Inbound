@@ -2,9 +2,17 @@ import SwiftData
 import SwiftUI
 
 struct TargetListView: View {
+  @Environment(\.modelContext)
+  private var modelContext
+
   @State private var selectedTarget: Target?
   @State private var targetToFly: Target.ID?
   @State private var showingTutorial = false
+
+  /// Bumped for every request `TargetNavigator` delivers, so the setup flow is rebuilt even when the
+  /// request is for the target already showing. `SetupFlowView` lays out its navigation stack only
+  /// in its initializer, so "fly the target on screen" means a new flow, not a changed one.
+  @State private var navigationRequestCount = 0
 
   /// Picking a target from the sidebar always lands on the setup flow, so clear any pending
   /// fly-immediately intent left by the post-pass “Fly” shortcut.
@@ -40,12 +48,16 @@ struct TargetListView: View {
           }
         )
         .id(selectedTarget.id)
+        .id(navigationRequestCount)
       } else {
         Text("No Target").foregroundStyle(.secondary)
       }
     }
     .sheet(isPresented: $showingTutorial) {
       TutorialView()
+    }
+    .onChange(of: TargetNavigator.shared.pending, initial: true) {
+      followNavigationRequest()
     }
   }
 
@@ -55,6 +67,21 @@ struct TargetListView: View {
   init(resumedTarget: Target? = nil) {
     _selectedTarget = State(initialValue: resumedTarget)
     _targetToFly = State(initialValue: resumedTarget?.id)
+  }
+
+  private func followNavigationRequest() {
+    guard let request = TargetNavigator.shared.takePending(),
+      let target = target(identifiedBy: request.targetID)
+    else { return }
+    navigationRequestCount += 1
+    targetToFly = request.flying ? target.id : nil
+    selectedTarget = target
+  }
+
+  private func target(identifiedBy id: Target.ID) -> Target? {
+    var descriptor = FetchDescriptor<Target>(predicate: #Predicate { $0.id == id })
+    descriptor.fetchLimit = 1
+    return try? modelContext.fetch(descriptor).first
   }
 }
 

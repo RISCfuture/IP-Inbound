@@ -95,6 +95,10 @@ struct FlyView: View {
     // every descendant, replacing the ones the readouts set for themselves.
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier("flyView")
+    // The Fly screen has no title of its own. Left to inherit its bar's display mode, it keeps a
+    // large-title bar's worth of empty space above the readouts whenever it is opened straight from
+    // the root of the setup flow, as a Siri request does.
+    .navigationBarTitleDisplayMode(.inline)
     .onAppear {
       target.isConfigured = true
       RunController.shared.beginRun(flying: target)

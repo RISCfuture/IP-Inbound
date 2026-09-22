@@ -270,6 +270,14 @@
 			);
 			target = 01ECF4B52CF3DF0D00BD0604 /* IP Inbound */;
 		};
+		0140E8852FEDC27B0030CF68 /* Exceptions for "IP Inbound" folder in "IP Inbound Watch" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"App Intents/TargetEntity.swift",
+				"App Intents/TimeOnTargetIntent.swift",
+			);
+			target = 010FB62D2FEBA0610056ECE0 /* IP Inbound Watch */;
+		};
 		0140E8842FEDC27B0030CF68 /* Exceptions for "IP Inbound Watch" folder in "IP Inbound Watch" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -347,6 +355,7 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				0140E8832FEDC27B0030CF68 /* Exceptions for "IP Inbound" folder in "IP Inbound" target */,
+				0140E8852FEDC27B0030CF68 /* Exceptions for "IP Inbound" folder in "IP Inbound Watch" target */,
 				0140E8822FEDC27B0030CF68 /* Exceptions for "IP Inbound" folder in "Live ActivityExtension" target */,
 			);
 			path = "IP Inbound";
@@ -1149,7 +1158,7 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "IP Inbound Watch/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "IP Inbound Watch";
+				INFOPLIST_KEY_CFBundleDisplayName = "IP Inbound";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "IP Inbound needs to know your location in order to help you navigate to your target.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "codes.tim.IP-Inbound";
@@ -1181,7 +1190,7 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "IP Inbound Watch/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "IP Inbound Watch";
+				INFOPLIST_KEY_CFBundleDisplayName = "IP Inbound";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "IP Inbound needs to know your location in order to help you navigate to your target.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "codes.tim.IP-Inbound";
