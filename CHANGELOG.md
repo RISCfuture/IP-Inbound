@@ -15,6 +15,9 @@ IP Inbound now requires iOS 27 and watchOS 27. If your iPhone or Apple Watch is
 on an older version, the App Store will keep offering you 2.1.0 and it will go
 on working — but this is where new versions stop until you update.
 
+- With your iPhone in landscape, the Dynamic Island shows your run as a target
+  symbol and a ring that runs down to your time on target.
+
 ## 2.1.0
 
 ### Apple Watch
