@@ -1,3 +1,4 @@
+import AppIntents
 import IP_Inbound_Shared
 import SwiftUI
 
@@ -23,5 +24,11 @@ struct IP_Inbound_Watch: App {
           if scenePhase == .active { BackgroundActivityHolder.shared.endUnclaimedRun() }
         }
     }
+  }
+
+  /// Siri resolves targets through `AppDependencyManager`, which only ever learns of what this
+  /// process tells it — so the source is registered here, before any intent can ask.
+  init() {
+    AppDependencyManager.shared.add(dependency: WatchTargetSource() as any TargetSource)
   }
 }
