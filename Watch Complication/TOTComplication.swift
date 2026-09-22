@@ -35,23 +35,26 @@ private struct TOTComplicationView: View {
   private var family
 
   var body: some View {
-    if let target = entry.target, let timeOnTarget = target.timeOnTarget {
-      // Judged against the entry's own moment rather than the clock: WidgetKit renders an entry
-      // whenever it likes, and a run drawn for a time it is not yet at would be drawn closing.
-      if target.hasPassedTOT(at: entry.date) {
-        PastTOT(target: target, family: family)
-      } else if target.isClosing(at: entry.date) {
-        RunInCountdown(
-          target: target,
-          timeOnTarget: timeOnTarget,
-          family: family
-        )
-      } else {
-        StandingOff(
-          target: target,
-          timeOnTarget: timeOnTarget,
-          family: family
-        )
+    // Judged against the entry's own moment rather than the clock: WidgetKit renders an entry
+    // whenever it likes, and a run drawn for a time it is not yet at would be drawn closing.
+    if let target = entry.target, let timeOnTarget = target.timeOnTarget,
+      let status = target.status(at: entry.date)
+    {
+      switch status {
+        case .pastTOT, .expired:
+          PastTOT(target: target, family: family)
+        case .closing:
+          RunInCountdown(
+            target: target,
+            timeOnTarget: timeOnTarget,
+            family: family
+          )
+        case .standingOff:
+          StandingOff(
+            target: target,
+            timeOnTarget: timeOnTarget,
+            family: family
+          )
       }
     } else {
       NoRun(family: family)
