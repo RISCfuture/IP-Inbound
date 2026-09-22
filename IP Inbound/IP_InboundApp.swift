@@ -1,3 +1,4 @@
+import AppIntents
 import CloudKit
 import CoreData
 import IP_Inbound_Shared
@@ -85,6 +86,7 @@ struct IP_InboundApp: App {
       fatalError(error.localizedDescription)
     }
     Self.seedUITestTargetIfNeeded(into: modelContainer)
+    Self.registerIntentDependencies(for: modelContainer)
 
     // Before any view exists, because on the launch this is for none ever will: Core Location
     // relaunches the app in the background when a run outlives the process, and that launch
@@ -93,6 +95,14 @@ struct IP_InboundApp: App {
   }
 
   // MARK: - Type Methods
+
+  /// Siri and Shortcuts resolve targets through `AppDependencyManager`, which only ever learns of
+  /// what this process tells it — so the source is registered here, before any intent can ask.
+  private static func registerIntentDependencies(for modelContainer: ModelContainer) {
+    AppDependencyManager.shared.add(
+      dependency: SwiftDataTargetSource(modelContainer: modelContainer) as any TargetSource
+    )
+  }
 
   /// Sentry stays off under UI tests: its logging, profiling, and structured logging do
   /// main-thread work that keeps the run loop from going idle, which stalls XCUITest's
