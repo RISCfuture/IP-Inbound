@@ -15,6 +15,8 @@ struct SetupFlowView: View {
 
   @State private var path: [SetupFlowStep]
 
+  private let startsAtFly: Bool
+
   var body: some View {
     NavigationStack(path: $path) {
       TargetSetupView(target: target)
@@ -42,6 +44,10 @@ struct SetupFlowView: View {
           }
         }
     }
+    // A collapsed split view empties the path of a stack it pushes as its detail, after the
+    // initializer has laid that path out. A flow asked to open on the Fly screen while the target
+    // list is showing — as a Siri request is, on iPhone — would otherwise open at its start.
+    .task(restoreFlyOnceSettled)
     // Setting a run up is the point at which the pilot has committed to flying one, so it is the
     // point at which the GPS is worth warming and the authorization prompt is worth raising: the
     // Fly screen then opens on a fix already in hand rather than on the acquiring-GPS placeholder.
@@ -60,6 +66,13 @@ struct SetupFlowView: View {
     self.onSelectTarget = onSelectTarget
     self.onChooseTarget = onChooseTarget
     _path = State(initialValue: startAtFly ? [.fly] : [.targetSetup])
+    startsAtFly = startAtFly
+  }
+
+  private func restoreFlyOnceSettled() async {
+    await Task.yield()
+    guard startsAtFly, path.isEmpty else { return }
+    path = [.fly]
   }
 }
 

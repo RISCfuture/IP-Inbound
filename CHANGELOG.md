@@ -17,6 +17,9 @@ on working — but this is where new versions stop until you update.
 
 - With your iPhone in landscape, the Dynamic Island shows your run as a target
   symbol and a ring that runs down to your time on target.
+- Siri and Shortcuts: say “Fly Bullseye in IP Inbound” to open a target’s Fly
+  screen, ask how long it is to your time on target, or end the run you’re
+  flying. On Apple Watch, ask Siri how long it is to your time on target.
 
 ## 2.1.0
 
