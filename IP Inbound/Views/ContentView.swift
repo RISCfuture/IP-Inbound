@@ -17,25 +17,12 @@ struct ContentView: View {
   }
 
   var body: some View {
+    @Bindable var errorStore = errorStore
     TargetListView(resumedTarget: resumedTarget)
-      .alert(
-        "Something went wrong.",
-        isPresented: isErrorPresented,
-        presenting: errorStore.error
-      ) { _ in
-        Button("OK") { errorStore.error = nil }
+      .alert("Something went wrong.", item: $errorStore.error) { _ in
       } message: { error in
         Text(errorMessage(for: error))
       }
-  }
-
-  private var isErrorPresented: Binding<Bool> {
-    Binding(
-      get: { errorStore.error != nil },
-      set: { isPresented in
-        if !isPresented { errorStore.error = nil }
-      }
-    )
   }
 
   private func errorMessage(for error: any Error) -> String {
