@@ -172,7 +172,7 @@ final class RunController {
 
   private func fly(_ target: Target) async {
     await LocationStreamer.shared.start()
-    defer { Task { await LocationStreamer.shared.stop() } }
+    defer { await LocationStreamer.shared.stop() }
 
     guard let stream = await LocationStreamer.shared.eventStream() else { return }
 
