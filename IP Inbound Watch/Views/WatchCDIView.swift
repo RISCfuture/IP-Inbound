@@ -178,26 +178,32 @@ extension LabeledReadout where Accessory == EmptyView {
   }
 }
 
-#Preview("On Course") {
-  if let math = WatchPreviewData.math() {
-    WatchCDIView(math: math, deviation: math.courseDeviation)
+/// Where the aircraft sits against the course, as the canvas labels it.
+private enum WatchCDIPreview: CaseIterable, CustomStringConvertible {
+  case onCourse, leftOfCourse, rightOfCourse, steeringToIP
+
+  var description: String {
+    switch self {
+      case .onCourse: "On Course"
+      case .leftOfCourse: "Left of Course"
+      case .rightOfCourse: "Right of Course"
+      case .steeringToIP: "Steering to the IP"
+    }
   }
+
+  var offsetEastNM: Double {
+    switch self {
+      case .leftOfCourse: 2
+      case .rightOfCourse: -2
+      case .onCourse, .steeringToIP: 0
+    }
+  }
+
+  var isOnRunIn: Bool { self != .steeringToIP }
 }
 
-#Preview("Left of Course") {
-  if let math = WatchPreviewData.math(offsetEastNM: 2) {
-    WatchCDIView(math: math, deviation: math.courseDeviation)
-  }
-}
-
-#Preview("Right of Course") {
-  if let math = WatchPreviewData.math(offsetEastNM: -2) {
-    WatchCDIView(math: math, deviation: math.courseDeviation)
-  }
-}
-
-#Preview("Steering to the IP") {
-  if let math = WatchPreviewData.math() {
-    WatchCDIView(math: math, deviation: nil)
+#Preview(arguments: WatchCDIPreview.allCases) { preview in
+  if let math = WatchPreviewData.math(offsetEastNM: preview.offsetEastNM) {
+    WatchCDIView(math: math, deviation: preview.isOnRunIn ? math.courseDeviation : nil)
   }
 }
