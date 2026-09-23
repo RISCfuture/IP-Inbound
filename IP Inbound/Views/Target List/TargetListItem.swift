@@ -1,3 +1,4 @@
+import AppIntents
 import Defaults
 import IP_Inbound_Shared
 import SwiftUI
@@ -43,6 +44,7 @@ struct TargetListItem: View {
         .accessibilityHidden(true)
     }
     .accessibilityIdentifier("targetListItem")
+    .appEntityIdentifier(.target(target.id))
   }
 }
 

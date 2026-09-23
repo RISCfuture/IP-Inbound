@@ -36,6 +36,16 @@ struct TargetEntity: AppEntity {
   }
 }
 
+extension EntityIdentifier {
+  /// How Siri knows the target with identifier `id`, for marking a screen as showing it.
+  ///
+  /// - Parameter id: the target's identifier.
+  /// - Returns: the identifier of the target's entity.
+  static func target(_ id: TargetSnapshot.ID) -> Self {
+    .init(for: TargetEntity.self, identifier: id)
+  }
+}
+
 /// Finds targets for Siri and Shortcuts, from whichever `TargetSource` this process registered with
 /// `AppDependencyManager` at launch.
 ///

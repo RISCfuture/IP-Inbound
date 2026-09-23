@@ -20,6 +20,10 @@
 		<key>CourseGuidance</key>
 		<string>Precise location lets IP Inbound show your course deviation and time to the target accurately enough to fly the run-in.</string>
 	</dict>
+	<key>NSUserActivityTypes</key>
+	<array>
+		<string>codes.tim.IP-Inbound.fly</string>
+	</array>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>location</string>
