@@ -9,6 +9,12 @@
     }
   ],
   "defaultOptions" : {
+    "environmentVariableEntries" : [
+      {
+        "key" : "SWIFT_TESTING_XCTEST_INTEROP_MODE",
+        "value" : "limited"
+      }
+    ],
     "testTimeoutsEnabled" : true
   },
   "testTargets" : [
