@@ -23,7 +23,7 @@ final class AppIntentsTests: BaseTestCase {
   /// Launches the app holding the seeded "Flythrough" target, so an intent run while it is up is
   /// performed by this process and finds the target in its store.
   @MainActor
-  private func launchWithSeededTarget() async {
+  private func launchWithSeededTarget() {
     app = XCUIApplication()
     app.disableLogStderrMirroring()
     app.launchArguments.append("-UITests")
@@ -33,7 +33,6 @@ final class AppIntentsTests: BaseTestCase {
     app.resetAuthorizationStatus(for: .location)
     app.launch()
     waitForAppStability()
-    await handleLocationPermissionIfNeeded()
   }
 
   /// The seeded target as the app's entity query hands it to Siri.
@@ -48,7 +47,7 @@ final class AppIntentsTests: BaseTestCase {
 
   @MainActor
   func testFlyTargetIntentOpensTheTargetsFlyScreen() async throws {
-    await launchWithSeededTarget()
+    launchWithSeededTarget()
     let target = try await seededTarget()
 
     try await Self.definitions.intents["FlyTargetIntent"].makeIntent(target: target).run()

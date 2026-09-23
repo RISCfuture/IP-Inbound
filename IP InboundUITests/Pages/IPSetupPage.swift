@@ -4,6 +4,8 @@ import XCUITestKit
 // swiftlint:disable prefer_nimble
 
 struct IPSetupPage: Page {
+  private static let keyboardDoneButton = "keyboardDoneButton"
+
   let app: XCUIApplication
 
   var isDisplayed: Bool {
@@ -43,7 +45,7 @@ struct IPSetupPage: Page {
   func enterBearing(_ value: String) {
     let field = scrollToVisible(offsetBearingField) ?? offsetBearingField
     XCTAssertTrue(field.waitForExistence(timeout: 5), "Bearing field should appear")
-    field.clearAndType(value, app: app)
+    field.clearAndType(value, app: app, doneButtonIdentifier: Self.keyboardDoneButton)
   }
 
   func selectBearingReference(_ reference: String) {
@@ -55,7 +57,7 @@ struct IPSetupPage: Page {
   func enterOffsetDistance(_ value: String) {
     let field = scrollToVisible(offsetDistanceField) ?? offsetDistanceField
     XCTAssertTrue(field.waitForExistence(timeout: 3), "Offset distance field should appear")
-    field.clearAndType(value, app: app)
+    field.clearAndType(value, app: app, doneButtonIdentifier: Self.keyboardDoneButton)
   }
 
   /// Commit a pending offset-distance edit by moving focus to another field.
@@ -71,7 +73,7 @@ struct IPSetupPage: Page {
   func enterOffsetTime(_ value: String) {
     let field = scrollToVisible(offsetTimeField) ?? offsetTimeField
     XCTAssertTrue(field.waitForExistence(timeout: 3), "Offset time field should appear")
-    field.clearAndType(value, app: app)
+    field.clearAndType(value, app: app, doneButtonIdentifier: Self.keyboardDoneButton)
   }
 
   func selectOffsetType(_ type: String) {
@@ -83,7 +85,7 @@ struct IPSetupPage: Page {
   func enterGroundSpeed(_ value: String) {
     let field = scrollToVisible(groundSpeedField) ?? groundSpeedField
     XCTAssertTrue(field.waitForExistence(timeout: 3), "Ground speed field should appear")
-    field.clearAndType(value, app: app)
+    field.clearAndType(value, app: app, doneButtonIdentifier: Self.keyboardDoneButton)
   }
 
   @discardableResult

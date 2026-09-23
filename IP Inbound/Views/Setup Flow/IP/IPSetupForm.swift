@@ -20,6 +20,8 @@ struct IPSetupForm: View {
 
   @State private var offsetType = IPOffsetType.distance
 
+  @FocusState private var focusedField: Field?
+
   @Default(.distanceUnit)
   private var distanceDefault
 
@@ -56,6 +58,7 @@ struct IPSetupForm: View {
               TextField("", value: $target.offsetBearing, format: .number)
                 .multilineTextAlignment(.trailing)
                 .keyboardType(.numberPad)
+                .focused($focusedField, equals: .bearing)
                 .accessibilityIdentifier("offsetBearingField")
               Picker("", selection: $target.offsetBearingIsTrue) {
                 Text("°M").tag(false)
@@ -84,6 +87,7 @@ struct IPSetupForm: View {
                 TextField("", value: offsetDistance, format: Self.offsetValueFormat)
                   .multilineTextAlignment(.trailing)
                   .keyboardType(.numberPad)
+                  .focused($focusedField, equals: .offsetDistance)
                   .accessibilityIdentifier("offsetDistanceField")
                 Picker("", selection: $distanceDefault) {
                   ForEach(DistanceUnit.allCases, id: \.self) { unit in
@@ -99,6 +103,7 @@ struct IPSetupForm: View {
                 TextField("", value: offsetTime, format: Self.offsetValueFormat)
                   .multilineTextAlignment(.trailing)
                   .keyboardType(.numberPad)
+                  .focused($focusedField, equals: .offsetTime)
                   .accessibilityIdentifier("offsetTimeField")
                 Text(localizedName(of: UnitDuration.minutes, style: .short))
               }
@@ -121,6 +126,7 @@ struct IPSetupForm: View {
             TextField("", value: targetGroundSpeed, format: .number)
               .multilineTextAlignment(.trailing)
               .keyboardType(.numberPad)
+              .focused($focusedField, equals: .groundSpeed)
               .accessibilityIdentifier("groundSpeedField")
             Picker("", selection: $distanceDefault) {
               ForEach(DistanceUnit.allCases, id: \.self) { unit in
@@ -135,6 +141,15 @@ struct IPSetupForm: View {
           Text("Target Ground Speed")
             .foregroundStyle(.secondary)
         }
+      }
+    }
+    // The number pad has no Return key, so without this the only way off a field is to tap
+    // elsewhere or scroll.
+    .toolbar {
+      ToolbarItemGroup(placement: .keyboard) {
+        Spacer()
+        Button("Done") { focusedField = nil }
+          .accessibilityIdentifier("keyboardDoneButton")
       }
     }
     // Switching representation re-rounds the now-active value into the store
@@ -152,6 +167,15 @@ struct IPSetupForm: View {
           target.setOffset(time: .init(value: offsetTime.wrappedValue, unit: .minutes))
       }
     }
+  }
+}
+
+extension IPSetupForm {
+  private enum Field {
+    case bearing
+    case offsetDistance
+    case offsetTime
+    case groundSpeed
   }
 }
 

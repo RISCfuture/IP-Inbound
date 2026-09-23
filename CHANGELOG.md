@@ -22,6 +22,8 @@ on working — but this is where new versions stop until you update.
   targets also appears as a shortcut in the Shortcuts app, which opens its Fly
   screen. On Apple Watch, ask Siri how long it is to your time on target.
 - Your targets turn up in Spotlight: search for one by name to open it.
+- The number pad for an IP’s bearing, offset and ground speed has a Done button,
+  so you can put the keyboard away without scrolling or tapping elsewhere.
 
 ## 2.1.0
 

@@ -73,7 +73,7 @@ final class FlyViewTests: BaseTestCase {
   private func launchSeededFlythrough(
     fix: String,
     secondsBeforeTOT: TimeInterval
-  ) async throws -> FlyPage {
+  ) throws -> FlyPage {
     let tot = try XCTUnwrap(
       Self.uiTestNowFormatter.date(from: "2026-05-18T18:00:00.000Z")
     )
@@ -89,7 +89,6 @@ final class FlyViewTests: BaseTestCase {
     app.resetAuthorizationStatus(for: .location)
     app.launch()
     waitForAppStability()
-    await handleLocationPermissionIfNeeded()
 
     let list = TargetListPage(app: app)
     XCTAssertTrue(list.isDisplayed, "Seeded target list should appear")
@@ -99,21 +98,21 @@ final class FlyViewTests: BaseTestCase {
 
   // Moving on-axis fix past the IP → `.toTarget` (IP→Target) guidance, which renders the CDI.
   @MainActor
-  private func launchIntoIPToTarget() async throws -> FlyPage {
-    try await launchSeededFlythrough(fix: Self.ipToTargetFix, secondsBeforeTOT: 90)
+  private func launchIntoIPToTarget() throws -> FlyPage {
+    try launchSeededFlythrough(fix: Self.ipToTargetFix, secondsBeforeTOT: 90)
   }
 
   // Stationary fix → `.countdownOnly` guidance, whose `TOTView` renders the distance readout.
   @MainActor
-  private func launchIntoCountdownWithDistance() async throws -> FlyPage {
-    try await launchSeededFlythrough(fix: Self.countdownFix, secondsBeforeTOT: 600)
+  private func launchIntoCountdownWithDistance() throws -> FlyPage {
+    try launchSeededFlythrough(fix: Self.countdownFix, secondsBeforeTOT: 600)
   }
 
   // Moving fix with no usable course → `IPTargetMath` is nil, so guidance falls back to
   // `.countdownOnly` with no geometry behind it.
   @MainActor
-  private func launchIntoCountdownWithoutMath() async throws -> FlyPage {
-    try await launchSeededFlythrough(fix: Self.noCourseFix, secondsBeforeTOT: 600)
+  private func launchIntoCountdownWithoutMath() throws -> FlyPage {
+    try launchSeededFlythrough(fix: Self.noCourseFix, secondsBeforeTOT: 600)
   }
 
   // Wait for any fly view content to appear after navigating to FlyView.
@@ -195,8 +194,8 @@ final class FlyViewTests: BaseTestCase {
   // MARK: - Test 32
 
   @MainActor
-  func testFlyView_WithMovement_ShowsCDI() async throws {
-    let flyPage = try await launchIntoIPToTarget()
+  func testFlyView_WithMovement_ShowsCDI() throws {
+    let flyPage = try launchIntoIPToTarget()
 
     // The IP→Target header confirms `.toTarget` guidance is active; the CDI is the navigation
     // display for that phase, which a static-location countdown never renders.
@@ -213,8 +212,8 @@ final class FlyViewTests: BaseTestCase {
   // MARK: - Test 33
 
   @MainActor
-  func testFlyView_PostIP_ShowsIPToTarget() async throws {
-    _ = try await launchIntoIPToTarget()
+  func testFlyView_PostIP_ShowsIPToTarget() throws {
+    _ = try launchIntoIPToTarget()
 
     // Past the IP and inbound, the header must read IP→Target — not the pre-IP "P.POS → IP" nor the
     // bypass "P.POS → Target". Assert the specific header and rule out the other phases.
@@ -235,7 +234,7 @@ final class FlyViewTests: BaseTestCase {
   // MARK: - Test 34
 
   @MainActor
-  func testFlyView_CountdownMode_ShowsDistanceReadout() async throws {
+  func testFlyView_CountdownMode_ShowsDistanceReadout() throws {
     // `configureTargetAndFly` injects no location, so `pposToTarget` is nil and the TOTView distance
     // readout never renders (the original test asserted nothing here — a no-op `else` branch let it
     // pass silently). The stationary harness puts the app in `.countdownOnly` with a valid position,
@@ -245,7 +244,7 @@ final class FlyViewTests: BaseTestCase {
     // pinned to the bottom safe-area edge, where the SwiftUI `.onTapGesture` responds to synthesized
     // taps only unreliably (and the cycled unit persists in `@Default`, making the start state
     // non-deterministic across runs). The cycling logic itself is trivial.
-    let flyPage = try await launchIntoCountdownWithDistance()
+    let flyPage = try launchIntoCountdownWithDistance()
 
     XCTAssertTrue(
       flyPage.flyDistanceDisplay.waitForExistence(timeout: 12),
@@ -261,14 +260,14 @@ final class FlyViewTests: BaseTestCase {
   // the "5-fly-pre-ip" screenshot scenario, which puts `FlyView` into
   // `.toIPWithSpeedGuidance`, the mode that renders `TimingView`.
   @MainActor
-  func testFlyView_ShowsRequiredSpeedForTOT() async throws {
+  func testFlyView_ShowsRequiredSpeedForTOT() throws {
     // The aircraft is 5 NM north of the IP on the run-in axis (no turn) but flying ~35 m/s — well
     // below the run-in speed — so it reaches the IP more than the on-time window late while still
     // recoverable at max speed. FlyView is therefore in `.toIPWithSpeedGuidance`, and because the
     // arrival sits outside the green on-time window it renders the required-speed callout (which is
     // hidden while on time). The clock ticks from UITEST_NOW, so it is set ~360 s before TOT to keep
     // this off-time, pre-bypass state through navigation and the wait below.
-    let flyPage = try await launchSeededFlythrough(
+    let flyPage = try launchSeededFlythrough(
       fix: "36.935565,-115.457402,1502,179,35",
       secondsBeforeTOT: 360
     )
@@ -286,11 +285,11 @@ final class FlyViewTests: BaseTestCase {
   }
 
   @MainActor
-  func testFlyView_HidesRequiredSpeedWhenBypassingIP() async throws {
+  func testFlyView_HidesRequiredSpeedWhenBypassingIP() throws {
     // Off the run-in axis with a large turn still required, this geometry can't make the TOT even
     // at max speed, so FlyView bypasses the IP. The required-speed callout must be hidden there: a
     // finite “req.” speed would wrongly imply the time-on-target is still achievable.
-    let flyPage = try await launchSeededFlythrough(
+    let flyPage = try launchSeededFlythrough(
       fix: "36.853375,-115.593249,1502,179,62",
       secondsBeforeTOT: 5 * 60
     )
@@ -311,11 +310,11 @@ final class FlyViewTests: BaseTestCase {
   // MARK: - Test 36
 
   @MainActor
-  func testFlyView_NoUsableCourse_KeepsCountdownReadouts() async throws {
+  func testFlyView_NoUsableCourse_KeepsCountdownReadouts() throws {
     // With no course to solve from, `FlyView` gets no `IPTargetMath` at all and falls back to the
     // countdown. Distance-to-target and push time are geometry between the position and the target,
     // needing neither speed nor course, so both must survive that fallback.
-    let flyPage = try await launchIntoCountdownWithoutMath()
+    let flyPage = try launchIntoCountdownWithoutMath()
 
     XCTAssertTrue(
       flyPage.flyDistanceDisplay.waitForExistence(timeout: 12),
@@ -341,11 +340,11 @@ final class FlyViewTests: BaseTestCase {
   // MARK: - Test 37
 
   @MainActor
-  func testFlyView_StandsDownOnceTheRunExpires() async throws {
+  func testFlyView_StandsDownOnceTheRunExpires() throws {
     // Arrives with the run still inside its grace and then touches nothing. A run outlives the
     // screen showing it, so nothing but the clock can end one — and the pilot who pockets the phone
     // on this screen is exactly who the bound is for.
-    let flyPage = try await launchSeededFlythrough(
+    let flyPage = try launchSeededFlythrough(
       fix: Self.shortOfIPMovingFix,
       secondsBeforeTOT: Self.standDownMargin - Self.postTOTGraceSeconds
     )
