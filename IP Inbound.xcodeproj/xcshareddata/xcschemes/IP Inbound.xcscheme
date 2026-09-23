@@ -39,6 +39,9 @@
          <TestPlanReference
             reference = "container:Generate Screenshots/Generate Screenshots.xctestplan">
          </TestPlanReference>
+         <TestPlanReference
+            reference = "container:IP InboundUITests/App Intents.xctestplan">
+         </TestPlanReference>
       </TestPlans>
       <Testables>
          <TestableReference
