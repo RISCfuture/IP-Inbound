@@ -3,6 +3,10 @@ import SwiftData
 import SwiftUI
 
 struct ContentView: View {
+  /// How long the targets must sit unchanged before Spotlight is told about them, so a name typed
+  /// a letter at a time is indexed once rather than once per letter.
+  private static let indexingDelay = Duration.seconds(2)
+
   @Environment(\.errorStore)
   private var errorStore
 
@@ -16,6 +20,12 @@ struct ContentView: View {
     return targets.first { $0.id == runTargetID }
   }
 
+  /// The targets as Spotlight is to see them, in a fixed order so that only a real change to one
+  /// of them reads as a change.
+  private var indexedTargets: [TargetSnapshot] {
+    targets.map(\.snapshot).sorted { $0.id < $1.id }
+  }
+
   var body: some View {
     @Bindable var errorStore = errorStore
     TargetListView(resumedTarget: resumedTarget)
@@ -23,6 +33,12 @@ struct ContentView: View {
       } message: { error in
         Text(errorMessage(for: error))
       }
+      .task(id: indexedTargets) { await indexOnceSettled(indexedTargets) }
+  }
+
+  private func indexOnceSettled(_ targets: [TargetSnapshot]) async {
+    guard (try? await Task.sleep(for: Self.indexingDelay)) != nil else { return }
+    await TargetSpotlightIndex.shared.reindex(targets)
   }
 
   private func errorMessage(for error: any Error) -> String {

@@ -21,6 +21,7 @@ on working — but this is where new versions stop until you update.
   you have, or “End the run in IP Inbound” when you’re done. Each of your
   targets also appears as a shortcut in the Shortcuts app, which opens its Fly
   screen. On Apple Watch, ask Siri how long it is to your time on target.
+- Your targets turn up in Spotlight: search for one by name to open it.
 
 ## 2.1.0
 

@@ -1,9 +1,11 @@
 import AppIntents
 import Foundation
 import IP_Inbound_Shared
+import MeasurementKitLocation
 
 /// A target as Siri and Shortcuts see it: enough to name it, tell it apart from its neighbours, and
-/// hand its identifier back to the app — nothing of its geometry.
+/// hand its identifier back to the app — nothing of its run-in geometry. Its coordinate is there
+/// only to be shown beside it in search; guidance always reads the target afresh.
 ///
 /// Compiled into both the iPhone and the Apple Watch app, so it is built from a `TargetSnapshot`
 /// rather than the iPhone's SwiftData model.
@@ -14,6 +16,7 @@ struct TargetEntity: AppEntity {
   let id: TargetSnapshot.ID
   let name: String
   let timeOnTarget: Date?
+  let coordinate: Coordinate
 
   /// Always in Zulu: Siri has no display-mode preference to consult on the watch, and a time spoken
   /// or shown without its zone is worse than one in the zone the pilot briefed in.
@@ -29,6 +32,7 @@ struct TargetEntity: AppEntity {
     id = snapshot.id
     name = snapshot.name
     timeOnTarget = snapshot.timeOnTarget
+    coordinate = snapshot.coordinate
   }
 }
 
@@ -40,7 +44,7 @@ struct TargetEntity: AppEntity {
 struct TargetEntityQuery: EntityStringQuery, EnumerableEntityQuery {
   static let allowedExecutionTargets: IntentExecutionTargets = .main
 
-  @Dependency private var source: any TargetSource
+  @Dependency var source: any TargetSource
 
   /// Orders targets the way a pilot reaches for them: the run being flown first, then the runs still
   /// live, soonest time on target first, then everything else by name.
