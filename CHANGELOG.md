@@ -20,6 +20,7 @@ on working — but this is where new versions stop until you update.
 - Siri and Shortcuts: say “Fly Bullseye in IP Inbound” to open a target’s Fly
   screen, ask how long it is to your time on target, or end the run you’re
   flying. On Apple Watch, ask Siri how long it is to your time on target.
+- Your targets turn up in Spotlight: search for one by name to open it.
 
 ## 2.1.0
 
