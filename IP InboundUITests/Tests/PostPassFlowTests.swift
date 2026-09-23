@@ -32,7 +32,7 @@ final class PostPassFlowTests: BaseTestCase {
   func testPostPass_ShowsPastTargetAndFliesNextTarget() async throws {
     let now = try XCTUnwrap(Self.uiTestNowFormatter.date(from: Self.nowISO))
 
-    await launchWithSeededTargets(now: now, location: Self.pastTargetFix)
+    launchWithSeededTargets(now: now, location: Self.pastTargetFix)
 
     let list = TargetListPage(app: app)
     XCTAssertTrue(list.isDisplayed, "Target list should appear with the seeded targets")
@@ -104,7 +104,7 @@ final class PostPassFlowTests: BaseTestCase {
   // MARK: - Helpers
 
   @MainActor
-  private func launchWithSeededTargets(now: Date, location: String) async {
+  private func launchWithSeededTargets(now: Date, location: String) {
     let knownApps = ["codes.tim.FART"]
     for bundleID in knownApps {
       let other = XCUIApplication(bundleIdentifier: bundleID)
@@ -129,7 +129,6 @@ final class PostPassFlowTests: BaseTestCase {
     app.resetAuthorizationStatus(for: .location)
     app.launch()
     waitForAppStability()
-    await handleLocationPermissionIfNeeded()
   }
 
   // Screenshot capture on the next target's screen. Uses a generic `Page`

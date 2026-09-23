@@ -73,7 +73,8 @@ nonisolated class BaseTestCase: XCTestCase {
     app.resetAuthorizationStatus(for: .location)
     app.launch()
     waitForAppStability()
-    await handleLocationPermissionIfNeeded()
+    // A scripted feed never constructs a CLLocationManager, so there is no prompt to wait out.
+    if location == nil && path == nil { await handleLocationPermissionIfNeeded() }
   }
 
   @MainActor

@@ -45,7 +45,6 @@ final class HarnessFlythroughTests: BaseTestCase {
     app.resetAuthorizationStatus(for: .location)
     app.launch()
     waitForAppStability()
-    await handleLocationPermissionIfNeeded()
 
     let list = TargetListPage(app: app)
     XCTAssertTrue(list.isDisplayed, "Target list should appear with the seeded target")

@@ -22,6 +22,8 @@ on working — but this is where new versions stop until you update.
   flying. On Apple Watch, ask Siri how long it is to your time on target.
 - Your targets turn up in Spotlight: search for one by name to open it.
 - Siri can see which target you have on screen, on iPhone and Apple Watch.
+- The number pad for an IP’s bearing, offset and ground speed has a Done button,
+  so you can put the keyboard away without scrolling or tapping elsewhere.
 
 ## 2.1.0
 

@@ -23,7 +23,7 @@ struct TargetSetupPage: Page {
   func enterTargetName(_ name: String) {
     let field = scrollToVisible(targetNameField) ?? targetNameField
     XCTAssertTrue(field.waitForExistence(timeout: 5), "Target name field should appear")
-    field.clearAndType(name, app: app)
+    field.clearAndType("\(name)\n", app: app)
   }
 
   func tapCoordinatesToCycleFormat() {
