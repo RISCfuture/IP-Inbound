@@ -15,6 +15,16 @@ struct TimeOnTargetIntent: AppIntent {
   static let supportedModes: IntentModes = .background
   static let allowedExecutionTargets: IntentExecutionTargets = .main
 
+  /// The time on target as Siri says it: a clock time and the zone by name. Read aloud, the
+  /// `2248Z` every screen shows is a number and a letter — "two thousand two hundred forty-eight
+  /// zee" — where the colon makes it a time, "twenty-two forty-eight".
+  private static let spokenZuluFormat = Date.VerbatimFormatStyle(
+    format:
+      "\(hour: .twoDigits(clock: .twentyFourHour, hourCycle: .zeroBased)):\(minute: .twoDigits) Zulu",
+    timeZone: .gmt,
+    calendar: .init(identifier: .gregorian)
+  )
+
   private static let remainingFormat = Duration.UnitsFormatStyle(
     allowedUnits: [.hours, .minutes, .seconds],
     width: .wide,
@@ -35,7 +45,7 @@ struct TimeOnTargetIntent: AppIntent {
     guard let timeOnTarget = target.timeOnTarget, let status = target.status(at: now) else {
       return "\(target.name) has no time on target."
     }
-    let zulu = timeOnTarget.formatted(zuluTOTFormatStyle),
+    let zulu = timeOnTarget.formatted(spokenZuluFormat),
       interval = Duration.seconds(abs(timeOnTarget.timeIntervalSince(now)).rounded())
         .formatted(remainingFormat)
     switch status {
