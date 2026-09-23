@@ -24,6 +24,12 @@ struct WatchCDIView: View {
 
       if let deviation {
         DeviationScale(deviation: deviation)
+      } else {
+        // Keeps the needle's room, so the readouts hold their place below the name whether or not
+        // the phase flies a course.
+        DeviationScale(deviation: .init(crossTrackDistance: .init(value: 0, unit: .nauticalMiles)))
+          .hidden()
+          .accessibilityHidden(true)
       }
 
       if let fromTo = math.pposToTarget {
