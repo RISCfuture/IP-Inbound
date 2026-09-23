@@ -12,6 +12,10 @@
       {
         "key": "XCUITEST_TIMEOUT_MULTIPLIER",
         "value": "3"
+      },
+      {
+        "key": "SWIFT_TESTING_XCTEST_INTEROP_MODE",
+        "value": "limited"
       }
     ]
   },
