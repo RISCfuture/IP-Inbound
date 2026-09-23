@@ -1,9 +1,13 @@
+import AppIntents
 import CoreLocation
 import IP_Inbound_Shared
 import MeasurementKitLocation
 import SwiftUI
 
 struct FlyView: View {
+  /// Declared under `NSUserActivityTypes` in the app's Info.plist.
+  private static let activityType = "codes.tim.IP-Inbound.fly"
+
   var target: Target
   var onSelectTarget: (Target) -> Void = { _ in }
   var onChooseTarget: () -> Void = {}
@@ -99,6 +103,9 @@ struct FlyView: View {
     // large-title bar's worth of empty space above the readouts whenever it is opened straight from
     // the root of the setup flow, as a Siri request does.
     .navigationBarTitleDisplayMode(.inline)
+    // Flying a target is an activity of its own, so Siri, asked about the run with no target named,
+    // answers for this one.
+    .userActivity(Self.activityType) { $0.appEntityIdentifier = .target(target.id) }
     .onAppear {
       target.isConfigured = true
       RunController.shared.beginRun(flying: target)

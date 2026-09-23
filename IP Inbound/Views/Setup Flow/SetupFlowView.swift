@@ -1,3 +1,4 @@
+import AppIntents
 import SwiftData
 import SwiftUI
 
@@ -48,6 +49,8 @@ struct SetupFlowView: View {
     // initializer has laid that path out. A flow asked to open on the Fly screen while the target
     // list is showing — as a Siri request is, on iPhone — would otherwise open at its start.
     .task(restoreFlyOnceSettled)
+    // Every screen of the flow is about this one target, so Siri can take it as the one on screen.
+    .appEntityIdentifier(.target(target.id))
     // Setting a run up is the point at which the pilot has committed to flying one, so it is the
     // point at which the GPS is worth warming and the authorization prompt is worth raising: the
     // Fly screen then opens on a fix already in hand rather than on the acquiring-GPS placeholder.

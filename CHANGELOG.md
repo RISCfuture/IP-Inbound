@@ -21,6 +21,7 @@ on working — but this is where new versions stop until you update.
   screen, ask how long it is to your time on target, or end the run you’re
   flying. On Apple Watch, ask Siri how long it is to your time on target.
 - Your targets turn up in Spotlight: search for one by name to open it.
+- Siri can see which target you have on screen, on iPhone and Apple Watch.
 
 ## 2.1.0
 
