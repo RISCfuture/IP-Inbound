@@ -1,3 +1,4 @@
+import AppIntents
 import CoreLocation
 import IP_Inbound_Shared
 import SwiftUI
@@ -11,15 +12,18 @@ struct WatchGuidanceView: View {
   private var locationModel
 
   var body: some View {
-    // Tested before the fix, because `accuracyLimited` arrives with one and the CDI must not be
-    // drawn from a deliberately coarsened position.
-    if let impediment = locationModel.diagnostics.impediment {
-      WatchLocationUnavailableView(impediment: impediment)
-    } else if let location = locationModel.location {
-      WatchLocatedGuidance(location: location, target: target)
-    } else {
-      WatchAcquiringFixView()
+    Group {
+      // Tested before the fix, because `accuracyLimited` arrives with one and the CDI must not be
+      // drawn from a deliberately coarsened position.
+      if let impediment = locationModel.diagnostics.impediment {
+        WatchLocationUnavailableView(impediment: impediment)
+      } else if let location = locationModel.location {
+        WatchLocatedGuidance(location: location, target: target)
+      } else {
+        WatchAcquiringFixView()
+      }
     }
+    .appEntityIdentifier(.target(target.id))
   }
 }
 
