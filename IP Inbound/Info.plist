@@ -6,10 +6,6 @@
 	<array>
 		<dict>
 			<key>INAlternativeAppName</key>
-			<string>Inbound</string>
-		</dict>
-		<dict>
-			<key>INAlternativeAppName</key>
 			<string>I P Inbound</string>
 			<key>INAlternativeAppNamePronunciationHint</key>
 			<string>eye pee inbound</string>
