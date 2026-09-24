@@ -52,7 +52,13 @@ final class AppIntentsTests: BaseTestCase {
 
     try await Self.definitions.intents["FlyTargetIntent"].makeIntent(target: target).run()
 
-    XCTAssertTrue(FlyPage(app: app).isDisplayed, "Flying a target should open its Fly screen")
+    let fly = FlyPage(app: app)
+    XCTAssertTrue(fly.isDisplayed, "Flying a target should open its Fly screen")
+
+    let setup = TargetSetupPage(app: app)
+    let didLeave = await fly.tapButton("BackButton", toReveal: setup.defineIPButton)
+    XCTAssertTrue(didLeave, "Back should leave the Fly screen")
+    XCTAssertFalse(fly.isDisplayed, "The Fly screen should stay closed once the pilot leaves it")
   }
 }
 

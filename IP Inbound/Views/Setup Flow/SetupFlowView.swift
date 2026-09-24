@@ -16,7 +16,10 @@ struct SetupFlowView: View {
 
   @State private var path: [SetupFlowStep]
 
-  private let startsAtFly: Bool
+  /// Whether the flow still owes the Fly screen it was asked to open on. The task that restores it
+  /// runs again whenever the pilot pops back to the stack's root — when the path is empty, just as
+  /// it is after the split view collapses — so it has to know the debt is already paid.
+  @State private var isRestoringFly: Bool
 
   var body: some View {
     NavigationStack(path: $path) {
@@ -69,13 +72,14 @@ struct SetupFlowView: View {
     self.onSelectTarget = onSelectTarget
     self.onChooseTarget = onChooseTarget
     _path = State(initialValue: startAtFly ? [.fly] : [.targetSetup])
-    startsAtFly = startAtFly
+    _isRestoringFly = State(initialValue: startAtFly)
   }
 
   private func restoreFlyOnceSettled() async {
     await Task.yield()
-    guard startsAtFly, path.isEmpty else { return }
-    path = [.fly]
+    guard isRestoringFly else { return }
+    isRestoringFly = false
+    if path.isEmpty { path = [.fly] }
   }
 }
 
