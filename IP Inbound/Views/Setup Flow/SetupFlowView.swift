@@ -16,10 +16,10 @@ struct SetupFlowView: View {
 
   @State private var path: [SetupFlowStep]
 
-  /// Whether the flow still owes the Fly screen it was asked to open on. The task that restores it
-  /// runs again whenever the pilot pops back to the stack's root — when the path is empty, just as
-  /// it is after the split view collapses — so it has to know the debt is already paid.
-  @State private var isRestoringFly: Bool
+  /// Whether the flow still owes the Fly screen it was asked to open on. It is owed until that
+  /// screen has appeared: until then an empty path is the split view's doing, and after it, the
+  /// pilot's.
+  @State private var owesFlyScreen: Bool
 
   var body: some View {
     NavigationStack(path: $path) {
@@ -44,14 +44,16 @@ struct SetupFlowView: View {
               )
               .onAppear {
                 target.isConfigured = true
+                owesFlyScreen = false
               }
           }
         }
     }
     // A collapsed split view empties the path of a stack it pushes as its detail, after the
-    // initializer has laid that path out. A flow asked to open on the Fly screen while the target
-    // list is showing — as a Siri request is, on iPhone — would otherwise open at its start.
-    .task(restoreFlyOnceSettled)
+    // initializer has laid that path out, and how soon after depends on how the app was brought
+    // forward. A flow asked to open on the Fly screen while the target list is showing — as a Siri
+    // request is, on iPhone — would otherwise open at its start.
+    .onChange(of: path, initial: true, restoreOwedFlyScreen)
     // Every screen of the flow is about this one target, so Siri can take it as the one on screen.
     .appEntityIdentifier(.target(target.id))
     // Setting a run up is the point at which the pilot has committed to flying one, so it is the
@@ -72,14 +74,13 @@ struct SetupFlowView: View {
     self.onSelectTarget = onSelectTarget
     self.onChooseTarget = onChooseTarget
     _path = State(initialValue: startAtFly ? [.fly] : [.targetSetup])
-    _isRestoringFly = State(initialValue: startAtFly)
+    _owesFlyScreen = State(initialValue: startAtFly)
   }
 
-  private func restoreFlyOnceSettled() async {
-    await Task.yield()
-    guard isRestoringFly else { return }
-    isRestoringFly = false
-    if path.isEmpty { path = [.fly] }
+  private func restoreOwedFlyScreen() {
+    guard owesFlyScreen, path.isEmpty else { return }
+    // The split view empties the path mid-update, and a push made inside that update is dropped.
+    Task { path = [.fly] }
   }
 }
 
