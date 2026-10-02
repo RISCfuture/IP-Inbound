@@ -126,31 +126,45 @@ final actor SimReceiver {
     channel = nil
     group = nil
 
-    do {
-      if let currentChannel {
-        try await currentChannel.close()
-      }
-
-      if let currentGroup {
-        try await currentGroup.shutdownGracefully()
-      }
-      Self.logger.info("UDP server stopped")
-    } catch {
-      SentrySDK.capture(error: error) { scope in
-        scope.setLevel(.warning)
-        scope.setTag(value: "sim-receiver", key: "component")
-        scope.setFingerprint(["sim-receiver", "stop"])
-      }
-      Self.logger.error(
-        "Error stopping UDP server",
-        metadata: [
-          "error": "\(error)"
-        ]
-      )
-    }
+    await close(currentChannel)
+    await shutDown(currentGroup)
+    Self.logger.info("UDP server stopped")
 
     // Don't finish the continuation - we want to keep the stream alive
     // but just not yield any data when there's no connection
+  }
+
+  /// Closes the channel, tolerating one that is already closed.
+  private func close(_ channel: (any Channel)?) async {
+    do {
+      try await channel?.close()
+    } catch ChannelError.alreadyClosed {
+      return
+    } catch {
+      reportStopError(error)
+    }
+  }
+
+  private func shutDown(_ group: (any EventLoopGroup)?) async {
+    do {
+      try await group?.shutdownGracefully()
+    } catch {
+      reportStopError(error)
+    }
+  }
+
+  private func reportStopError(_ error: any Error) {
+    SentrySDK.capture(error: error) { scope in
+      scope.setLevel(.warning)
+      scope.setTag(value: "sim-receiver", key: "component")
+      scope.setFingerprint(["sim-receiver", "stop"])
+    }
+    Self.logger.error(
+      "Error stopping UDP server",
+      metadata: [
+        "error": "\(error)"
+      ]
+    )
   }
 }
 
