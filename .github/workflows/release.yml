@@ -9,7 +9,10 @@ name: Release
 # version ends up pointing at the newer build; the older one stays on App Store Connect, since a
 # build can be expired but never deleted. A tag push is a deploy, not bookkeeping.
 #
-# Nothing here re-runs the tests: tag a commit CI has already passed.
+# Nothing here re-runs the test suites: tag a commit CI has already passed. The one test it does
+# run is CloudKitSchemaTests, strictly, after checking Production still matches
+# CloudKit/schema.ckdb: a model that schema doesn't cover would never sync from the build being
+# shipped. See CloudKit/README.md.
 on:
   push:
     tags: ["[0-9]+.[0-9]+*"]
@@ -25,7 +28,23 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  cloudkit:
+    uses: RISCfuture/XCUITestKit/.github/workflows/cloudkit-schema.yml@1.1.0
+    with:
+      runner: xcode-27
+      ruby-version: "4.0.7"
+      team-id: 2NFSK2WB24
+      container-id: iCloud.codes.tim.IP-Inbound
+      certificates-repo: RISCfuture/certificates
+      scheme: IP Inbound
+      destination: platform=iOS Simulator,name=iPhone 17 Pro
+      only-testing: IP InboundTests/CloudKitSchemaTests
+    secrets:
+      certificates-token: ${{ secrets.CERTIFICATES_TOKEN }}
+      match-password: ${{ secrets.MATCH_PASSWORD }}
+
   release:
+    needs: cloudkit
     uses: RISCfuture/XCUITestKit/.github/workflows/ios-release.yml@1.0.0
     with:
       # The watch app and the Live Activity extension are embedded in the iOS archive.
