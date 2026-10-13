@@ -12,6 +12,9 @@ import SwiftUI
 struct IP_InboundApp: App {
   // MARK: - Type Properties
 
+  /// The models synced through the app's CloudKit container.
+  static let syncedModels: [any PersistentModel.Type] = [Target.self]
+
   private static var isRunningTests: Bool {
     // Detect unit tests (XCTestCase is loaded in the app process)
     if NSClassFromString("XCTestCase") != nil {
@@ -226,7 +229,7 @@ struct IP_InboundApp: App {
         // Load the store synchronously so it completes before initializing the
         // CloudKit schema.
         desc.shouldAddStoreAsynchronously = false
-        if let mom = NSManagedObjectModel.makeManagedObjectModel(for: [Target.self]) {
+        if let mom = NSManagedObjectModel.makeManagedObjectModel(for: syncedModels) {
           let container = NSPersistentCloudKitContainer(name: "IP Inbound", managedObjectModel: mom)
           container.persistentStoreDescriptions = [desc]
           container.loadPersistentStores { _, err in

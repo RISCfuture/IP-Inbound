@@ -1,0 +1,32 @@
+name: CloudKit
+
+# Fails when the container's live Production schema differs from CloudKit/schema.ckdb — a deploy
+# from CloudKit Console that was never exported, or an export that was never deployed. The weekly
+# run catches a console change made between commits. Whether the schema covers the models is the
+# unit suite's CloudKitSchemaTests: a warning there, and a failure in the release workflow.
+on:
+  push:
+    branches: [main]
+  # No base-branch filter, as in ci.yml: a stacked pull request targets the branch below it.
+  pull_request:
+  schedule:
+    - cron: "17 9 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  schema:
+    uses: RISCfuture/XCUITestKit/.github/workflows/cloudkit-schema.yml@1.1.0
+    with:
+      runner: xcode-27
+      # .ruby-version carries an RVM prefix setup-ruby cannot parse.
+      ruby-version: "4.0.7"
+      team-id: 2NFSK2WB24
+      container-id: iCloud.codes.tim.IP-Inbound
+      certificates-repo: RISCfuture/certificates
+    secrets:
+      certificates-token: ${{ secrets.CERTIFICATES_TOKEN }}
+      match-password: ${{ secrets.MATCH_PASSWORD }}
