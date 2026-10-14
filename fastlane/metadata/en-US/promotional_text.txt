@@ -1,0 +1,1 @@
+Brief a target, an initial point and a time on target, then fly one screen that tells you where to steer and how fast to go, until it reports the pass to the second.
