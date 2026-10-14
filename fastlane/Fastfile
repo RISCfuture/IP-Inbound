@@ -88,6 +88,9 @@ RELEASE_NOTES_LIMIT = 4000
 ASSET_CATALOG = "IP Inbound/Assets.xcassets"
 DOCS_SHOTS_DIRECTORY = "docs/assets/img/shots"
 
+# The listing text deliver uploads and downloads, a folder per locale.
+METADATA_PATH = File.expand_path("metadata", __dir__)
+
 # The Sentry project the release lanes upload dSYMs and sources to. `sentry-cli` reads
 # SENTRY_AUTH_TOKEN from the environment itself; `.sentryclirc` is committed and so holds only the
 # project's identity.
@@ -406,6 +409,14 @@ def write_docs_shot(image)
   end
 end
 
+# Removes what deliver's metadata download writes but the repository doesn't keep: CHANGELOG.md is
+# the source of the release notes, the review contact holds personal details, and the app has no
+# Apple TV listing.
+def remove_unversioned_metadata
+  FileUtils.rm_f(Dir.glob(File.join(METADATA_PATH, "*", "{release_notes,apple_tv_privacy_policy}.txt")))
+  FileUtils.rm_rf(Dir.glob(File.join(METADATA_PATH, "{review_information,trade_representative_contact_information}")))
+end
+
 def certificates_repo
   path = ENV.fetch("CERTIFICATES_REPO", DEFAULT_CERTIFICATES_REPO)
   return path if Dir.exist?(path)
@@ -634,6 +645,38 @@ platform :ios do
   lane :screenshots_and_upload do
     screenshots
     upload_screenshots
+  end
+
+  desc "Upload fastlane/metadata to the version open for editing"
+  lane :upload_metadata do
+    ensure_api_key
+    remove_unversioned_metadata
+    upload_to_app_store(
+      app_identifier:             APP_IDENTIFIER,
+      metadata_path:              METADATA_PATH,
+      skip_binary_upload:         true,
+      skip_screenshots:           true,
+      skip_app_version_update:    true,
+      force:                      true,
+      run_precheck_before_submit: false
+    )
+  end
+
+  desc "Download the live listing into fastlane/metadata"
+  lane :download_metadata do
+    ensure_api_key
+    require "deliver"
+    require "deliver/setup"
+
+    app = Spaceship::ConnectAPI::App.find(APP_IDENTIFIER)
+    version = app.get_live_app_store_version(platform: Spaceship::ConnectAPI::Platform::IOS)
+    UI.user_error!("#{APP_IDENTIFIER} has no live version to download.") unless version
+
+    deliver_options = FastlaneCore::Configuration.create(Deliver::Options.available_options,
+                                                         app_identifier:   APP_IDENTIFIER,
+                                                         use_live_version: true)
+    Deliver::Setup.new.generate_metadata_files(app, version, METADATA_PATH, deliver_options)
+    remove_unversioned_metadata
   end
 
   desc "Build and upload to TestFlight"

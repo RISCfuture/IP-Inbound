@@ -1,0 +1,1 @@
+tot,pilot,flyover,formation,airshow,aviation,timing,eta,initial,point,run-in,mgrs,navigation,cdi,utm

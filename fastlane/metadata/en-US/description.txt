@@ -1,0 +1,39 @@
+Cross the target at the second you promised. IP Inbound turns a target, an initial point and a time on target into live course and speed guidance, from the countdown on the ground to the moment you pass overhead.
+
+THE PROBLEM
+
+You are lead of a formation over a ceremony, or you are being scored on putting a flour bomb on a mock target. Either way you are handed three things: a target, a time on target (TOT), and an initial point (IP) or run-in direction.
+
+The rest is on you: pick a run-in speed, plan the arrival over the IP, and keep adjusting as the winds and the timeline move. When a band or a pyrotechnics display is keyed to your pass, ten seconds off is wrong.
+
+IP Inbound does that arithmetic continuously, in flight, so you can fly.
+
+PLAN
+
+Place the target on the map, by name, or as latitude/longitude, UTM or MGRS. Set the run-in bearing, distance and ground speed, and IP Inbound works the TOT backwards to find your time over the IP. No final TOT yet? Set it later; it can change in the air.
+
+FLY
+
+ON THE GROUND, a countdown to TOT keeps engine start, taxi and departure honest.
+
+PRE-IP, the course deviation indicator gives direct-to guidance to the IP, and speed guidance tells you to speed up or slow down to make your time over it. If you are very early, it becomes a countdown to your push time.
+
+OUT OF TIME FOR THE IP, the title turns red and reads P.POS → Target, and guidance goes direct to the target from your present position.
+
+ON THE RUN-IN, the indicator switches to desired-track guidance along the IP-to-target bearing, and speed guidance drives you to cross at exactly TOT.
+
+PAST THE TARGET, it reports the pass in seconds early or late. Set several targets with sequential TOTs and chain them with one tap after each pass.
+
+Timing includes the turn to the IP and the turn onto the run-in, flown as level 30°-banked turns. Throw in a 360 or an S-turn and the estimate still holds.
+
+ALSO
+
+• Apple Watch repeats the indicator, the countdown and speed guidance, for when the phone is kneeboarded and your eyes are outside. A complication keeps the countdown on the watch face.
+• A Live Activity keeps the countdown and your run-in figures on the Lock Screen and in the Dynamic Island.
+• Ask Siri "Time on target in IP Inbound" to hear how long you have.
+• Targets sync over iCloud, so you can build the list on the iPad and fly it from the iPhone. They turn up in Spotlight, too.
+• Knots, MPH or KPH; local or Zulu time.
+
+IP Inbound is free and open source, with no ads, no subscription and no tracking. Your position is processed on the device and never transmitted.
+
+IP Inbound is a planning and situational-awareness aid. It is not certified for navigation. The pilot in command remains responsible for the safe conduct of the flight.
