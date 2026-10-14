@@ -2,6 +2,5 @@
 
 source "https://rubygems.org"
 
-gem "fastlane", "~> 2.238"
-
-eval_gemfile("fastlane/Pluginfile") if File.exist?("fastlane/Pluginfile")
+# Carries fastlane PRs #30442 and #30457 (creative asset uploads) until a fastlane release includes them.
+gem "fastlane", git: "https://github.com/RISCfuture/fastlane.git", branch: "creative-assets"
