@@ -8,9 +8,11 @@ leave the device.
 
 ## Changing the schema
 
-1. Write the new model to Development. Every Debug launch on a device or
-   simulator signed into iCloud initializes the schema from
-   `IP_InboundApp.syncedModels`, so run one once after changing the model.
+1. Write the new model to Development. Launch a Debug build on a device or
+   simulator signed into iCloud with the `-initializeCloudKitSchema` argument
+   (in the scheme's Arguments Passed On Launch). It writes every record type
+   and field of `IP_InboundApp.syncedModels`, prints "Wrote the CloudKit schema
+   to the Development environment.", and quits.
 
 2. Deploy it. In CloudKit Console, open Development and choose **Deploy Schema
    Changes**. The diff should show only additions: Production is append-only,

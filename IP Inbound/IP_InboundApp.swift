@@ -1,6 +1,4 @@
 import AppIntents
-import CloudKit
-import CoreData
 import IP_Inbound_Shared
 import MeasurementKitLocation
 import MetalKit
@@ -14,6 +12,9 @@ struct IP_InboundApp: App {
 
   /// The models synced through the app's CloudKit container.
   static let syncedModels: [any PersistentModel.Type] = [Target.self]
+
+  /// The CloudKit container that `syncedModels` sync through.
+  static let cloudKitContainerIdentifier = "iCloud.codes.tim.IP-Inbound"
 
   private static var isRunningTests: Bool {
     // Detect unit tests (XCTestCase is loaded in the app process)
@@ -84,9 +85,17 @@ struct IP_InboundApp: App {
     // Ensure Metal is available
     _ = MTLCreateSystemDefaultDevice()
 
+    #if DEBUG
+      CloudKitSchemaInitializer.initializeIfRequested(
+        models: Self.syncedModels,
+        containerIdentifier: Self.cloudKitContainerIdentifier
+      )
+    #endif
     do {
-      let config = try Self.createCloudKitStore()
-      modelContainer = try ModelContainer(for: Target.self, configurations: config)
+      modelContainer = try ModelContainer(
+        for: Target.self,
+        configurations: Self.makeModelConfiguration()
+      )
     } catch {
       fatalError(error.localizedDescription)
     }
@@ -203,50 +212,12 @@ struct IP_InboundApp: App {
     return target
   }
 
-  private static func createCloudKitStore() throws -> ModelConfiguration {
+  private static func makeModelConfiguration() -> ModelConfiguration {
     // Disable CloudKit entirely when running tests to avoid blocking the main
     // thread waiting for CloudKit operations that will fail in the simulator.
     if isRunningTests {
       return ModelConfiguration(isStoredInMemoryOnly: true, cloudKitDatabase: .none)
     }
-
-    guard FileManager.default.ubiquityIdentityToken != nil else {
-      return ModelConfiguration(for: Target.self)
-    }
-
-    let config = ModelConfiguration()
-
-    #if DEBUG
-
-      // Use an autorelease pool to make sure Swift deallocates the persistent
-      // container before setting up the SwiftData stack.
-      try autoreleasepool {
-        let desc = NSPersistentStoreDescription(url: config.url)
-        let opts = NSPersistentCloudKitContainerOptions(
-          containerIdentifier: "iCloud.codes.tim.IP-Inbound"
-        )
-        desc.cloudKitContainerOptions = opts
-        // Load the store synchronously so it completes before initializing the
-        // CloudKit schema.
-        desc.shouldAddStoreAsynchronously = false
-        if let mom = NSManagedObjectModel.makeManagedObjectModel(for: syncedModels) {
-          let container = NSPersistentCloudKitContainer(name: "IP Inbound", managedObjectModel: mom)
-          container.persistentStoreDescriptions = [desc]
-          container.loadPersistentStores { _, err in
-            if let err {
-              fatalError(err.localizedDescription)
-            }
-          }
-          // Initialize the CloudKit schema after the store finishes loading.
-          try container.initializeCloudKitSchema()
-          // Remove and unload the store from the persistent container.
-          if container.persistentStoreCoordinator.persistentStores.first != nil {
-            //                    try container.persistentStoreCoordinator.remove(store)
-          }
-        }
-      }
-    #endif
-
-    return config
+    return ModelConfiguration(for: Target.self)
   }
 }
