@@ -1,5 +1,311 @@
 {
   "$schema": "./node_modules/xcuipromokit/schema/storyboard.schema.json",
+  "previews": [
+    {
+      "id": "flythrough",
+      "take": "flythrough",
+      "device": "iphone",
+      "poster": {
+        "scene": "converge",
+        "at": 0.9
+      },
+      "captionEntrance": {
+        "unit": "word",
+        "delay": 0.12,
+        "duration": 0.3,
+        "stagger": 0.05,
+        "easing": [
+          0.2,
+          0.8,
+          0.25,
+          1
+        ],
+        "keyframes": [
+          {
+            "at": 0,
+            "opacity": 0,
+            "x": 1.2,
+            "skew": -24
+          },
+          {
+            "at": 0.35,
+            "opacity": 1
+          },
+          {
+            "at": 0.75,
+            "x": -0.04,
+            "skew": 5
+          },
+          {
+            "at": 1,
+            "x": 0,
+            "skew": 0
+          }
+        ]
+      },
+      "taps": {
+        "before": 0.15,
+        "after": 0.3
+      },
+      "scenes": [
+        {
+          "scene": "target",
+          "caption": {
+            "copy": "target",
+            "y": 0.53
+          },
+          "stretches": [
+            {
+              "index": 0,
+              "trim": {
+                "start": 1.3
+              }
+            },
+            {
+              "index": 1,
+              "speed": {
+                "rate": 3,
+                "ramp": 0.25
+              }
+            },
+            {
+              "index": 2,
+              "speed": {
+                "rate": 3,
+                "ramp": 0.25
+              }
+            }
+          ]
+        },
+        {
+          "scene": "ip",
+          "transition": {
+            "type": "slide",
+            "direction": "left",
+            "duration": 0.18,
+            "easing": [
+              0.7,
+              0,
+              0.3,
+              1
+            ],
+            "motionBlur": 0.12
+          },
+          "caption": {
+            "copy": "ip",
+            "y": 0.53
+          },
+          "stretches": [
+            {
+              "index": 0,
+              "trim": {
+                "start": 0.6
+              }
+            },
+            {
+              "index": 1,
+              "speed": {
+                "rate": 3,
+                "ramp": 0.25
+              }
+            },
+            2,
+            {
+              "index": 3,
+              "speed": {
+                "rate": 2,
+                "ramp": 0.25
+              }
+            },
+            {
+              "index": 4,
+              "speed": {
+                "rate": 2,
+                "ramp": 0.25
+              }
+            }
+          ]
+        },
+        {
+          "scene": "tot",
+          "transition": {
+            "type": "slide",
+            "direction": "left",
+            "duration": 0.18,
+            "easing": [
+              0.7,
+              0,
+              0.3,
+              1
+            ],
+            "motionBlur": 0.12
+          },
+          "caption": {
+            "copy": "tot",
+            "y": 0.408
+          },
+          "stretches": [
+            {
+              "index": 0,
+              "trim": {
+                "start": 0.5
+              }
+            },
+            {
+              "index": 1,
+              "speed": {
+                "rate": 4,
+                "ramp": 0.25
+              }
+            },
+            {
+              "index": 2,
+              "speed": {
+                "rate": 4,
+                "ramp": 0.25
+              }
+            },
+            {
+              "index": 3,
+              "speed": {
+                "rate": 4,
+                "ramp": 0.25
+              }
+            },
+            {
+              "index": 4,
+              "speed": {
+                "rate": 4,
+                "ramp": 0.25
+              }
+            },
+            {
+              "index": 5,
+              "speed": {
+                "rate": 4,
+                "ramp": 0.25
+              }
+            },
+            {
+              "index": 6,
+              "speed": {
+                "rate": 4,
+                "ramp": 0.25
+              }
+            },
+            {
+              "index": 7,
+              "trim": {
+                "end": 0.4
+              }
+            }
+          ]
+        },
+        {
+          "scene": "push",
+          "transition": {
+            "type": "slide",
+            "direction": "up",
+            "duration": 0.18,
+            "easing": [
+              0.7,
+              0,
+              0.3,
+              1
+            ],
+            "motionBlur": 0.12
+          },
+          "trim": {
+            "end": 0.8
+          },
+          "caption": {
+            "copy": "push",
+            "y": 0.25
+          }
+        },
+        {
+          "scene": "speed",
+          "transition": {
+            "type": "slide",
+            "direction": "left",
+            "duration": 0.18,
+            "easing": [
+              0.7,
+              0,
+              0.3,
+              1
+            ],
+            "motionBlur": 0.12
+          },
+          "trim": {
+            "end": 0.4
+          },
+          "caption": {
+            "copy": "speed",
+            "y": 0.25
+          },
+          "zoom": {
+            "to": 3.5,
+            "x": 0.262,
+            "y": 1.0,
+            "at": 0.9,
+            "duration": 0.3,
+            "easing": [
+              0.16,
+              1,
+              0.3,
+              1
+            ]
+          }
+        },
+        {
+          "scene": "converge",
+          "transition": {
+            "type": "slide",
+            "direction": "left",
+            "duration": 0.18,
+            "easing": [
+              0.7,
+              0,
+              0.3,
+              1
+            ],
+            "motionBlur": 0.12
+          },
+          "caption": {
+            "copy": "converge",
+            "y": 0.25
+          },
+          "stretches": [
+            {
+              "index": 0,
+              "speed": {
+                "rate": 6,
+                "ramp": 0.25
+              },
+              "trim": {
+                "start": 1.0
+              }
+            }
+          ]
+        },
+        {
+          "scene": "pass",
+          "transition": {
+            "type": "fade",
+            "duration": 0.25
+          },
+          "trim": {
+            "end": 0.8
+          },
+          "caption": {
+            "copy": "pass",
+            "y": 0.28
+          }
+        }
+      ]
+    }
+  ],
   "screenshots": [
     {
       "id": "run-in",

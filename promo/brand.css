@@ -15,6 +15,35 @@
   background: var(--paper);
 }
 
+/* Preview captions: the site's display type, outlined in paper to lift it off the app. */
+.promo-caption {
+  padding: 0 7vw;
+  font-family: "Archivo", sans-serif;
+  font-size: 9vw;
+  font-stretch: 118%;
+  font-weight: 700;
+  letter-spacing: -0.022em;
+  line-height: 1.02;
+  text-align: center;
+  text-wrap: balance;
+  color: var(--ink);
+  -webkit-text-stroke: 0.28em var(--paper);
+  paint-order: stroke fill;
+}
+
+/* Tap marks: a hairline ring that closes as the finger lands and opens out as it lifts. */
+.promo-tap {
+  width: 13vmin;
+  background: color-mix(in srgb, var(--ink) 12%, transparent);
+  border: 0.6vmin solid color-mix(in srgb, var(--ink) 70%, transparent);
+  scale: calc(1.4 - 0.4 * var(--promo-tap-in) + 0.5 * var(--promo-tap-out));
+}
+
+/* The one phrase a caption leans on, in the site's red index. */
+.promo-caption-em {
+  color: var(--index);
+}
+
 /* Screenshots: a headline in the site's display type over the capture, on paper. */
 .promo-screenshot {
   background: var(--paper);
