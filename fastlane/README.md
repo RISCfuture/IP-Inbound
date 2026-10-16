@@ -39,6 +39,14 @@ Generate watchOS screenshots
 
 Import the captured stills into the asset catalog and the marketing site
 
+### ios preview
+
+```sh
+[bundle exec] fastlane ios preview
+```
+
+Record the App Store preview and render it
+
 ### ios verify
 
 ```sh
@@ -62,6 +70,14 @@ Upload the light screenshots and the watch set to App Store Connect
 ```
 
 Generate and upload screenshots to App Store
+
+### ios upload_preview
+
+```sh
+[bundle exec] fastlane ios upload_preview
+```
+
+Upload the rendered App Store preview to App Store Connect, replacing the ones there
 
 ### ios upload_metadata
 

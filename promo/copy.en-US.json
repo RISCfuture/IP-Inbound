@@ -1,4 +1,11 @@
 {
+  "target": "Pick the target.",
+  "ip": "Set the IP.",
+  "tot": "Set the TOT.",
+  "push": "Push on the count.",
+  "speed": "Fly the speed.",
+  "converge": "Close the gap.",
+  "pass": "*On the second.*",
   "run-in": "Steer the run-in onto the target.",
   "speed-guidance": "Fly the speed it asks for.",
   "contingency": "Out of time for the IP? Go direct.",

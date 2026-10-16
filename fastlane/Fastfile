@@ -54,6 +54,7 @@ PROMO_STILLS_PATH = File.expand_path("../.build/promo/stills", __dir__)
 
 # The folders `promokit render` writes into and deliver uploads from, a folder per locale in each.
 SCREENSHOTS_PATH = File.expand_path("screenshots", __dir__)
+PREVIEWS_PATH = File.expand_path("previews", __dir__)
 
 # Where watch_screenshots puts the Apple Watch set, a folder per locale.
 WATCH_SCREENSHOTS_PATH = File.expand_path("screenshots_watch", __dir__)
@@ -541,6 +542,15 @@ def write_docs_shot(name, illustration)
   end
 end
 
+# The App Store Connect time code (`HH:MM:SS:FF`) of the poster frame `promokit render` chose for
+# the previews, which deliver applies to every preview it uploads.
+def preview_poster_time_code
+  posters = Dir.glob(File.join(PREVIEWS_PATH, "*", "*-poster.txt")).map { File.read(it).strip }.uniq
+  UI.user_error!("The previews name #{posters.size} poster frames; deliver sets one for all.") if posters.size > 1
+
+  posters.first
+end
+
 # Removes what deliver's metadata download writes but the repository doesn't keep: CHANGELOG.md is
 # the source of the release notes, the review contact holds personal details, and the app has no
 # Apple TV listing.
@@ -681,6 +691,14 @@ platform :ios do
     UI.success("Imported #{TUTORIAL_IMAGES.count} tutorial illustrations → #{ASSET_CATALOG}")
   end
 
+  desc "Record the App Store preview and render it"
+  lane :preview do
+    refuse_ci
+    promokit("record", "flythrough")
+    promokit("render", "--only", "previews")
+    verify
+  end
+
   desc "Check the rendered media against Apple's rules and the screenshots against the storyboard"
   lane :verify do
     verify_screenshot_folder(SCREENSHOTS_PATH, promo_still_devices) if Dir.exist?(SCREENSHOTS_PATH)
@@ -696,6 +714,26 @@ platform :ios do
   lane :screenshots_and_upload do
     screenshots
     upload_screenshots
+  end
+
+  desc "Upload the rendered App Store preview to App Store Connect, replacing the ones there"
+  lane :upload_preview do
+    if Dir.glob(File.join(PREVIEWS_PATH, "*", "*.mp4")).empty?
+      UI.user_error!("No previews under #{PREVIEWS_PATH}; run the preview lane first.")
+    end
+    verify
+    ensure_api_key
+    upload_to_app_store(
+      app_identifier:             APP_IDENTIFIER,
+      app_previews_path:          PREVIEWS_PATH,
+      overwrite_preview_videos:   true,
+      preview_frame_time_code:    preview_poster_time_code,
+      skip_binary_upload:         true,
+      skip_metadata:              true,
+      skip_screenshots:           true,
+      force:                      true,
+      run_precheck_before_submit: false
+    )
   end
 
   desc "Upload fastlane/metadata to the version open for editing"

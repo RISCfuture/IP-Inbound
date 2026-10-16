@@ -3,7 +3,7 @@ import XCTest
 
 // swiftlint:disable prefer_nimble
 /// Launches the app under its UI-test harness: a pinned clock, a simulated aircraft and seeded
-/// targets, for the screenshot tests.
+/// targets, for the screenshot and preview tests.
 enum UITestHarness {
 
   // MARK: - Type Properties
