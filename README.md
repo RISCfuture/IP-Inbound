@@ -62,7 +62,16 @@ This app is written in Swift 6 and requires iOS 27 and watchOS 27.
 ## Development
 
 The "IP Inbound" target is the application, which can be compiled and run on any
-iOS device. The "Generate Screenshots" target generates screenshots for the
-App Store.
+iOS device. The "Generate Screenshots" target drives the App Store and tutorial
+captures through its **Promo** test plan.
+
+[XCUIPromoKit](https://github.com/RISCfuture/XCUIPromoKit) captures and renders
+the listing's media from `promo/`: run `pnpm install` there once, then
+`fastlane screenshots`. That lane also turns the stills into the tutorial's
+illustrations and the marketing site's shots, and captures the Apple Watch set.
+It builds with Xcode 27.1 or later, which the iPhone Duo simulator needs; set
+`DUO_XCODE` in `fastlane/.env` if it isn't the release candidate in
+`/Applications`. `promo/storyboard.json` and `promo/brand.css` set how the
+media look.
 
 Sentry is included for exception reporting.

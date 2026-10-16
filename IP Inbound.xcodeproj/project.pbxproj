@@ -34,6 +34,7 @@
 		01A9E0132FF1B3C400E5A1D9 /* MeasurementKitLocation in Frameworks */ = {isa = PBXBuildFile; productRef = 01A9E0122FF1B3C400E5A1D9 /* MeasurementKitLocation */; };
 		01A9E0152FF1B3C400E5A1D9 /* Numerics in Frameworks */ = {isa = PBXBuildFile; productRef = 01A9E0142FF1B3C400E5A1D9 /* Numerics */; };
 		01C059A72DBF49C600D733C1 /* AsyncAlgorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 01C059A62DBF49C600D733C1 /* AsyncAlgorithms */; };
+		0A7E10012FD00001C0FFEE03 /* XCUIPromoKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0A7E10012FD00001C0FFEE02 /* XCUIPromoKit */; };
 		01EB04182FCA2D0B007C3D1E /* XCUITestKit in Frameworks */ = {isa = PBXBuildFile; productRef = 01EB04172FCA2D0B007C3D1E /* XCUITestKit */; };
 		01ECF4F32CF3E2F800BD0604 /* Defaults in Frameworks */ = {isa = PBXBuildFile; productRef = 01ECF4F22CF3E2F800BD0604 /* Defaults */; };
 		01F13CF52DBEE074000E58A2 /* NIO in Frameworks */ = {isa = PBXBuildFile; productRef = 01F13CF42DBEE074000E58A2 /* NIO */; };
@@ -431,6 +432,7 @@
 			isa = PBXFrameworksBuildPhase;
 			files = (
 				01EB04182FCA2D0B007C3D1E /* XCUITestKit in Frameworks */,
+				0A7E10012FD00001C0FFEE03 /* XCUIPromoKit in Frameworks */,
 			);
 		};
 		0172C0702FEC82A50034B332 /* Frameworks */ = {
@@ -714,6 +716,7 @@
 			name = "Generate Screenshots";
 			packageProductDependencies = (
 				01EB04172FCA2D0B007C3D1E /* XCUITestKit */,
+				0A7E10012FD00001C0FFEE02 /* XCUIPromoKit */,
 			);
 			productName = "Generate Screenshots";
 			productReference = 016F3C1B2DC08E7A00F2A1AE /* Generate Screenshots.xctest */;
@@ -896,6 +899,7 @@
 			mainGroup = 01ECF4AD2CF3DF0D00BD0604;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
+				0A7E10012FD00001C0FFEE01 /* XCRemoteSwiftPackageReference "XCUIPromoKit" */,
 				01ECF4F12CF3E2F800BD0604 /* XCRemoteSwiftPackageReference "Defaults" */,
 				01F13CF32DBEE074000E58A2 /* XCRemoteSwiftPackageReference "swift-nio" */,
 				01F13CFC2DBEE65B000E58A2 /* XCRemoteSwiftPackageReference "swift-log" */,
@@ -1937,6 +1941,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		0A7E10012FD00001C0FFEE01 /* XCRemoteSwiftPackageReference "XCUIPromoKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/RISCfuture/XCUIPromoKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
 		011479EB2F779D5F003AEBCC /* XCRemoteSwiftPackageReference "SwiftGeographic" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/RISCfuture/SwiftGeographic";
@@ -2014,6 +2026,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		0A7E10012FD00001C0FFEE02 /* XCUIPromoKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0A7E10012FD00001C0FFEE01 /* XCRemoteSwiftPackageReference "XCUIPromoKit" */;
+			productName = XCUIPromoKit;
+		};
 		74C7058512CAD0809E4A89DD /* CloudKitSchemaTesting */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 0159221D2FCA2B28007FB6BB /* XCRemoteSwiftPackageReference "XCUITestKit" */;

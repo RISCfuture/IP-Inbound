@@ -36,6 +36,9 @@ struct WatchAppScreen {
   /// Captures the current watch screen as a named, always-kept attachment in the result bundle,
   /// where the `watch_screenshots` fastlane lane harvests it into the App Store screenshot set.
   func screenshot(_ name: String) {
+    // The simulator's display trails the accessibility tree, furthest on the first launch after
+    // it boots, when the screen can still be fading in from the boot logo.
+    Thread.sleep(forTimeInterval: 3)
     let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
     attachment.name = name
     attachment.lifetime = .keepAlways

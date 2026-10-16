@@ -1,0 +1,50 @@
+{
+  "$schema": "./node_modules/xcuipromokit/schema/storyboard.schema.json",
+  "screenshots": [
+    {
+      "id": "run-in",
+      "still": "run-in",
+      "caption": "run-in"
+    },
+    {
+      "id": "speed-guidance",
+      "still": "speed-guidance",
+      "caption": "speed-guidance"
+    },
+    {
+      "id": "contingency",
+      "still": "contingency",
+      "caption": "contingency"
+    },
+    {
+      "id": "past-target",
+      "still": "past-target",
+      "caption": "past-target"
+    },
+    {
+      "id": "define-target",
+      "still": "define-target",
+      "caption": "define-target"
+    },
+    {
+      "id": "define-ip",
+      "still": "define-ip",
+      "caption": "define-ip"
+    },
+    {
+      "id": "push-countdown",
+      "still": "push-countdown",
+      "caption": "push-countdown"
+    },
+    {
+      "id": "ground",
+      "still": "ground",
+      "caption": "ground"
+    },
+    {
+      "id": "tot",
+      "still": "tot",
+      "caption": "tot-entry"
+    }
+  ]
+}

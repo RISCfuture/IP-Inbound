@@ -22,8 +22,13 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "YES"
-      shouldAutocreateTestPlan = "YES">
+      shouldUseLaunchSchemeArgsEnv = "YES">
+      <TestPlans>
+         <TestPlanReference
+            reference = "container:Generate Screenshots/Promo.xctestplan"
+            default = "YES">
+         </TestPlanReference>
+      </TestPlans>
       <Testables>
          <TestableReference
             skipped = "NO"
@@ -33,17 +38,6 @@
                BlueprintIdentifier = "016F3C1A2DC08E7A00F2A1AE"
                BuildableName = "Generate Screenshots.xctest"
                BlueprintName = "Generate Screenshots"
-               ReferencedContainer = "container:IP Inbound.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO"
-            parallelizable = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "014CD0003049E04F00E8D24F"
-               BuildableName = "IP Inbound SharedTests.xctest"
-               BlueprintName = "IP Inbound SharedTests"
                ReferencedContainer = "container:IP Inbound.xcodeproj">
             </BuildableReference>
          </TestableReference>

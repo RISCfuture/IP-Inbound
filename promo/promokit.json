@@ -1,0 +1,28 @@
+{
+  "$schema": "./node_modules/xcuipromokit/schema/promokit.schema.json",
+  "app": "IP-Inbound",
+  "project": "../IP Inbound.xcodeproj",
+  "scheme": "Generate Screenshots",
+  "testPlan": "Promo",
+  "locales": [
+    "en-US"
+  ],
+  "brand": {
+    "css": "brand.css",
+    "assets": [
+      "../docs/assets/fonts"
+    ]
+  },
+  "stills": {
+    "test": "Generate Screenshots/StoreScreenshots/testCaptureStills",
+    "devices": [
+      "iPhone 18 Pro Max",
+      "iPad Pro 13-inch (M5)",
+      "iPhone Duo"
+    ],
+    "appearances": [
+      "light",
+      "dark"
+    ]
+  }
+}
