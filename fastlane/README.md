@@ -47,6 +47,14 @@ Import the captured stills into the asset catalog and the marketing site
 
 Record the App Store preview and render it
 
+### ios creative_assets
+
+```sh
+[bundle exec] fastlane ios creative_assets
+```
+
+Capture the stills and render the product page header and search result assets
+
 ### ios verify
 
 ```sh
