@@ -1,0 +1,79 @@
+/* Header, 3840×1646. Apple's art safe area is 1646×661 at (1097, 493). */
+
+.scale {
+  --second: 96px;
+  left: 0;
+  top: 1214px;
+  font-size: 34px;
+}
+
+.copy {
+  position: absolute;
+  left: 1097px;
+  top: 540px;
+}
+
+.copy .label {
+  font-size: 36px;
+}
+
+.copy .headline {
+  margin-top: 40px;
+  font-size: 112px;
+}
+
+.readout {
+  position: absolute;
+  left: 1097px;
+  top: 1086px;
+  display: flex;
+  align-items: baseline;
+  gap: 36px;
+  font-size: 34px;
+}
+
+.readout .value {
+  font-family: "Plex Mono", monospace;
+  font-weight: 500;
+  font-size: 56px;
+}
+
+/* The run-in, from its title to its readout: 1320×2360 of the capture at 48%. */
+.run-in {
+  left: 2110px;
+  top: 266px;
+  width: 640px;
+  height: 1139px;
+}
+
+.run-in img {
+  object-view-box: inset(400px 0 108px 0);
+}
+
+/* The speed guidance headline alone: 1120×137 of the capture. */
+.speed {
+  --radius: 48px;
+
+  left: 2640px;
+  top: 1150px;
+  width: 784px;
+  height: 96px;
+}
+
+.speed img {
+  object-view-box: inset(2515px 100px 216px 100px);
+}
+
+/* The pass report alone: 1080×500 of the capture. */
+.pass {
+  --radius: 48px;
+
+  left: 2650px;
+  top: 196px;
+  width: 654px;
+  height: 306px;
+}
+
+.pass img {
+  object-view-box: inset(1100px 120px 1268px 120px);
+}
