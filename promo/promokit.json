@@ -13,6 +13,12 @@
       "../docs/assets/fonts"
     ]
   },
+  "takes": {
+    "flythrough": {
+      "test": "Generate Screenshots/PreviewRecording/testRecordPreview",
+      "device": "iPhone 18 Pro Max"
+    }
+  },
   "stills": {
     "test": "Generate Screenshots/StoreScreenshots/testCaptureStills",
     "devices": [

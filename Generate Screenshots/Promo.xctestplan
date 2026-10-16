@@ -20,6 +20,7 @@
   "testTargets" : [
     {
       "selectedTests" : [
+        "PreviewRecording",
         "StoreScreenshots"
       ],
       "target" : {
