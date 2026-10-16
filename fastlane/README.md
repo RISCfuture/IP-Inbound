@@ -21,7 +21,7 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 [bundle exec] fastlane ios screenshots
 ```
 
-Generate screenshots for App Store
+Capture the iPhone and iPad stills, render the App Store screenshots and import the tutorial's
 
 ### ios watch_screenshots
 
@@ -31,21 +31,21 @@ Generate screenshots for App Store
 
 Generate watchOS screenshots
 
-### ios frames
-
-```sh
-[bundle exec] fastlane ios frames
-```
-
-Generate framed screenshots
-
 ### ios import_screenshots
 
 ```sh
 [bundle exec] fastlane ios import_screenshots
 ```
 
-Import the generated screenshots into the asset catalog and the marketing site
+Import the captured stills into the asset catalog and the marketing site
+
+### ios verify
+
+```sh
+[bundle exec] fastlane ios verify
+```
+
+Check the rendered media against Apple's rules and the screenshots against the storyboard
 
 ### ios upload_screenshots
 
@@ -53,7 +53,7 @@ Import the generated screenshots into the asset catalog and the marketing site
 [bundle exec] fastlane ios upload_screenshots
 ```
 
-Upload screenshots to App Store Connect
+Upload the light screenshots and the watch set to App Store Connect
 
 ### ios screenshots_and_upload
 

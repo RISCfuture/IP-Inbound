@@ -1,5 +1,5 @@
 {
-  "originHash" : "81b73313d364480945064d754d8de7d3bd563b99d3d29e7fd684252c233ebf07",
+  "originHash" : "a1be6b33784974a4c13fa7494fa09bf73a9ff13ebd8209d83c4c1600f617a04a",
   "pins" : [
     {
       "identity" : "defaults",
@@ -107,6 +107,15 @@
       "state" : {
         "revision" : "265b36a965d843d9b0c3fb3ae8ba44b17f70489e",
         "version" : "1.0.2"
+      }
+    },
+    {
+      "identity" : "xcuipromokit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/RISCfuture/XCUIPromoKit",
+      "state" : {
+        "revision" : "49c67dea5e469e04e9f62fed3196198bac7de115",
+        "version" : "1.1.0"
       }
     },
     {
