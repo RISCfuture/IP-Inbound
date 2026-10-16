@@ -22,11 +22,4 @@ nonisolated final class WatchScreenshotTests: XCTestCase {
     screen.assertCountdownVisible()
     screen.screenshot("2-countdown")
   }
-
-  @MainActor
-  func testScreenshot_placeholder() {
-    let screen = WatchAppScreen().launchWithoutTarget()
-    screen.assertPlaceholderVisible()
-    screen.screenshot("3-placeholder")
-  }
 }

@@ -44,31 +44,54 @@ PLATFORMS = {
   "iOS" => { destination: "generic/platform=iOS", deliver: "ios", connect: "IOS" }
 }.freeze
 
-# The tutorial inside the app illustrates every step with the App Store screenshots. Each name here is
-# both the label `Generate Screenshots.swift` passes to `snapshot` and the imageset `TutorialView`
-# loads, so importing one into the other needs no translation table.
-TUTORIAL_IMAGES = %w[
-  0-define-target
-  1-define-ip
-  2-tot
-  3-ground
-  4-pre-ip-early
-  5-pre-ip
-  6-ip-to-target
-  7-pre-ip-late
-  8-post-pass
-].freeze
+# promokit's folder, and the configuration and storyboard it captures and renders from.
+PROMO_PATH = File.expand_path("../promo", __dir__)
+PROMO_CONFIG = JSON.parse(File.read(File.join(PROMO_PATH, "promokit.json")))
+PROMO_STORYBOARD = JSON.parse(File.read(File.join(PROMO_PATH, "storyboard.json")))
+
+# Where promokit keeps the stills it captures, a folder per locale and device.
+PROMO_STILLS_PATH = File.expand_path("../.build/promo/stills", __dir__)
+
+# The folders `promokit render` writes into and deliver uploads from, a folder per locale in each.
+SCREENSHOTS_PATH = File.expand_path("screenshots", __dir__)
+
+# Where watch_screenshots puts the Apple Watch set, a folder per locale.
+WATCH_SCREENSHOTS_PATH = File.expand_path("screenshots_watch", __dir__)
+
+# The Xcode promokit builds and tests with. The iPhone Duo simulator needs Xcode 27.1 or later.
+DUO_XCODE = ENV.fetch("DUO_XCODE", "/Applications/Xcode-27.1.0-Release.Candidate.app")
+
+# The tutorial inside the app illustrates every step with the App Store stills. Each still, named
+# by StoreScreenshots, maps to the illustration `TutorialView` loads, numbered in the order the
+# tutorial teaches it. The marketing site names its shots after the illustrations too.
+TUTORIAL_IMAGES = {
+  "run-in" => "6-ip-to-target",
+  "speed-guidance" => "5-pre-ip",
+  "contingency" => "7-pre-ip-late",
+  "past-target" => "8-post-pass",
+  "define-target" => "0-define-target",
+  "define-ip" => "1-define-ip",
+  "push-countdown" => "4-pre-ip-early",
+  "ground" => "3-ground",
+  "tot" => "2-tot"
+}.freeze
 
 # An asset catalog tells only phone from pad, so the tutorial draws on one capture device per idiom
-# and the Snapfile's other two devices serve App Store delivery alone. The phone capture is filed as
-# "universal" so destinations beyond iPhone and iPad still resolve an image.
+# and the iPhone Duo's stills serve the App Store alone. The phone capture is filed as "universal"
+# so destinations beyond iPhone and iPad still resolve an image.
 TUTORIAL_IDIOM_DEVICES = {
-  "universal" => "iPhone 17 Pro Max",
+  "universal" => "iPhone 18 Pro Max",
   "ipad" => "iPad Pro 13-inch (M5)"
 }.freeze
 
-# Both appearances every tutorial imageset carries, named for the directories the screenshots lane
-# writes them to.
+# The radius of each idiom's screen corners as a fraction of its width. The illustrations are cut
+# to them so each reads as the device's screen.
+SCREEN_CORNER_RADII = {
+  "universal" => 0.14,
+  "ipad" => 0.03
+}.freeze
+
+# Both appearances every tutorial imageset carries.
 APPEARANCES = %w[light dark].freeze
 
 # The suite xcodebuild files a failure under when the fault lies with the harness rather than a test.
@@ -260,20 +283,13 @@ def repository_path(*components)
   File.join(REPOSITORY_ROOT, *components)
 end
 
-def screenshots_directory(appearance)
-  repository_path("fastlane", "screenshots", appearance)
+def imageset_directory(illustration)
+  repository_path(ASSET_CATALOG, "#{illustration}.imageset")
 end
 
-def framed_screenshot(image, device:, appearance:)
-  File.join(screenshots_directory(appearance), "en-US", "#{device}-#{image}_framed.png")
-end
-
-def imageset_directory(image)
-  repository_path(ASSET_CATALOG, "#{image}.imageset")
-end
-
-def imageset_filename(image, idiom:, appearance:)
-  idiom == "universal" ? "#{image}-#{appearance}.png" : "#{image}-#{idiom}-#{appearance}.png"
+def imageset_filename(illustration, idiom:, appearance:)
+  stem = idiom == "universal" ? illustration : "#{illustration}-#{idiom}"
+  "#{stem}-#{appearance}.png"
 end
 
 # Every test case in a result bundle that did not pass, by name.
@@ -332,41 +348,153 @@ def purge_remote_screenshots(platform)
                  "Uploading now would leave the set a mix of old and new.")
 end
 
-# Stops an upload that has nothing to publish, naming the folder that came up empty. The path is
-# anchored to this file so it means the same thing however the lane was invoked.
-def verify_screenshots_present(subdirectory)
-  directory = File.expand_path(File.join("screenshots", subdirectory), __dir__)
-  return if Dir.glob(File.join(directory, "*.png")).any?
+# Runs the block with every tool fastlane shells out to — xcodebuild and simctl among them — taken
+# from the given Xcode rather than the selected one.
+def with_xcode(path)
+  developer_dir = File.join(path, "Contents", "Developer")
+  UI.user_error!("No Xcode at #{path}. Set DUO_XCODE in fastlane/.env.") unless Dir.exist?(developer_dir)
 
-  UI.user_error!("No screenshots in #{directory} — generate them first. Uploading an empty set " \
-                 "would clear the screenshots already on the App Store.")
+  previous = ENV.fetch("DEVELOPER_DIR", nil)
+  ENV["DEVELOPER_DIR"] = developer_dir
+  yield
+ensure
+  ENV["DEVELOPER_DIR"] = previous
 end
 
-# frameit skips a screenshot it has no template for rather than failing, which would quietly leave the
-# tutorial an idiom short. Demanding every file the import is about to read turns that into an error.
-def verify_framed_screenshots
-  wanted = TUTORIAL_IMAGES.product(TUTORIAL_IDIOM_DEVICES.values, APPEARANCES)
-  missing = wanted.filter_map do |image, device, appearance|
-    path = framed_screenshot(image, device:, appearance:)
+# Runs XCUIPromoKit's `promokit` from promo/.
+def promokit(*)
+  with_xcode(DUO_XCODE) { sh("pnpm", "--dir", PROMO_PATH, "promokit", *) }
+end
+
+# The capture lanes drive simulators, which a CI runner can't stand in for.
+def refuse_ci
+  UI.user_error!("Capturing App Store media needs a Mac with simulators; it doesn't run on CI.") if Helper.ci?
+end
+
+# A device's folder name in promokit's stills and renders, such as `iphone-18-pro-max`.
+def promo_slug(name)
+  name.downcase.gsub(/[^a-z0-9]+/, "-").delete_prefix("-").delete_suffix("-")
+end
+
+# The folder `promokit stills` captures one device's stills into in one appearance.
+def promo_still_folder(device, appearance)
+  (appearance == "light") ? promo_slug(device) : "#{promo_slug(device)}-#{appearance}"
+end
+
+# The device folders `promokit stills` captures into: one per device and appearance.
+def promo_still_devices(appearances = PROMO_CONFIG.dig("stills", "appearances") || %w[light])
+  PROMO_CONFIG.dig("stills", "devices").product(appearances).map { promo_still_folder(*it) }
+end
+
+# A still `promokit stills` captured in the first locale.
+def promo_still(name, device:, appearance:)
+  locale = PROMO_CONFIG.fetch("locales", %w[en-US]).first
+  File.join(PROMO_STILLS_PATH, locale, promo_still_folder(device, appearance), "#{name}.png")
+end
+
+# The screenshots `promokit render` makes for one locale and device: each of the storyboard's
+# screenshots whose still the test captured there, in order. A test may leave a still out on a
+# device it doesn't suit.
+def expected_screenshots(locale, device)
+  stills = File.join(PROMO_STILLS_PATH, locale, device)
+  UI.user_error!("No #{device} stills for #{locale} in #{stills}; run the capture lane first.") unless Dir.exist?(stills)
+
+  PROMO_STORYBOARD.fetch("screenshots", []).each_with_index.filter_map do |screenshot, index|
+    next unless screenshot["file"] || File.exist?(File.join(stills, "#{screenshot["still"]}.png"))
+
+    "#{device}-#{index.to_s.rjust(2, "0")}-#{screenshot["id"]}.png"
+  end
+end
+
+# Refuses a rendered screenshot folder that is not exactly what the storyboard makes of the
+# captured stills. An upload syncs the remote sets to it, so a missing file would clear a slot on
+# the product page and a stray one would publish whatever it happens to be.
+def verify_screenshot_folder(directory, devices)
+  PROMO_CONFIG.fetch("locales", %w[en-US]).each do |locale|
+    folder = File.join(directory, locale)
+    expected = devices.flat_map { |device| expected_screenshots(locale, device) }.sort
+    found = Dir.exist?(folder) ? Dir.children(folder).grep(/\.png\z/).sort : []
+    next if found == expected
+
+    UI.user_error!("#{folder} holds #{found.join(", ").then { it.empty? ? "nothing" : it }}, " \
+                   "not #{expected.join(", ")}. Run the capture lane again.")
+  end
+end
+
+# `upload_to_app_store` syncs every slot it uploads into, so an empty directory would strip the
+# screenshots from the product page rather than leave the ones already there alone.
+def verify_screenshots_present(directory, lane:)
+  return if Dir.glob(File.join(directory, "*", "*.png")).any?
+
+  UI.user_error!("No screenshots under #{directory}; run the #{lane} lane first. Uploading an " \
+                 "empty set would clear the screenshots already on the App Store.")
+end
+
+# Copies what upload_screenshots sends into `staging`, a folder per locale: the light renders,
+# since App Store Connect holds one set per display size, and the watch set, since deliver syncs
+# every display family of the platform at once and would otherwise clear it.
+def stage_store_screenshots(staging)
+  PROMO_CONFIG.fetch("locales", %w[en-US]).each do |locale|
+    destination = File.join(staging, locale)
+    FileUtils.mkdir_p(destination)
+    renders = promo_still_devices(%w[light]).flat_map { expected_screenshots(locale, it) }
+    FileUtils.cp(renders.map { File.join(SCREENSHOTS_PATH, locale, it) }, destination)
+    FileUtils.cp(Dir.glob(File.join(WATCH_SCREENSHOTS_PATH, locale, "*.png")), destination)
+  end
+end
+
+# Syncs the staged screenshots to the version open for editing, after `verify` and a purge.
+def upload_rendered_screenshots
+  verify_screenshots_present(SCREENSHOTS_PATH, lane: "screenshots")
+  verify_screenshots_present(WATCH_SCREENSHOTS_PATH, lane: "watch_screenshots")
+  verify
+  ensure_api_key
+  purge_remote_screenshots(Spaceship::ConnectAPI::Platform::IOS)
+  # deliver ships screenshot syncing as a beta and refuses `sync_screenshots` without this opt-in.
+  ENV["FASTLANE_ENABLE_BETA_DELIVER_SYNC_SCREENSHOTS"] = "true"
+  Dir.mktmpdir("store-screenshots") do |staging|
+    stage_store_screenshots(staging)
+    upload_to_app_store(
+      app_identifier:                       APP_IDENTIFIER,
+      screenshots_path:                     staging,
+      # `overwrite_screenshots` verifies its deletions against the objects it already held
+      # rather than App Store Connect; syncing reconciles against what is actually there.
+      sync_screenshots:                     true,
+      skip_binary_upload:                   true,
+      skip_metadata:                        true,
+      languages:                            PROMO_CONFIG.fetch("locales", %w[en-US]),
+      force:                                true,
+      run_precheck_before_submit:           false,
+      ignore_language_directory_validation: true
+    )
+  end
+end
+
+# Demanding every still the import is about to read keeps a short capture run from quietly leaving
+# the tutorial an idiom or an appearance short.
+def verify_tutorial_stills
+  wanted = TUTORIAL_IMAGES.keys.product(TUTORIAL_IDIOM_DEVICES.values, APPEARANCES)
+  missing = wanted.filter_map do |name, device, appearance|
+    path = promo_still(name, device:, appearance:)
     path unless File.exist?(path)
   end
   return if missing.empty?
 
-  UI.user_error!("frameit produced no framed screenshot for:\n  #{missing.join("\n  ")}\n" \
-                 "Point the device at a frame frameit carries in fastlane/Framefile.json.")
+  UI.user_error!("No still for:\n  #{missing.join("\n  ")}\nRun the screenshots lane first.")
 end
 
-# One PNG per idiom and appearance, each resampled down from its framed capture — the tutorial never
-# shows one wider than a column of body text.
-def write_imageset(image)
-  directory = imageset_directory(image)
+# One PNG per idiom and appearance, each resampled down from its still — the tutorial never shows
+# one wider than a column of body text.
+def write_imageset(name, illustration)
+  directory = imageset_directory(illustration)
   FileUtils.rm_rf(directory)
   FileUtils.mkdir_p(directory)
 
   images = TUTORIAL_IDIOM_DEVICES.flat_map do |idiom, device|
     APPEARANCES.map do |appearance|
-      filename = imageset_filename(image, idiom:, appearance:)
-      resample(framed_screenshot(image, device:, appearance:), File.join(directory, filename))
+      filename = imageset_filename(illustration, idiom:, appearance:)
+      resample(promo_still(name, device:, appearance:), File.join(directory, filename),
+               width: TUTORIAL_IMAGE_WIDTH, corner_radius: SCREEN_CORNER_RADII.fetch(idiom))
       imageset_entry(filename, idiom:, appearance:)
     end
   end
@@ -384,11 +512,16 @@ def imageset_entry(filename, idiom:, appearance:)
   entry
 end
 
-# ImageMagick comes along with frameit. `-strip` drops the capture's metadata so the catalog carries
-# pixels and nothing else.
-def resample(source, destination)
-  run_quietly("magick #{source.shellescape} -resize #{TUTORIAL_IMAGE_WIDTH}x " \
-              "-strip #{destination.shellescape}")
+# Scales a still down to `width` and cuts its corners to the screen's, `corner_radius` being a
+# fraction of the width, writing PNG or webp by the destination's extension. `-strip` drops the
+# still's metadata so the result carries pixels and nothing else.
+def resample(source, destination, width:, corner_radius:)
+  radius = (width * corner_radius).round
+  mask = "-alpha extract -fill black -colorize 100 -fill white " \
+         "-draw #{"roundrectangle 0,0 %[fx:w-1],%[fx:h-1] #{radius},#{radius}".shellescape}"
+  run_quietly("magick #{source.shellescape} -resize #{width}x \\( +clone #{mask} \\) " \
+              "-alpha off -compose CopyOpacity -composite -strip " \
+              "-quality 82 -define webp:alpha-quality=100 #{destination.shellescape}")
 end
 
 # The import runs one of these per file. `sh` would enter every one in fastlane's summary table and
@@ -397,15 +530,14 @@ def run_quietly(command)
   FastlaneCore::CommandExecutor.execute(command:, print_all: false, print_command: false)
 end
 
-# The marketing site illustrates the same steps with the same phone captures, as webp. It resamples
-# from the capture rather than from the imageset so the two carry their own widths.
-def write_docs_shot(image)
+# The marketing site illustrates the same steps with the same phone stills, as webp. It resamples
+# from the still rather than from the imageset so the two carry their own widths.
+def write_docs_shot(name, illustration)
   APPEARANCES.each do |appearance|
-    source = framed_screenshot(image, device: TUTORIAL_IDIOM_DEVICES["universal"], appearance:)
+    source = promo_still(name, device: TUTORIAL_IDIOM_DEVICES["universal"], appearance:)
     suffix = appearance == "dark" ? "-dark" : ""
-    destination = repository_path(DOCS_SHOTS_DIRECTORY, "#{image}#{suffix}.webp")
-    run_quietly("cwebp -quiet -q 82 -alpha_q 100 -resize #{DOCS_IMAGE_WIDTH} 0 " \
-                "#{source.shellescape} -o #{destination.shellescape}")
+    destination = repository_path(DOCS_SHOTS_DIRECTORY, "#{illustration}#{suffix}.webp")
+    resample(source, destination, width: DOCS_IMAGE_WIDTH, corner_radius: SCREEN_CORNER_RADII["universal"])
   end
 end
 
@@ -455,46 +587,26 @@ def provisioning_authentication_args
 end
 
 platform :ios do
-  desc "Generate screenshots for App Store"
+  desc "Capture the iPhone and iPad stills, render the App Store screenshots and import the tutorial's"
   lane :screenshots do
-    # First run with light mode
-    puts "Generating light mode screenshots…"
-    snapshot scheme:                     "Generate Screenshots",
-             dark_mode:                  false,
-             output_directory:           "./fastlane/screenshots/light",
-             clear_previous_screenshots: true
-
-    # Then run with dark mode
-    puts "Generating dark mode screenshots…"
-    snapshot scheme:                     "Generate Screenshots",
-             dark_mode:                  true,
-             output_directory:           "./fastlane/screenshots/dark",
-             clear_previous_screenshots: true
-
-    # The tutorial's illustrations are these same captures, and need nothing from the watch, so they
-    # are imported while the two sets above are all that matters
-    puts "Importing screenshots into the asset catalog…"
+    refuse_ci
+    promokit("stills")
+    promokit("render", "--only", "screenshots")
     import_screenshots
-
-    # Then the watchOS companion screens (dark-only)
-    puts "Generating watch screenshots…"
     watch_screenshots
-
-    puts "Screenshots generated successfully!"
+    verify
   end
 
   desc "Generate watchOS screenshots"
   lane :watch_screenshots do
-    # fastlane runs with the working directory set to the fastlane folder, so these paths are relative
-    # to it (no leading "fastlane/"). output matches where upload_screenshots reads from.
-    derived = File.expand_path("./test_output/watch")
-    output = File.expand_path("./screenshots/watch/en-US")
+    derived = File.expand_path("test_output/watch", __dir__)
+    output = File.join(WATCH_SCREENSHOTS_PATH, "en-US")
     export_dir = File.join(derived, "attachments")
 
     FileUtils.rm_rf(derived)
 
     # watchOS UI runs dark-only, so a single set suffices — no light/dark split. The screens are
-    # captured as XCTAttachments because fastlane's snapshot action doesn't support watchOS.
+    # captured as XCTAttachments because promokit's stills don't extend to watchOS.
     #
     # The runner routinely fails to relaunch once the tests have finished, which fails the action
     # even though every screenshot was captured. That verdict is held rather than raised, because the
@@ -502,12 +614,13 @@ platform :ios do
     runner_failure = nil
     begin
       run_tests(
-        project:          XCODEPROJ,
-        scheme:           "IP Inbound Watch",
-        devices:          ["Apple Watch Series 11 (46mm)"],
-        only_testing:     ["IP Inbound Watch Watch AppUITests/WatchScreenshotTests"],
-        result_bundle:    true,
-        output_directory: derived
+        project:           XCODEPROJ,
+        scheme:            "IP Inbound Watch",
+        devices:           ["Apple Watch Series 12 (46mm)"],
+        only_testing:      ["IP Inbound Watch Watch AppUITests/WatchScreenshotTests"],
+        derived_data_path: repository_path(".build", "DerivedData"),
+        result_bundle:     true,
+        output_directory:  derived
       )
     rescue StandardError => e
       runner_failure = e
@@ -531,7 +644,7 @@ platform :ios do
 
     # Captures are staged outside the published folder, which is replaced only once the run has
     # produced a full set. A run that fails, or captures nothing, therefore leaves the previous
-    # screenshots where they are — and `upload_screenshots` clears every App Store slot it uploads
+    # screenshots where they are — and `upload_screenshots` syncs every App Store slot it uploads
     # into, so publishing an empty folder would drop the watch screenshots from the product page.
     Dir.mktmpdir("watch-screenshots") do |staging|
       captured = manifest.flat_map { |test| test["attachments"] }.filter_map do |attachment|
@@ -556,89 +669,27 @@ platform :ios do
     end
   end
 
-  desc "Generate framed screenshots"
-  lane :frames do
-    APPEARANCES.each do |appearance|
-      directory = screenshots_directory(appearance)
-      unless Dir.exist?(directory)
-        UI.user_error!("No #{appearance} screenshots at #{directory} — run the screenshots lane first.")
-      end
-
-      # frameit recognizes a device by the pixel size of its capture and has no entry for either M5
-      # iPad, so Framefile.json points those two at the nearest frame it does carry. It reads that
-      # file from beside the language folder, and snapshot empties that folder on every run, so the
-      # tracked copy is staged here each time.
-      FileUtils.cp(repository_path("fastlane", "Framefile.json"), directory)
-      frame_screenshots path: directory
-    end
-  end
-
-  desc "Import the generated screenshots into the asset catalog and the marketing site"
+  desc "Import the captured stills into the asset catalog and the marketing site"
   lane :import_screenshots do
-    frames
-    verify_framed_screenshots
+    verify_tutorial_stills
 
-    TUTORIAL_IMAGES.each do |image|
-      write_imageset(image)
-      write_docs_shot(image)
+    TUTORIAL_IMAGES.each do |name, illustration|
+      write_imageset(name, illustration)
+      write_docs_shot(name, illustration)
     end
 
     UI.success("Imported #{TUTORIAL_IMAGES.count} tutorial illustrations → #{ASSET_CATALOG}")
   end
 
-  desc "Upload screenshots to App Store Connect"
+  desc "Check the rendered media against Apple's rules and the screenshots against the storyboard"
+  lane :verify do
+    verify_screenshot_folder(SCREENSHOTS_PATH, promo_still_devices) if Dir.exist?(SCREENSHOTS_PATH)
+    promokit("check")
+  end
+
+  desc "Upload the light screenshots and the watch set to App Store Connect"
   lane :upload_screenshots do
-    # deliver clears every slot it uploads into, across all three display families at once, so a
-    # missing set would strip those screenshots from the product page rather than leave them be.
-    verify_screenshots_present("light/en-US")
-    verify_screenshots_present("watch/en-US")
-    ensure_api_key
-    purge_remote_screenshots(Spaceship::ConnectAPI::Platform::IOS)
-
-    # Create a temporary directory with only non-framed screenshots
-    Dir.mktmpdir do |temp_dir|
-      # Create language subdirectory structure
-      lang_dir = File.join(temp_dir, "en-US")
-      FileUtils.mkdir_p(lang_dir)
-
-      # Copy only non-framed screenshots to temp directory
-      screenshots_path = File.join(Dir.pwd, "screenshots/light/en-US/*.png")
-
-      Dir.glob(screenshots_path).each do |file|
-        next if file.include?("_framed")
-
-        FileUtils.cp(file, lang_dir)
-      end
-
-      # Apple Watch screenshots (416×496, dark-only) live in their own folder. deliver detects them by
-      # pixel size and maps them to the Apple Watch display family, so they share the language dir with
-      # the iPhone/iPad shots rather than needing a separate upload.
-      watch_path = File.join(Dir.pwd, "screenshots/watch/en-US/*.png")
-
-      Dir.glob(watch_path).each do |file|
-        FileUtils.cp(file, lang_dir)
-      end
-
-      # Upload only non-framed screenshots
-      upload_to_app_store(
-        app_identifier:             APP_IDENTIFIER,
-        skip_binary_upload:         true,
-        skip_metadata:              true,
-        screenshots_path:           temp_dir,
-        # `overwrite_screenshots` verifies its deletions against the objects it already held rather
-        # than App Store Connect, so it reports success while the old screenshots survive and the new
-        # upload lands beside them, up to the ten-image ceiling on a set. Syncing reconciles against
-        # what is actually there, confirms the counts agree, and leaves each set in order.
-        sync_screenshots:           true,
-        force:                      true, # Skip HTML preview
-        run_precheck_before_submit: false # Skip precheck since we're only uploading screenshots
-      )
-    end
-
-    # NOTE: App Store Connect only supports one set of screenshots per size class
-    # Dark mode screenshots are generated but not uploaded (watch screens are dark-only, so the single
-    # watch set is uploaded)
-    # Framed screenshots are kept locally for marketing/other uses
+    upload_rendered_screenshots
   end
 
   desc "Generate and upload screenshots to App Store"

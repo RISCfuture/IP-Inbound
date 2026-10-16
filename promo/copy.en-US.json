@@ -1,0 +1,11 @@
+{
+  "run-in": "Steer the run-in onto the target.",
+  "speed-guidance": "Fly the speed it asks for.",
+  "contingency": "Out of time for the IP? Go direct.",
+  "past-target": "Every pass, *to the second.*",
+  "define-target": "Pick the target where you stand.",
+  "define-ip": "Set the IP by bearing and distance.",
+  "push-countdown": "Hold, then push on the count.",
+  "ground": "Brief the run before you start.",
+  "tot-entry": "Key in the time on target."
+}

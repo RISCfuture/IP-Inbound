@@ -1,0 +1,58 @@
+/* IP Inbound's look for promokit renders: the site's wide Archivo display face, in ink on paper. */
+
+@font-face {
+  font-family: "Archivo";
+  src: url("../docs/assets/fonts/archivo-var.woff2") format("woff2");
+  font-weight: 400 700;
+  font-stretch: 62% 125%;
+}
+
+.promo-root {
+  --paper: #eff0f2;
+  --ink: #16191e;
+  --index: #c1121f;
+
+  background: var(--paper);
+}
+
+/* Screenshots: a headline in the site's display type over the capture, on paper. */
+.promo-screenshot {
+  background: var(--paper);
+}
+
+.promo-headline {
+  font-family: "Archivo", sans-serif;
+  font-stretch: 118%;
+  font-weight: 700;
+  letter-spacing: -0.022em;
+  line-height: 1.02;
+  text-align: center;
+  text-wrap: balance;
+  color: var(--ink);
+}
+
+[data-layout="phone"] .promo-headline {
+  margin: 11vh 7vw 0;
+  font-size: 7.6vw;
+}
+
+[data-layout="tablet"] .promo-headline {
+  margin: 7vh 7vw 0;
+  font-size: 5.4vw;
+}
+
+/* A capture is the whole screen: show it as one, running off the bottom edge. */
+[data-layout="phone"] .promo-screen,
+[data-layout="tablet"] .promo-screen {
+  flex: none;
+  width: 84vw;
+  max-width: none;
+  margin-top: 5vh;
+  border-radius: var(--screen-radius);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--ink) 8%, transparent),
+    0 3vw 8vw -2vw color-mix(in srgb, var(--ink) 30%, transparent);
+}
+
+[data-layout="phone"] { --screen-radius: 11vw; }
+[data-layout="tablet"] { --screen-radius: 3.6vw; }
