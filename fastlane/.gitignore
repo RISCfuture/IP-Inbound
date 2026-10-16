@@ -5,6 +5,7 @@ test_output
 # promokit renders these from promo/.
 screenshots
 previews
+creative_assets
 
 # watch_screenshots captures these.
 screenshots_watch

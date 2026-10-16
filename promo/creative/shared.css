@@ -1,0 +1,158 @@
+/* IP Inbound's creative assets: the marketing site's dark bench, its faces, and the deviation
+   scale that is its signature. Real captures sit on it as cards, cropped to what they show. */
+
+@font-face {
+  font-family: "Plex Mono";
+  src: url("../../docs/assets/fonts/plexmono-500.woff2") format("woff2");
+  font-weight: 500;
+}
+
+.promo-creative {
+  --paper: #0d0f12;
+  --ink: #e9ebee;
+  --steel: #878e98;
+  --hairline: #3a4049;
+  --index: #e84a58;
+
+  position: relative;
+  width: var(--promo-width);
+  height: var(--promo-height);
+  overflow: hidden;
+  font-family: "Archivo", sans-serif;
+  color: var(--ink);
+  background: var(--paper);
+}
+
+.promo-creative * {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+.label {
+  font-family: "Plex Mono", monospace;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--steel);
+}
+
+.headline {
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-stretch: 118%;
+  letter-spacing: -0.022em;
+  line-height: 1.02;
+  white-space: pre-line;
+}
+
+/* A capture as the screen it is: black glass with the device's corners and a hairline bezel. */
+.card {
+  position: absolute;
+  overflow: hidden;
+  background: #000;
+  border: var(--bezel, 3px) solid var(--hairline);
+  border-radius: var(--radius, 72px);
+}
+
+.card img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* The deviation scale, −20 s to +20 s: minor ticks each second, major each five, the red index at
+   zero and the needle settled on it. --second sets its pitch, so it spans 40 seconds' worth. */
+.scale {
+  position: absolute;
+  width: calc(40 * var(--second));
+  border-top: var(--rule, 3px) solid var(--hairline);
+}
+
+.scale-track {
+  position: relative;
+  height: var(--track, 110px);
+}
+
+.scale-track::before,
+.scale-track::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+}
+
+.scale-track::before {
+  height: 42%;
+  background: repeating-linear-gradient(
+    to right,
+    var(--hairline) 0 var(--tick, 3px),
+    transparent var(--tick, 3px) var(--second)
+  );
+}
+
+.scale-track::after {
+  height: 74%;
+  background: repeating-linear-gradient(
+    to right,
+    var(--steel) 0 var(--tick, 3px),
+    transparent var(--tick, 3px) calc(5 * var(--second))
+  );
+}
+
+.scale-index,
+.scale-needle {
+  position: absolute;
+  bottom: 0;
+  left: calc(20 * var(--second));
+  z-index: 1;
+}
+
+.scale-index {
+  width: var(--tick, 3px);
+  height: 100%;
+  background: var(--index);
+}
+
+.scale-index::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  translate: -50% 0;
+  border: calc(2 * var(--tick, 3px)) solid transparent;
+  border-top: calc(3 * var(--tick, 3px)) solid var(--index);
+}
+
+.scale-needle {
+  width: calc(2 * var(--tick, 3px));
+  height: 76%;
+  translate: calc(-0.25 * var(--tick, 3px)) 0;
+  background: var(--ink);
+}
+
+.scale-needle::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: calc(3 * var(--tick, 3px));
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  rotate: 45deg;
+  background: var(--ink);
+}
+
+.scale-legend {
+  position: relative;
+  height: 1.4em;
+  margin-top: 0.6em;
+}
+
+.scale-legend span {
+  position: absolute;
+  translate: -50% 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.scale-legend .zero {
+  color: var(--index);
+}

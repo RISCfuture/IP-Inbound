@@ -4,8 +4,8 @@ import XCUIPromoKit
 import XCUITestKit
 
 // swiftlint:disable prefer_nimble
-/// Captures the stills `promo/storyboard.json` sets as App Store screenshots, and that
-/// `import_screenshots` turns into the tutorial's illustrations.
+/// Captures the stills `promo/storyboard.json` sets as App Store screenshots and cuts the
+/// creative assets from, and that `import_screenshots` turns into the tutorial's illustrations.
 /// `promokit stills` runs it; anywhere else, the test skips.
 ///
 /// Each phase of a run is its own launch on the harness's pinned clock, with the aircraft placed
