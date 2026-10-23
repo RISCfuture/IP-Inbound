@@ -23,7 +23,7 @@ jobs:
     with:
       runner: xcode-27
       # .ruby-version carries an RVM prefix setup-ruby cannot parse.
-      ruby-version: "4.0.7"
+      ruby-version: "4.0.9"
       team-id: 2NFSK2WB24
       container-id: iCloud.codes.tim.IP-Inbound
       certificates-repo: RISCfuture/certificates

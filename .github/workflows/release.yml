@@ -32,7 +32,7 @@ jobs:
     uses: RISCfuture/XCUITestKit/.github/workflows/cloudkit-schema.yml@1.1.0
     with:
       runner: xcode-27
-      ruby-version: "4.0.7"
+      ruby-version: "4.0.9"
       team-id: 2NFSK2WB24
       container-id: iCloud.codes.tim.IP-Inbound
       certificates-repo: RISCfuture/certificates
@@ -53,7 +53,7 @@ jobs:
       runner: xcode-27
       # Named explicitly so the release bundler matches the Ruby .ruby-version pins;
       # upstream would otherwise install its own default.
-      ruby-version: "4.0.7"
+      ruby-version: "4.0.9"
       version: ${{ inputs.version || github.ref_name }}
       certificates-repo: RISCfuture/certificates
       verify-lane: ci_verify_release_notes
