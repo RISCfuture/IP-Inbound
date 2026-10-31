@@ -74,4 +74,10 @@ It builds with Xcode 27.1 or later, which the iPhone Duo simulator needs; set
 `/Applications`. `promo/storyboard.json` and `promo/brand.css` set how the
 media look.
 
+A release is a commit titled "Release X.Y" that advances the app's
+`MARKETING_VERSION`, beside a `## X.Y` section in `CHANGELOG.md`, tagged `X.Y`
+on `main` or on a `release/X.Y` branch for a hotfix. Pushing the tag runs the
+Release workflow, which refuses a tag the project's version doesn't match and
+numbers the build one past App Store Connect's latest.
+
 Sentry is included for exception reporting.
