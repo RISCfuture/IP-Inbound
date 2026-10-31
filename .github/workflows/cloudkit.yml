@@ -6,7 +6,7 @@ name: CloudKit
 # unit suite's CloudKitSchemaTests: a warning there, and a failure in the release workflow.
 on:
   push:
-    branches: [main]
+    branches: [main, "release/**"]
   # No base-branch filter, as in ci.yml: a stacked pull request targets the branch below it.
   pull_request:
   schedule:

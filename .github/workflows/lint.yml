@@ -2,7 +2,7 @@ name: Linters
 
 on:
   push:
-    branches: [main]
+    branches: [main, "release/**"]
   # No base-branch filter: a stacked pull request targets the branch below it rather than
   # main, and a filtered trigger would leave it with no checks until its parent merged.
   pull_request:
