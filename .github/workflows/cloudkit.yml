@@ -19,11 +19,9 @@ concurrency:
 
 jobs:
   schema:
-    uses: RISCfuture/XCUITestKit/.github/workflows/cloudkit-schema.yml@1.1.0
+    uses: RISCfuture/XCUITestKit/.github/workflows/cloudkit-schema.yml@1.2.0
     with:
       runner: xcode-27
-      # .ruby-version carries an RVM prefix setup-ruby cannot parse.
-      ruby-version: "4.0.9"
       team-id: 2NFSK2WB24
       container-id: iCloud.codes.tim.IP-Inbound
       certificates-repo: RISCfuture/certificates
