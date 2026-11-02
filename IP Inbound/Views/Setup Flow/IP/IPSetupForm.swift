@@ -20,8 +20,6 @@ struct IPSetupForm: View {
 
   @State private var offsetType = IPOffsetType.distance
 
-  @FocusState private var focusedField: Field?
-
   @Default(.distanceUnit)
   private var distanceDefault
 
@@ -55,10 +53,7 @@ struct IPSetupForm: View {
         LabeledContent {
           VStack {
             HStack {
-              TextField("", value: $target.offsetBearing, format: .number)
-                .multilineTextAlignment(.trailing)
-                .keyboardType(.numberPad)
-                .focused($focusedField, equals: .bearing)
+              NumericField("Bearing", value: $target.offsetBearing, format: .number)
                 .accessibilityIdentifier("offsetBearingField")
               Picker("", selection: $target.offsetBearingIsTrue) {
                 Text("°M").tag(false)
@@ -84,11 +79,12 @@ struct IPSetupForm: View {
           switch offsetType {
             case .distance:
               HStack {
-                TextField("", value: offsetDistance, format: Self.offsetValueFormat)
-                  .multilineTextAlignment(.trailing)
-                  .keyboardType(.numberPad)
-                  .focused($focusedField, equals: .offsetDistance)
-                  .accessibilityIdentifier("offsetDistanceField")
+                NumericField(
+                  "Distance",
+                  value: offsetDistance,
+                  format: Self.offsetValueFormat
+                )
+                .accessibilityIdentifier("offsetDistanceField")
                 Picker("", selection: $distanceDefault) {
                   ForEach(DistanceUnit.allCases, id: \.self) { unit in
                     Text(localizedName(of: unit.distanceUnit, style: .short))
@@ -100,11 +96,12 @@ struct IPSetupForm: View {
               }
             case .time:
               HStack {
-                TextField("", value: offsetTime, format: Self.offsetValueFormat)
-                  .multilineTextAlignment(.trailing)
-                  .keyboardType(.numberPad)
-                  .focused($focusedField, equals: .offsetTime)
-                  .accessibilityIdentifier("offsetTimeField")
+                NumericField(
+                  "Time",
+                  value: offsetTime,
+                  format: Self.offsetValueFormat
+                )
+                .accessibilityIdentifier("offsetTimeField")
                 Text(localizedName(of: UnitDuration.minutes, style: .short))
               }
           }
@@ -123,11 +120,12 @@ struct IPSetupForm: View {
 
         LabeledContent {
           HStack {
-            TextField("", value: targetGroundSpeed, format: .number)
-              .multilineTextAlignment(.trailing)
-              .keyboardType(.numberPad)
-              .focused($focusedField, equals: .groundSpeed)
-              .accessibilityIdentifier("groundSpeedField")
+            NumericField(
+              "Target Ground Speed",
+              value: targetGroundSpeed,
+              format: .number
+            )
+            .accessibilityIdentifier("groundSpeedField")
             Picker("", selection: $distanceDefault) {
               ForEach(DistanceUnit.allCases, id: \.self) { unit in
                 Text(localizedName(of: unit.speedUnit, style: .short))
@@ -141,15 +139,6 @@ struct IPSetupForm: View {
           Text("Target Ground Speed")
             .foregroundStyle(.secondary)
         }
-      }
-    }
-    // The number pad has no Return key, so without this the only way off a field is to tap
-    // elsewhere or scroll.
-    .toolbar {
-      ToolbarItemGroup(placement: .keyboard) {
-        Spacer()
-        Button("Done") { focusedField = nil }
-          .accessibilityIdentifier("keyboardDoneButton")
       }
     }
     // Switching representation re-rounds the now-active value into the store
@@ -167,15 +156,6 @@ struct IPSetupForm: View {
           target.setOffset(time: .init(value: offsetTime.wrappedValue, unit: .minutes))
       }
     }
-  }
-}
-
-extension IPSetupForm {
-  private enum Field {
-    case bearing
-    case offsetDistance
-    case offsetTime
-    case groundSpeed
   }
 }
 

@@ -19,7 +19,7 @@ concurrency:
 
 jobs:
   schema:
-    uses: RISCfuture/XCUITestKit/.github/workflows/cloudkit-schema.yml@1.2.0
+    uses: RISCfuture/XCUITestKit/.github/workflows/cloudkit-schema.yml@1.2.1
     with:
       runner: xcode-27
       team-id: 2NFSK2WB24

@@ -1974,7 +1974,7 @@
 			repositoryURL = "https://github.com/RISCfuture/XCUITestKit";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.2.0;
+				minimumVersion = 1.2.1;
 			};
 		};
 		016F3ED02DD4F1E1006EEC6D /* XCRemoteSwiftPackageReference "swift-numerics" */ = {
@@ -1990,7 +1990,7 @@
 			repositoryURL = "https://github.com/apple/swift-async-algorithms.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.1.5;
+				minimumVersion = 1.1.7;
 			};
 		};
 		01ECF4F12CF3E2F800BD0604 /* XCRemoteSwiftPackageReference "Defaults" */ = {
@@ -2006,7 +2006,7 @@
 			repositoryURL = "https://github.com/apple/swift-nio.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 2.101.2;
+				minimumVersion = 2.104.0;
 			};
 		};
 		01F13CFC2DBEE65B000E58A2 /* XCRemoteSwiftPackageReference "swift-log" */ = {
@@ -2014,7 +2014,7 @@
 			repositoryURL = "https://github.com/apple/swift-log.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.14.0;
+				minimumVersion = 1.16.2;
 			};
 		};
 		455EB96FD3C3DE444A131339 /* XCRemoteSwiftPackageReference "MeasurementKit" */ = {
@@ -2030,7 +2030,7 @@
 			repositoryURL = "https://github.com/getsentry/sentry-cocoa/";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 9.19.1;
+				minimumVersion = 9.32.0;
 			};
 			traits = (
 			);

@@ -33,7 +33,7 @@ concurrency:
 
 jobs:
   cloudkit:
-    uses: RISCfuture/XCUITestKit/.github/workflows/cloudkit-schema.yml@1.2.0
+    uses: RISCfuture/XCUITestKit/.github/workflows/cloudkit-schema.yml@1.2.1
     with:
       runner: xcode-27
       team-id: 2NFSK2WB24
@@ -48,7 +48,7 @@ jobs:
 
   release:
     needs: cloudkit
-    uses: RISCfuture/XCUITestKit/.github/workflows/ios-release.yml@1.2.0
+    uses: RISCfuture/XCUITestKit/.github/workflows/ios-release.yml@1.2.1
     with:
       # The watch app and the Live Activity extension are embedded in the iOS archive.
       platforms: '["iOS"]'

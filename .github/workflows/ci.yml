@@ -13,7 +13,7 @@ concurrency:
 
 jobs:
   ci:
-    uses: RISCfuture/XCUITestKit/.github/workflows/ios-ci.yml@1.2.0
+    uses: RISCfuture/XCUITestKit/.github/workflows/ios-ci.yml@1.2.1
     with:
       scheme: "IP Inbound"
       unit-test-plan: "Unit Tests"
@@ -37,21 +37,21 @@ jobs:
     name: Documentation Build
     runs-on: xcode-27
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7.0.1
       - name: Enable macros
         run: defaults write com.apple.dt.Xcode IDESkipMacroFingerprintValidation -bool YES
       - name: Record toolchain version
         id: toolchain
         run: echo "xcode=$(xcodebuild -version | tr '\n' '-')" >> "$GITHUB_OUTPUT"
       - name: Cache SwiftPM dependencies
-        uses: actions/cache@v6
+        uses: actions/cache@v6.1.0
         with:
           path: ~/Library/Caches/org.swift.swiftpm
           key: spm-${{ runner.os }}-${{ hashFiles('**/Package.resolved') }}
           restore-keys: |
             spm-${{ runner.os }}-
       - name: Cache Xcode build products
-        uses: actions/cache@v6
+        uses: actions/cache@v6.1.0
         with:
           path: ${{ runner.temp }}/docs-dd
           key: derived-docs-xcode-27-${{ steps.toolchain.outputs.xcode }}-${{ hashFiles('**/Package.resolved') }}

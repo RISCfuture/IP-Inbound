@@ -4,7 +4,7 @@ import XCUITestKit
 // swiftlint:disable prefer_nimble
 
 struct IPSetupPage: Page {
-  private static let keyboardDoneButton = "keyboardDoneButton"
+  private static let keyboardDoneButton = "MeasurementKit.NumericField.done"
 
   let app: XCUIApplication
 
@@ -45,7 +45,7 @@ struct IPSetupPage: Page {
   func enterBearing(_ value: String) {
     let field = scrollToVisible(offsetBearingField) ?? offsetBearingField
     XCTAssertTrue(field.waitForExistence(timeout: 5), "Bearing field should appear")
-    field.clearAndType(value, app: app, doneButtonIdentifier: Self.keyboardDoneButton)
+    enterNumber(value, into: field)
   }
 
   func selectBearingReference(_ reference: String) {
@@ -57,7 +57,7 @@ struct IPSetupPage: Page {
   func enterOffsetDistance(_ value: String) {
     let field = scrollToVisible(offsetDistanceField) ?? offsetDistanceField
     XCTAssertTrue(field.waitForExistence(timeout: 3), "Offset distance field should appear")
-    field.clearAndType(value, app: app, doneButtonIdentifier: Self.keyboardDoneButton)
+    enterNumber(value, into: field, roundsToWholeNumber: true)
   }
 
   /// Commit a pending offset-distance edit by moving focus to another field.
@@ -73,7 +73,7 @@ struct IPSetupPage: Page {
   func enterOffsetTime(_ value: String) {
     let field = scrollToVisible(offsetTimeField) ?? offsetTimeField
     XCTAssertTrue(field.waitForExistence(timeout: 3), "Offset time field should appear")
-    field.clearAndType(value, app: app, doneButtonIdentifier: Self.keyboardDoneButton)
+    enterNumber(value, into: field, roundsToWholeNumber: true)
   }
 
   func selectOffsetType(_ type: String) {
@@ -85,7 +85,49 @@ struct IPSetupPage: Page {
   func enterGroundSpeed(_ value: String) {
     let field = scrollToVisible(groundSpeedField) ?? groundSpeedField
     XCTAssertTrue(field.waitForExistence(timeout: 3), "Ground speed field should appear")
-    field.clearAndType(value, app: app, doneButtonIdentifier: Self.keyboardDoneButton)
+    enterNumber(value, into: field)
+  }
+
+  private func enterNumber(
+    _ value: String,
+    into field: XCUIElement,
+    roundsToWholeNumber: Bool = false
+  ) {
+    field.clearAndType(
+      value,
+      app: app,
+      replacingSelection: true,
+      doneButtonIdentifier: Self.keyboardDoneButton
+    )
+    finishEditing(field)
+
+    let expected = Double(value).map { roundsToWholeNumber ? $0.rounded() : $0 }
+    XCTAssertNotNil(expected, "Numeric entry should contain a number")
+    XCTAssertEqual(
+      Double((field.value as? String) ?? ""),
+      expected,
+      "Numeric field should retain the entered value"
+    )
+  }
+
+  private func finishEditing(_ field: XCUIElement) {
+    let focused = NSPredicate(format: "hasKeyboardFocus == true")
+    guard focused.evaluate(with: field) else { return }
+
+    let doneButton = app.buttons[Self.keyboardDoneButton].firstMatch
+    XCTAssertTrue(doneButton.waitForExistence(timeout: ScaledTimeouts.short))
+    XCTAssertTrue(doneButton.isVisible, "Keyboard Done button should be on screen")
+    doneButton.forceTap()
+    XCTAssertTrue(
+      field.waitFor(NSPredicate(format: "hasKeyboardFocus == false")),
+      "Numeric field should finish editing"
+    )
+    XCTAssertTrue(
+      app.keyboards.keys["1"].firstMatch.waitFor(
+        NSPredicate(format: "exists == false OR isHittable == false")
+      ),
+      "Number pad should stop covering IP setup"
+    )
   }
 
   @discardableResult

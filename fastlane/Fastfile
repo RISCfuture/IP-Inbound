@@ -61,9 +61,6 @@ PREVIEWS_PATH = File.expand_path("previews", __dir__)
 # Where watch_screenshots puts the Apple Watch set, a folder per locale.
 WATCH_SCREENSHOTS_PATH = File.expand_path("screenshots_watch", __dir__)
 
-# The Xcode promokit builds and tests with. The iPhone Duo simulator needs Xcode 27.1 or later.
-DUO_XCODE = ENV.fetch("DUO_XCODE", "/Applications/Xcode-27.1.0-Release.Candidate.app")
-
 # The tutorial inside the app illustrates every step with the App Store stills. Each still, named
 # by StoreScreenshots, maps to the illustration `TutorialView` loads, numbered in the order the
 # tutorial teaches it. The marketing site names its shots after the illustrations too.
@@ -393,22 +390,9 @@ def purge_remote_screenshots(platform)
                  "Uploading now would leave the set a mix of old and new.")
 end
 
-# Runs the block with every tool fastlane shells out to — xcodebuild and simctl among them — taken
-# from the given Xcode rather than the selected one.
-def with_xcode(path)
-  developer_dir = File.join(path, "Contents", "Developer")
-  UI.user_error!("No Xcode at #{path}. Set DUO_XCODE in fastlane/.env.") unless Dir.exist?(developer_dir)
-
-  previous = ENV.fetch("DEVELOPER_DIR", nil)
-  ENV["DEVELOPER_DIR"] = developer_dir
-  yield
-ensure
-  ENV["DEVELOPER_DIR"] = previous
-end
-
 # Runs XCUIPromoKit's `promokit` from promo/.
 def promokit(*)
-  with_xcode(DUO_XCODE) { sh("pnpm", "--dir", PROMO_PATH, "promokit", *) }
+  sh("pnpm", "--dir", PROMO_PATH, "promokit", *)
 end
 
 # The capture lanes drive simulators, which a CI runner can't stand in for.

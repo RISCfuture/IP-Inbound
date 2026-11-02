@@ -69,10 +69,9 @@ captures through its **Promo** test plan.
 the listing's media from `promo/`: run `pnpm install` there once, then
 `fastlane screenshots`. That lane also turns the stills into the tutorial's
 illustrations and the marketing site's shots, and captures the Apple Watch set.
-It builds with Xcode 27.1 or later, which the iPhone Duo simulator needs; set
-`DUO_XCODE` in `fastlane/.env` if it isn't the release candidate in
-`/Applications`. `promo/storyboard.json` and `promo/brand.css` set how the
-media look.
+It builds with the selected Xcode, which must be 27.1 or later for the iPhone
+Duo simulator. `promo/storyboard.json` and `promo/brand.css` set how the media
+look.
 
 A release is a commit titled "Release X.Y" that advances the app's
 `MARKETING_VERSION`, beside a `## X.Y` section in `CHANGELOG.md`, tagged `X.Y`
