@@ -15,7 +15,7 @@ final class TargetManagementTests: BaseTestCase {
 
     // Navigate back and verify target appears in list
     let listPage: TargetListPage
-    if !isIPad {
+    if !isListBesideDetail {
       listPage = setup.navigateBackToList()
     } else {
       listPage = list
@@ -38,7 +38,7 @@ final class TargetManagementTests: BaseTestCase {
 
     // Go back to list
     let listPage: TargetListPage
-    if !isIPad {
+    if !isListBesideDetail {
       listPage = setup.navigateBackToList()
     } else {
       listPage = list
@@ -64,7 +64,7 @@ final class TargetManagementTests: BaseTestCase {
     // Create Charlie
     let setup1 = list.createTarget(named: "Charlie")
     let list1: TargetListPage
-    if !isIPad {
+    if !isListBesideDetail {
       list1 = setup1.navigateBackToList()
     } else {
       list1 = list
@@ -73,7 +73,7 @@ final class TargetManagementTests: BaseTestCase {
     // Create Delta
     let setup2 = list1.createTarget(named: "Delta")
     let list2: TargetListPage
-    if !isIPad {
+    if !isListBesideDetail {
       list2 = setup2.navigateBackToList()
     } else {
       list2 = list1
@@ -119,7 +119,7 @@ final class TargetManagementTests: BaseTestCase {
 
     // Navigate to list
     let listPage: TargetListPage
-    if !isIPad {
+    if !isListBesideDetail {
       listPage = setupReturned.navigateBackToList()
     } else {
       listPage = list
@@ -184,8 +184,8 @@ final class TargetManagementTests: BaseTestCase {
   @MainActor
   func testEmptyStateShowsNoTarget() async throws {
     await launchApp()
-    guard isIPad else {
-      throw XCTSkip("Empty state detail pane only visible on iPad")
+    guard isListBesideDetail else {
+      throw XCTSkip("The empty detail pane shows only beside the target list")
     }
 
     // With no target selected, the detail pane should show "No Target"

@@ -4,17 +4,33 @@ import XCUITestKit
 // swiftlint:disable prefer_nimble
 
 struct TargetListPage: Page {
+  /// The share of the window's width below which the target list is a sidebar beside a detail pane.
+  private static let sidebarWidthFraction = 0.75
+
   let app: XCUIApplication
 
   var isDisplayed: Bool {
     app.buttons["addTargetButton"].waitForExistence(timeout: 15)
   }
 
+  var listView: XCUIElement { app.descendant(id: "targetList") }
   var addTargetButton: XCUIElement { app.buttons["addTargetButton"] }
   var tutorialButton: XCUIElement { app.buttons["tutorialButton"] }
 
   var targetCount: Int {
     app.cells.count
+  }
+
+  /**
+   Whether the target list sits in a sidebar beside a detail pane rather than filling the window.
+
+   Read from the layout rather than the device idiom: iPhone Duo's inner display lays the app out
+   in two panes while still reporting itself a phone. Only meaningful while the list is on screen.
+   */
+  var isBesideDetail: Bool {
+    let list = listView.frame.width
+    let window = app.windows.firstMatch.frame.width
+    return list < window * Self.sidebarWidthFraction
   }
 
   // MARK: - Methods
@@ -66,13 +82,12 @@ struct TargetListPage: Page {
   }
 
   /// Pop the master navigation stack back to the target list, one nav-bar back
-  /// tap at a time, until `addTargetButton` is showing. On iPad the list lives
-  /// in the always-visible sidebar, so there is nothing to pop and this returns
-  /// immediately. Each iteration waits for the next state rather than sleeping a
-  /// fixed interval: `addTargetButton.waitForExistence` is the loop's settle.
+  /// tap at a time, until `addTargetButton` is showing. A list in a sidebar beside
+  /// the detail is already showing, unless the Fly screen has hidden the sidebar,
+  /// which leaving it restores. Each iteration waits for the next state rather than
+  /// sleeping a fixed interval: `addTargetButton.waitForExistence` is the loop's settle.
   @discardableResult
   func navigateBackToList() -> Self {
-    guard UIDevice.current.userInterfaceIdiom != .pad else { return self }
     for _ in 0..<6 {
       if addTargetButton.waitForExistence(timeout: 1) { break }
       let backButton = app.buttons["BackButton"]

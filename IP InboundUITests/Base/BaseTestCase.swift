@@ -22,9 +22,9 @@ nonisolated class BaseTestCase: XCTestCase {
 
   var app: XCUIApplication!
 
-  @MainActor var isIPad: Bool {
-    UIDevice.current.userInterfaceIdiom == .pad
-  }
+  /// Whether the launched app shows the target list in a sidebar beside the detail rather than in a
+  /// stack. Read once the list is up, since the Fly screen hides the sidebar.
+  private(set) var isListBesideDetail = false
 
   // MARK: - XCTestCase
 
@@ -75,6 +75,7 @@ nonisolated class BaseTestCase: XCTestCase {
     waitForAppStability()
     // A scripted feed never constructs a CLLocationManager, so there is no prompt to wait out.
     if location == nil && path == nil { await handleLocationPermissionIfNeeded() }
+    isListBesideDetail = readListLayout()
   }
 
   @MainActor
@@ -96,6 +97,15 @@ nonisolated class BaseTestCase: XCTestCase {
     // interaction (unlike `addUIInterruptionMonitor`). Safe to call defensively:
     // returns without failing if no prompt is present.
     await SystemAlert.dismiss(labels: ["Allow While Using App"])
+  }
+
+  @MainActor
+  private func readListLayout() -> Bool {
+    let list = TargetListPage(app: app)
+    if !list.listView.waitForExistence(timeout: ScaledTimeouts.element) {
+      XCTFail("The target list should be on screen after launch, to read the layout from")
+    }
+    return list.isBesideDetail
   }
 
   @MainActor

@@ -241,7 +241,7 @@ final class CoordinateEntryTests: BaseTestCase {
   @MainActor
   private func navigateToListAndDelete(_ name: String) {
     let setup = TargetSetupPage(app: app)
-    if !isIPad {
+    if !isListBesideDetail {
       _ = setup.navigateBackToList()
     }
     TargetListPage(app: app).deleteTarget(named: name)

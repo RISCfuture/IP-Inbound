@@ -16,18 +16,18 @@ final class NavigationFlowTests: BaseTestCase {
   }
 
   // Navigate back from fly view to the setup root.
-  // iPhone: pops the SetupFlowView off the master nav stack, ending on the
-  // target list. iPad: rewinds the detail panel's NavigationStack to Define
-  // Target — the sidebar stays visible. Re-selecting the same cell on iPad
-  // does not reset the detail (SetupFlowView is `.id`-bound to the target),
-  // so the test has to drive this back-traversal explicitly.
+  // In a stack: pops the SetupFlowView off the master nav stack, ending on the
+  // target list. Beside a sidebar: rewinds the detail panel's NavigationStack to
+  // Define Target — the sidebar returns once the Fly screen is left. Re-selecting
+  // the same cell there does not reset the detail (SetupFlowView is `.id`-bound
+  // to the target), so the test has to drive this back-traversal explicitly.
   @MainActor
   private func navigateBackFromFly() {
     // Use `targetNameField` (only present on the root TargetSetupView, not on
     // TOT/IP/Fly) so the back loop doesn't stop early. `defineIPButton` also
     // appears on TOTSetupView as a back-to-IP link, so it's not unique enough.
     let exitMarker: XCUIElement =
-      isIPad ? app.textFields["targetNameField"] : app.buttons["addTargetButton"]
+      isListBesideDetail ? app.textFields["targetNameField"] : app.buttons["addTargetButton"]
     for _ in 0..<6 {
       if exitMarker.waitForExistence(timeout: 1) { break }
       // By identity, not position: on iPad the split view's sidebar toggle shares the
@@ -142,7 +142,7 @@ final class NavigationFlowTests: BaseTestCase {
     )
 
     // Clean up
-    if !isIPad {
+    if !isListBesideDetail {
       _ = setupBack.navigateBackToList()
     }
     TargetListPage(app: app).deleteTarget(named: "BackNav")
@@ -194,7 +194,7 @@ final class NavigationFlowTests: BaseTestCase {
     )
 
     // Clean up
-    if !isIPad {
+    if !isListBesideDetail {
       _ = TargetSetupPage(app: app).navigateBackToList()
     }
     TargetListPage(app: app).deleteTarget(named: "ConfiguredSetup")
@@ -219,7 +219,7 @@ final class NavigationFlowTests: BaseTestCase {
     XCTAssertFalse(flyView.exists, "Should NOT be on fly view for new target")
 
     // Clean up
-    if !isIPad {
+    if !isListBesideDetail {
       _ = setup.navigateBackToList()
     }
     TargetListPage(app: app).deleteTarget(named: "NewSetup")

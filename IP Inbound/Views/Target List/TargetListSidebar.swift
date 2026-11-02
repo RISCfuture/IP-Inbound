@@ -34,6 +34,7 @@ struct TargetListSidebar: View {
         }
       }
     }
+    .accessibilityIdentifier("targetList")
     .navigationTitle("Targets")
     .toolbar {
       ToolbarItem(placement: .bottomBar) {
