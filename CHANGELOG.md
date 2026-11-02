@@ -9,6 +9,12 @@ and as plain text on the store, where the field shows whatever it is given
 verbatim: a line that only makes sense with its formatting will read badly in one
 of the two places.
 
+## 3.0.1
+
+- On iPad and on iPhone Duo’s inner display, your targets step aside while you
+  fly, giving the CDI the whole screen. They come back when you leave the Fly
+  screen.
+
 ## 3.0
 
 IP Inbound now requires iOS 27 and watchOS 27. If your iPhone or Apple Watch is

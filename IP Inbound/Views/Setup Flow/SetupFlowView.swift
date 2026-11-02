@@ -9,6 +9,16 @@ enum SetupFlowStep: Int {
   case fly
 }
 
+/// Whether the setup flow is showing the Fly screen. Reverts to `false` when the flow leaves the
+/// view hierarchy.
+struct ShowsFlyScreenKey: PreferenceKey {
+  static let defaultValue = false
+
+  static func reduce(value: inout Bool, nextValue: () -> Bool) {
+    value = value || nextValue()
+  }
+}
+
 struct SetupFlowView: View {
   @Bindable var target: Target
   var onSelectTarget: (Target) -> Void = { _ in }
@@ -54,6 +64,7 @@ struct SetupFlowView: View {
     // forward. A flow asked to open on the Fly screen while the target list is showing — as a Siri
     // request is, on iPhone — would otherwise open at its start.
     .onChange(of: path, initial: true, restoreOwedFlyScreen)
+    .preference(key: ShowsFlyScreenKey.self, value: path.last == .fly)
     // Every screen of the flow is about this one target, so Siri can take it as the one on screen.
     .appEntityIdentifier(.target(target.id))
     // Setting a run up is the point at which the pilot has committed to flying one, so it is the
