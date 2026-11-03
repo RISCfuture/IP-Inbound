@@ -136,8 +136,11 @@ struct IPSetupForm: View {
             .accessibilityIdentifier("speedUnitPicker")
           }
         } label: {
-          Text("Target Ground Speed")
-            .foregroundStyle(.secondary)
+          ViewThatFits(in: .horizontal) {
+            Text("Target Ground Speed")
+            Text("Ground Speed")
+          }
+          .foregroundStyle(.secondary)
         }
       }
     }

@@ -16,6 +16,8 @@ of the two places.
   screen.
 - On iPad and on iPhone Duo’s inner display, Back from Define Target goes
   straight to your targets, not to a second Define Target screen.
+- Where “Target Ground Speed” would be cut off, as on iPhone Duo’s outer
+  display, the field reads “Ground Speed”.
 
 ## 3.0
 
