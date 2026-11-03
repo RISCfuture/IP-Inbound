@@ -44,6 +44,23 @@ struct `RunController tests` {
   }
 
   @Test
+  func `ownsRun, hands the run to the screen that began it last`() {
+    let target = target(timeOnTarget: nil)
+    let departing = UUID()
+    let arriving = UUID()
+
+    // A screen replaced by another for the same target must not take the replacement's run down
+    // with it, whichever order the two are raised and lowered in.
+    RunController.shared.beginRun(flying: target, for: departing)
+    RunController.shared.beginRun(flying: target, for: arriving)
+    #expect(!RunController.shared.ownsRun(screen: departing))
+    #expect(RunController.shared.ownsRun(screen: arriving))
+
+    RunController.shared.endRun()
+    #expect(!RunController.shared.ownsRun(screen: arriving))
+  }
+
+  @Test
   func `isRunLive, never flies a target with no time on target`() {
     // Nothing to be partway through, and nothing to bound an unattended run by.
     #expect(!RunController.isRunLive(target(timeOnTarget: nil), at: Self.timeOnTarget))

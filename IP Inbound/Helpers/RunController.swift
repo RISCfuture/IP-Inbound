@@ -9,7 +9,7 @@ import UIKit
 ///
 /// A run holds a great deal — the screen awake, the location stream alive once the app stops being
 /// frontmost, a countdown on the Lock Screen and on the watch face — and none of it belongs to the
-/// screen that happens to be showing. ``beginRun(flying:)`` raises all of it together and
+/// screen that happens to be showing. ``beginRun(flying:for:)`` raises all of it together and
 /// ``endRun()`` releases all of it together, so there is one answer to "is a run live?" rather than
 /// one per resource.
 ///
@@ -49,9 +49,8 @@ final class RunController {
   private var startTask: Task<Void, Never>?
   private var expiryTask: Task<Void, Never>?
 
-  /// The target whose window this process is waiting on, so a screen leaving can tell a start of
-  /// its own from one the screen replacing it has just armed.
-  private var pendingStartTargetID: String?
+  /// The Fly screen that began the run this process holds, raised or waiting for its window.
+  private var owningScreen: UUID?
 
   /// The last figures pushed, so a fix that would not move the Lock Screen's readout is not sent.
   /// `RunInSnapshot` is already rounded to the precision it displays at.
@@ -112,10 +111,15 @@ final class RunController {
   /// Steps the screenless solver aside as it goes — the screen pushes its own figures from the first
   /// fix it draws, so the handover leaves no gap, and two solvers reading two fixes would let the
   /// Lock Screen and the CDI disagree.
-  func beginRun(flying target: Target) {
+  ///
+  /// - Parameters:
+  ///   - target: the target the run flies.
+  ///   - screen: identifies the Fly screen beginning the run, which owns it from here on.
+  func beginRun(flying target: Target, for screen: UUID) {
     stopSolving()
     cancelStart()
     cancelExpiry()
+    owningScreen = screen
 
     // A brief may be hours from the run it plans. Holding the screen awake and the aircraft's GPS
     // running through all of it is the same waste the expiry exists to stop, at the other end of
@@ -124,7 +128,7 @@ final class RunController {
     // there is nothing left holding it.
     guard Self.isRunLive(target, at: Date()) else {
       releaseHeldRun()
-      armStart(for: target)
+      armStart(flying: target, for: screen)
       return
     }
 
@@ -139,6 +143,7 @@ final class RunController {
     cancelStart()
     cancelExpiry()
     releaseHeldRun()
+    owningScreen = nil
   }
 
   /// Releases a run nothing in this process is flying: the wreckage a force-quit or a crash left
@@ -158,16 +163,15 @@ final class RunController {
     endRun()
   }
 
-  /// Whether the run `target`'s screen began is still the one this process holds — raised, or
-  /// waiting for its window to open.
+  /// Whether the run this process holds — raised, or waiting for its window to open — is still the
+  /// one `screen` began.
   ///
-  /// Flying straight on to the next target replaces the whole Fly screen, and SwiftUI may raise the
-  /// replacement before it lowers the screen it replaces, so the departing screen asks this before
-  /// dismantling anything. A pending start answers for itself: `BackgroundActivityHolder` records
-  /// only runs that were raised, and reads a window still being waited on as nobody's.
-  func ownsRun(flying target: Target) -> Bool {
-    if let pendingStartTargetID { return pendingStartTargetID == target.id }
-    return BackgroundActivityHolder.shared.ownsRun(flying: target.id)
+  /// A Fly screen can be replaced by another, for the next target or for the same one, and SwiftUI
+  /// may raise the replacement before it lowers the screen it replaces, so the departing screen asks
+  /// this before dismantling anything. Screens answer for themselves rather than for their target:
+  /// an old and a new screen for one target would otherwise both claim the run.
+  func ownsRun(screen: UUID) -> Bool {
+    owningScreen == screen
   }
 
   private func fly(_ target: Target) async {
@@ -202,7 +206,7 @@ final class RunController {
     LiveActivityController.shared.update(runIn: runIn, for: target)
   }
 
-  /// Raises everything a live run holds. Separated from ``beginRun(flying:)`` so the decision of
+  /// Raises everything a live run holds. Separated from ``beginRun(flying:for:)`` so the decision of
   /// *whether* the run is one to raise reads apart from the raising.
   ///
   /// Replaces the previous run's holdings in place rather than releasing them first: the watch and
@@ -256,19 +260,18 @@ final class RunController {
   /// time-on-target has no window, and one whose window has already opened or closed has none left
   /// to wait for.
   ///
-  /// Re-enters ``beginRun(flying:)`` rather than raising the run directly, so the window is judged
-  /// again on arrival: a process suspended across the edge wakes to a decision it makes then rather
-  /// than one it made hours earlier.
-  private func armStart(for target: Target) {
+  /// Re-enters ``beginRun(flying:for:)`` rather than raising the run directly, so the window is
+  /// judged again on arrival: a process suspended across the edge wakes to a decision it makes then
+  /// rather than one it made hours earlier.
+  private func armStart(flying target: Target, for screen: UUID) {
     guard let timeOnTarget = target.timeOnTarget else { return }
     let remaining = (timeOnTarget - Self.maxLead).timeIntervalSinceNow
     guard remaining > 0 else { return }
 
-    pendingStartTargetID = target.id
     startTask = Task { [weak self] in
       try? await Task.sleep(for: .seconds(remaining))
       guard !Task.isCancelled else { return }
-      self?.beginRun(flying: target)
+      self?.beginRun(flying: target, for: screen)
     }
   }
 
@@ -299,7 +302,6 @@ final class RunController {
   private func cancelStart() {
     startTask?.cancel()
     startTask = nil
-    pendingStartTargetID = nil
   }
 
   private func cancelExpiry() {

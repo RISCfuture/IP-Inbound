@@ -140,18 +140,6 @@ public final class BackgroundActivityHolder {
     releaseUpdates()
   }
 
-  /// Whether a screen flying `targetID` is still the one the outstanding run belongs to, and so the
-  /// one that should tear it down.
-  ///
-  /// SwiftUI does not promise that a departing screen's `onDisappear` runs before its replacement's
-  /// `onAppear`, and flying straight on to the next target replaces the whole subtree. Torn down
-  /// unconditionally, the screen the pilot just left would end the run the screen they just arrived
-  /// at has already begun. A record naming no target — the watch's, or one written before this app
-  /// recorded them — is nobody else's to lose, so it is the caller's to end.
-  public func ownsRun(flying targetID: String) -> Bool {
-    runTargetID == nil || runTargetID == targetID
-  }
-
   /// Rejoins the session a run left outstanding when Core Location relaunched the app, and restarts
   /// the location stream alongside it — the stream is what the system relaunched the app to deliver,
   /// and dropping it forfeits the recovery. Belongs at `@main`: the window is the first moments of

@@ -20,6 +20,9 @@ struct FlyView: View {
 
   @State private var postPassResult = PostPassResult()
 
+  /// Identifies this screen to `RunController`, which hands the run to whichever screen began it last.
+  @State private var screenID = UUID()
+
   /// The phase the last fix with geometry to solve put the aircraft in, fed back so the early-arrival
   /// threshold can hold its ground against a lead hovering at the boundary. A fix carrying no usable
   /// ground speed or course leaves it standing: it says nothing about where the run has got to, and
@@ -108,14 +111,14 @@ struct FlyView: View {
     .userActivity(Self.activityType) { $0.appEntityIdentifier = .target(target.id) }
     .onAppear {
       target.isConfigured = true
-      RunController.shared.beginRun(flying: target)
+      RunController.shared.beginRun(flying: target, for: screenID)
     }
-    // Flying straight on to the next target replaces this whole screen, and SwiftUI may raise the
-    // replacement before it lowers this one. Tearing the run down then would end the run the next
-    // target has already begun — raised, or still waiting for its window to open — so the screen
-    // only dismantles a run it still owns.
+    // This screen can be replaced by another — for the next target, or for this one — and SwiftUI
+    // may raise the replacement before it lowers this one. Tearing the run down then would end the
+    // run the replacement has already begun, raised or still waiting for its window to open, so the
+    // screen only dismantles a run it still owns.
     .onDisappear {
-      guard RunController.shared.ownsRun(flying: target) else { return }
+      guard RunController.shared.ownsRun(screen: screenID) else { return }
       RunController.shared.endRun()
     }
   }
