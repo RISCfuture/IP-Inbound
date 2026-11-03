@@ -14,6 +14,8 @@ of the two places.
 - On iPad and on iPhone Duo’s inner display, your targets step aside while you
   fly, giving the CDI the whole screen. They come back when you leave the Fly
   screen.
+- On iPad and on iPhone Duo’s inner display, Back from Define Target goes
+  straight to your targets, not to a second Define Target screen.
 
 ## 3.0
 

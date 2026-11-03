@@ -84,7 +84,7 @@ struct SetupFlowView: View {
     self.target = target
     self.onSelectTarget = onSelectTarget
     self.onChooseTarget = onChooseTarget
-    _path = State(initialValue: startAtFly ? [.fly] : [.targetSetup])
+    _path = State(initialValue: startAtFly ? [.fly] : [])
     _owesFlyScreen = State(initialValue: startAtFly)
   }
 
