@@ -25,6 +25,7 @@ struct TargetListView: View {
     Binding(
       get: { selectedTarget },
       set: { newValue in
+        guard newValue != selectedTarget else { return }
         targetToFly = nil
         selectedTarget = newValue
       }
