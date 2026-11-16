@@ -18,10 +18,16 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  route:
+    uses: RISCfuture/ci-workflows/.github/workflows/minerva-route.yml@1.1.0
+    permissions:
+      contents: read
+
   schema:
-    uses: RISCfuture/XCUITestKit/.github/workflows/cloudkit-schema.yml@1.2.1
+    needs: route
+    uses: RISCfuture/XCUITestKit/.github/workflows/cloudkit-schema.yml@1.3.0
     with:
-      runner: xcode-27
+      runner: ${{ needs.route.outputs.xcode-27 }}
       team-id: 2NFSK2WB24
       container-id: iCloud.codes.tim.IP-Inbound
       certificates-repo: RISCfuture/certificates
