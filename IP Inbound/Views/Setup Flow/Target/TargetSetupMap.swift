@@ -10,6 +10,9 @@ struct TargetSetupMap: View {
 
   @Bindable var target: Target
 
+  @Environment(\.services)
+  private var services
+
   @State private var cameraPosition: MapCameraPosition = .automatic
   @State private var skipUpdate = false
   @State private var currentDistance: Double = Self.defaultCameraDistanceMeters
@@ -52,7 +55,7 @@ struct TargetSetupMap: View {
       target.coordinate = .init(context.camera.centerCoordinate)
     }
     .onMapCameraChange(frequency: .onEnd) {
-      target.calculateDeclination()
+      target.calculateDeclination(at: services.clock.now)
     }
     .onChange(of: target.coordinate) { _, newValue in
       guard !skipUpdate else {

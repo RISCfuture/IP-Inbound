@@ -30,6 +30,7 @@ struct NewTargetButton: View {
     Button {
       let placeholder = placeholderCoordinate
       let target = Target(name: String(localized: "New Target"), coordinate: placeholder)
+      target.calculateDeclination(at: services.clock.now)
       modelContext.insert(target)
       selectedTarget = target
       Task { await seedPresentPosition(into: target, replacing: placeholder) }
@@ -109,7 +110,7 @@ struct NewTargetButton: View {
       isUntouched(target, since: placeholder)
     else { return }
     target.coordinate = coordinate
-    target.calculateDeclination()
+    target.calculateDeclination(at: services.clock.now)
   }
 
   /// Whether the pilot has yet to put the target anywhere, leaving the seed the best coordinate

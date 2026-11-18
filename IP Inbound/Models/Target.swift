@@ -4,7 +4,9 @@ import Foundation
 import IP_Inbound_Shared
 import MeasurementKit
 import MeasurementKitLocation
+import Sentry
 import SwiftData
+import SwiftGeomagnetism
 
 @Model
 final class Target: CustomDebugStringConvertible, Identifiable, Equatable, Hashable {
@@ -90,8 +92,6 @@ final class Target: CustomDebugStringConvertible, Identifiable, Equatable, Hasha
         offsetTimeMeasurement = .init(value: Defaults[.defaultOffset], unit: .minutes)
         offsetDistanceMeasurement = targetGroundSpeedMeasurement * offsetTimeMeasurement
     }
-
-    calculateDeclination()
   }
 
   static func == (lhs: Target, rhs: Target) -> Bool {
@@ -124,7 +124,21 @@ final class Target: CustomDebugStringConvertible, Identifiable, Equatable, Hasha
     hasher.combine(id)
   }
 
-  func calculateDeclination() {
-    declination = Geomagnetism(longitude: longitude, latitude: latitude).declination
+  /// Updates ``declination`` from the World Magnetic Model as of `date`. If the model can't evaluate
+  /// this point or date, the previous value stands and the error goes to Sentry.
+  func calculateDeclination(at date: Date) {
+    do {
+      declination = try MagneticModel.wmm2025.field(
+        latitude: latitude,
+        longitude: longitude,
+        heightAboveEllipsoid: 0,
+        date: date
+      ).declination
+    } catch {
+      SentrySDK.capture(error: error) { scope in
+        scope.setLevel(.warning)
+        scope.setTag(value: "geomagnetism", key: "component")
+      }
+    }
   }
 }

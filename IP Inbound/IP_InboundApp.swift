@@ -170,10 +170,11 @@ struct IP_InboundApp: App {
     let info = ProcessInfo.processInfo
     guard info.isRunningUITests else { return }
     let context = modelContainer.mainContext
+    let clock: any ClockProviding = UITestClock(processInfo: info) ?? SystemClock()
 
     if info.environment["UITEST_SEED_TARGET"] == "1" {
       let name = info.environment["UITEST_SEED_TARGET_NAME"] ?? "Flythrough"
-      context.insert(makeSeedTarget(name: name, totISO: "2026-05-18T18:00:00.000Z"))
+      context.insert(makeSeedTarget(name: name, totISO: "2026-05-18T18:00:00.000Z", now: clock.now))
     }
 
     // Secondary seed for the post-pass flow: a second pre-configured target so
@@ -185,6 +186,7 @@ struct IP_InboundApp: App {
         makeSeedTarget(
           name: name,
           totISO: "2026-05-18T18:15:00.000Z",
+          now: clock.now,
           coordinate: Coordinate(latitude: 36.500000, longitude: -115.500000)
         )
       )
@@ -196,6 +198,7 @@ struct IP_InboundApp: App {
   private static func makeSeedTarget(
     name: String,
     totISO: String,
+    now: Date,
     coordinate: Coordinate = Coordinate(latitude: 36.772367, longitude: -115.453840)
   ) -> Target {
     let isoFormatter = ISO8601DateFormatter()
@@ -203,6 +206,7 @@ struct IP_InboundApp: App {
     let plainFormatter = ISO8601DateFormatter()
     let tot = isoFormatter.date(from: totISO) ?? plainFormatter.date(from: totISO)
     let target = Target(name: name, coordinate: coordinate)
+    target.calculateDeclination(at: now)
     target.offsetBearing = 359
     target.offsetBearingIsTrue = true
     target.offsetDistance = 4.8

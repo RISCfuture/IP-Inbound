@@ -6,6 +6,9 @@ import SwiftUI
 struct TargetSetupForm: View {
   @Bindable var target: Target
 
+  @Environment(\.services)
+  private var services
+
   @Default(.coordinateFormat)
   private var coordinateFormat
 
@@ -52,7 +55,7 @@ struct TargetSetupForm: View {
         coordinate: target.coordinate,
         onAccept: { coordinate in
           target.coordinate = coordinate
-          target.calculateDeclination()
+          target.calculateDeclination(at: services.clock.now)
           editingCoordinates = false
         },
         onCancel: { editingCoordinates = false }
@@ -62,7 +65,7 @@ struct TargetSetupForm: View {
     .sheet(isPresented: $findLocationShown) {
       FindLocationView { coord, title in
         target.coordinate = .init(coord)
-        target.calculateDeclination()
+        target.calculateDeclination(at: services.clock.now)
         target.name = title
         findLocationShown = false
       }
