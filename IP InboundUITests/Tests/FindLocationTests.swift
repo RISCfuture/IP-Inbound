@@ -1,4 +1,5 @@
 import XCTest
+import XCUITestKit
 
 // swiftlint:disable prefer_nimble
 
@@ -33,7 +34,7 @@ final class FindLocationTests: BaseTestCase {
     findLocation.search(for: Self.searchQuery)
 
     XCTAssertTrue(
-      findLocation.firstSuggestion.waitForExistence(timeout: 15),
+      findLocation.firstSuggestion.wait(timeout: 15),
       "Searching for a well-known place should populate the suggestions list"
     )
     XCTAssertTrue(findLocation.hasSuggestions, "Suggestions list should be non-empty after search")
@@ -61,7 +62,7 @@ final class FindLocationTests: BaseTestCase {
     // returns and the geocode never fires, producing an unactionable assertion
     // failure ("coords didn't change") that we'd misread as a real bug.
     try XCTSkipUnless(
-      findLocation.firstSuggestion.waitForExistence(timeout: 15),
+      findLocation.firstSuggestion.wait(timeout: 15),
       "MapKit did not return a suggestion within 15s — skipping (test depends on live MKLocalSearchCompleter)"
     )
     let returned = findLocation.selectFirstSuggestion()
@@ -102,18 +103,14 @@ final class FindLocationTests: BaseTestCase {
     timeout: TimeInterval = 30
   ) -> String {
     let coords = app.buttons["targetCoordinates"]
-    let changed = XCTNSPredicateExpectation(
-      predicate: NSPredicate(format: "label != %@", previous),
-      object: coords
-    )
-    _ = XCTWaiter.wait(for: [changed], timeout: timeout)
+    _ = coords.waitFor(NSPredicate(format: "label != %@", previous), timeout: timeout)
     return page.coordinatesLabel()
   }
 
   @MainActor
   private func nameFieldValue() -> String {
     let field = app.textFields["targetNameField"]
-    XCTAssertTrue(field.waitForExistence(timeout: 5), "Target name field should exist")
+    XCTAssertTrue(field.wait(timeout: 5), "Target name field should exist")
     return (field.value as? String) ?? ""
   }
 }

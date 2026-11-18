@@ -60,13 +60,13 @@ final class HarnessFlythroughTests: BaseTestCase {
       "P.POS → Target"
     )
     let movingLabel = app.staticTexts.matching(movingGuidance).firstMatch
-    if !movingLabel.waitForExistence(timeout: 12) {
+    if !movingLabel.wait(timeout: 12) {
       // Fallback: tap through configured pages to Fly (no keyboard input).
       let ipPage = setupPage.tapDefineIP()
       let totPage = await ipPage.tapTimeOnTarget()
       await totPage.tapFly()
       XCTAssertTrue(
-        movingLabel.waitForExistence(timeout: 12),
+        movingLabel.wait(timeout: 12),
         "Moving guidance label should appear after tap-only navigation"
       )
     }
@@ -91,7 +91,7 @@ final class HarnessFlythroughTests: BaseTestCase {
     )
     let timingText = app.staticTexts.matching(timingPredicate).firstMatch
     XCTAssertTrue(
-      timingText.waitForExistence(timeout: 30),
+      timingText.wait(timeout: 30),
       "Deterministic early/late timing readout should be rendered from injected clock"
     )
 

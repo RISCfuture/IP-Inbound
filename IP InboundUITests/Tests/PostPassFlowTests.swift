@@ -60,16 +60,16 @@ final class PostPassFlowTests: BaseTestCase {
     // by identifier now that the headline distinguishes that from a run that merely lapsed, so the
     // crossed headline is asserted here rather than implied by the screen having appeared.
     XCTAssertTrue(
-      postPass.crossedTitle.waitForExistence(timeout: 5),
+      postPass.crossedTitle.wait(timeout: 5),
       "A pass flown over the target should read ‘Past Target’"
     )
 
     XCTAssertTrue(
-      app.staticTexts["Flythrough"].waitForExistence(timeout: 5),
+      app.staticTexts["Flythrough"].wait(timeout: 5),
       "Post-pass screen should name the flown target"
     )
 
-    XCTAssertTrue(postPass.missText.waitForExistence(timeout: 5))
+    XCTAssertTrue(postPass.missText.wait(timeout: 5))
     let missLabel = postPass.missLabel
     XCTAssertTrue(
       missLabel.localizedCaseInsensitiveContains("late"),
@@ -94,7 +94,7 @@ final class PostPassFlowTests: BaseTestCase {
     )
     let nextHopElement = app.descendants(matching: .any).element(matching: nextHopActive)
     XCTAssertTrue(
-      nextHopElement.waitForExistence(timeout: 15),
+      nextHopElement.wait(timeout: 15),
       "Tapping ‘Fly next target’ should make NextHop the active target"
     )
 

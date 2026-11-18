@@ -9,7 +9,7 @@ struct IPSetupPage: Page {
   let app: XCUIApplication
 
   var isDisplayed: Bool {
-    app.buttons["timeOnTargetButton"].waitForExistence(timeout: 5)
+    app.buttons["timeOnTargetButton"].wait(timeout: 5)
   }
 
   // MARK: - Elements
@@ -34,7 +34,7 @@ struct IPSetupPage: Page {
   func inboundLabel() -> String? {
     let predicate = NSPredicate(format: "label BEGINSWITH 'Inbound:'")
     let match = app.staticTexts.element(matching: predicate)
-    if match.waitForExistence(timeout: 3) {
+    if match.wait(timeout: 3) {
       return match.label
     }
     return nil
@@ -44,19 +44,19 @@ struct IPSetupPage: Page {
 
   func enterBearing(_ value: String) {
     let field = scrollToVisible(offsetBearingField) ?? offsetBearingField
-    XCTAssertTrue(field.waitForExistence(timeout: 5), "Bearing field should appear")
+    XCTAssertTrue(field.wait(timeout: 5), "Bearing field should appear")
     enterNumber(value, into: field)
   }
 
   func selectBearingReference(_ reference: String) {
     let picker = scrollToVisible(bearingReferencePicker) ?? bearingReferencePicker
-    XCTAssertTrue(picker.waitForExistence(timeout: 3), "Bearing reference picker should appear")
+    XCTAssertTrue(picker.wait(timeout: 3), "Bearing reference picker should appear")
     picker.buttons[reference].forceTap()
   }
 
   func enterOffsetDistance(_ value: String) {
     let field = scrollToVisible(offsetDistanceField) ?? offsetDistanceField
-    XCTAssertTrue(field.waitForExistence(timeout: 3), "Offset distance field should appear")
+    XCTAssertTrue(field.wait(timeout: 3), "Offset distance field should appear")
     enterNumber(value, into: field, roundsToWholeNumber: true)
   }
 
@@ -72,19 +72,19 @@ struct IPSetupPage: Page {
 
   func enterOffsetTime(_ value: String) {
     let field = scrollToVisible(offsetTimeField) ?? offsetTimeField
-    XCTAssertTrue(field.waitForExistence(timeout: 3), "Offset time field should appear")
+    XCTAssertTrue(field.wait(timeout: 3), "Offset time field should appear")
     enterNumber(value, into: field, roundsToWholeNumber: true)
   }
 
   func selectOffsetType(_ type: String) {
     let picker = scrollToVisible(offsetTypePicker) ?? offsetTypePicker
-    XCTAssertTrue(picker.waitForExistence(timeout: 3), "Offset type picker should appear")
+    XCTAssertTrue(picker.wait(timeout: 3), "Offset type picker should appear")
     picker.buttons[type].forceTap()
   }
 
   func enterGroundSpeed(_ value: String) {
     let field = scrollToVisible(groundSpeedField) ?? groundSpeedField
-    XCTAssertTrue(field.waitForExistence(timeout: 3), "Ground speed field should appear")
+    XCTAssertTrue(field.wait(timeout: 3), "Ground speed field should appear")
     enterNumber(value, into: field)
   }
 
@@ -115,17 +115,17 @@ struct IPSetupPage: Page {
     guard focused.evaluate(with: field) else { return }
 
     let doneButton = app.buttons[Self.keyboardDoneButton].firstMatch
-    XCTAssertTrue(doneButton.waitForExistence(timeout: ScaledTimeouts.short))
+    XCTAssertTrue(doneButton.wait(timeout: ScaledTimeouts.short))
     XCTAssertTrue(doneButton.isVisible, "Keyboard Done button should be on screen")
     doneButton.forceTap()
     XCTAssertTrue(
       field.waitFor(NSPredicate(format: "hasKeyboardFocus == false")),
       "Numeric field should finish editing"
     )
+    let numberPadKey = app.keyboards.keys["1"].firstMatch
     XCTAssertTrue(
-      app.keyboards.keys["1"].firstMatch.waitFor(
-        NSPredicate(format: "exists == false OR isHittable == false")
-      ),
+      !numberPadKey.exists || !numberPadKey.isHittable
+        || numberPadKey.waitFor(NSPredicate(format: "exists == false OR isHittable == false")),
       "Number pad should stop covering IP setup"
     )
   }

@@ -7,7 +7,7 @@ struct TargetSetupPage: Page {
   let app: XCUIApplication
 
   var isDisplayed: Bool {
-    app.buttons["defineIPButton"].waitForExistence(timeout: 5)
+    app.buttons["defineIPButton"].wait(timeout: 5)
   }
 
   // MARK: - Elements
@@ -22,20 +22,20 @@ struct TargetSetupPage: Page {
 
   func enterTargetName(_ name: String) {
     let field = scrollToVisible(targetNameField) ?? targetNameField
-    XCTAssertTrue(field.waitForExistence(timeout: 5), "Target name field should appear")
+    XCTAssertTrue(field.wait(timeout: 5), "Target name field should appear")
     field.clearAndType("\(name)\n", app: app)
   }
 
   func tapCoordinatesToCycleFormat() {
     let coords = scrollToVisible(targetCoordinates) ?? targetCoordinates
-    XCTAssertTrue(coords.waitForExistence(timeout: 3), "Coordinates should be displayed")
+    XCTAssertTrue(coords.wait(timeout: 3), "Coordinates should be displayed")
     coords.forceTap()
   }
 
   @discardableResult
   func tapSetCoordinates() -> CoordinateEntryPage {
     let button = scrollToVisible(setCoordinatesButton) ?? setCoordinatesButton
-    XCTAssertTrue(button.waitForExistence(timeout: 3), "Set Coordinates button should appear")
+    XCTAssertTrue(button.wait(timeout: 3), "Set Coordinates button should appear")
     button.forceTap()
     return CoordinateEntryPage(app: app)
   }
@@ -49,7 +49,7 @@ struct TargetSetupPage: Page {
 
   @discardableResult
   func tapDefineIP() -> IPSetupPage {
-    XCTAssertTrue(defineIPButton.waitForExistence(timeout: 5), "Define IP button should appear")
+    XCTAssertTrue(defineIPButton.wait(timeout: 5), "Define IP button should appear")
     defineIPButton.forceTap()
     return IPSetupPage(app: app)
   }
@@ -67,13 +67,13 @@ struct TargetSetupPage: Page {
   /// links are present (each guarded by an existence wait, never a fixed sleep).
   @discardableResult
   func advanceThroughSetupToFly() -> FlyPage {
-    if defineIPButton.waitForExistence(timeout: 2) {
+    if defineIPButton.wait(timeout: 2) {
       defineIPButton.tap()
     }
-    if app.buttons["timeOnTargetButton"].waitForExistence(timeout: 2) {
+    if app.buttons["timeOnTargetButton"].wait(timeout: 2) {
       app.buttons["timeOnTargetButton"].tap()
     }
-    if app.buttons["flyButton"].waitForExistence(timeout: 2) {
+    if app.buttons["flyButton"].wait(timeout: 2) {
       app.buttons["flyButton"].tap()
     }
     return FlyPage(app: app)
@@ -83,7 +83,7 @@ struct TargetSetupPage: Page {
 
   func coordinatesLabel() -> String {
     let coords = scrollToVisible(targetCoordinates) ?? targetCoordinates
-    XCTAssertTrue(coords.waitForExistence(timeout: 5), "Coordinates should be displayed")
+    XCTAssertTrue(coords.wait(timeout: 5), "Coordinates should be displayed")
     return coords.label
   }
 }

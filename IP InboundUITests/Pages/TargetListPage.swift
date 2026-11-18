@@ -10,7 +10,7 @@ struct TargetListPage: Page {
   let app: XCUIApplication
 
   var isDisplayed: Bool {
-    app.buttons["addTargetButton"].waitForExistence(timeout: 15)
+    app.buttons["addTargetButton"].wait(timeout: 15)
   }
 
   var listView: XCUIElement { app.descendant(id: "targetList") }
@@ -37,7 +37,7 @@ struct TargetListPage: Page {
 
   @discardableResult
   func tapAddTarget() -> TargetSetupPage {
-    XCTAssertTrue(addTargetButton.waitForExistence(timeout: 15), "addTargetButton should appear")
+    XCTAssertTrue(addTargetButton.wait(timeout: 15), "addTargetButton should appear")
     addTargetButton.forceTap()
     return TargetSetupPage(app: app)
   }
@@ -52,7 +52,7 @@ struct TargetListPage: Page {
 
   @discardableResult
   func tapTutorial() -> TutorialPage {
-    XCTAssertTrue(tutorialButton.waitForExistence(timeout: 5), "tutorialButton should appear")
+    XCTAssertTrue(tutorialButton.wait(timeout: 5), "tutorialButton should appear")
     let tutorialTitle = app.staticTexts["How to Use IP Inbound"]
     // Try tapping the button up to 3 times (may fail if another app interrupts)
     for attempt in 0..<3 {
@@ -68,7 +68,7 @@ struct TargetListPage: Page {
         // Fallback: tap via coordinate to bypass hittability check
         tutorialButton.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
       }
-      if tutorialTitle.waitForExistence(timeout: 3) { break }
+      if tutorialTitle.wait(timeout: 3) { break }
     }
     return TutorialPage(app: app)
   }
@@ -85,13 +85,13 @@ struct TargetListPage: Page {
   /// tap at a time, until `addTargetButton` is showing. A list in a sidebar beside
   /// the detail is already showing, unless the Fly screen has hidden the sidebar,
   /// which leaving it restores. Each iteration waits for the next state rather than
-  /// sleeping a fixed interval: `addTargetButton.waitForExistence` is the loop's settle.
+  /// sleeping a fixed interval: `addTargetButton.wait(timeout:)` is the loop's settle.
   @discardableResult
   func navigateBackToList() -> Self {
     for _ in 0..<6 {
-      if addTargetButton.waitForExistence(timeout: 1) { break }
+      if addTargetButton.wait(timeout: 1) { break }
       let backButton = app.buttons["BackButton"]
-      guard backButton.waitForExistence(timeout: 3) else { break }
+      guard backButton.wait(timeout: 3) else { break }
       if backButton.isHittable {
         backButton.tap()
       } else {
@@ -119,13 +119,13 @@ struct TargetListPage: Page {
       let end = cell.coordinate(withNormalizedOffset: CGVector(dx: 0.1, dy: 0.5))
       start.press(forDuration: 0.1, thenDragTo: end)
       let deleteButton = app.buttons.matching(swipeActionDelete).firstMatch
-      if deleteButton.waitForExistence(timeout: 2) {
+      if deleteButton.wait(timeout: 2) {
         deleteButton.tap()
-        _ = deleteButton.waitForNonExistence(timeout: 2)
+        _ = deleteButton.waitForAbsence(timeout: 2)
         // Wait for the removed row's text to leave the hierarchy (the deletion
         // animation finishing) rather than sleeping a fixed interval before
         // re-querying for any remaining duplicate.
-        _ = app.staticTexts[name].firstMatch.waitForNonExistence(timeout: 2)
+        _ = app.staticTexts[name].firstMatch.waitForAbsence(timeout: 2)
       }
     }
   }
@@ -149,16 +149,11 @@ struct TargetListPage: Page {
 
   // MARK: - Private
 
+  /// The cell showing `name`, matched by its text rather than its row so that it still resolves
+  /// to the same target while a deletion shifts the rows around it.
   private func findCell(named name: String) -> XCUIElement? {
-    let nameText = app.staticTexts[name].firstMatch
-    guard nameText.waitForExistence(timeout: 5) else { return nil }
-    for i in 0..<app.cells.count {
-      let cell = app.cells.element(boundBy: i)
-      if cell.staticTexts[name].exists {
-        return cell
-      }
-    }
-    return nil
+    let cell = app.cells.containing(.staticText, identifier: name).firstMatch
+    return cell.wait(timeout: 5) ? cell : nil
   }
 }
 

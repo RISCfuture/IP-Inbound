@@ -1,4 +1,5 @@
 import XCTest
+import XCUITestKit
 
 // swiftlint:disable prefer_nimble
 
@@ -126,7 +127,7 @@ final class TOTEntryTests: BaseTestCase {
 
     // The time entry field should display a non-zero time (30-minute default)
     let entryField = totPage.timeEntryField
-    XCTAssertTrue(entryField.waitForExistence(timeout: 3), "Time entry field should appear")
+    XCTAssertTrue(entryField.wait(timeout: 3), "Time entry field should appear")
     let label = entryField.label
     XCTAssertFalse(label.isEmpty, "Time entry should display a default time")
     // Verify it's not all zeros

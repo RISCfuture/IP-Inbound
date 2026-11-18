@@ -1,4 +1,5 @@
 import XCTest
+import XCUITestKit
 
 // swiftlint:disable prefer_nimble
 
@@ -13,7 +14,7 @@ final class TutorialTests: BaseTestCase {
     let tutorial = list.tapTutorial()
 
     XCTAssertTrue(
-      tutorial.tutorialTitle.waitForExistence(timeout: 5),
+      tutorial.tutorialTitle.wait(timeout: 5),
       "'How to Use IP Inbound' title should be displayed"
     )
   }
@@ -49,7 +50,7 @@ final class TutorialTests: BaseTestCase {
 
     let returnedList = tutorial.dismiss()
     XCTAssertTrue(
-      returnedList.addTargetButton.waitForExistence(timeout: 5),
+      returnedList.addTargetButton.wait(timeout: 5),
       "addTargetButton should be on screen after dismissing tutorial"
     )
   }
@@ -65,7 +66,7 @@ final class TutorialTests: BaseTestCase {
 
     let returnedList = tutorial.dismissViaSwipeDown()
     XCTAssertTrue(
-      returnedList.addTargetButton.waitForExistence(timeout: 5),
+      returnedList.addTargetButton.wait(timeout: 5),
       "addTargetButton should be on screen after swipe-down dismiss"
     )
   }

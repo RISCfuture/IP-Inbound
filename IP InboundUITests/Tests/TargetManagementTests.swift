@@ -1,4 +1,5 @@
 import XCTest
+import XCUITestKit
 
 // swiftlint:disable prefer_nimble
 
@@ -47,7 +48,7 @@ final class TargetManagementTests: BaseTestCase {
     // Select the target
     let reloaded = listPage.selectTarget(named: "Bravo")
     let nameField = reloaded.targetNameField
-    XCTAssertTrue(nameField.waitForExistence(timeout: 5), "Target name field should appear")
+    XCTAssertTrue(nameField.wait(timeout: 5), "Target name field should appear")
     XCTAssertEqual(nameField.value as? String, "Bravo", "Target name should be 'Bravo'")
 
     // Clean up
@@ -84,13 +85,13 @@ final class TargetManagementTests: BaseTestCase {
 
     // Assert Delta remains (check this first since Charlie lookup has a 5s timeout)
     let deltaText = app.staticTexts["Delta"]
-    XCTAssertTrue(deltaText.waitForExistence(timeout: 10), "Delta should remain in list")
+    XCTAssertTrue(deltaText.wait(timeout: 10), "Delta should remain in list")
 
     // Assert Charlie is gone — wait for its cell to leave the list rather than
     // relying on a fixed settle after the delete animation.
     let charlieText = app.staticTexts["Charlie"]
     XCTAssertTrue(
-      charlieText.waitForNonExistence(timeout: 5),
+      charlieText.waitForAbsence(timeout: 5),
       "Charlie should be deleted"
     )
 
@@ -134,7 +135,7 @@ final class TargetManagementTests: BaseTestCase {
       let predicate = NSPredicate(format: "label CONTAINS '37' AND label CONTAINS '121'")
       let coordText = cell.staticTexts.element(matching: predicate)
       XCTAssertTrue(
-        coordText.waitForExistence(timeout: 5),
+        coordText.wait(timeout: 5),
         "Cell should show coordinates containing '37' and '121'"
       )
     }
@@ -191,7 +192,7 @@ final class TargetManagementTests: BaseTestCase {
     // With no target selected, the detail pane should show "No Target"
     let noTargetText = app.staticTexts["No Target"]
     XCTAssertTrue(
-      noTargetText.waitForExistence(timeout: 5),
+      noTargetText.wait(timeout: 5),
       "'No Target' should be displayed in detail pane"
     )
   }

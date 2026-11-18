@@ -14,7 +14,7 @@ extension Page {
     // If element already exists and is hittable, no scrolling needed
     if element.exists && element.isHittable { return element }
     // Wait briefly for element to appear (covers layout/animation delays)
-    if element.waitForExistence(timeout: 5) && element.isHittable { return element }
+    if element.wait(timeout: 5) && element.isHittable { return element }
     // Scroll the detail collection view to find the element
     // On iPad, multiple collection views may exist (sidebar + detail);
     // iterate to find the one that can make the element visible.
@@ -64,7 +64,7 @@ extension Page {
         }
         (scrollToVisible(target) ?? target).forceTap()
       },
-      until: { expected.waitForExistence(timeout: 5) }
+      until: { expected.wait(timeout: 5) }
     )
   }
 
@@ -95,7 +95,7 @@ extension Page {
     for char in input {
       guard char.isNumber || char.isLetter else { continue }
       let button = app.buttons["keypad-\(char)"]
-      XCTAssertTrue(button.waitForExistence(timeout: 8), "Keypad button '\(char)' should exist")
+      XCTAssertTrue(button.wait(timeout: 8), "Keypad button '\(char)' should exist")
       if !button.waitUntilHittable(timeout: 8) {
         ensureHittable(button)
       }
@@ -110,7 +110,7 @@ extension Page {
 
   func tapDirection(_ direction: String) async {
     let button = app.buttons["keypad-\(direction)"]
-    XCTAssertTrue(button.waitForExistence(timeout: 3), "\(direction) button should exist")
+    XCTAssertTrue(button.wait(timeout: 3), "\(direction) button should exist")
     if !button.waitUntilHittable() {
       ensureHittable(button)
     }
@@ -118,12 +118,13 @@ extension Page {
     // non-hittable. A single forceTap is intermittently dropped on iPad,
     // leaving the keypad on the direction page; retry the tap until it switches.
     let switched = await button.tap(until: {
-      button.waitFor(NSPredicate(format: "isHittable == false"), timeout: ScaledTimeouts.short)
+      !button.isHittable
+        || button.waitFor(NSPredicate(format: "isHittable == false"), timeout: ScaledTimeouts.short)
     })
     XCTAssertTrue(switched, "\(direction) button should disappear after tap")
     // Wait for numeric keypad to be ready
     let numericButton = app.buttons["keypad-1"]
-    XCTAssertTrue(numericButton.waitForExistence(timeout: 2), "Numeric keypad should appear")
+    XCTAssertTrue(numericButton.wait(timeout: 2), "Numeric keypad should appear")
     numericButton.waitUntilHittable()
   }
 
@@ -144,3 +145,11 @@ extension Page {
 }
 
 // swiftlint:enable prefer_nimble
+
+extension XCUIElement {
+  /// Returns whether the element is gone, waiting up to `timeout` only if it is still present.
+  @MainActor
+  func waitForAbsence(timeout: TimeInterval) -> Bool {
+    !exists || waitForNonExistence(timeout: timeout)
+  }
+}

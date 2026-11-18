@@ -102,7 +102,7 @@ nonisolated class BaseTestCase: XCTestCase {
   @MainActor
   private func readListLayout() -> Bool {
     let list = TargetListPage(app: app)
-    if !list.listView.waitForExistence(timeout: ScaledTimeouts.element) {
+    if !list.listView.wait(timeout: ScaledTimeouts.element) {
       XCTFail("The target list should be on screen after launch, to read the layout from")
     }
     return list.isBesideDetail

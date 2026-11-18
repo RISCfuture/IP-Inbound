@@ -1,4 +1,5 @@
 import XCTest
+import XCUITestKit
 
 // swiftlint:disable prefer_nimble
 
@@ -230,11 +231,7 @@ final class CoordinateEntryTests: BaseTestCase {
     timeout: TimeInterval = 5
   ) -> String {
     let coords = app.buttons["targetCoordinates"]
-    let changed = XCTNSPredicateExpectation(
-      predicate: NSPredicate(format: "label != %@", previous),
-      object: coords
-    )
-    _ = XCTWaiter.wait(for: [changed], timeout: timeout)
+    _ = coords.waitFor(NSPredicate(format: "label != %@", previous), timeout: timeout)
     return page.coordinatesLabel()
   }
 

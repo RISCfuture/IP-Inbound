@@ -1,4 +1,5 @@
 import XCTest
+import XCUITestKit
 
 // swiftlint:disable prefer_nimble
 
@@ -24,7 +25,7 @@ final class IPSetupTests: BaseTestCase {
       matching: NSPredicate(format: "label BEGINSWITH 'Inbound:'")
     )
     XCTAssertTrue(
-      inboundLabel.waitForExistence(timeout: 5),
+      inboundLabel.wait(timeout: 5),
       "Inbound label should appear after entering bearing"
     )
 
@@ -61,7 +62,7 @@ final class IPSetupTests: BaseTestCase {
     let inboundElement = app.staticTexts.element(
       matching: NSPredicate(format: "label BEGINSWITH 'Inbound:'")
     )
-    XCTAssertTrue(inboundElement.waitForExistence(timeout: 5), "Inbound label should appear")
+    XCTAssertTrue(inboundElement.wait(timeout: 5), "Inbound label should appear")
 
     // Read inbound with magnetic (default)
     let inboundMagnetic = ipPage.inboundLabel()
@@ -69,16 +70,14 @@ final class IPSetupTests: BaseTestCase {
     // Switch to true and wait for the inbound label to recompute to a value that
     // differs from the magnetic reading rather than sleeping a fixed interval.
     ipPage.selectBearingReference("°T")
-    let inboundChanged = XCTNSPredicateExpectation(
-      predicate: NSPredicate(
-        format: "label BEGINSWITH 'Inbound:' AND label != %@",
-        inboundMagnetic ?? ""
+    XCTAssertTrue(
+      inboundElement.waitFor(
+        NSPredicate(
+          format: "label BEGINSWITH 'Inbound:' AND label != %@",
+          inboundMagnetic ?? ""
+        ),
+        timeout: 5
       ),
-      object: inboundElement
-    )
-    XCTAssertEqual(
-      XCTWaiter.wait(for: [inboundChanged], timeout: 5),
-      .completed,
       "Inbound label should recompute after switching to a true bearing reference"
     )
 
@@ -105,7 +104,7 @@ final class IPSetupTests: BaseTestCase {
     // Distance field should be visible by default
     let distField = ipPage.offsetDistanceField
     XCTAssertTrue(
-      distField.waitForExistence(timeout: 3),
+      distField.wait(timeout: 3),
       "Distance field should be visible initially"
     )
 
@@ -114,13 +113,13 @@ final class IPSetupTests: BaseTestCase {
 
     let timeField = ipPage.offsetTimeField
     XCTAssertTrue(
-      timeField.waitForExistence(timeout: 3),
+      timeField.wait(timeout: 3),
       "Time field should appear after switching"
     )
     // Wait for the distance field to be torn down rather than reading it after a
     // fixed sleep.
     XCTAssertTrue(
-      ipPage.offsetDistanceField.waitForNonExistence(timeout: 3),
+      ipPage.offsetDistanceField.waitForAbsence(timeout: 3),
       "Distance field should be gone after switching to Time"
     )
 
@@ -128,7 +127,7 @@ final class IPSetupTests: BaseTestCase {
     ipPage.selectOffsetType("Distance")
 
     XCTAssertTrue(
-      ipPage.offsetDistanceField.waitForExistence(timeout: 3),
+      ipPage.offsetDistanceField.wait(timeout: 3),
       "Distance field should reappear"
     )
 
@@ -151,13 +150,8 @@ final class IPSetupTests: BaseTestCase {
     // dismissed by tapping a blank area or swiping; moving focus to another
     // field ends editing and writes the binding.
     ipPage.commitOffsetDistance()
-    let distanceCommitted = XCTNSPredicateExpectation(
-      predicate: NSPredicate(format: "value CONTAINS '5'"),
-      object: ipPage.offsetDistanceField
-    )
-    XCTAssertEqual(
-      XCTWaiter.wait(for: [distanceCommitted], timeout: 5),
-      .completed,
+    XCTAssertTrue(
+      ipPage.offsetDistanceField.waitFor(NSPredicate(format: "value CONTAINS '5'"), timeout: 5),
       "Distance field should retain the entered value"
     )
 
@@ -167,14 +161,9 @@ final class IPSetupTests: BaseTestCase {
     // Time field should show a non-zero computed value. Wait for the field to
     // appear and then for a non-empty value rather than sleeping.
     let timeField = ipPage.offsetTimeField
-    XCTAssertTrue(timeField.waitForExistence(timeout: 3), "Time field should appear")
-    let timePopulated = XCTNSPredicateExpectation(
-      predicate: NSPredicate(format: "value != nil AND value != ''"),
-      object: timeField
-    )
-    XCTAssertEqual(
-      XCTWaiter.wait(for: [timePopulated], timeout: 5),
-      .completed,
+    XCTAssertTrue(timeField.wait(timeout: 3), "Time field should appear")
+    XCTAssertTrue(
+      timeField.waitFor(NSPredicate(format: "value != nil AND value != ''"), timeout: 5),
       "Time field should populate with a computed value"
     )
     let timeValue = timeField.value as? String ?? ""
@@ -217,7 +206,7 @@ final class IPSetupTests: BaseTestCase {
       matching: NSPredicate(format: "label BEGINSWITH 'Inbound:'")
     )
     XCTAssertTrue(
-      inboundElement.waitForExistence(timeout: 5),
+      inboundElement.wait(timeout: 5),
       "Inbound label should appear with speed 120"
     )
 
@@ -229,14 +218,9 @@ final class IPSetupTests: BaseTestCase {
     ipPage.selectOffsetType("Time")
 
     let timeField = ipPage.offsetTimeField
-    XCTAssertTrue(timeField.waitForExistence(timeout: 3), "Time field should appear")
-    let timePopulated = XCTNSPredicateExpectation(
-      predicate: NSPredicate(format: "value != nil AND value != ''"),
-      object: timeField
-    )
-    XCTAssertEqual(
-      XCTWaiter.wait(for: [timePopulated], timeout: 5),
-      .completed,
+    XCTAssertTrue(timeField.wait(timeout: 3), "Time field should appear")
+    XCTAssertTrue(
+      timeField.waitFor(NSPredicate(format: "value != nil AND value != ''"), timeout: 5),
       "Time field should populate with a computed value"
     )
     let timeValue = timeField.value as? String ?? ""
@@ -269,7 +253,7 @@ final class IPSetupTests: BaseTestCase {
 
     // Verify time entry is functional (field should exist with default time)
     XCTAssertTrue(
-      totPage.timeEntryField.waitForExistence(timeout: 3),
+      totPage.timeEntryField.wait(timeout: 3),
       "Time entry field should be functional"
     )
 

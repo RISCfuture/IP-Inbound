@@ -122,7 +122,7 @@ final class FlyViewTests: BaseTestCase {
   private func waitForFlyContent(timeout: TimeInterval = 15) -> Bool {
     // Nothing identifies the phase copy, so the rendered state is recognized by its text.
     let guidanceMsg = app.staticTexts["Guidance begins once aircraft is moving."]
-    if guidanceMsg.waitForExistence(timeout: timeout) { return true }
+    if guidanceMsg.wait(timeout: timeout) { return true }
 
     // Also check for guidance mode texts
     let pposIP = app.staticTexts["P.POS → IP"]
@@ -144,7 +144,7 @@ final class FlyViewTests: BaseTestCase {
     let targetNamePredicate = NSPredicate(format: "label CONTAINS[c] %@", "Echo")
     let targetNameText = app.staticTexts.element(matching: targetNamePredicate)
     XCTAssertTrue(
-      targetNameText.waitForExistence(timeout: 5),
+      targetNameText.wait(timeout: 5),
       "'Echo' should appear as static text in fly view"
     )
 
@@ -163,7 +163,7 @@ final class FlyViewTests: BaseTestCase {
     // In countdownOnly mode, the guidance message is always shown
     let guidanceText = app.staticTexts["Guidance begins once aircraft is moving."]
     XCTAssertTrue(
-      guidanceText.waitForExistence(timeout: 5),
+      guidanceText.wait(timeout: 5),
       "'Guidance begins once aircraft is moving.' should be displayed in countdown mode"
     )
 
@@ -184,7 +184,7 @@ final class FlyViewTests: BaseTestCase {
     let toTOT = app.staticTexts["TO TOT"]
     let pastTOT = app.staticTexts["Past TOT"]
     XCTAssertTrue(
-      toTOT.waitForExistence(timeout: 5) || pastTOT.waitForExistence(timeout: 2),
+      toTOT.wait(timeout: 5) || pastTOT.wait(timeout: 2),
       "Countdown should contain 'TO TOT' or 'Past TOT' text"
     )
 
@@ -200,11 +200,11 @@ final class FlyViewTests: BaseTestCase {
     // The IP→Target header confirms `.toTarget` guidance is active; the CDI is the navigation
     // display for that phase, which a static-location countdown never renders.
     XCTAssertTrue(
-      app.staticTexts["IP → Target"].waitForExistence(timeout: 12),
+      app.staticTexts["IP → Target"].wait(timeout: 12),
       "Moving past the IP should enter IP→Target guidance"
     )
     XCTAssertTrue(
-      flyPage.cdi.waitForExistence(timeout: 5),
+      flyPage.cdi.wait(timeout: 5),
       "CDI should render once the aircraft is moving with active guidance"
     )
   }
@@ -218,7 +218,7 @@ final class FlyViewTests: BaseTestCase {
     // Past the IP and inbound, the header must read IP→Target — not the pre-IP "P.POS → IP" nor the
     // bypass "P.POS → Target". Assert the specific header and rule out the other phases.
     XCTAssertTrue(
-      app.staticTexts["IP → Target"].waitForExistence(timeout: 12),
+      app.staticTexts["IP → Target"].wait(timeout: 12),
       "Moving past the IP should show IP→Target guidance"
     )
     XCTAssertFalse(
@@ -247,7 +247,7 @@ final class FlyViewTests: BaseTestCase {
     let flyPage = try launchIntoCountdownWithDistance()
 
     XCTAssertTrue(
-      flyPage.flyDistanceDisplay.waitForExistence(timeout: 12),
+      flyPage.flyDistanceDisplay.wait(timeout: 12),
       "TOTView distance readout should render in countdown mode"
     )
   }
@@ -273,7 +273,7 @@ final class FlyViewTests: BaseTestCase {
     )
     let requiredSpeed = flyPage.requiredSpeedDisplay
     XCTAssertTrue(
-      requiredSpeed.waitForExistence(timeout: 12),
+      requiredSpeed.wait(timeout: 12),
       "Required-speed callout should render in pre-IP speed-guidance mode"
     )
     XCTAssertTrue(
@@ -297,7 +297,7 @@ final class FlyViewTests: BaseTestCase {
     // The bypass title confirms the mode; once it’s on screen the timing readout has rendered.
     let bypassTitle = app.staticTexts["P.POS → Target"]
     XCTAssertTrue(
-      bypassTitle.waitForExistence(timeout: 12),
+      bypassTitle.wait(timeout: 12),
       "This geometry should bypass the IP"
     )
 
@@ -317,7 +317,7 @@ final class FlyViewTests: BaseTestCase {
     let flyPage = try launchIntoCountdownWithoutMath()
 
     XCTAssertTrue(
-      flyPage.flyDistanceDisplay.waitForExistence(timeout: 12),
+      flyPage.flyDistanceDisplay.wait(timeout: 12),
       "Distance readout should survive a fix with no usable course"
     )
     // The seeded clock fixes the target time at 18:00:00Z and the run-in at 144 s, so the push
