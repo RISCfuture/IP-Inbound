@@ -10,6 +10,7 @@
 		BC34301EA0E6030BC63278FB /* CloudKitSchemaTesting in Frameworks */ = {isa = PBXBuildFile; productRef = 74C7058512CAD0809E4A89DD /* CloudKitSchemaTesting */; };
 		010FB64E2FEBA0640056ECE0 /* IP Inbound Watch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 010FB62E2FEBA0610056ECE0 /* IP Inbound Watch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		011479ED2F779D5F003AEBCC /* SwiftGeographic in Frameworks */ = {isa = PBXBuildFile; productRef = 011479EC2F779D5F003AEBCC /* SwiftGeographic */; };
+		5E0A6A102FD5000100C0FFEE /* SwiftGeomagnetism in Frameworks */ = {isa = PBXBuildFile; productRef = 5E0A6A0F2FD5000100C0FFEE /* SwiftGeomagnetism */; };
 		014CCFE23049E01300E8D24F /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0172C0742FEC82A50034B332 /* WidgetKit.framework */; };
 		014CCFE33049E01300E8D24F /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0172C0762FEC82A50034B332 /* SwiftUI.framework */; };
 		014CCFEE3049E01300E8D24F /* Watch ComplicationExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 014CCFE13049E01300E8D24F /* Watch ComplicationExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -453,6 +454,7 @@
 				01ECF4F32CF3E2F800BD0604 /* Defaults in Frameworks */,
 				01F13CF52DBEE074000E58A2 /* NIO in Frameworks */,
 				011479ED2F779D5F003AEBCC /* SwiftGeographic in Frameworks */,
+				5E0A6A102FD5000100C0FFEE /* SwiftGeomagnetism in Frameworks */,
 				01C059A72DBF49C600D733C1 /* AsyncAlgorithms in Frameworks */,
 				6B2BC84D01DF41E8847B6899 /* Sentry in Frameworks */,
 				014CD00C3049E05000E8D24F /* IP_Inbound_Shared.framework in Frameworks */,
@@ -779,6 +781,7 @@
 				0166FA732DCA685800970EFD /* DefaultsMacros */,
 				4E66068E9AFD4993959FE327 /* Sentry */,
 				011479EC2F779D5F003AEBCC /* SwiftGeographic */,
+				5E0A6A0F2FD5000100C0FFEE /* SwiftGeomagnetism */,
 				0FB064D238D0BF11C58B07F0 /* MeasurementKit */,
 				82B3BDDD1791A1F0A898CD40 /* MeasurementKitLocation */,
 				0A3F5C1E7B24D9E60F81AC36 /* MeasurementKitUI */,
@@ -907,6 +910,7 @@
 				016F3ED02DD4F1E1006EEC6D /* XCRemoteSwiftPackageReference "swift-numerics" */,
 				F48BBB649D7A4A6387FBF73C /* XCRemoteSwiftPackageReference "sentry-cocoa" */,
 				011479EB2F779D5F003AEBCC /* XCRemoteSwiftPackageReference "SwiftGeographic" */,
+				5E0A6A0E2FD5000100C0FFEE /* XCRemoteSwiftPackageReference "SwiftGeomagnetism" */,
 				0159221D2FCA2B28007FB6BB /* XCRemoteSwiftPackageReference "XCUITestKit" */,
 				455EB96FD3C3DE444A131339 /* XCRemoteSwiftPackageReference "MeasurementKit" */,
 			);
@@ -1969,6 +1973,14 @@
 				minimumVersion = 1.1.0;
 			};
 		};
+		5E0A6A0E2FD5000100C0FFEE /* XCRemoteSwiftPackageReference "SwiftGeomagnetism" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/RISCfuture/SwiftGeomagnetism";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 		0159221D2FCA2B28007FB6BB /* XCRemoteSwiftPackageReference "XCUITestKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/RISCfuture/XCUITestKit";
@@ -2052,6 +2064,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 011479EB2F779D5F003AEBCC /* XCRemoteSwiftPackageReference "SwiftGeographic" */;
 			productName = SwiftGeographic;
+		};
+		5E0A6A0F2FD5000100C0FFEE /* SwiftGeomagnetism */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5E0A6A0E2FD5000100C0FFEE /* XCRemoteSwiftPackageReference "SwiftGeomagnetism" */;
+			productName = SwiftGeomagnetism;
 		};
 		014CD0473049E08500E8D24F /* MeasurementKit */ = {
 			isa = XCSwiftPackageProductDependency;
