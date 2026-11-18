@@ -128,10 +128,13 @@ struct `Target tests` {
   }
 
   @Test
-  func `calculateDeclination, calculates correctly`() {
-    let target = Target(name: "Test", coordinate: Coordinate(latitude: 38.0, longitude: -122.0))
-    target.calculateDeclination()
+  func `declination, calculates correctly`() {
+    let geomagnetism = Geomagnetism(
+      longitude: -122.0,
+      latitude: 38.0,
+      date: Date(timeIntervalSince1970: 1_700_000_000)
+    )
 
-    #expect(target.declination.isApproximatelyEqual(to: 12.919, relativeTolerance: 0.01))
+    #expect(geomagnetism.declination.isApproximatelyEqual(to: 13.046, relativeTolerance: 0.001))
   }
 }
