@@ -1,5 +1,6 @@
 import CoreLocation
 import XCTest
+import XCUITestKit
 
 // swiftlint:disable prefer_nimble
 
@@ -9,7 +10,7 @@ final class NavigationFlowTests: BaseTestCase {
   @MainActor
   private func waitForFlyContent(timeout: TimeInterval = 15) -> Bool {
     let guidanceMsg = app.staticTexts["Guidance begins once aircraft is moving."]
-    if guidanceMsg.waitForExistence(timeout: timeout) { return true }
+    if guidanceMsg.wait(timeout: timeout) { return true }
     let pposIP = app.staticTexts["P.POS → IP"]
     let ipTarget = app.staticTexts["IP → Target"]
     return pposIP.exists || ipTarget.exists
@@ -29,14 +30,14 @@ final class NavigationFlowTests: BaseTestCase {
     let exitMarker: XCUIElement =
       isListBesideDetail ? app.textFields["targetNameField"] : app.buttons["addTargetButton"]
     for _ in 0..<6 {
-      if exitMarker.waitForExistence(timeout: 1) { break }
+      if exitMarker.wait(timeout: 1) { break }
       // By identity, not position: on iPad the split view's sidebar toggle shares the
       // navigation bar and sits to the *left* of the back button, so the first button
       // by index is "Hide Sidebar". Tapping that collapses the sidebar instead of
       // navigating, which both strands the traversal and takes `addTargetButton` — the
       // marker for "the list is showing" — out of the hierarchy entirely.
       let backButton = app.buttons["BackButton"]
-      guard backButton.waitForExistence(timeout: 3) else { break }
+      guard backButton.wait(timeout: 3) else { break }
       if backButton.isHittable {
         backButton.tap()
       } else {
@@ -120,7 +121,7 @@ final class NavigationFlowTests: BaseTestCase {
     // back navigation rather than sleeping a fixed interval.
     let ipBack = IPSetupPage(app: app)
     _ = ipBack.scrollToVisible(ipBack.offsetBearingField)
-    XCTAssertTrue(ipBack.offsetBearingField.waitForExistence(timeout: 5))
+    XCTAssertTrue(ipBack.offsetBearingField.wait(timeout: 5))
     XCTAssertTrue(
       waitForFieldValue(ipBack.offsetBearingField, equals: enteredBearing),
       "Bearing should retain ‘\(enteredBearing)’ but was: "
@@ -134,7 +135,7 @@ final class NavigationFlowTests: BaseTestCase {
     // Wait for the name field to repopulate with the retained value rather than
     // sleeping a fixed interval before reading it.
     let setupBack = TargetSetupPage(app: app)
-    XCTAssertTrue(setupBack.targetNameField.waitForExistence(timeout: 5))
+    XCTAssertTrue(setupBack.targetNameField.wait(timeout: 5))
     XCTAssertTrue(
       waitForFieldValue(setupBack.targetNameField, equals: "BackNav"),
       "Target name should retain ‘BackNav’ but was: "
@@ -185,7 +186,7 @@ final class NavigationFlowTests: BaseTestCase {
 
     // A configured target re-selected from the list lands on the setup flow; it does not skip to fly.
     XCTAssertTrue(
-      app.buttons["defineIPButton"].waitForExistence(timeout: 15),
+      app.buttons["defineIPButton"].wait(timeout: 15),
       "Re-selecting a configured target should land on the setup flow (Define IP visible)"
     )
     XCTAssertFalse(
@@ -210,7 +211,7 @@ final class NavigationFlowTests: BaseTestCase {
 
     // Assert we land on target setup, NOT fly view
     XCTAssertTrue(
-      setup.defineIPButton.waitForExistence(timeout: 5),
+      setup.defineIPButton.wait(timeout: 5),
       "Define IP button should be visible"
     )
 
@@ -246,7 +247,7 @@ final class NavigationFlowTests: BaseTestCase {
 
     // Go back to TOT via nav bar back button (labeled with previous view's title)
     let backButton = app.navigationBars.buttons["Time on Target"]
-    if backButton.waitForExistence(timeout: 3) {
+    if backButton.wait(timeout: 3) {
       if backButton.isHittable {
         backButton.tap()
       } else {

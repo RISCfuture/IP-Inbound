@@ -5,7 +5,7 @@ struct TutorialPage: Page {
   let app: XCUIApplication
 
   var isDisplayed: Bool {
-    app.staticTexts["How to Use IP Inbound"].waitForExistence(timeout: 5)
+    app.staticTexts["How to Use IP Inbound"].wait(timeout: 5)
   }
 
   var tutorialTitle: XCUIElement { app.staticTexts["How to Use IP Inbound"] }
@@ -39,13 +39,13 @@ struct TutorialPage: Page {
   func hasSectionTitle(_ title: String) -> Bool {
     let text = app.staticTexts[title]
     // Wait briefly for initial render (LazyVStack may need a moment)
-    if text.waitForExistence(timeout: 2) { return true }
+    if text.wait(timeout: 2) { return true }
     // Scroll until we find it or exhaust attempts. After each swipe, give the
     // newly laid-out content a short auto-waiting probe rather than a fixed
-    // settle: `waitForExistence` returns as soon as the title renders.
+    // settle: `wait(timeout:)` returns as soon as the title renders.
     for _ in 0..<10 {
       app.swipeUp()
-      if text.waitForExistence(timeout: 0.5) { return true }
+      if text.wait(timeout: 0.5) { return true }
     }
     return false
   }

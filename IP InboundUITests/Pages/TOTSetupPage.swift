@@ -7,7 +7,7 @@ struct TOTSetupPage: Page {
   let app: XCUIApplication
 
   var isDisplayed: Bool {
-    app.segmentedControls["timeDisplayModePicker"].waitForExistence(timeout: 3)
+    app.segmentedControls["timeDisplayModePicker"].wait(timeout: 3)
   }
 
   // MARK: - Elements
@@ -31,13 +31,13 @@ struct TOTSetupPage: Page {
 
   func selectLocalTime() {
     let picker = scrollToVisible(timeDisplayModePicker) ?? timeDisplayModePicker
-    XCTAssertTrue(picker.waitForExistence(timeout: 3))
+    XCTAssertTrue(picker.wait(timeout: 3))
     picker.buttons["Target Local"].forceTap()
   }
 
   func selectZuluTime() {
     let picker = scrollToVisible(timeDisplayModePicker) ?? timeDisplayModePicker
-    XCTAssertTrue(picker.waitForExistence(timeout: 3))
+    XCTAssertTrue(picker.wait(timeout: 3))
     picker.buttons["Zulu"].forceTap()
   }
 
@@ -80,7 +80,7 @@ struct TOTSetupPage: Page {
   }
 
   func timeEntryFieldLabel() -> String {
-    XCTAssertTrue(timeEntryField.waitForExistence(timeout: 3))
+    XCTAssertTrue(timeEntryField.wait(timeout: 3))
     return timeEntryField.label
   }
 }

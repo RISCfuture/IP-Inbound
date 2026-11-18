@@ -8,7 +8,7 @@ struct FindLocationPage: Page {
 
   var isDisplayed: Bool {
     // The identifier sits on a SwiftUI `List`, which XCUITest exposes as a collection view.
-    app.collectionViews["findLocationView"].waitForExistence(timeout: 5)
+    app.collectionViews["findLocationView"].wait(timeout: 5)
   }
 
   var searchField: XCUIElement { app.searchFields.firstMatch }
@@ -26,10 +26,17 @@ struct FindLocationPage: Page {
 
   var firstSuggestion: XCUIElement { suggestionList.firstMatch }
 
+  /// The first suggestion's label and the number of suggestions, which together change whenever
+  /// the completer revises the list.
+  private var suggestionsShown: String {
+    let first = suggestionList.firstMatch
+    return "\(suggestionList.count) \(first.exists ? first.label : "")"
+  }
+
   // MARK: - Actions
 
   func search(for query: String) {
-    XCTAssertTrue(searchField.waitForExistence(timeout: 3), "Search field should appear")
+    XCTAssertTrue(searchField.wait(timeout: 3), "Search field should appear")
     searchField.forceTap()
     searchField.typeText(query)
   }
@@ -37,9 +44,24 @@ struct FindLocationPage: Page {
   @discardableResult
   func selectFirstSuggestion() -> TargetSetupPage {
     let cell = suggestionList.firstMatch
-    XCTAssertTrue(cell.waitForExistence(timeout: 10), "Suggestion should appear")
+    XCTAssertTrue(cell.wait(timeout: 10), "Suggestion should appear")
+    waitForSuggestionsToSettle()
     cell.forceTap()
     return TargetSetupPage(app: app)
+  }
+
+  /// Waits for live MapKit search to stop revising the suggestions. The completer rewrites the
+  /// list as each keystroke's results arrive, and a tap that lands mid-rewrite selects a row that
+  /// is replaced before its location is looked up.
+  private func waitForSuggestionsToSettle(timeout: TimeInterval = 5) {
+    let deadline = Date().addingTimeInterval(timeout)
+    var listed = suggestionsShown
+    while Date() < deadline {
+      Thread.sleep(forTimeInterval: 0.5)
+      let current = suggestionsShown
+      if current == listed { return }
+      listed = current
+    }
   }
 
   @discardableResult
@@ -47,7 +69,7 @@ struct FindLocationPage: Page {
     let predicate = NSPredicate(format: "label CONTAINS[c] %@", text)
     let match = suggestionList.containing(predicate).firstMatch
     XCTAssertTrue(
-      match.waitForExistence(timeout: 10),
+      match.wait(timeout: 10),
       "Suggestion containing '\(text)' should appear"
     )
     match.forceTap()

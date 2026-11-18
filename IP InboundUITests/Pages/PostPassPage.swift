@@ -45,13 +45,13 @@ struct PostPassPage: Page {
   // MARK: - Methods
 
   func waitUntilDisplayed(timeout: TimeInterval) -> Bool {
-    container.waitForExistence(timeout: timeout)
+    container.wait(timeout: timeout)
   }
 
   @discardableResult
   func tapFlyNextTarget() -> FlyPage {
     XCTAssertTrue(
-      flyNextTargetButton.waitForExistence(timeout: 5),
+      flyNextTargetButton.wait(timeout: 5),
       "Fly next target button should appear"
     )
     flyNextTargetButton.forceTap()
@@ -61,7 +61,7 @@ struct PostPassPage: Page {
   @discardableResult
   func tapChooseTarget() -> TargetListPage {
     XCTAssertTrue(
-      chooseTargetButton.waitForExistence(timeout: 5),
+      chooseTargetButton.wait(timeout: 5),
       "Choose target button should appear"
     )
     chooseTargetButton.forceTap()

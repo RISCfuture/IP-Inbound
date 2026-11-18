@@ -9,9 +9,9 @@ struct FlyPage: Page {
   var isDisplayed: Bool {
     // Displayed if the flyView container, the CDI, or the countdown exists. Each surfaces as a
     // different element type, and the map-bearing iPad layout adds more, so match across any type.
-    anyElement(identifier: "flyView").waitForExistence(timeout: 5)
-      || cdi.waitForExistence(timeout: 2)
-      || countdown.waitForExistence(timeout: 2)
+    anyElement(identifier: "flyView").wait(timeout: 5)
+      || cdi.wait(timeout: 2)
+      || countdown.wait(timeout: 2)
   }
 
   var cdi: XCUIElement { anyElement(identifier: "cdi") }
@@ -46,18 +46,18 @@ struct FlyPage: Page {
 
   func tapSpeedToCycleUnits() {
     let speed = flySpeedDisplay
-    if speed.waitForExistence(timeout: 3) {
+    if speed.wait(timeout: 3) {
       speed.forceTap()
     } else {
       // Fallback: tap distance display which also cycles units
       let distance = flyDistanceDisplay
-      XCTAssertTrue(distance.waitForExistence(timeout: 3), "Distance display should exist")
+      XCTAssertTrue(distance.wait(timeout: 3), "Distance display should exist")
       distance.forceTap()
     }
   }
 
   func tapTOTToToggleTimeMode() {
-    XCTAssertTrue(flyTOTDisplay.waitForExistence(timeout: 3), "TOT display should exist")
+    XCTAssertTrue(flyTOTDisplay.wait(timeout: 3), "TOT display should exist")
     flyTOTDisplay.forceTap()
   }
 
@@ -75,16 +75,16 @@ struct FlyPage: Page {
   }
 
   func hasTargetName(_ name: String) -> Bool {
-    anyElement(label: name).waitForExistence(timeout: 5)
+    anyElement(label: name).wait(timeout: 5)
   }
 
   func hasText(_ text: String) -> Bool {
-    anyElement(label: text).waitForExistence(timeout: 5)
+    anyElement(label: text).wait(timeout: 5)
   }
 
   func hasTextContaining(_ text: String) -> Bool {
     let predicate = NSPredicate(format: "label CONTAINS[c] %@", text)
-    return app.staticTexts.element(matching: predicate).waitForExistence(timeout: 5)
+    return app.staticTexts.element(matching: predicate).wait(timeout: 5)
   }
 }
 
