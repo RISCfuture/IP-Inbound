@@ -21,8 +21,8 @@ extension FloatingPoint {
   var toRadians: Self { return self * .pi / 180 }
 }
 
-/// Class to calculate magnetic declination, magnetic field strength,
-/// inclination etc. for any point on the earth.
+/// Class to calculate magnetic declination, and the field components it is
+/// derived from, for any point on the earth.
 ///
 /// Adapted from the geomagc software and World Magnetic Model of the NOAA
 /// Satellite and Information Service, National Geophysical Data Center
@@ -56,18 +56,6 @@ final class Geomagnetism {
 
   /** Geomagnetic declination (decimal degrees) [opposite of variation, positive Eastward/negative Westward]*/
   private(set) var declination = Double.nan
-
-  /** Geomagnetic inclination/dip angle (degrees) [positive downward]*/
-  private(set) var inclination = Double.nan
-
-  /** Geomagnetic field intensity/strength (nano Teslas)*/
-  private(set) var intensity = Double.nan
-
-  /** Geomagnetic horizontal field intensity/strength (nano Teslas)*/
-  private(set) var horizontalIntensity = Double.nan
-
-  /** Geomagnetic vertical field intensity/strength (nano Teslas) [positive downward]*/
-  private(set) var verticalIntensity = Double.nan
 
   /** Geomagnetic North South (northerly component) field intensity/strength (nano Tesla)*/
   private(set) var northIntensity = Double.nan
@@ -353,19 +341,10 @@ final class Geomagnetism {
     // Rotate magnetic vector components from spherical to geodetic coordinates
     // northIntensity must be the east-west field component
     // eastIntensity must be the north-south field component
-    // verticalIntensity must be the vertical field component.
     northIntensity = -bt * ca - br * sa
     eastIntensity = bp
-    verticalIntensity = bt * sa - br * ca
 
-    // Compute declination (dec), inclination (dip) and total intensity (ti)
-    horizontalIntensity = sqrt((northIntensity * northIntensity) + (eastIntensity * eastIntensity))
-    intensity = sqrt(
-      (horizontalIntensity * horizontalIntensity) + (verticalIntensity * verticalIntensity)
-    )
-    //	Calculate the declination.
     declination = atan2(eastIntensity, northIntensity).toDegrees
-    inclination = atan2(verticalIntensity, horizontalIntensity).toDegrees
 
     otime = yearFraction
     oalt = altitudeKm
